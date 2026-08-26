@@ -1,0 +1,1174 @@
+[
+  {
+    "id": "deck-1",
+    "name": "Darkness Beatdown & Tag Team Rush",
+    "format": "Expandido",
+    "format_slug": "expanded",
+    "archetype": "Aggro / Toolbox GX",
+    "badge_color": "from-purple-900 to-indigo-950",
+    "accent_color": "#705848",
+    "summary": "Agressivo com múltiplas opções de ataque, focado em nocautes rápidos e punição contra decks com muitas habilidades.",
+    "win_condition": "Obter 6 cartas de Prêmio rapidamente através de nocautes pesados e punição contra decks com muitas habilidades.",
+    "stats": {
+      "pokemon": 21,
+      "trainers": 19,
+      "energies": 20,
+      "total": 60
+    },
+    "energy_breakdown": {
+      "owned": "12 Escuridão, 3 Fogo, 4 Psíquica",
+      "needed": "+1 Fogo Básica",
+      "missing_count": 1
+    },
+    "cards": [
+      {
+        "section": "pokemon",
+        "name": "Mewtwo e Mew-GX",
+        "set": "Sol e Lua Promos - SM191",
+        "count": 1,
+        "owned": 1,
+        "rarity": "RU"
+      },
+      {
+        "section": "pokemon",
+        "name": "Darkrai-GX",
+        "set": "Sombras Ardentes - BUS 88",
+        "count": 2,
+        "owned": 2,
+        "rarity": "RU"
+      },
+      {
+        "section": "pokemon",
+        "name": "Darkrai",
+        "set": "Sombras Ardentes - BUS 87",
+        "count": 1,
+        "owned": 1,
+        "rarity": "RH"
+      },
+      {
+        "section": "pokemon",
+        "name": "Umbreon-GX",
+        "set": "Sol e Lua - SUM 142",
+        "count": 1,
+        "owned": 1,
+        "rarity": "RU"
+      },
+      {
+        "section": "pokemon",
+        "name": "Umbreon",
+        "set": "Trovões Perdidos - LOT 120",
+        "count": 2,
+        "owned": 2,
+        "rarity": "R"
+      },
+      {
+        "section": "pokemon",
+        "name": "Eevee",
+        "set": "Sol e Lua - SUM 101",
+        "count": 4,
+        "owned": 4,
+        "rarity": "C"
+      },
+      {
+        "section": "pokemon",
+        "name": "Weavile",
+        "set": "Sombras Ardentes - BUS 86",
+        "count": 3,
+        "owned": 3,
+        "rarity": "R"
+      },
+      {
+        "section": "pokemon",
+        "name": "Sneasel",
+        "set": "Sombras Ardentes - BUS 85",
+        "count": 4,
+        "owned": 4,
+        "rarity": "C"
+      },
+      {
+        "section": "pokemon",
+        "name": "Noivern-GX",
+        "set": "Sombras Ardentes - BUS 141 / 160",
+        "count": 2,
+        "owned": 2,
+        "rarity": "RU"
+      },
+      {
+        "section": "pokemon",
+        "name": "Noibat",
+        "set": "Sombras Ardentes - BUS 109",
+        "count": 2,
+        "owned": 2,
+        "rarity": "C"
+      },
+      {
+        "section": "pokemon",
+        "name": "Charizard-GX",
+        "set": "Destinos Ocultos - HIF 9",
+        "count": 1,
+        "owned": 1,
+        "rarity": "RU"
+      },
+      {
+        "section": "trainers",
+        "name": "Bola de Ninho",
+        "set": "Item - Nest Ball",
+        "count": 3,
+        "owned": 3,
+        "type": "Item"
+      },
+      {
+        "section": "trainers",
+        "name": "Bola Tempo",
+        "set": "Item - Timer Ball",
+        "count": 2,
+        "owned": 2,
+        "type": "Item"
+      },
+      {
+        "section": "trainers",
+        "name": "Substituição",
+        "set": "Item - Switch",
+        "count": 2,
+        "owned": 2,
+        "type": "Item"
+      },
+      {
+        "section": "trainers",
+        "name": "Corda de Fuga",
+        "set": "Item - Escape Rope",
+        "count": 2,
+        "owned": 2,
+        "type": "Item"
+      },
+      {
+        "section": "trainers",
+        "name": "Skate de Fuga",
+        "set": "Ferramenta - Escape Board",
+        "count": 2,
+        "owned": 2,
+        "type": "Tool"
+      },
+      {
+        "section": "trainers",
+        "name": "Maca de Resgate",
+        "set": "Item - Rescue Stretcher",
+        "count": 1,
+        "owned": 1,
+        "type": "Item"
+      },
+      {
+        "section": "trainers",
+        "name": "Ventilador de Campo",
+        "set": "Item - Field Blower",
+        "count": 2,
+        "owned": 2,
+        "type": "Item"
+      },
+      {
+        "section": "trainers",
+        "name": "Martelo Avançado",
+        "set": "Item - Enhanced Hammer",
+        "count": 2,
+        "owned": 2,
+        "type": "Item"
+      },
+      {
+        "section": "trainers",
+        "name": "Floresta de Viridian",
+        "set": "Estádio - Viridian Forest",
+        "count": 2,
+        "owned": 2,
+        "type": "Stadium"
+      },
+      {
+        "section": "trainers",
+        "name": "Mercado Negro Estrela Prisma",
+        "set": "Estádio - Black Market ◇",
+        "count": 1,
+        "owned": 1,
+        "type": "Stadium"
+      },
+      {
+        "section": "energies",
+        "name": "Energia de Escuridão Básica",
+        "set": "Básica",
+        "count": 12,
+        "owned": 12,
+        "type": "Darkness"
+      },
+      {
+        "section": "energies",
+        "name": "Energia de Fogo Básica",
+        "set": "Básica",
+        "count": 4,
+        "owned": 3,
+        "type": "Fire"
+      },
+      {
+        "section": "energies",
+        "name": "Energia Psíquica Básica",
+        "set": "Básica",
+        "count": 4,
+        "owned": 4,
+        "type": "Psychic"
+      }
+    ],
+    "strategy_guide": {
+      "opening": {
+        "title": "Plano de Abertura (Turnos 1 e 2)",
+        "steps": [
+          "Objetivo Imediato: Colocar Mewtwo & Mew-GX ou Eevee como ativos, baixando Sneasel no banco imediatamente.",
+          "Uso da Floresta de Viridian: Use o estádio no Turno 1 para descartar intencionalmente cartas GX pesadas da sua mão (como Charizard-GX ou Darkrai-GX) e buscar a energia necessária.",
+          "Vantagem Tática: A habilidade Perfeição do Mewtwo & Mew-GX copia ataques de cartas GX no descarte, transformando descarte em munição ofensiva instantânea."
+        ]
+      },
+      "midgame": {
+        "title": "Desenvolvimento e Meio de Jogo (Turnos 3 a 5)",
+        "steps": [
+          "O Motor do Weavile: Evolua seus Sneasel para Weavile. O ataque Regra de Conduta causa dano multiplicado pela quantidade de Pokémon com habilidades em jogo.",
+          "Punição Barata: Contra motores como Gardevoir/Bibarel/Dedenne, Weavile nocauteia Pokémon pesados gastando apenas 1 Energia de Escuridão.",
+          "Pressão com Mewtwo & Mew-GX: Utilize Fenda da Noite ou Morte Noturna GX (nocaute imediato se sob Condição Especial).",
+          "Defesa com Mercado Negro Prisma: Enquanto este estádio estiver em campo, se seu Pokémon de Escuridão for nocauteado, o oponente pega 1 carta de Prêmio a menos."
+        ]
+      },
+      "lategame": {
+        "title": "Fechamento de Partida (Late Game)",
+        "steps": [
+          "Caso o adversário suba um Pokémon de Vida alta (250+ HP), utilize Asas Carmesim ou ataque GX do Charizard-GX copiado por Mewtwo & Mew-GX para 300 de dano devastador.",
+          "Gerencie as trocas de prêmio para vencer na corrida de 6 prêmios."
+        ]
+      }
+    },
+    "prize_trade_tip": "Ao jogar com Pokémon-GX, cada nocaute sofrido entrega 2 cartas de Prêmio. Use atacantes de 1 Prêmio (como Weavile) para forçar o oponente a comprar 6 nocautes individuais."
+  },
+  {
+    "id": "deck-2",
+    "name": "Charizard Turbo & Beatdown",
+    "format": "Expandido",
+    "format_slug": "expanded",
+    "archetype": "Aggro Pesado / One-Hit Knockout",
+    "badge_color": "from-red-900 to-amber-950",
+    "accent_color": "#F08030",
+    "summary": "Dano Bruto Massivo e OHKO (One-Hit Knockout), acelerando energias de Fogo para nocautes catastróficos.",
+    "win_condition": "Nocautear os atacantes principais do oponente em 1 único golpe, drenando os Prêmios em 3 nocautes de Pokémon de 2 Prêmios.",
+    "stats": {
+      "pokemon": 19,
+      "trainers": 21,
+      "energies": 20,
+      "total": 60
+    },
+    "energy_breakdown": {
+      "owned": "3 Fogo Básica",
+      "needed": "+17 Fogo Básica",
+      "missing_count": 17
+    },
+    "cards": [
+      {
+        "section": "pokemon",
+        "name": "Charizard-GX",
+        "set": "Destinos Ocultos - HIF 9 / SM211",
+        "count": 2,
+        "owned": 2,
+        "rarity": "RU"
+      },
+      {
+        "section": "pokemon",
+        "name": "Charmeleon",
+        "set": "Destinos Ocultos / Sombras Ardentes",
+        "count": 4,
+        "owned": 4,
+        "rarity": "R"
+      },
+      {
+        "section": "pokemon",
+        "name": "Charmander",
+        "set": "Destinos Ocultos / União de Aliados",
+        "count": 2,
+        "owned": 2,
+        "rarity": "C"
+      },
+      {
+        "section": "pokemon",
+        "name": "Turtonator",
+        "set": "Sombras Ardentes - BUS 26",
+        "count": 1,
+        "owned": 1,
+        "rarity": "R"
+      },
+      {
+        "section": "pokemon",
+        "name": "Litleo",
+        "set": "Caos Ascendente - CRI 14",
+        "count": 2,
+        "owned": 2,
+        "rarity": "C"
+      },
+      {
+        "section": "pokemon",
+        "name": "Ninetales",
+        "set": "Caos Ascendente / União de Aliados",
+        "count": 2,
+        "owned": 2,
+        "rarity": "U"
+      },
+      {
+        "section": "pokemon",
+        "name": "Vulpix",
+        "set": "Caos Ascendente - CRI 8",
+        "count": 1,
+        "owned": 1,
+        "rarity": "C"
+      },
+      {
+        "section": "pokemon",
+        "name": "Rapidash",
+        "set": "União de Aliados - TEU 18",
+        "count": 1,
+        "owned": 1,
+        "rarity": "U"
+      },
+      {
+        "section": "pokemon",
+        "name": "Magmar",
+        "set": "Destinos Ocultos / Sintonia Mental",
+        "count": 2,
+        "owned": 2,
+        "rarity": "U"
+      },
+      {
+        "section": "pokemon",
+        "name": "Drampa-GX",
+        "set": "Guardiões Ascendentes - GRI 115",
+        "count": 1,
+        "owned": 1,
+        "rarity": "RU"
+      },
+      {
+        "section": "pokemon",
+        "name": "Salazzle",
+        "set": "Ultraprisma - UPR 26",
+        "count": 1,
+        "owned": 1,
+        "rarity": "R"
+      },
+      {
+        "section": "trainers",
+        "name": "Bola de Ninho",
+        "set": "Item - Nest Ball",
+        "count": 3,
+        "owned": 3,
+        "type": "Item"
+      },
+      {
+        "section": "trainers",
+        "name": "Bola Tempo",
+        "set": "Item - Timer Ball",
+        "count": 2,
+        "owned": 2,
+        "type": "Item"
+      },
+      {
+        "section": "trainers",
+        "name": "Substituição",
+        "set": "Item - Switch",
+        "count": 2,
+        "owned": 2,
+        "type": "Item"
+      },
+      {
+        "section": "trainers",
+        "name": "Corda de Fuga",
+        "set": "Item - Escape Rope",
+        "count": 2,
+        "owned": 2,
+        "type": "Item"
+      },
+      {
+        "section": "trainers",
+        "name": "Floresta de Viridian",
+        "set": "Estádio - Viridian Forest",
+        "count": 2,
+        "owned": 2,
+        "type": "Stadium"
+      },
+      {
+        "section": "trainers",
+        "name": "Bastão do Desejo",
+        "set": "Ferramenta - Wishful Baton",
+        "count": 1,
+        "owned": 1,
+        "type": "Tool"
+      },
+      {
+        "section": "trainers",
+        "name": "Compart. Exp.",
+        "set": "Ferramenta - Exp. Share",
+        "count": 1,
+        "owned": 1,
+        "type": "Tool"
+      },
+      {
+        "section": "trainers",
+        "name": "Maca de Resgate",
+        "set": "Item - Rescue Stretcher",
+        "count": 1,
+        "owned": 1,
+        "type": "Item"
+      },
+      {
+        "section": "trainers",
+        "name": "Ventilador de Campo",
+        "set": "Item - Field Blower",
+        "count": 2,
+        "owned": 2,
+        "type": "Item"
+      },
+      {
+        "section": "trainers",
+        "name": "Martelo Avançado",
+        "set": "Item - Enhanced Hammer",
+        "count": 3,
+        "owned": 3,
+        "type": "Item"
+      },
+      {
+        "section": "trainers",
+        "name": "Política de Fraqueza",
+        "set": "Ferramenta - Weakness Policy",
+        "count": 2,
+        "owned": 2,
+        "type": "Tool"
+      },
+      {
+        "section": "energies",
+        "name": "Energia de Fogo Básica",
+        "set": "Básica",
+        "count": 20,
+        "owned": 3,
+        "type": "Fire"
+      }
+    ],
+    "strategy_guide": {
+      "opening": {
+        "title": "Plano de Abertura (Turnos 1 e 2)",
+        "steps": [
+          "Atacante Provisório: Inicie com Turtonator ou Magmar no ativo com 1 ou 2 energias para pressionar os primeiros básicos do oponente.",
+          "Montagem de Banco: Use as Bolas de Ninho para priorizar colocar Charmander e Vulpix no banco no Turno 1."
+        ]
+      },
+      "midgame": {
+        "title": "Desenvolvimento e Gerenciamento de Recursos",
+        "steps": [
+          "Bastão do Desejo: Anexe no seu atacante principal ativo. Se ele for nocauteado, mova até 3 energias básicas de Fogo para o Charizard no banco.",
+          "Compart. Exp.: Anexe em um Charmeleon no banco para acumular energias passivamente durante os nocautes.",
+          "Política de Fraqueza: Anexe caso o adversário use atacantes de Água, neutralizando o dano dobrado por fraqueza."
+        ]
+      },
+      "lategame": {
+        "title": "Fechamento de Partida (Late Game)",
+        "steps": [
+          "Suba o Charizard-GX totalmente carregado e utilize Cratera Escaldante GX ou ataques pesados para nocautear qualquer ameaça ativa em 1 hit.",
+          "Use a Maca de Resgate para retornar cópias descartadas de Charizard ou Charmeleon para sua mão e manter a pressão."
+        ]
+      }
+    },
+    "prize_trade_tip": "Turtonator e Magmar compram tempo valioso enquanto você prepara o Charizard-GX no banco com segurança."
+  },
+  {
+    "id": "deck-3",
+    "name": "Dragon Lock & Item Denial",
+    "format": "Expandido",
+    "format_slug": "expanded",
+    "archetype": "Controle / Trava de Mão",
+    "badge_color": "from-indigo-950 to-purple-950",
+    "accent_color": "#7038F8",
+    "summary": "Controle absoluto negando ao adversário o uso de Itens e Energias Especiais da mão com Noivern-GX e Absol.",
+    "win_condition": "Negar a capacidade do adversário de jogar cartas essenciais da mão, travando-o sem recursos e vencendo por desgaste ou nocautes cirúrgicos.",
+    "stats": {
+      "pokemon": 21,
+      "trainers": 19,
+      "energies": 20,
+      "total": 60
+    },
+    "energy_breakdown": {
+      "owned": "12 Escuridão, 6 Psíquica",
+      "needed": "+2 Psíquica Básica",
+      "missing_count": 2
+    },
+    "cards": [
+      {
+        "section": "pokemon",
+        "name": "Noivern-GX",
+        "set": "Sombras Ardentes - BUS 141 / 160",
+        "count": 2,
+        "owned": 2,
+        "rarity": "RU"
+      },
+      {
+        "section": "pokemon",
+        "name": "Noibat",
+        "set": "Sombras Ardentes / Sintonia Mental",
+        "count": 4,
+        "owned": 4,
+        "rarity": "C"
+      },
+      {
+        "section": "pokemon",
+        "name": "Mewtwo e Mew-GX",
+        "set": "Sol e Lua Promos - SM191",
+        "count": 1,
+        "owned": 1,
+        "rarity": "RU"
+      },
+      {
+        "section": "pokemon",
+        "name": "Absol",
+        "set": "Guardiões Ascendentes - GRI 81",
+        "count": 3,
+        "owned": 3,
+        "rarity": "R"
+      },
+      {
+        "section": "pokemon",
+        "name": "Dratini",
+        "set": "Sintonia Mental - UNM 147 / 148",
+        "count": 2,
+        "owned": 2,
+        "rarity": "C"
+      },
+      {
+        "section": "pokemon",
+        "name": "Dragonair",
+        "set": "Sintonia Mental - UNM 149",
+        "count": 1,
+        "owned": 1,
+        "rarity": "U"
+      },
+      {
+        "section": "pokemon",
+        "name": "Druddigon",
+        "set": "Sintonia Mental - UNM 157",
+        "count": 1,
+        "owned": 1,
+        "rarity": "U"
+      },
+      {
+        "section": "pokemon",
+        "name": "Axew",
+        "set": "Sintonia Mental - UNM 154",
+        "count": 1,
+        "owned": 1,
+        "rarity": "C"
+      },
+      {
+        "section": "pokemon",
+        "name": "Fraxure",
+        "set": "Sintonia Mental - UNM 155",
+        "count": 1,
+        "owned": 1,
+        "rarity": "U"
+      },
+      {
+        "section": "pokemon",
+        "name": "Deoxys",
+        "set": "Sol e Lua Promos - SM164",
+        "count": 1,
+        "owned": 1,
+        "rarity": "R"
+      },
+      {
+        "section": "pokemon",
+        "name": "Lugia",
+        "set": "União de Aliados - TEU 131",
+        "count": 1,
+        "owned": 1,
+        "rarity": "R"
+      },
+      {
+        "section": "pokemon",
+        "name": "Drampa-GX",
+        "set": "Guardiões Ascendentes - GRI 115",
+        "count": 1,
+        "owned": 1,
+        "rarity": "RU"
+      },
+      {
+        "section": "pokemon",
+        "name": "Patrat",
+        "set": "Caos Ascendente - CRI 70",
+        "count": 2,
+        "owned": 2,
+        "rarity": "C"
+      },
+      {
+        "section": "trainers",
+        "name": "Bola de Ninho",
+        "set": "Item - Nest Ball",
+        "count": 3,
+        "owned": 3,
+        "type": "Item"
+      },
+      {
+        "section": "trainers",
+        "name": "Bola Tempo",
+        "set": "Item - Timer Ball",
+        "count": 2,
+        "owned": 2,
+        "type": "Item"
+      },
+      {
+        "section": "trainers",
+        "name": "Skate de Fuga",
+        "set": "Ferramenta - Escape Board",
+        "count": 2,
+        "owned": 2,
+        "type": "Tool"
+      },
+      {
+        "section": "trainers",
+        "name": "Substituição",
+        "set": "Item - Switch",
+        "count": 2,
+        "owned": 2,
+        "type": "Item"
+      },
+      {
+        "section": "trainers",
+        "name": "Corda de Fuga",
+        "set": "Item - Escape Rope",
+        "count": 2,
+        "owned": 2,
+        "type": "Item"
+      },
+      {
+        "section": "trainers",
+        "name": "Ventilador de Campo",
+        "set": "Item - Field Blower",
+        "count": 2,
+        "owned": 2,
+        "type": "Item"
+      },
+      {
+        "section": "trainers",
+        "name": "Martelo Avançado",
+        "set": "Item - Enhanced Hammer",
+        "count": 3,
+        "owned": 3,
+        "type": "Item"
+      },
+      {
+        "section": "trainers",
+        "name": "Floresta de Viridian",
+        "set": "Estádio - Viridian Forest",
+        "count": 2,
+        "owned": 2,
+        "type": "Stadium"
+      },
+      {
+        "section": "trainers",
+        "name": "Maca de Resgate",
+        "set": "Item - Rescue Stretcher",
+        "count": 1,
+        "owned": 1,
+        "type": "Item"
+      },
+      {
+        "section": "energies",
+        "name": "Energia de Escuridão Básica",
+        "set": "Básica",
+        "count": 12,
+        "owned": 12,
+        "type": "Darkness"
+      },
+      {
+        "section": "energies",
+        "name": "Energia Psíquica Básica",
+        "set": "Básica",
+        "count": 8,
+        "owned": 6,
+        "type": "Psychic"
+      }
+    ],
+    "strategy_guide": {
+      "opening": {
+        "title": "Plano de Abertura (Turnos 1 e 2)",
+        "steps": [
+          "Montagem da Linha de Noivern: Priorize colocar 2 Noibat no banco usando Bola de Ninho.",
+          "Absol Passivo: Coloque Absol no banco. Sua habilidade passiva adiciona +1 ao custo de recuo do Pokémon básico ativo do oponente, travando suportes de compra na posição ativa."
+        ]
+      },
+      "midgame": {
+        "title": "Aplicação da Trava (Lock Engine)",
+        "steps": [
+          "Contra Decks Rápidos de Itens: Use Onda Distorcida (Distortion) do Noivern-GX a cada turno para impedir o oponente de jogar qualquer Item da mão.",
+          "Contra Decks de Energia Especial: Use Explosão Sonora (Sonic Volume) para impedir a descida de qualquer Energia Especial da mão.",
+          "Destruição de Recursos: Use Martelo Avançado para descartar energias especiais ativas e Ventilador de Campo para limpar ferramentas e estádios do adversário."
+        ]
+      },
+      "lategame": {
+        "title": "Fechamento de Partida (Late Game)",
+        "steps": [
+          "Quando o oponente estiver totalmente sem cartas e recursos, use Sincronia Booming GX do Noivern-GX ou copie com Mewtwo & Mew-GX para espalhar dano e nocautear múltiplos alvos juntos."
+        ]
+      }
+    },
+    "prize_trade_tip": "A trava de itens atrasa o adversário em 3 a 5 turnos, permitindo que você controle o ritmo da partida sem sofrer retaliação."
+  },
+  {
+    "id": "deck-4",
+    "name": "Poison Trap & Metal Fortress",
+    "format": "Casual",
+    "format_slug": "casual",
+    "archetype": "Status / Controle Defensivo",
+    "badge_color": "from-emerald-950 to-slate-900",
+    "accent_color": "#78C850",
+    "summary": "Envenena e Confunde o oponente com Victreebel e Parasect enquanto resiste a ataques com muralhas de Metal.",
+    "win_condition": "Envenenar e Confundir o Pokémon adversário enquanto absorve dano através de ferramentas e resistências de Metal.",
+    "stats": {
+      "pokemon": 26,
+      "trainers": 14,
+      "energies": 20,
+      "total": 60
+    },
+    "energy_breakdown": {
+      "owned": "11 Planta, 8 Metal",
+      "needed": "+1 Metal Básica",
+      "missing_count": 1
+    },
+    "cards": [
+      {
+        "section": "pokemon",
+        "name": "Bellsprout",
+        "set": "Guardiões Ascendentes - GRI 1",
+        "count": 4,
+        "owned": 4,
+        "rarity": "C"
+      },
+      {
+        "section": "pokemon",
+        "name": "Weepinbell",
+        "set": "Tempestade Celestial - CES 2",
+        "count": 4,
+        "owned": 4,
+        "rarity": "U"
+      },
+      {
+        "section": "pokemon",
+        "name": "Victreebel",
+        "set": "Guardiões Ascendentes - GRI 3",
+        "count": 4,
+        "owned": 4,
+        "rarity": "R"
+      },
+      {
+        "section": "pokemon",
+        "name": "Paras",
+        "set": "União de Aliados - TEU 6",
+        "count": 3,
+        "owned": 3,
+        "rarity": "C"
+      },
+      {
+        "section": "pokemon",
+        "name": "Parasect",
+        "set": "União de Aliados - TEU 7",
+        "count": 2,
+        "owned": 2,
+        "rarity": "U"
+      },
+      {
+        "section": "pokemon",
+        "name": "Honedge",
+        "set": "União de Aliados - TEU 107",
+        "count": 4,
+        "owned": 4,
+        "rarity": "C"
+      },
+      {
+        "section": "pokemon",
+        "name": "Doublade",
+        "set": "União de Aliados / Sintonia Mental",
+        "count": 3,
+        "owned": 3,
+        "rarity": "U"
+      },
+      {
+        "section": "pokemon",
+        "name": "Bidoof",
+        "set": "Sintonia Mental - UNM 171",
+        "count": 1,
+        "owned": 1,
+        "rarity": "C"
+      },
+      {
+        "section": "pokemon",
+        "name": "Bibarel",
+        "set": "Sintonia Mental - UNM 172",
+        "count": 1,
+        "owned": 1,
+        "rarity": "U"
+      },
+      {
+        "section": "trainers",
+        "name": "Óculos de Metal",
+        "set": "Ferramenta - Metal Goggles",
+        "count": 3,
+        "owned": 3,
+        "type": "Tool"
+      },
+      {
+        "section": "trainers",
+        "name": "Frigideira de Metal",
+        "set": "Ferramenta - Metal Frying Pan",
+        "count": 1,
+        "owned": 1,
+        "type": "Tool"
+      },
+      {
+        "section": "trainers",
+        "name": "Halteres de Fisioculturismo",
+        "set": "Ferramenta - Bodybuilding Dumbbells",
+        "count": 1,
+        "owned": 1,
+        "type": "Tool"
+      },
+      {
+        "section": "trainers",
+        "name": "Política de Fraqueza",
+        "set": "Ferramenta - Weakness Policy",
+        "count": 2,
+        "owned": 2,
+        "type": "Tool"
+      },
+      {
+        "section": "trainers",
+        "name": "Floresta de Viridian",
+        "set": "Estádio - Viridian Forest",
+        "count": 2,
+        "owned": 2,
+        "type": "Stadium"
+      },
+      {
+        "section": "trainers",
+        "name": "Apito do Juiz",
+        "set": "Item - Judge Whistle",
+        "count": 1,
+        "owned": 1,
+        "type": "Item"
+      },
+      {
+        "section": "trainers",
+        "name": "Bola Tempo",
+        "set": "Item - Timer Ball",
+        "count": 2,
+        "owned": 2,
+        "type": "Item"
+      },
+      {
+        "section": "trainers",
+        "name": "Substituição",
+        "set": "Item - Switch",
+        "count": 2,
+        "owned": 2,
+        "type": "Item"
+      },
+      {
+        "section": "energies",
+        "name": "Energia de Planta Básica",
+        "set": "Básica",
+        "count": 11,
+        "owned": 11,
+        "type": "Grass"
+      },
+      {
+        "section": "energies",
+        "name": "Energia de Metal Básica",
+        "set": "Básica",
+        "count": 9,
+        "owned": 8,
+        "type": "Metal"
+      }
+    ],
+    "strategy_guide": {
+      "opening": {
+        "title": "Plano de Abertura (Turnos 1 e 2)",
+        "steps": [
+          "Abra com Bellsprout ou Honedge no ativo.",
+          "Baixe Bidoof no banco para preparar Bibarel, que funcionará como motor contínuo de compra de cartas da mão."
+        ]
+      },
+      "midgame": {
+        "title": "Aplicação da Armadilha de Veneno & Muralha",
+        "steps": [
+          "Evolua para Victreebel e Parasect, aplicando Veneno e Confusão constantes.",
+          "Suba Doublade com Óculos de Metal (-30 dano e imune a marcadores) ou Frigideira de Metal (-30 dano e anula fraqueza).",
+          "O adversário toma dano entre os turnos e tem 50% de chance de se machucar ao tentar atacar."
+        ]
+      },
+      "lategame": {
+        "title": "Fechamento Defensivo",
+        "steps": [
+          "Drene os pontos de vida do atacante oponente enquanto seu Doublade fortificado sustenta múltiplos turnos em campo."
+        ]
+      }
+    },
+    "prize_trade_tip": "Como este deck usa apenas Pokémon de 1 Prêmio, o oponente é forçado a realizar 6 nocautes trabalhosos enquanto sofre veneno a cada turno."
+  },
+  {
+    "id": "deck-5",
+    "name": "Fairy Swarm & Healing Guard",
+    "format": "Casual",
+    "format_slug": "casual",
+    "archetype": "Motor de Busca / Suporte & Cura",
+    "badge_color": "from-pink-950 to-rose-950",
+    "accent_color": "#EE99AC",
+    "summary": "Aceleração ininterrupta de energias com Ribombee, proteção mágica com Clefable e Diancie, e bloqueio de danos com Pingente de Fada.",
+    "win_condition": "Montar uma bancada protegida com Ribombee e Clefable, curando e bloqueando danos até superar o adversário em recursos.",
+    "stats": {
+      "pokemon": 21,
+      "trainers": 19,
+      "energies": 20,
+      "total": 60
+    },
+    "energy_breakdown": {
+      "owned": "9 Fada, 4 Planta",
+      "needed": "+7 Fada Básica",
+      "missing_count": 7
+    },
+    "cards": [
+      {
+        "section": "pokemon",
+        "name": "Cutiefly",
+        "set": "Sombras Ardentes - BUS 95",
+        "count": 4,
+        "owned": 4,
+        "rarity": "C"
+      },
+      {
+        "section": "pokemon",
+        "name": "Ribombee",
+        "set": "Sombras Ardentes - BUS 96",
+        "count": 3,
+        "owned": 3,
+        "rarity": "R"
+      },
+      {
+        "section": "pokemon",
+        "name": "Clefairy",
+        "set": "Guardiões Ascendentes / Destinos Ocultos",
+        "count": 2,
+        "owned": 2,
+        "rarity": "C"
+      },
+      {
+        "section": "pokemon",
+        "name": "Clefable",
+        "set": "Guardiões Ascendentes - GRI 89",
+        "count": 1,
+        "owned": 1,
+        "rarity": "R"
+      },
+      {
+        "section": "pokemon",
+        "name": "Diancie",
+        "set": "Sombras Ardentes - BUS 94",
+        "count": 1,
+        "owned": 1,
+        "rarity": "R"
+      },
+      {
+        "section": "pokemon",
+        "name": "Cottonee",
+        "set": "Sintonia Mental - UNM 143",
+        "count": 1,
+        "owned": 1,
+        "rarity": "C"
+      },
+      {
+        "section": "pokemon",
+        "name": "Whimsicott",
+        "set": "Sintonia Mental - UNM 144",
+        "count": 1,
+        "owned": 1,
+        "rarity": "R"
+      },
+      {
+        "section": "pokemon",
+        "name": "Dedenne",
+        "set": "Sintonia Mental - UNM 145",
+        "count": 1,
+        "owned": 1,
+        "rarity": "U"
+      },
+      {
+        "section": "pokemon",
+        "name": "Swirlix",
+        "set": "Eclipse Cósmico - CEC 153",
+        "count": 1,
+        "owned": 1,
+        "rarity": "C"
+      },
+      {
+        "section": "pokemon",
+        "name": "Togedemaru",
+        "set": "Fogo Fantasmagórico - PFL 73",
+        "count": 1,
+        "owned": 1,
+        "rarity": "C"
+      },
+      {
+        "section": "pokemon",
+        "name": "Eevee",
+        "set": "Sol e Lua - SUM 101",
+        "count": 2,
+        "owned": 2,
+        "rarity": "C"
+      },
+      {
+        "section": "pokemon",
+        "name": "Bewear",
+        "set": "Guardiões Ascendentes - GRI 113",
+        "count": 1,
+        "owned": 1,
+        "rarity": "U"
+      },
+      {
+        "section": "pokemon",
+        "name": "Audino / Chansey",
+        "set": "Sintonia Mental",
+        "count": 2,
+        "owned": 2,
+        "rarity": "U"
+      },
+      {
+        "section": "trainers",
+        "name": "Bola de Ninho",
+        "set": "Item - Nest Ball",
+        "count": 3,
+        "owned": 3,
+        "type": "Item"
+      },
+      {
+        "section": "trainers",
+        "name": "Bola Tempo",
+        "set": "Item - Timer Ball",
+        "count": 2,
+        "owned": 2,
+        "type": "Item"
+      },
+      {
+        "section": "trainers",
+        "name": "Pingente de Fada",
+        "set": "Ferramenta - Fairy Charm UB",
+        "count": 1,
+        "owned": 1,
+        "type": "Tool"
+      },
+      {
+        "section": "trainers",
+        "name": "Halteres de Fisioculturismo",
+        "set": "Ferramenta - Bodybuilding Dumbbells",
+        "count": 1,
+        "owned": 1,
+        "type": "Tool"
+      },
+      {
+        "section": "trainers",
+        "name": "Skate de Fuga",
+        "set": "Ferramenta - Escape Board",
+        "count": 2,
+        "owned": 2,
+        "type": "Tool"
+      },
+      {
+        "section": "trainers",
+        "name": "Substituição",
+        "set": "Item - Switch",
+        "count": 2,
+        "owned": 2,
+        "type": "Item"
+      },
+      {
+        "section": "trainers",
+        "name": "Corda de Fuga",
+        "set": "Item - Escape Rope",
+        "count": 2,
+        "owned": 2,
+        "type": "Item"
+      },
+      {
+        "section": "trainers",
+        "name": "Floresta de Viridian",
+        "set": "Estádio - Viridian Forest",
+        "count": 2,
+        "owned": 2,
+        "type": "Stadium"
+      },
+      {
+        "section": "trainers",
+        "name": "Apito do Juiz",
+        "set": "Item - Judge Whistle",
+        "count": 1,
+        "owned": 1,
+        "type": "Item"
+      },
+      {
+        "section": "trainers",
+        "name": "Maca de Resgate",
+        "set": "Item - Rescue Stretcher",
+        "count": 1,
+        "owned": 1,
+        "type": "Item"
+      },
+      {
+        "section": "trainers",
+        "name": "Política de Fraqueza",
+        "set": "Ferramenta - Weakness Policy",
+        "count": 2,
+        "owned": 2,
+        "type": "Tool"
+      },
+      {
+        "section": "energies",
+        "name": "Energia de Fada Básica",
+        "set": "Básica",
+        "count": 16,
+        "owned": 9,
+        "type": "Fairy"
+      },
+      {
+        "section": "energies",
+        "name": "Energia de Planta Básica",
+        "set": "Básica",
+        "count": 4,
+        "owned": 4,
+        "type": "Grass"
+      }
+    ],
+    "strategy_guide": {
+      "opening": {
+        "title": "Plano de Abertura (Turnos 1 e 2)",
+        "steps": [
+          "Priorize colocar múltiplos Cutiefly no banco com Bola de Ninho.",
+          "Coloque Clefairy ou Diancie na frente para absorver os primeiros turnos de ataque adversário."
+        ]
+      },
+      "midgame": {
+        "title": "Motor de Busca e Proteção Mágica",
+        "steps": [
+          "Habilidade do Ribombee: Uma vez por turno, Ribombee busca energias básicas no baralho e coloca na mão, garantindo consistência total.",
+          "Proteção de Efeitos: Clefable e Diancie protegem seus Pokémon contra condições especiais e efeitos secundários de ataques.",
+          "Pingente de Fada: Previne todo o dano recebido de determinados tipos de atacantes do adversário."
+        ]
+      },
+      "lategame": {
+        "title": "Supremacia de Recursos",
+        "steps": [
+          "Supere o adversário pela constância ininterrupta de energias e cura passiva."
+        ]
+      }
+    },
+    "prize_trade_tip": "Deck tático ideal para jogos prolongados e controle defensivo com atacantes não-GX."
+  }
+]

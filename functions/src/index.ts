@@ -1,0 +1,92 @@
+import { onRequest } from "firebase-functions/v2/https";
+import express from "express";
+import cors from "cors";
+import { expressConnectMiddleware } from "@connectrpc/connect-express";
+import { ConnectRouter } from "@connectrpc/connect";
+import { initializeApp, getApps } from "firebase-admin/app";
+import { getFirestore } from "firebase-admin/firestore";
+import { getAuth } from "firebase-admin/auth";
+
+if (!getApps().length) {
+  initializeApp();
+}
+
+const db = getFirestore();
+const auth = getAuth();
+
+/**
+ * Rotas e Serviços Connect-RPC
+ */
+function routes(router: ConnectRouter) {
+  // Mock/Service registry for Pokedex RPC
+  router.service({
+    typeName: "pokedex.v1.PokedexService",
+    methods: {
+      listCards: {
+        name: "ListCards",
+        I: Object,
+        O: Object,
+        kind: 0,
+      },
+      getCard: {
+        name: "GetCard",
+        I: Object,
+        O: Object,
+        kind: 0,
+      },
+      listDecks: {
+        name: "ListDecks",
+        I: Object,
+        O: Object,
+        kind: 0,
+      },
+      syncCollection: {
+        name: "SyncCollection",
+        I: Object,
+        O: Object,
+        kind: 0,
+      }
+    }
+  } as any, {
+    async listCards(req: any) {
+      const snapshot = await db.collection("cards").limit(req.pageSize || 50).get();
+      const cards = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      return {
+        cards,
+        totalCount: cards.length,
+        page: req.page || 1,
+        totalPages: 1
+      };
+    },
+    async getCard(req: any) {
+      if (!req.cardId) throw new Error("cardId obrigatório");
+      const doc = await db.collection("cards").doc(req.cardId).get();
+      if (!doc.exists) throw new Error("Carta não encontrada");
+      return { id: doc.id, ...doc.data() };
+    },
+    async listDecks() {
+      const snapshot = await db.collection("decks").get();
+      const decks = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      return { decks };
+    },
+    async syncCollection(req: any) {
+      if (!req.userId) throw new Error("userId obrigatório");
+      const batch = db.batch();
+      const userRef = db.collection("users").doc(req.userId);
+      batch.set(userRef, { lastSyncedAt: Date.now(), cardQuantities: req.cardQuantities }, { merge: true });
+      await batch.commit();
+      return {
+        success: true,
+        totalSyncedCards: Object.keys(req.cardQuantities || {}).length,
+        timestamp: BigInt(Date.now())
+      };
+    }
+  });
+}
+
+const app = express();
+app.use(cors({ origin: true, credentials: true }));
+app.use(expressConnectMiddleware({ routes }));
+
+// Export Cloud Functions 2nd Gen
+export const api = onRequest({ region: "southamerica-east1", cors: true }, app);

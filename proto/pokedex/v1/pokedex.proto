@@ -1,0 +1,70 @@
+syntax = "proto3";
+
+package pokedex.v1;
+
+message Card {
+  string id = 1;
+  string name_pt = 2;
+  string name_en = 3;
+  string set_code = 4;
+  string set_pt = 5;
+  string card_number = 6;
+  int32 quantity = 7;
+  string rarity = 8;
+  string color = 9;
+  bool is_foil = 10;
+  string image_url = 11;
+  repeated string deck_ids = 12;
+}
+
+message ListCardsRequest {
+  string query = 1;
+  string set_code = 2;
+  string color = 3;
+  int32 page = 4;
+  int32 page_size = 5;
+}
+
+message ListCardsResponse {
+  repeated Card cards = 1;
+  int32 total_count = 2;
+  int32 page = 3;
+  int32 total_pages = 4;
+}
+
+message GetCardRequest {
+  string card_id = 1;
+}
+
+message DeckSummary {
+  string id = 1;
+  string name = 2;
+  string format = 3;
+  string archetype = 4;
+  int32 total_cards = 5;
+  int32 missing_cards = 6;
+}
+
+message ListDecksRequest {}
+
+message ListDecksResponse {
+  repeated DeckSummary decks = 1;
+}
+
+message SyncCollectionRequest {
+  string user_id = 1;
+  map<string, int32> card_quantities = 2;
+}
+
+message SyncCollectionResponse {
+  bool success = 1;
+  int32 total_synced_cards = 2;
+  int64 timestamp = 3;
+}
+
+service PokedexService {
+  rpc ListCards (ListCardsRequest) returns (ListCardsResponse);
+  rpc GetCard (GetCardRequest) returns (Card);
+  rpc ListDecks (ListDecksRequest) returns (ListDecksResponse);
+  rpc SyncCollection (SyncCollectionRequest) returns (SyncCollectionResponse);
+}

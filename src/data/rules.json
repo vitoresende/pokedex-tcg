@@ -1,0 +1,125 @@
+{
+  "formats": [
+    {
+      "id": "standard",
+      "name": "Standard (Padrão)",
+      "tag": "Competitivo Oficial",
+      "status_badge": "Rotativo",
+      "description": "O formato mais jogado em torneios oficiais do circuito mundial Pokémon Championship. Permite apenas cartas das coleções mais recentes (com marcas de regulamentação válidas, ex: F, G, H).",
+      "deck_size": "Exatamente 60 cartas",
+      "copy_limit": "Máximo de 4 cópias de qualquer carta com o mesmo nome (exceto Energias Básicas)",
+      "prizes": "6 cartas de Prêmio",
+      "advantages": [
+        "Ambiente equilibrado",
+        "Menor complexidade de cartas antigas",
+        "Atualizado anualmente"
+      ],
+      "disadvantages": [
+        "Necessidade de renovar o acervo a cada rotação anual"
+      ]
+    },
+    {
+      "id": "expanded",
+      "name": "Expanded (Expandido)",
+      "tag": "Competitivo Amplo",
+      "status_badge": "Preto e Branco até Hoje",
+      "description": "Formato que permite cartas desde a série Black & White (2011) até as coleções mais recentes de Scarlet & Violet. Possibilita combos poderosos e sinergias GX/EX lendárias como os Decks 1, 2 e 3 do seu acervo.",
+      "deck_size": "Exatamente 60 cartas",
+      "copy_limit": "Máximo de 4 cópias de qualquer carta com o mesmo nome",
+      "prizes": "6 cartas de Prêmio",
+      "advantages": [
+        "Suas cartas nunca rotacionam",
+        "Combos explosivos e arquetípicos ricos",
+        "Valoriza coleções históricas Sol e Lua"
+      ],
+      "disadvantages": [
+        "Exige conhecimento de uma lista extensa de cartas banidas"
+      ]
+    },
+    {
+      "id": "casual",
+      "name": "Casual / Amistoso (Mesa de Casa)",
+      "tag": "Livre & Temático",
+      "status_badge": "Sem Restrições",
+      "description": "Formato livre para jogos entre amigos e família, perfeito para experimentar estratégias temáticas (como o Deck de Veneno/Metal e o Deck de Fadas) sem a pressão do metagame competitivo.",
+      "deck_size": "60 cartas (ou 40/30 para partidas rápidas de aprendizado)",
+      "copy_limit": "Geralmente 4 cópias, ajustável conforme o acordo entre jogadores",
+      "prizes": "6 cartas de Prêmio (ou 4 para jogos rápidos)",
+      "advantages": [
+        "Diversão pura e experimentação",
+        "Uso de qualquer carta do acervo",
+        "Ótimo para novos jogadores"
+      ],
+      "disadvantages": [
+        "Pode haver desequilíbrio se um jogador usar cartas competitivas extremas"
+      ]
+    }
+  ],
+  "deck_building_rules": [
+    {
+      "title": "Regra das 60 Cartas",
+      "content": "Todo baralho deve conter exatamente 60 cartas — nem uma a mais, nem uma a menos. Ao final do jogo, o baralho não pode estar vazio quando for sua vez de comprar."
+    },
+    {
+      "title": "Limite de 4 Cópias por Nome",
+      "content": "Você só pode ter no máximo 4 cópias de cartas que compartilham exatamente o mesmo nome (ex: no máximo 4 'Eevee', mesmo que sejam de artes ou coleções diferentes). A única exceção são as Energias Básicas, que não possuem limite."
+    },
+    {
+      "title": "Presença de Pokémon Básico",
+      "content": "Seu deck DEVE ter pelo menos 1 Pokémon Básico para permitir a inicialização da partida. Se na mão inicial de 7 cartas você não tiver nenhum Pokémon Básico, você deve declarar Mulligan (embaralhar e comprar 7 novas cartas, dando 1 compra extra ao oponente)."
+    },
+    {
+      "title": "Regra dos Prêmios (Prize Trade)",
+      "content": "Nocautear um Pokémon normal concede 1 Prêmio. Nocautear um Pokémon-GX ou Pokémon-ex concede 2 Prêmios. Nocautear um Pokémon Aliados (TAG TEAM) concede 3 Prêmios. Quem comprar todos os seus 6 Prêmios primeiro vence a partida!"
+    }
+  ],
+  "trainer_types": [
+    {
+      "type": "Itens (Items)",
+      "rule": "Você pode jogar quantas cartas de Item quiser durante o seu turno.",
+      "examples": "Bola de Ninho, Bola Tempo, Substituição, Corda de Fuga, Maca de Resgate"
+    },
+    {
+      "type": "Apoiadores (Supporters)",
+      "rule": "Você só pode jogar 1 carta de Apoiador por turno. (No Turno 1 de quem joga primeiro, não é permitido jogar Apoiador).",
+      "examples": "Professor's Research, Boss's Orders, Cynthia, Guza"
+    },
+    {
+      "type": "Estádios (Stadiums)",
+      "rule": "Você só pode jogar 1 Estádio por turno. O Estádio fica em campo aplicando seu efeito a ambos os jogadores até que outro Estádio seja jogado.",
+      "examples": "Floresta de Viridian, Mercado Negro Estrela Prisma"
+    },
+    {
+      "type": "Ferramentas Pokémon (Pokémon Tools)",
+      "rule": "Você pode ligar 1 Ferramenta por Pokémon (a menos que uma habilidade permita mais). A ferramenta permanece ligada até o Pokémon ser nocauteado ou a ferramenta removida.",
+      "examples": "Skate de Fuga, Óculos de Metal, Bastão do Desejo, Política de Fraqueza"
+    }
+  ],
+  "special_conditions": [
+    {
+      "name": "Envenenado (Poisoned)",
+      "effect": "Coloque 1 marcador de dano (10 de dano ou mais conforme a carta) no Pokémon Envenenado entre cada turno.",
+      "cure": "Recuar para o banco, evoluir ou usar uma carta de cura/Substituição."
+    },
+    {
+      "name": "Queimado (Burned)",
+      "effect": "Coloque 2 marcadores de dano (20 de dano) entre cada turno. Em seguida, jogue uma moeda: se der cara, a condição é curada.",
+      "cure": "Tirar cara na moeda entre turnos, recuar para o banco ou evoluir."
+    },
+    {
+      "name": "Adormecido (Asleep)",
+      "effect": "Vire a carta 90 graus para a esquerda. O Pokémon Adormecido não pode atacar nem recuar. Entre turnos jogue uma moeda: cara acorda.",
+      "cure": "Cara na moeda, evoluir ou trocar de posição com cartas como Substituição."
+    },
+    {
+      "name": "Paralisado (Paralyzed)",
+      "effect": "Vire a carta 90 graus para a direita. O Pokémon Paralisado não pode atacar nem recuar. Dura até o fim do próximo turno do dono.",
+      "cure": "Cura automaticamente após o término do turno do jogador, ou via troca/evolução."
+    },
+    {
+      "name": "Confuso (Confused)",
+      "effect": "Vire a carta 180 graus de cabeça para baixo. Quando tentar atacar, jogue uma moeda: se der coroa, o ataque falha e o Pokémon toma 30 de dano em si mesmo!",
+      "cure": "Recuar para o banco ou evoluir."
+    }
+  ]
+}

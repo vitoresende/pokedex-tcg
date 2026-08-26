@@ -1,0 +1,31 @@
+syntax = "proto3";
+
+package user.v1;
+
+message GetUserRequest {
+  string user_id = 1;
+}
+
+message UserResponse {
+  string user_id = 1;
+  string display_name = 2;
+  string email = 3;
+  int64 created_at = 4;
+  bool is_allowed = 5;
+  repeated string favorite_card_ids = 6;
+}
+
+message UpdateFavoritesRequest {
+  string user_id = 1;
+  repeated string favorite_card_ids = 2;
+}
+
+message UpdateFavoritesResponse {
+  bool success = 1;
+  int32 total_favorites = 2;
+}
+
+service UserService {
+  rpc GetUser (GetUserRequest) returns (UserResponse);
+  rpc UpdateFavorites (UpdateFavoritesRequest) returns (UpdateFavoritesResponse);
+}

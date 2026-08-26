@@ -1,0 +1,50 @@
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# Dependencies and Build Outputs
+node_modules
+dist
+dist-ssr
+*.local
+
+# Environment Variables
+.env
+.env.production
+.env.local
+
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Firebase
+.firebase
+.firebaserc.local
+serviceAccountKey.json
+functions/node_modules
+functions/lib
+
+# Arquivos de Dados Pessoais & Acervos Específicos do Usuário
+colecao_completa_consolidada_com_energias.csv
+estrategias_e_decks_pokemon_tcg.md
+5a6649d8-9bd6-4475-a336-e79b93fdadaa.jpeg
+especificacao_arquitetura_connect_rpc.pdf
+*.csv
+*.pdf
+
+# Pasta local de downloads de imagens
+public/cards/
+public/cards/*
+downloads/

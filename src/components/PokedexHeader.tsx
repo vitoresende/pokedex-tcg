@@ -1,0 +1,113 @@
+import React from 'react';
+import { Volume2, VolumeX, ShieldCheck, ShieldAlert, Sparkles } from 'lucide-react';
+import { useCollection } from '../context/CollectionContext';
+import { useAuth } from '../context/AuthContext';
+import { soundEffects } from '../services/audio';
+
+interface PokedexHeaderProps {
+  onNavigateToAuth: () => void;
+}
+
+export const PokedexHeader: React.FC<PokedexHeaderProps> = ({ onNavigateToAuth }) => {
+  const { isMuted, toggleMute, stats } = useCollection();
+  const { user, isAllowed } = useAuth();
+
+  const handleSensorClick = () => {
+    soundEffects.playScan();
+  };
+
+  return (
+    <header className="sticky top-0 z-40 bg-pokedex-red border-b-4 border-pokedex-darkred shadow-lg select-none">
+      {/* Upper Pokedex bar */}
+      <div className="max-w-7xl mx-auto px-4 py-2.5 flex items-center justify-between">
+        {/* Sensor & Status LEDs */}
+        <div className="flex items-center space-x-3">
+          {/* Main Blue Lens / Sensor */}
+          <button
+            onClick={handleSensorClick}
+            aria-label="Sensor Pokédex"
+            className="relative w-12 h-12 rounded-full bg-white p-1 shadow-md hover:scale-105 active:scale-95 transition-transform flex items-center justify-center focus:outline-none"
+          >
+            <div className="w-full h-full rounded-full bg-gradient-to-br from-cyan-300 via-pokedex-blue to-blue-700 shadow-inner flex items-center justify-center relative overflow-hidden border-2 border-white">
+              {/* Lens Glare */}
+              <div className="absolute top-1 left-1.5 w-3.5 h-3.5 rounded-full bg-white/70 blur-[0.5px]"></div>
+              <div className="w-2.5 h-2.5 rounded-full bg-white/30 animate-pulse"></div>
+            </div>
+          </button>
+
+          {/* Mini 3 LEDs (Red, Yellow, Green) */}
+          <div className="flex items-center space-x-2">
+            <div className="w-3.5 h-3.5 rounded-full bg-red-500 border border-red-950 shadow-[0_0_8px_rgba(239,68,68,0.8)]"></div>
+            <div className="w-3.5 h-3.5 rounded-full bg-yellow-400 border border-yellow-950 shadow-[0_0_8px_rgba(250,204,21,0.8)]"></div>
+            <div className="w-3.5 h-3.5 rounded-full bg-emerald-400 border border-emerald-950 shadow-[0_0_8px_rgba(52,211,153,0.8)]"></div>
+          </div>
+        </div>
+
+        {/* Title & Brand */}
+        <div className="text-center hidden sm:block">
+          <div className="flex items-center justify-center space-x-2">
+            <Sparkles className="w-4 h-4 text-pokedex-yellow" />
+            <h1 className="font-display font-black text-xl tracking-wider text-white uppercase drop-shadow-md">
+              Pokédex TCG Master
+            </h1>
+            <span className="bg-pokedex-darkred/60 text-yellow-300 font-mono text-xs px-2 py-0.5 rounded font-bold border border-yellow-400/30">
+              v1.0
+            </span>
+          </div>
+        </div>
+
+        {/* Action Controls: Audio, Cloud Sync & User Profile */}
+        <div className="flex items-center space-x-2">
+          {/* Mute/Sound Button */}
+          <button
+            onClick={toggleMute}
+            aria-label={isMuted ? "Ativar sons" : "Mutar sons"}
+            className="w-9 h-9 rounded-lg bg-pokedex-darkred/80 hover:bg-pokedex-darkred text-white flex items-center justify-center border border-white/20 transition-colors"
+          >
+            {isMuted ? <VolumeX className="w-4 h-4 text-slate-300" /> : <Volume2 className="w-4 h-4 text-yellow-300 animate-pulse" />}
+          </button>
+
+          {/* User Auth Status Pill */}
+          <button
+            onClick={onNavigateToAuth}
+            className="flex items-center space-x-2 bg-pokedex-darker/90 hover:bg-pokedex-darker text-white px-3 py-1.5 rounded-lg border border-white/20 text-xs font-medium transition-all"
+          >
+            {user ? (
+              <>
+                <div className="relative">
+                  {user.photoURL ? (
+                    <img src={user.photoURL} alt={user.displayName || 'User'} className="w-5 h-5 rounded-full object-cover border border-white/50" />
+                  ) : (
+                    <div className="w-5 h-5 rounded-full bg-pokedex-blue text-white flex items-center justify-center text-[10px] font-bold">
+                      {user.email?.[0].toUpperCase() || 'U'}
+                    </div>
+                  )}
+                  {isAllowed ? (
+                    <div className="absolute -bottom-0.5 -right-0.5 w-2 h-2 rounded-full bg-emerald-500 border border-slate-900"></div>
+                  ) : (
+                    <div className="absolute -bottom-0.5 -right-0.5 w-2 h-2 rounded-full bg-amber-500 border border-slate-900"></div>
+                  )}
+                </div>
+                <span className="hidden md:inline truncate max-w-[100px] text-slate-200">
+                  {user.displayName?.split(' ')[0] || user.email?.split('@')[0]}
+                </span>
+                {isAllowed ? (
+                  <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
+                ) : (
+                  <ShieldAlert className="w-3.5 h-3.5 text-amber-400" />
+                )}
+              </>
+            ) : (
+              <span className="text-yellow-300 font-semibold flex items-center gap-1">
+                <span>Entrar</span>
+              </span>
+            )}
+          </button>
+        </div>
+      </div>
+
+      {/* Decorative Pokedex Bevel Line */}
+      <div className="h-1 bg-gradient-to-r from-red-600 via-red-400 to-red-600"></div>
+    </header>
+  );
+};
