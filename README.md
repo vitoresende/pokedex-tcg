@@ -130,6 +130,94 @@ Standard gRPC uses low-level HTTP/2 framing and trailers that standard browser `
 
 ---
 
+## 📥 Como Importar sua Coleção de Cartas (CSV & Manual)
+
+O Pokédex TCG oferece suporte a importação de coleções inteiras com **busca automática de imagens oficiais em alta definição** e **persistência direta no Firebase Cloud Storage & Firestore**.
+
+```mermaid
+flowchart LR
+    CSV["Arquivo .CSV (LigaPokemon / Planilha)"] --> PIPELINE["Busca Automática de Artes Oficiais (PT / EN)"]
+    PIPELINE --> STORAGE["Upload no Firebase Cloud Storage"]
+    STORAGE --> FIRESTORE["Sincronização em Tempo Real no Firestore"]
+    FIRESTORE --> APP["Pokédex Web Pronta"]
+```
+
+---
+
+### 💻 Método 1: Importação Automática via Terminal (Recomendado)
+
+Com apenas um comando, o script processa sua planilha, localiza e baixa as imagens oficiais em alta resolução, faz o upload em massa para o seu **Google Cloud Storage** e atualiza o catálogo da aplicação:
+
+```bash
+# Importar o arquivo padrão da raiz (colecao_completa_consolidada_com_energias.csv):
+npm run import:csv
+
+# Ou importar qualquer arquivo CSV personalizado:
+npm run import:csv caminho/para/minhas_cartas.csv
+```
+
+**O que o comando faz automaticamente:**
+1. Lê e estrutura todas as cartas, quantidades, raridades e acabamentos (Foil/Holo).
+2. Mapeia com precisão todas as cartas de **Energia Básica** (Planta, Fogo, Água, Raios, Psíquico, Luta, Escuridão, Metal, Fada) e **Energias Especiais** (Bubbly Water Energy, Weakness Guard Energy, etc.).
+3. Baixa as imagens em alta resolução em paralelo (multithread).
+4. Faz o upload de todas as imagens para o seu bucket no **Firebase Storage** (`gs://seu-projeto.firebasestorage.app/cards/`).
+5. Atualiza o catálogo estruturado em `src/data/cards.json`.
+
+---
+
+### 🌐 Método 2: Importação Direta pela Interface Web (Sem Terminal)
+
+Você pode importar cartas diretamente pelo navegador:
+
+1. Abra a aplicação e clique no botão **➕ Add Cards** (no topo da Pokédex).
+2. Selecione a aba **Batch CSV Import**.
+3. Clique em **Choose File** e selecione seu arquivo `.csv` (ou cole o texto da planilha na caixa de texto).
+4. Clique em **Process CSV Import**.
+5. As cartas serão adicionadas à sua coleção e sincronizadas automaticamente em tempo real com o seu **Cloud Firestore**.
+
+---
+
+### ✍️ Método 3: Adição Manual de Cartas com Upload de Foto
+
+Para adicionar cartas avulsas que você acabou de tirar em um booster:
+
+1. Clique em **➕ Add Cards** ➡️ aba **Manual Form**.
+2. Preencha o nome da carta (PT ou EN), código da coleção (ex: `SVI`, `PAF`, `OBF`), número e quantidade.
+3. **Upload de Imagem**:
+   - **Opção A**: Selecione uma foto/arquivo diretamente da câmera do seu celular ou do computador. O app faz o upload para o seu Firebase Storage.
+   - **Opção B**: Cole uma URL de imagem externa. O app espelha a imagem para o seu Cloud Storage.
+4. Clique em **Save Card to Collection & Storage**.
+
+---
+
+### 📊 Formato Padrão de Colunas do CSV
+
+O importador aceita o formato padrão de exportação da **LigaPokemon** e planilhas Pokémon TCG:
+
+| Coluna | Exemplo | Descrição |
+| :--- | :--- | :--- |
+| `Edicao (PTBR)` | `Caos Ascendente` | Nome da coleção em Português |
+| `Edicao (EN)` | `Chaos Rising` | Nome da coleção em Inglês |
+| `Edicao (Sigla)` | `CRI` / `SVI` / `MEW` | Sigla oficial da coleção |
+| `Card (PT)` | `Charizard ex` | Nome da carta em Português |
+| `Card (EN)` | `Charizard ex` | Nome da carta em Inglês |
+| `Quantidade` | `1`, `2`, `4` | Quantidade de cópias que você possui |
+| `Qualidade` | `M`, `NM`, `SP` | Estado de conservação (Mint, Near Mint...) |
+| `Idioma` | `PT`, `EN`, `JP` | Idioma da carta física |
+| `Raridade` | `C`, `U`, `R`, `IR`, `S` | Código de raridade |
+| `Cor` | `R`, `W`, `G`, `L`, `P`, `E` | Tipo de energia (Fogo, Água, Planta...) |
+| `Extras` | `Foil`, `Holo`, `Reverse` | Acabamento holográfico |
+| `Card #` | `54`, `087`, `213` | Número da carta na coleção |
+| `Comentario` | `Pasta 1` | Anotações pessoais de organização |
+| `# Cards na Edicao` | `198` | Total de cartas na coleção |
+
+**Exemplo de linha CSV:**
+```csv
+Caos Ascendente,Chaos Rising,CRI,Charizard ex,Charizard ex,1,M,PT,IR,R,Foil,087,Pasta Principal,198
+```
+
+---
+
 ## 🖼️ Card Image Pipeline & Firebase Storage
 
 Card images are dynamically loaded in cascading order:
