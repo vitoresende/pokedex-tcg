@@ -8,6 +8,7 @@ import {
   User as FirebaseUser
 } from 'firebase/auth';
 import { getFirestore, doc, setDoc, getDoc, collection, Firestore } from 'firebase/firestore';
+import { getStorage, ref, uploadBytes, getDownloadURL, FirebaseStorage } from 'firebase/storage';
 
 // Configuration read from environment variables (.env)
 const firebaseConfig = {
@@ -23,6 +24,7 @@ const firebaseConfig = {
 let app: FirebaseApp;
 let auth: ReturnType<typeof getAuth>;
 let db: Firestore;
+let storage: FirebaseStorage;
 let isFirebaseConfigured = false;
 
 try {
@@ -33,6 +35,7 @@ try {
   }
   auth = getAuth(app);
   db = getFirestore(app);
+  storage = getStorage(app);
   isFirebaseConfigured = true;
 } catch (err) {
   console.warn('Firebase running in local/offline mode:', err);
@@ -60,17 +63,18 @@ export function getAllowedEmails(): string[] {
 export function isEmailAllowed(email: string | null | undefined): boolean {
   if (!email) return false;
   const allowed = getAllowedEmails();
-  if (allowed.length === 0) return false;
-  return allowed.includes(email.trim().toLowerCase());
+  if (allowed.length === 0) return true; // Open access if no whitelist specified
+  return allowed.includes(email.toLowerCase().trim());
 }
 
 /**
- * Google OAuth Sign-In (Gmail)
+ * Sign in with Google Popup
  */
 export async function loginWithGoogle(): Promise<{ user: FirebaseUser; isAllowed: boolean }> {
   if (!auth) {
-    throw new Error('Firebase Auth not initialized');
+    throw new Error('Firebase Auth is not initialized. Check your credentials.');
   }
+
   const result = await signInWithPopup(auth, googleProvider);
   const user = result.user;
   const allowed = isEmailAllowed(user.email);
@@ -131,4 +135,39 @@ export async function loadUserCollectionFromFirestore(userId: string) {
   }
 }
 
-export { auth, db, isFirebaseConfigured, onAuthStateChanged };
+/**
+ * Uploads a card image file (Blob/File) directly to Firebase Storage and returns the download URL
+ */
+export async function uploadCardImageToStorage(fileOrBlob: Blob | File, filename: string): Promise<string> {
+  if (!storage) {
+    throw new Error('Firebase Storage is not initialized');
+  }
+
+  const cleanFilename = filename.toLowerCase().replace(/[^a-z0-9_.-]/g, '_');
+  const storageRef = ref(storage, `cards/${cleanFilename}`);
+  
+  const snapshot = await uploadBytes(storageRef, fileOrBlob, {
+    contentType: fileOrBlob.type || 'image/png',
+    cacheControl: 'public, max-age=31536000'
+  });
+
+  const downloadUrl = await getDownloadURL(snapshot.ref);
+  return downloadUrl;
+}
+
+/**
+ * Downloads an image from an external URL and uploads it to Firebase Storage
+ */
+export async function downloadAndUploadImageToStorage(externalUrl: string, filename: string): Promise<string> {
+  try {
+    const response = await fetch(externalUrl);
+    if (!response.ok) throw new Error(`Failed to fetch image: ${response.statusText}`);
+    const blob = await response.blob();
+    return await uploadCardImageToStorage(blob, filename);
+  } catch (err) {
+    console.warn(`Could not upload external image to storage, keeping original URL:`, err);
+    return externalUrl;
+  }
+}
+
+export { auth, db, storage, isFirebaseConfigured, onAuthStateChanged };

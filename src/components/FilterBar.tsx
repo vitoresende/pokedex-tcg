@@ -87,8 +87,23 @@ export const FilterBar: React.FC = () => {
           )}
         </div>
 
-        {/* Set and Sort dropdowns */}
-        <div className="flex gap-2">
+        {/* Set, Category and Sort dropdowns */}
+        <div className="flex flex-wrap sm:flex-nowrap gap-2">
+          <select
+            value={filters.selectedCategory}
+            onChange={(e) => {
+              soundEffects.playClick();
+              setFilters(prev => ({ ...prev, selectedCategory: e.target.value }));
+            }}
+            aria-label="Filter by Category"
+            className="bg-pokedex-darker border border-slate-800 rounded-xl px-3 py-2 text-xs font-mono text-slate-200 focus:outline-none focus:border-pokedex-blue"
+          >
+            <option value="ALL">All Categories</option>
+            <option value="Pokémon">Pokémon Only</option>
+            <option value="Trainer">Trainers Only</option>
+            <option value="Energy">Energies Only</option>
+          </select>
+
           <select
             value={filters.selectedSet}
             onChange={(e) => {

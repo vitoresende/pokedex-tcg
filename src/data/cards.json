@@ -21,8 +21,8 @@
     "is_foil": false,
     "extras": "",
     "comment": "",
-    "image_url": "https://images.pokemontcg.io/sm4/59.png",
-    "local_image": "/cards/cri_59.png",
+    "image_filename": "cri_59.png",
+    "image_url": "https://images.pokemontcg.io/cri/59.png",
     "decks": []
   },
   {
@@ -44,11 +44,11 @@
     "color_slug": "grass",
     "color_bg": "#78C850",
     "card_category": "Pokémon",
-    "is_foil": true,
+    "is_foil": false,
     "extras": "",
     "comment": "",
-    "image_url": "https://images.pokemontcg.io/sm4/87.png",
-    "local_image": "/cards/cri_087.png",
+    "image_filename": "cri_087.png",
+    "image_url": "https://images.pokemontcg.io/cri/87.png",
     "decks": []
   },
   {
@@ -73,8 +73,8 @@
     "is_foil": false,
     "extras": "",
     "comment": "",
-    "image_url": "https://images.pokemontcg.io/sm4/5.png",
-    "local_image": "/cards/cri_5.png",
+    "image_filename": "cri_5.png",
+    "image_url": "https://images.pokemontcg.io/cri/5.png",
     "decks": []
   },
   {
@@ -96,11 +96,11 @@
     "color_slug": "grass",
     "color_bg": "#78C850",
     "card_category": "Pokémon",
-    "is_foil": true,
+    "is_foil": false,
     "extras": "",
     "comment": "",
-    "image_url": "https://images.pokemontcg.io/sm4/87.png",
-    "local_image": "/cards/cri_87.png",
+    "image_filename": "cri_87.png",
+    "image_url": "https://images.pokemontcg.io/cri/87.png",
     "decks": []
   },
   {
@@ -125,8 +125,8 @@
     "is_foil": false,
     "extras": "",
     "comment": "",
-    "image_url": "https://images.pokemontcg.io/sm4/18.png",
-    "local_image": "/cards/cri_18.png",
+    "image_filename": "cri_18.png",
+    "image_url": "https://images.pokemontcg.io/cri/18.png",
     "decks": []
   },
   {
@@ -151,8 +151,8 @@
     "is_foil": true,
     "extras": "Foil",
     "comment": "",
-    "image_url": "https://images.pokemontcg.io/sm4/45.png",
-    "local_image": "/cards/cri_45.png",
+    "image_filename": "cri_45.png",
+    "image_url": "https://images.pokemontcg.io/cri/45.png",
     "decks": []
   },
   {
@@ -177,8 +177,8 @@
     "is_foil": true,
     "extras": "Foil",
     "comment": "",
-    "image_url": "https://images.pokemontcg.io/sve/1.png",
-    "local_image": "/cards/cri_084.png",
+    "image_filename": "cri_084.png",
+    "image_url": "https://images.pokemontcg.io/cri/84.png",
     "decks": []
   },
   {
@@ -196,15 +196,15 @@
     "rarity_code": "C",
     "rarity_name": "Comum",
     "color_code": "P",
-    "color_name": "Psíquica",
+    "color_name": "Psíquico",
     "color_slug": "psychic",
     "color_bg": "#F85888",
     "card_category": "Pokémon",
     "is_foil": false,
     "extras": "",
     "comment": "",
-    "image_url": "https://images.pokemontcg.io/sm4/36.png",
-    "local_image": "/cards/cri_36.png",
+    "image_filename": "cri_36.png",
+    "image_url": "https://images.pokemontcg.io/cri/36.png",
     "decks": []
   },
   {
@@ -229,8 +229,8 @@
     "is_foil": false,
     "extras": "",
     "comment": "",
-    "image_url": "https://images.pokemontcg.io/sm4/62.png",
-    "local_image": "/cards/cri_62.png",
+    "image_filename": "cri_62.png",
+    "image_url": "https://images.pokemontcg.io/cri/62.png",
     "decks": []
   },
   {
@@ -255,8 +255,8 @@
     "is_foil": false,
     "extras": "",
     "comment": "",
-    "image_url": "https://images.pokemontcg.io/sm4/19.png",
-    "local_image": "/cards/cri_19.png",
+    "image_filename": "cri_19.png",
+    "image_url": "https://images.pokemontcg.io/cri/19.png",
     "decks": []
   },
   {
@@ -272,17 +272,17 @@
     "quality": "M",
     "language": "PT",
     "rarity_code": "RD",
-    "rarity_name": "Rara Dupla (ex)",
+    "rarity_name": "Double Rara",
     "color_code": "D",
-    "color_name": "Escuridão",
+    "color_name": "Noturno",
     "color_slug": "darkness",
     "color_bg": "#705848",
     "card_category": "Pokémon",
     "is_foil": true,
     "extras": "Foil",
     "comment": "",
-    "image_url": "https://images.pokemontcg.io/sm4/55.png",
-    "local_image": "/cards/cri_055.png",
+    "image_filename": "cri_055.png",
+    "image_url": "https://images.pokemontcg.io/cri/55.png",
     "decks": []
   },
   {
@@ -307,11 +307,9 @@
     "is_foil": false,
     "extras": "",
     "comment": "",
-    "image_url": "https://images.pokemontcg.io/sm4/14.png",
-    "local_image": "/cards/cri_14.png",
-    "decks": [
-      "deck-2"
-    ]
+    "image_filename": "cri_14.png",
+    "image_url": "https://images.pokemontcg.io/cri/14.png",
+    "decks": []
   },
   {
     "id": "tcg-013",
@@ -335,8 +333,8 @@
     "is_foil": false,
     "extras": "",
     "comment": "",
-    "image_url": "https://images.pokemontcg.io/sm4/27.png",
-    "local_image": "/cards/cri_27.png",
+    "image_filename": "cri_27.png",
+    "image_url": "https://images.pokemontcg.io/cri/27.png",
     "decks": []
   },
   {
@@ -352,7 +350,7 @@
     "quality": "N",
     "language": "PT",
     "rarity_code": "RD",
-    "rarity_name": "Rara Dupla (ex)",
+    "rarity_name": "Double Rara",
     "color_code": "W",
     "color_name": "Água",
     "color_slug": "water",
@@ -361,8 +359,8 @@
     "is_foil": true,
     "extras": "Foil",
     "comment": "",
-    "image_url": "https://images.pokemontcg.io/sm4/22.png",
-    "local_image": "/cards/cri_22.png",
+    "image_filename": "cri_22.png",
+    "image_url": "https://images.pokemontcg.io/cri/22.png",
     "decks": []
   },
   {
@@ -380,15 +378,15 @@
     "rarity_code": "U",
     "rarity_name": "Incomum",
     "color_code": "P",
-    "color_name": "Psíquica",
+    "color_name": "Psíquico",
     "color_slug": "psychic",
     "color_bg": "#F85888",
     "card_category": "Pokémon",
     "is_foil": false,
     "extras": "",
     "comment": "",
-    "image_url": "https://images.pokemontcg.io/sm4/37.png",
-    "local_image": "/cards/cri_37.png",
+    "image_filename": "cri_37.png",
+    "image_url": "https://images.pokemontcg.io/cri/37.png",
     "decks": []
   },
   {
@@ -413,8 +411,8 @@
     "is_foil": true,
     "extras": "Foil",
     "comment": "",
-    "image_url": "https://images.pokemontcg.io/sm4/72.png",
-    "local_image": "/cards/cri_72.png",
+    "image_filename": "cri_72.png",
+    "image_url": "https://images.pokemontcg.io/cri/72.png",
     "decks": []
   },
   {
@@ -439,11 +437,9 @@
     "is_foil": false,
     "extras": "",
     "comment": "",
-    "image_url": "https://images.pokemontcg.io/sm4/9.png",
-    "local_image": "/cards/cri_9.png",
-    "decks": [
-      "deck-2"
-    ]
+    "image_filename": "cri_9.png",
+    "image_url": "https://images.pokemontcg.io/cri/9.png",
+    "decks": []
   },
   {
     "id": "tcg-018",
@@ -467,11 +463,9 @@
     "is_foil": true,
     "extras": "Foil",
     "comment": "",
-    "image_url": "https://images.pokemontcg.io/sm4/9.png",
-    "local_image": "/cards/cri_9.png",
-    "decks": [
-      "deck-2"
-    ]
+    "image_filename": "cri_9.png",
+    "image_url": "https://images.pokemontcg.io/cri/9.png",
+    "decks": []
   },
   {
     "id": "tcg-019",
@@ -495,11 +489,9 @@
     "is_foil": false,
     "extras": "",
     "comment": "",
-    "image_url": "https://images.pokemontcg.io/sm4/70.png",
-    "local_image": "/cards/cri_70.png",
-    "decks": [
-      "deck-3"
-    ]
+    "image_filename": "cri_70.png",
+    "image_url": "https://images.pokemontcg.io/cri/70.png",
+    "decks": []
   },
   {
     "id": "tcg-020",
@@ -516,15 +508,15 @@
     "rarity_code": "C",
     "rarity_name": "Comum",
     "color_code": "D",
-    "color_name": "Escuridão",
+    "color_name": "Noturno",
     "color_slug": "darkness",
     "color_bg": "#705848",
     "card_category": "Pokémon",
     "is_foil": false,
     "extras": "",
     "comment": "",
-    "image_url": "https://images.pokemontcg.io/sm4/52.png",
-    "local_image": "/cards/cri_52.png",
+    "image_filename": "cri_52.png",
+    "image_url": "https://images.pokemontcg.io/cri/52.png",
     "decks": []
   },
   {
@@ -542,15 +534,15 @@
     "rarity_code": "C",
     "rarity_name": "Comum",
     "color_code": "D",
-    "color_name": "Escuridão",
+    "color_name": "Noturno",
     "color_slug": "darkness",
     "color_bg": "#705848",
     "card_category": "Pokémon",
     "is_foil": false,
     "extras": "",
     "comment": "",
-    "image_url": "https://images.pokemontcg.io/sm4/58.png",
-    "local_image": "/cards/cri_58.png",
+    "image_filename": "cri_58.png",
+    "image_url": "https://images.pokemontcg.io/cri/58.png",
     "decks": []
   },
   {
@@ -568,15 +560,15 @@
     "rarity_code": "U",
     "rarity_name": "Incomum",
     "color_code": "D",
-    "color_name": "Escuridão",
+    "color_name": "Noturno",
     "color_slug": "darkness",
     "color_bg": "#705848",
     "card_category": "Pokémon",
     "is_foil": false,
     "extras": "",
     "comment": "",
-    "image_url": "https://images.pokemontcg.io/sm4/54.png",
-    "local_image": "/cards/cri_54.png",
+    "image_filename": "cri_54.png",
+    "image_url": "https://images.pokemontcg.io/cri/54.png",
     "decks": []
   },
   {
@@ -601,11 +593,9 @@
     "is_foil": false,
     "extras": "",
     "comment": "",
-    "image_url": "https://images.pokemontcg.io/sm4/8.png",
-    "local_image": "/cards/cri_8.png",
-    "decks": [
-      "deck-2"
-    ]
+    "image_filename": "cri_8.png",
+    "image_url": "https://images.pokemontcg.io/cri/8.png",
+    "decks": []
   },
   {
     "id": "tcg-024",
@@ -622,15 +612,15 @@
     "rarity_code": "C",
     "rarity_name": "Comum",
     "color_code": "D",
-    "color_name": "Escuridão",
+    "color_name": "Noturno",
     "color_slug": "darkness",
     "color_bg": "#705848",
     "card_category": "Pokémon",
     "is_foil": false,
     "extras": "",
     "comment": "",
-    "image_url": "https://images.pokemontcg.io/sm4/49.png",
-    "local_image": "/cards/cri_49.png",
+    "image_filename": "cri_49.png",
+    "image_url": "https://images.pokemontcg.io/cri/49.png",
     "decks": []
   },
   {
@@ -646,21 +636,18 @@
     "quality": "M",
     "language": "PT",
     "rarity_code": "RU",
-    "rarity_name": "Ultra Rara (GX/EX)",
+    "rarity_name": "Ultra Rara",
     "color_code": "R",
     "color_name": "Fogo",
     "color_slug": "fire",
     "color_bg": "#F08030",
     "card_category": "Pokémon",
-    "is_foil": true,
+    "is_foil": false,
     "extras": "",
     "comment": "",
-    "image_url": "https://images.pokemontcg.io/sm115/9.png",
-    "local_image": "/cards/hif_9.png",
-    "decks": [
-      "deck-1",
-      "deck-2"
-    ]
+    "image_filename": "hif_9.png",
+    "image_url": "https://images.pokemontcg.io/hif/9.png",
+    "decks": []
   },
   {
     "id": "tcg-026",
@@ -684,11 +671,9 @@
     "is_foil": false,
     "extras": "",
     "comment": "",
-    "image_url": "https://images.pokemontcg.io/sm115/7.png",
-    "local_image": "/cards/hif_7.png",
-    "decks": [
-      "deck-2"
-    ]
+    "image_filename": "hif_7.png",
+    "image_url": "https://images.pokemontcg.io/hif/7.png",
+    "decks": []
   },
   {
     "id": "tcg-027",
@@ -712,11 +697,9 @@
     "is_foil": true,
     "extras": "Foil",
     "comment": "",
-    "image_url": "https://images.pokemontcg.io/sma/SV7.png",
-    "local_image": "/cards/hif_sv7.png",
-    "decks": [
-      "deck-2"
-    ]
+    "image_filename": "hif_SV7.png",
+    "image_url": "https://images.pokemontcg.io/hif/SV7.png",
+    "decks": []
   },
   {
     "id": "tcg-028",
@@ -740,11 +723,9 @@
     "is_foil": false,
     "extras": "",
     "comment": "",
-    "image_url": "https://images.pokemontcg.io/sm115/39.png",
-    "local_image": "/cards/hif_39.png",
-    "decks": [
-      "deck-5"
-    ]
+    "image_filename": "hif_39.png",
+    "image_url": "https://images.pokemontcg.io/hif/39.png",
+    "decks": []
   },
   {
     "id": "tcg-029",
@@ -768,8 +749,8 @@
     "is_foil": false,
     "extras": "",
     "comment": "",
-    "image_url": "https://images.pokemontcg.io/sm115/37.png",
-    "local_image": "/cards/hif_37.png",
+    "image_filename": "hif_37.png",
+    "image_url": "https://images.pokemontcg.io/hif/37.png",
     "decks": []
   },
   {
@@ -787,15 +768,15 @@
     "rarity_code": "C",
     "rarity_name": "Comum",
     "color_code": "P",
-    "color_name": "Psíquica",
+    "color_name": "Psíquico",
     "color_slug": "psychic",
     "color_bg": "#F85888",
     "card_category": "Pokémon",
     "is_foil": false,
     "extras": "",
     "comment": "",
-    "image_url": "https://images.pokemontcg.io/sm115/25.png",
-    "local_image": "/cards/hif_25.png",
+    "image_filename": "hif_25.png",
+    "image_url": "https://images.pokemontcg.io/hif/25.png",
     "decks": []
   },
   {
@@ -820,8 +801,8 @@
     "is_foil": false,
     "extras": "",
     "comment": "",
-    "image_url": "https://images.pokemontcg.io/sm115/33.png",
-    "local_image": "/cards/hif_33.png",
+    "image_filename": "hif_33.png",
+    "image_url": "https://images.pokemontcg.io/hif/33.png",
     "decks": []
   },
   {
@@ -846,8 +827,8 @@
     "is_foil": false,
     "extras": "",
     "comment": "",
-    "image_url": "https://images.pokemontcg.io/sm115/54.png",
-    "local_image": "/cards/hif_54.png",
+    "image_filename": "hif_54.png",
+    "image_url": "https://images.pokemontcg.io/hif/54.png",
     "decks": []
   },
   {
@@ -865,15 +846,15 @@
     "rarity_code": "C",
     "rarity_name": "Comum",
     "color_code": "P",
-    "color_name": "Psíquica",
+    "color_name": "Psíquico",
     "color_slug": "psychic",
     "color_bg": "#F85888",
     "card_category": "Pokémon",
     "is_foil": false,
     "extras": "",
     "comment": "",
-    "image_url": "https://images.pokemontcg.io/sm115/28.png",
-    "local_image": "/cards/hif_28.png",
+    "image_filename": "hif_28.png",
+    "image_url": "https://images.pokemontcg.io/hif/28.png",
     "decks": []
   },
   {
@@ -898,8 +879,8 @@
     "is_foil": false,
     "extras": "",
     "comment": "",
-    "image_url": "https://images.pokemontcg.io/sm115/17.png",
-    "local_image": "/cards/hif_17.png",
+    "image_filename": "hif_17.png",
+    "image_url": "https://images.pokemontcg.io/hif/17.png",
     "decks": []
   },
   {
@@ -924,8 +905,8 @@
     "is_foil": false,
     "extras": "",
     "comment": "",
-    "image_url": "https://images.pokemontcg.io/sm115/15.png",
-    "local_image": "/cards/hif_15.png",
+    "image_filename": "hif_15.png",
+    "image_url": "https://images.pokemontcg.io/hif/15.png",
     "decks": []
   },
   {
@@ -950,11 +931,9 @@
     "is_foil": false,
     "extras": "",
     "comment": "",
-    "image_url": "https://images.pokemontcg.io/sm115/10.png",
-    "local_image": "/cards/hif_10.png",
-    "decks": [
-      "deck-2"
-    ]
+    "image_filename": "hif_10.png",
+    "image_url": "https://images.pokemontcg.io/hif/10.png",
+    "decks": []
   },
   {
     "id": "tcg-037",
@@ -978,8 +957,8 @@
     "is_foil": false,
     "extras": "",
     "comment": "",
-    "image_url": "https://images.pokemontcg.io/sm115/19.png",
-    "local_image": "/cards/hif_19.png",
+    "image_filename": "hif_19.png",
+    "image_url": "https://images.pokemontcg.io/hif/19.png",
     "decks": []
   },
   {
@@ -1004,8 +983,8 @@
     "is_foil": false,
     "extras": "",
     "comment": "",
-    "image_url": "https://images.pokemontcg.io/sm115/11.png",
-    "local_image": "/cards/hif_11.png",
+    "image_filename": "hif_11.png",
+    "image_url": "https://images.pokemontcg.io/hif/11.png",
     "decks": []
   },
   {
@@ -1030,8 +1009,8 @@
     "is_foil": false,
     "extras": "",
     "comment": "",
-    "image_url": "https://images.pokemontcg.io/sm115/5.png",
-    "local_image": "/cards/hif_5.png",
+    "image_filename": "hif_5.png",
+    "image_url": "https://images.pokemontcg.io/hif/5.png",
     "decks": []
   },
   {
@@ -1056,8 +1035,8 @@
     "is_foil": false,
     "extras": "",
     "comment": "",
-    "image_url": "https://images.pokemontcg.io/sm115/12.png",
-    "local_image": "/cards/hif_12.png",
+    "image_filename": "hif_12.png",
+    "image_url": "https://images.pokemontcg.io/hif/12.png",
     "decks": []
   },
   {
@@ -1082,8 +1061,8 @@
     "is_foil": true,
     "extras": "Foil",
     "comment": "",
-    "image_url": "https://images.pokemontcg.io/sm115/18.png",
-    "local_image": "/cards/hif_18.png",
+    "image_filename": "hif_18.png",
+    "image_url": "https://images.pokemontcg.io/hif/18.png",
     "decks": []
   },
   {
@@ -1108,8 +1087,8 @@
     "is_foil": false,
     "extras": "",
     "comment": "",
-    "image_url": "https://images.pokemontcg.io/sm115/21.png",
-    "local_image": "/cards/hif_21.png",
+    "image_filename": "hif_21.png",
+    "image_url": "https://images.pokemontcg.io/hif/21.png",
     "decks": []
   },
   {
@@ -1127,22 +1106,22 @@
     "rarity_code": "C",
     "rarity_name": "Comum",
     "color_code": "P",
-    "color_name": "Psíquica",
+    "color_name": "Psíquico",
     "color_slug": "psychic",
     "color_bg": "#F85888",
     "card_category": "Pokémon",
     "is_foil": true,
     "extras": "Foil",
     "comment": "",
-    "image_url": "https://images.pokemontcg.io/sv4pt5/28.png",
-    "local_image": "/cards/paf_028.png",
+    "image_filename": "paf_028.png",
+    "image_url": "https://images.pokemontcg.io/paf/28.png",
     "decks": []
   },
   {
     "id": "tcg-044",
     "name_pt": "Bisharp",
     "name_en": "Bisharp",
-    "set_pt": "Eclipse Cósmico",
+    "set_pt": "Eclipse C�smico",
     "set_en": "Cosmic Eclipse",
     "set_code": "CEC",
     "card_number": "135",
@@ -1153,22 +1132,22 @@
     "rarity_code": "U",
     "rarity_name": "Incomum",
     "color_code": "D",
-    "color_name": "Escuridão",
+    "color_name": "Noturno",
     "color_slug": "darkness",
     "color_bg": "#705848",
     "card_category": "Pokémon",
     "is_foil": false,
     "extras": "",
     "comment": "",
-    "image_url": "https://images.pokemontcg.io/sm12/135.png",
-    "local_image": "/cards/cec_135.png",
+    "image_filename": "cec_135.png",
+    "image_url": "https://images.pokemontcg.io/cec/135.png",
     "decks": []
   },
   {
     "id": "tcg-045",
     "name_pt": "Carvanha",
     "name_en": "Carvanha",
-    "set_pt": "Eclipse Cósmico",
+    "set_pt": "Eclipse C�smico",
     "set_en": "Cosmic Eclipse",
     "set_code": "CEC",
     "card_number": "132",
@@ -1179,22 +1158,22 @@
     "rarity_code": "C",
     "rarity_name": "Comum",
     "color_code": "D",
-    "color_name": "Escuridão",
+    "color_name": "Noturno",
     "color_slug": "darkness",
     "color_bg": "#705848",
     "card_category": "Pokémon",
     "is_foil": false,
     "extras": "",
     "comment": "",
-    "image_url": "https://images.pokemontcg.io/sm12/132.png",
-    "local_image": "/cards/cec_132.png",
+    "image_filename": "cec_132.png",
+    "image_url": "https://images.pokemontcg.io/cec/132.png",
     "decks": []
   },
   {
     "id": "tcg-046",
     "name_pt": "Chinchou",
     "name_en": "Chinchou",
-    "set_pt": "Eclipse Cósmico",
+    "set_pt": "Eclipse C�smico",
     "set_en": "Cosmic Eclipse",
     "set_code": "CEC",
     "card_number": "71",
@@ -1212,15 +1191,15 @@
     "is_foil": false,
     "extras": "",
     "comment": "",
-    "image_url": "https://images.pokemontcg.io/sm12/71.png",
-    "local_image": "/cards/cec_71.png",
+    "image_filename": "cec_71.png",
+    "image_url": "https://images.pokemontcg.io/cec/71.png",
     "decks": []
   },
   {
     "id": "tcg-047",
     "name_pt": "Dewpider",
     "name_en": "Dewpider",
-    "set_pt": "Eclipse Cósmico",
+    "set_pt": "Eclipse C�smico",
     "set_en": "Cosmic Eclipse",
     "set_code": "CEC",
     "card_number": "64",
@@ -1238,15 +1217,15 @@
     "is_foil": false,
     "extras": "",
     "comment": "",
-    "image_url": "https://images.pokemontcg.io/sm12/64.png",
-    "local_image": "/cards/cec_64.png",
+    "image_filename": "cec_64.png",
+    "image_url": "https://images.pokemontcg.io/cec/64.png",
     "decks": []
   },
   {
     "id": "tcg-048",
     "name_pt": "Ducklett",
     "name_en": "Ducklett",
-    "set_pt": "Eclipse Cósmico",
+    "set_pt": "Eclipse C�smico",
     "set_en": "Cosmic Eclipse",
     "set_code": "CEC",
     "card_number": "59",
@@ -1264,15 +1243,15 @@
     "is_foil": false,
     "extras": "",
     "comment": "",
-    "image_url": "https://images.pokemontcg.io/sm12/59.png",
-    "local_image": "/cards/cec_59.png",
+    "image_filename": "cec_59.png",
+    "image_url": "https://images.pokemontcg.io/cec/59.png",
     "decks": []
   },
   {
     "id": "tcg-049",
     "name_pt": "Golett",
     "name_en": "Golett",
-    "set_pt": "Eclipse Cósmico",
+    "set_pt": "Eclipse C�smico",
     "set_en": "Cosmic Eclipse",
     "set_code": "CEC",
     "card_number": "89",
@@ -1283,22 +1262,22 @@
     "rarity_code": "C",
     "rarity_name": "Comum",
     "color_code": "P",
-    "color_name": "Psíquica",
+    "color_name": "Psíquico",
     "color_slug": "psychic",
     "color_bg": "#F85888",
     "card_category": "Pokémon",
     "is_foil": false,
     "extras": "",
     "comment": "",
-    "image_url": "https://images.pokemontcg.io/sm12/89.png",
-    "local_image": "/cards/cec_89.png",
+    "image_filename": "cec_89.png",
+    "image_url": "https://images.pokemontcg.io/cec/89.png",
     "decks": []
   },
   {
     "id": "tcg-050",
     "name_pt": "Magnemite",
     "name_en": "Magnemite",
-    "set_pt": "Eclipse Cósmico",
+    "set_pt": "Eclipse C�smico",
     "set_en": "Cosmic Eclipse",
     "set_code": "CEC",
     "card_number": "68",
@@ -1316,15 +1295,15 @@
     "is_foil": false,
     "extras": "",
     "comment": "",
-    "image_url": "https://images.pokemontcg.io/sm12/68.png",
-    "local_image": "/cards/cec_68.png",
+    "image_filename": "cec_68.png",
+    "image_url": "https://images.pokemontcg.io/cec/68.png",
     "decks": []
   },
   {
     "id": "tcg-051",
     "name_pt": "Natu",
     "name_en": "Natu",
-    "set_pt": "Eclipse Cósmico",
+    "set_pt": "Eclipse C�smico",
     "set_en": "Cosmic Eclipse",
     "set_code": "CEC",
     "card_number": "78",
@@ -1335,22 +1314,22 @@
     "rarity_code": "C",
     "rarity_name": "Comum",
     "color_code": "P",
-    "color_name": "Psíquica",
+    "color_name": "Psíquico",
     "color_slug": "psychic",
     "color_bg": "#F85888",
     "card_category": "Pokémon",
     "is_foil": false,
     "extras": "",
     "comment": "",
-    "image_url": "https://images.pokemontcg.io/sm12/78.png",
-    "local_image": "/cards/cec_78.png",
+    "image_filename": "cec_78.png",
+    "image_url": "https://images.pokemontcg.io/cec/78.png",
     "decks": []
   },
   {
     "id": "tcg-052",
     "name_pt": "Pawniard",
     "name_en": "Pawniard",
-    "set_pt": "Eclipse Cósmico",
+    "set_pt": "Eclipse C�smico",
     "set_en": "Cosmic Eclipse",
     "set_code": "CEC",
     "card_number": "134",
@@ -1361,22 +1340,22 @@
     "rarity_code": "C",
     "rarity_name": "Comum",
     "color_code": "D",
-    "color_name": "Escuridão",
+    "color_name": "Noturno",
     "color_slug": "darkness",
     "color_bg": "#705848",
     "card_category": "Pokémon",
     "is_foil": false,
     "extras": "",
     "comment": "",
-    "image_url": "https://images.pokemontcg.io/sm12/134.png",
-    "local_image": "/cards/cec_134.png",
+    "image_filename": "cec_134.png",
+    "image_url": "https://images.pokemontcg.io/cec/134.png",
     "decks": []
   },
   {
     "id": "tcg-053",
     "name_pt": "Phantump",
     "name_en": "Phantump",
-    "set_pt": "Eclipse Cósmico",
+    "set_pt": "Eclipse C�smico",
     "set_en": "Cosmic Eclipse",
     "set_code": "CEC",
     "card_number": "93",
@@ -1387,22 +1366,22 @@
     "rarity_code": "C",
     "rarity_name": "Comum",
     "color_code": "P",
-    "color_name": "Psíquica",
+    "color_name": "Psíquico",
     "color_slug": "psychic",
     "color_bg": "#F85888",
     "card_category": "Pokémon",
     "is_foil": false,
     "extras": "",
     "comment": "",
-    "image_url": "https://images.pokemontcg.io/sm12/93.png",
-    "local_image": "/cards/cec_93.png",
+    "image_filename": "cec_93.png",
+    "image_url": "https://images.pokemontcg.io/cec/93.png",
     "decks": []
   },
   {
     "id": "tcg-054",
     "name_pt": "Pikachu",
     "name_en": "Pikachu",
-    "set_pt": "Eclipse Cósmico",
+    "set_pt": "Eclipse C�smico",
     "set_en": "Cosmic Eclipse",
     "set_code": "CEC",
     "card_number": "66",
@@ -1420,15 +1399,15 @@
     "is_foil": false,
     "extras": "",
     "comment": "",
-    "image_url": "https://images.pokemontcg.io/sm12/66.png",
-    "local_image": "/cards/cec_66.png",
+    "image_filename": "cec_66.png",
+    "image_url": "https://images.pokemontcg.io/cec/66.png",
     "decks": []
   },
   {
     "id": "tcg-055",
     "name_pt": "Psyduck",
     "name_en": "Psyduck",
-    "set_pt": "Eclipse Cósmico",
+    "set_pt": "Eclipse C�smico",
     "set_en": "Cosmic Eclipse",
     "set_code": "CEC",
     "card_number": "40",
@@ -1446,15 +1425,15 @@
     "is_foil": false,
     "extras": "",
     "comment": "",
-    "image_url": "https://images.pokemontcg.io/sm12/40.png",
-    "local_image": "/cards/cec_40.png",
+    "image_filename": "cec_40.png",
+    "image_url": "https://images.pokemontcg.io/cec/40.png",
     "decks": []
   },
   {
     "id": "tcg-056",
     "name_pt": "Raichu",
     "name_en": "Raichu",
-    "set_pt": "Eclipse Cósmico",
+    "set_pt": "Eclipse C�smico",
     "set_en": "Cosmic Eclipse",
     "set_code": "CEC",
     "card_number": "67",
@@ -1472,15 +1451,15 @@
     "is_foil": false,
     "extras": "",
     "comment": "",
-    "image_url": "https://images.pokemontcg.io/sm12/67.png",
-    "local_image": "/cards/cec_67.png",
+    "image_filename": "cec_67.png",
+    "image_url": "https://images.pokemontcg.io/cec/67.png",
     "decks": []
   },
   {
     "id": "tcg-057",
     "name_pt": "Rockruff",
     "name_en": "Rockruff",
-    "set_pt": "Eclipse Cósmico",
+    "set_pt": "Eclipse C�smico",
     "set_en": "Cosmic Eclipse",
     "set_code": "CEC",
     "card_number": "123",
@@ -1498,15 +1477,15 @@
     "is_foil": false,
     "extras": "",
     "comment": "",
-    "image_url": "https://images.pokemontcg.io/sm12/123.png",
-    "local_image": "/cards/cec_123.png",
+    "image_filename": "cec_123.png",
+    "image_url": "https://images.pokemontcg.io/cec/123.png",
     "decks": []
   },
   {
     "id": "tcg-058",
     "name_pt": "Sandshrew de Alola",
     "name_en": "Alolan Sandshrew",
-    "set_pt": "Eclipse Cósmico",
+    "set_pt": "Eclipse C�smico",
     "set_en": "Cosmic Eclipse",
     "set_code": "CEC",
     "card_number": "137",
@@ -1524,15 +1503,15 @@
     "is_foil": false,
     "extras": "",
     "comment": "",
-    "image_url": "https://images.pokemontcg.io/sm12/137.png",
-    "local_image": "/cards/cec_137.png",
+    "image_filename": "cec_137.png",
+    "image_url": "https://images.pokemontcg.io/cec/137.png",
     "decks": []
   },
   {
     "id": "tcg-059",
     "name_pt": "Seismitoad",
     "name_en": "Seismitoad",
-    "set_pt": "Eclipse Cósmico",
+    "set_pt": "Eclipse C�smico",
     "set_en": "Cosmic Eclipse",
     "set_code": "CEC",
     "card_number": "117",
@@ -1550,15 +1529,15 @@
     "is_foil": false,
     "extras": "",
     "comment": "",
-    "image_url": "https://images.pokemontcg.io/sm12/117.png",
-    "local_image": "/cards/cec_117.png",
+    "image_filename": "cec_117.png",
+    "image_url": "https://images.pokemontcg.io/cec/117.png",
     "decks": []
   },
   {
     "id": "tcg-060",
     "name_pt": "Snorunt",
     "name_en": "Snorunt",
-    "set_pt": "Eclipse Cósmico",
+    "set_pt": "Eclipse C�smico",
     "set_en": "Cosmic Eclipse",
     "set_code": "CEC",
     "card_number": "47",
@@ -1576,15 +1555,15 @@
     "is_foil": false,
     "extras": "",
     "comment": "",
-    "image_url": "https://images.pokemontcg.io/sm12/47.png",
-    "local_image": "/cards/cec_47.png",
+    "image_filename": "cec_47.png",
+    "image_url": "https://images.pokemontcg.io/cec/47.png",
     "decks": []
   },
   {
     "id": "tcg-061",
     "name_pt": "Spheal",
     "name_en": "Spheal",
-    "set_pt": "Eclipse Cósmico",
+    "set_pt": "Eclipse C�smico",
     "set_en": "Cosmic Eclipse",
     "set_code": "CEC",
     "card_number": "50",
@@ -1602,15 +1581,15 @@
     "is_foil": false,
     "extras": "",
     "comment": "",
-    "image_url": "https://images.pokemontcg.io/sm12/50.png",
-    "local_image": "/cards/cec_50.png",
+    "image_filename": "cec_50.png",
+    "image_url": "https://images.pokemontcg.io/cec/50.png",
     "decks": []
   },
   {
     "id": "tcg-062",
     "name_pt": "Swirlix",
     "name_en": "Swirlix",
-    "set_pt": "Eclipse Cósmico",
+    "set_pt": "Eclipse C�smico",
     "set_en": "Cosmic Eclipse",
     "set_code": "CEC",
     "card_number": "153",
@@ -1628,17 +1607,15 @@
     "is_foil": false,
     "extras": "",
     "comment": "",
-    "image_url": "https://images.pokemontcg.io/sm12/153.png",
-    "local_image": "/cards/cec_153.png",
-    "decks": [
-      "deck-5"
-    ]
+    "image_filename": "cec_153.png",
+    "image_url": "https://images.pokemontcg.io/cec/153.png",
+    "decks": []
   },
   {
     "id": "tcg-063",
     "name_pt": "Togedemaru",
     "name_en": "Togedemaru",
-    "set_pt": "Eclipse Cósmico",
+    "set_pt": "Eclipse C�smico",
     "set_en": "Cosmic Eclipse",
     "set_code": "CEC",
     "card_number": "74",
@@ -1656,17 +1633,15 @@
     "is_foil": false,
     "extras": "",
     "comment": "",
-    "image_url": "https://images.pokemontcg.io/sm12/74.png",
-    "local_image": "/cards/cec_74.png",
-    "decks": [
-      "deck-5"
-    ]
+    "image_filename": "cec_74.png",
+    "image_url": "https://images.pokemontcg.io/cec/74.png",
+    "decks": []
   },
   {
     "id": "tcg-064",
     "name_pt": "Trapinch",
     "name_en": "Trapinch",
-    "set_pt": "Eclipse Cósmico",
+    "set_pt": "Eclipse C�smico",
     "set_en": "Cosmic Eclipse",
     "set_code": "CEC",
     "card_number": "108",
@@ -1684,15 +1659,15 @@
     "is_foil": false,
     "extras": "",
     "comment": "",
-    "image_url": "https://images.pokemontcg.io/sm12/108.png",
-    "local_image": "/cards/cec_108.png",
+    "image_filename": "cec_108.png",
+    "image_url": "https://images.pokemontcg.io/cec/108.png",
     "decks": []
   },
   {
     "id": "tcg-065",
     "name_pt": "Trevenant",
     "name_en": "Trevenant",
-    "set_pt": "Eclipse Cósmico",
+    "set_pt": "Eclipse C�smico",
     "set_en": "Cosmic Eclipse",
     "set_code": "CEC",
     "card_number": "94",
@@ -1703,22 +1678,22 @@
     "rarity_code": "R",
     "rarity_name": "Rara",
     "color_code": "P",
-    "color_name": "Psíquica",
+    "color_name": "Psíquico",
     "color_slug": "psychic",
     "color_bg": "#F85888",
     "card_category": "Pokémon",
     "is_foil": false,
     "extras": "",
     "comment": "",
-    "image_url": "https://images.pokemontcg.io/sm12/94.png",
-    "local_image": "/cards/cec_94.png",
+    "image_filename": "cec_94.png",
+    "image_url": "https://images.pokemontcg.io/cec/94.png",
     "decks": []
   },
   {
     "id": "tcg-066",
     "name_pt": "Walrein",
     "name_en": "Walrein",
-    "set_pt": "Eclipse Cósmico",
+    "set_pt": "Eclipse C�smico",
     "set_en": "Cosmic Eclipse",
     "set_code": "CEC",
     "card_number": "52",
@@ -1736,8 +1711,8 @@
     "is_foil": false,
     "extras": "",
     "comment": "",
-    "image_url": "https://images.pokemontcg.io/sm12/52.png",
-    "local_image": "/cards/cec_52.png",
+    "image_filename": "cec_52.png",
+    "image_url": "https://images.pokemontcg.io/cec/52.png",
     "decks": []
   },
   {
@@ -1755,15 +1730,15 @@
     "rarity_code": "C",
     "rarity_name": "Comum",
     "color_code": "P",
-    "color_name": "Psíquica",
+    "color_name": "Psíquico",
     "color_slug": "psychic",
     "color_bg": "#F85888",
     "card_category": "Pokémon",
     "is_foil": false,
     "extras": "",
     "comment": "",
+    "image_filename": "sv1_087.png",
     "image_url": "https://images.pokemontcg.io/sv1/87.png",
-    "local_image": "/cards/sv1_087.png",
     "decks": []
   },
   {
@@ -1779,17 +1754,17 @@
     "quality": "M",
     "language": "PT",
     "rarity_code": "S",
-    "rarity_name": "Secreta / Especial",
+    "rarity_name": "Secreta Rara",
     "color_code": "P",
-    "color_name": "Psíquica",
+    "color_name": "Psíquico",
     "color_slug": "psychic",
     "color_bg": "#F85888",
     "card_category": "Pokémon",
     "is_foil": true,
     "extras": "Foil",
     "comment": "",
+    "image_filename": "svp_010.png",
     "image_url": "https://images.pokemontcg.io/svp/10.png",
-    "local_image": "/cards/svp_010.png",
     "decks": []
   },
   {
@@ -1807,15 +1782,15 @@
     "rarity_code": "U",
     "rarity_name": "Incomum",
     "color_code": "D",
-    "color_name": "Escuridão",
+    "color_name": "Noturno",
     "color_slug": "darkness",
     "color_bg": "#705848",
     "card_category": "Pokémon",
     "is_foil": false,
     "extras": "",
     "comment": "",
-    "image_url": "https://images.pokemontcg.io/xy4/66.png",
-    "local_image": "/cards/pfl_066.png",
+    "image_filename": "pfl_066.png",
+    "image_url": "https://images.pokemontcg.io/pfl/66.png",
     "decks": []
   },
   {
@@ -1833,15 +1808,15 @@
     "rarity_code": "U",
     "rarity_name": "Incomum",
     "color_code": "P",
-    "color_name": "Psíquica",
+    "color_name": "Psíquico",
     "color_slug": "psychic",
     "color_bg": "#F85888",
     "card_category": "Pokémon",
     "is_foil": false,
     "extras": "",
     "comment": "",
-    "image_url": "https://images.pokemontcg.io/xy4/40.png",
-    "local_image": "/cards/pfl_040.png",
+    "image_filename": "pfl_040.png",
+    "image_url": "https://images.pokemontcg.io/pfl/40.png",
     "decks": []
   },
   {
@@ -1859,15 +1834,15 @@
     "rarity_code": "C",
     "rarity_name": "Comum",
     "color_code": "P",
-    "color_name": "Psíquica",
+    "color_name": "Psíquico",
     "color_slug": "psychic",
     "color_bg": "#F85888",
     "card_category": "Pokémon",
     "is_foil": false,
     "extras": "",
     "comment": "",
-    "image_url": "https://images.pokemontcg.io/xy4/42.png",
-    "local_image": "/cards/pfl_042.png",
+    "image_filename": "pfl_042.png",
+    "image_url": "https://images.pokemontcg.io/pfl/42.png",
     "decks": []
   },
   {
@@ -1892,11 +1867,9 @@
     "is_foil": false,
     "extras": "",
     "comment": "",
-    "image_url": "https://images.pokemontcg.io/xy4/73.png",
-    "local_image": "/cards/pfl_073.png",
-    "decks": [
-      "deck-5"
-    ]
+    "image_filename": "pfl_073.png",
+    "image_url": "https://images.pokemontcg.io/pfl/73.png",
+    "decks": []
   },
   {
     "id": "tcg-073",
@@ -1913,15 +1886,15 @@
     "rarity_code": "C",
     "rarity_name": "Comum",
     "color_code": "D",
-    "color_name": "Escuridão",
+    "color_name": "Noturno",
     "color_slug": "darkness",
     "color_bg": "#705848",
     "card_category": "Pokémon",
     "is_foil": false,
     "extras": "",
     "comment": "",
-    "image_url": "https://images.pokemontcg.io/xy4/67.png",
-    "local_image": "/cards/pfl_067.png",
+    "image_filename": "pfl_067.png",
+    "image_url": "https://images.pokemontcg.io/pfl/67.png",
     "decks": []
   },
   {
@@ -1939,18 +1912,16 @@
     "rarity_code": "RH",
     "rarity_name": "Rara Holo",
     "color_code": "D",
-    "color_name": "Escuridão",
+    "color_name": "Noturno",
     "color_slug": "darkness",
     "color_bg": "#705848",
     "card_category": "Pokémon",
     "is_foil": true,
     "extras": "Foil",
     "comment": "",
-    "image_url": "https://images.pokemontcg.io/sm2/81.png",
-    "local_image": "/cards/gri_81.png",
-    "decks": [
-      "deck-3"
-    ]
+    "image_filename": "gri_81.png",
+    "image_url": "https://images.pokemontcg.io/gri/81.png",
+    "decks": []
   },
   {
     "id": "tcg-075",
@@ -1974,8 +1945,8 @@
     "is_foil": false,
     "extras": "",
     "comment": "",
-    "image_url": "https://images.pokemontcg.io/sm2/83.png",
-    "local_image": "/cards/gri_83.png",
+    "image_filename": "gri_83.png",
+    "image_url": "https://images.pokemontcg.io/gri/83.png",
     "decks": []
   },
   {
@@ -2000,11 +1971,9 @@
     "is_foil": false,
     "extras": "",
     "comment": "",
-    "image_url": "https://images.pokemontcg.io/sm2/1.png",
-    "local_image": "/cards/gri_1.png",
-    "decks": [
-      "deck-4"
-    ]
+    "image_filename": "gri_1.png",
+    "image_url": "https://images.pokemontcg.io/gri/1.png",
+    "decks": []
   },
   {
     "id": "tcg-077",
@@ -2028,11 +1997,9 @@
     "is_foil": false,
     "extras": "",
     "comment": "",
-    "image_url": "https://images.pokemontcg.io/sm2/113.png",
-    "local_image": "/cards/gri_113.png",
-    "decks": [
-      "deck-5"
-    ]
+    "image_filename": "gri_113.png",
+    "image_url": "https://images.pokemontcg.io/gri/113.png",
+    "decks": []
   },
   {
     "id": "tcg-078",
@@ -2056,11 +2023,9 @@
     "is_foil": false,
     "extras": "",
     "comment": "",
-    "image_url": "https://images.pokemontcg.io/sm2/89.png",
-    "local_image": "/cards/gri_89.png",
-    "decks": [
-      "deck-5"
-    ]
+    "image_filename": "gri_89.png",
+    "image_url": "https://images.pokemontcg.io/gri/89.png",
+    "decks": []
   },
   {
     "id": "tcg-079",
@@ -2084,11 +2049,9 @@
     "is_foil": false,
     "extras": "",
     "comment": "",
-    "image_url": "https://images.pokemontcg.io/sm2/88.png",
-    "local_image": "/cards/gri_88.png",
-    "decks": [
-      "deck-5"
-    ]
+    "image_filename": "gri_88.png",
+    "image_url": "https://images.pokemontcg.io/gri/88.png",
+    "decks": []
   },
   {
     "id": "tcg-080",
@@ -2103,21 +2066,18 @@
     "quality": "M",
     "language": "PT",
     "rarity_code": "RU",
-    "rarity_name": "Ultra Rara (GX/EX)",
+    "rarity_name": "Ultra Rara",
     "color_code": "C",
     "color_name": "Incolor",
     "color_slug": "colorless",
     "color_bg": "#A8A878",
     "card_category": "Pokémon",
-    "is_foil": true,
+    "is_foil": false,
     "extras": "",
     "comment": "",
-    "image_url": "https://images.pokemontcg.io/sm2/115.png",
-    "local_image": "/cards/gri_115.png",
-    "decks": [
-      "deck-2",
-      "deck-3"
-    ]
+    "image_filename": "gri_115.png",
+    "image_url": "https://images.pokemontcg.io/gri/115.png",
+    "decks": []
   },
   {
     "id": "tcg-081",
@@ -2141,14 +2101,9 @@
     "is_foil": false,
     "extras": "",
     "comment": "",
-    "image_url": "https://images.pokemontcg.io/sm2/130.png",
-    "local_image": "/cards/gri_130.png",
-    "decks": [
-      "deck-1",
-      "deck-2",
-      "deck-3",
-      "deck-5"
-    ]
+    "image_filename": "gri_130.png",
+    "image_url": "https://images.pokemontcg.io/gri/130.png",
+    "decks": []
   },
   {
     "id": "tcg-082",
@@ -2172,8 +2127,8 @@
     "is_foil": true,
     "extras": "Foil",
     "comment": "",
-    "image_url": "https://images.pokemontcg.io/sm2/65.png",
-    "local_image": "/cards/gri_65.png",
+    "image_filename": "gri_65.png",
+    "image_url": "https://images.pokemontcg.io/gri/65.png",
     "decks": []
   },
   {
@@ -2198,8 +2153,8 @@
     "is_foil": false,
     "extras": "",
     "comment": "",
-    "image_url": "https://images.pokemontcg.io/sm2/124.png",
-    "local_image": "/cards/gri_124.png",
+    "image_filename": "gri_124.png",
+    "image_url": "https://images.pokemontcg.io/gri/124.png",
     "decks": []
   },
   {
@@ -2224,8 +2179,8 @@
     "is_foil": false,
     "extras": "",
     "comment": "",
-    "image_url": "https://images.pokemontcg.io/sm2/69.png",
-    "local_image": "/cards/gri_69.png",
+    "image_filename": "gri_69.png",
+    "image_url": "https://images.pokemontcg.io/gri/69.png",
     "decks": []
   },
   {
@@ -2243,15 +2198,15 @@
     "rarity_code": "C",
     "rarity_name": "Comum",
     "color_code": "P",
-    "color_name": "Psíquica",
+    "color_name": "Psíquico",
     "color_slug": "psychic",
     "color_bg": "#F85888",
     "card_category": "Pokémon",
     "is_foil": false,
     "extras": "",
     "comment": "",
-    "image_url": "https://images.pokemontcg.io/sm2/48.png",
-    "local_image": "/cards/gri_48.png",
+    "image_filename": "gri_48.png",
+    "image_url": "https://images.pokemontcg.io/gri/48.png",
     "decks": []
   },
   {
@@ -2276,8 +2231,8 @@
     "is_foil": false,
     "extras": "",
     "comment": "",
-    "image_url": "https://images.pokemontcg.io/sm2/23.png",
-    "local_image": "/cards/gri_23.png",
+    "image_filename": "gri_23.png",
+    "image_url": "https://images.pokemontcg.io/gri/23.png",
     "decks": []
   },
   {
@@ -2302,13 +2257,9 @@
     "is_foil": false,
     "extras": "",
     "comment": "",
-    "image_url": "https://images.pokemontcg.io/sm2/125a.png",
-    "local_image": "/cards/gri_125a.png",
-    "decks": [
-      "deck-1",
-      "deck-2",
-      "deck-3"
-    ]
+    "image_filename": "gri_125a.png",
+    "image_url": "https://images.pokemontcg.io/gri/125a.png",
+    "decks": []
   },
   {
     "id": "tcg-088",
@@ -2332,13 +2283,9 @@
     "is_foil": false,
     "extras": "",
     "comment": "",
-    "image_url": "https://images.pokemontcg.io/sm2/125.png",
-    "local_image": "/cards/gri_125.png",
-    "decks": [
-      "deck-1",
-      "deck-2",
-      "deck-3"
-    ]
+    "image_filename": "gri_125.png",
+    "image_url": "https://images.pokemontcg.io/gri/125.png",
+    "decks": []
   },
   {
     "id": "tcg-089",
@@ -2362,11 +2309,9 @@
     "is_foil": false,
     "extras": "",
     "comment": "",
-    "image_url": "https://images.pokemontcg.io/sm2/3.png",
-    "local_image": "/cards/gri_3.png",
-    "decks": [
-      "deck-4"
-    ]
+    "image_filename": "gri_3.png",
+    "image_url": "https://images.pokemontcg.io/gri/3.png",
+    "decks": []
   },
   {
     "id": "tcg-090",
@@ -2390,8 +2335,8 @@
     "is_foil": false,
     "extras": "",
     "comment": "",
-    "image_url": "https://images.pokemontcg.io/sm2/8.png",
-    "local_image": "/cards/gri_8.png",
+    "image_filename": "gri_8.png",
+    "image_url": "https://images.pokemontcg.io/gri/8.png",
     "decks": []
   },
   {
@@ -2409,15 +2354,15 @@
     "rarity_code": "RH",
     "rarity_name": "Rara Holo",
     "color_code": "D",
-    "color_name": "Escuridão",
+    "color_name": "Noturno",
     "color_slug": "darkness",
     "color_bg": "#705848",
     "card_category": "Pokémon",
     "is_foil": true,
     "extras": "Foil",
     "comment": "",
-    "image_url": "https://images.pokemontcg.io/sm35/54.png",
-    "local_image": "/cards/slg_54.png",
+    "image_filename": "slg_54.png",
+    "image_url": "https://images.pokemontcg.io/slg/54.png",
     "decks": []
   },
   {
@@ -2442,11 +2387,9 @@
     "is_foil": false,
     "extras": "",
     "comment": "",
-    "image_url": "https://images.pokemontcg.io/sm6/112.png",
-    "local_image": "/cards/fli_112.png",
-    "decks": [
-      "deck-4"
-    ]
+    "image_filename": "fli_112.png",
+    "image_url": "https://images.pokemontcg.io/fli/112.png",
+    "decks": []
   },
   {
     "id": "tcg-093",
@@ -2463,18 +2406,16 @@
     "rarity_code": "C",
     "rarity_name": "Comum",
     "color_code": "P",
-    "color_name": "Psíquica",
+    "color_name": "Psíquico",
     "color_slug": "psychic",
     "color_bg": "#F85888",
     "card_category": "Pokémon",
     "is_foil": true,
     "extras": "Foil",
     "comment": "",
-    "image_url": "https://images.pokemontcg.io/sm6/46.png",
-    "local_image": "/cards/fli_46.png",
-    "decks": [
-      "deck-4"
-    ]
+    "image_filename": "fli_46.png",
+    "image_url": "https://images.pokemontcg.io/fli/46.png",
+    "decks": []
   },
   {
     "id": "tcg-094",
@@ -2498,11 +2439,9 @@
     "is_foil": false,
     "extras": "",
     "comment": "",
-    "image_url": "https://images.pokemontcg.io/bw4/87.png",
-    "local_image": "/cards/nxd_87.png",
-    "decks": [
-      "deck-2"
-    ]
+    "image_filename": "nxd_87.png",
+    "image_url": "https://images.pokemontcg.io/nxd/87.png",
+    "decks": []
   },
   {
     "id": "tcg-095",
@@ -2526,8 +2465,8 @@
     "is_foil": false,
     "extras": "",
     "comment": "",
-    "image_url": "https://images.pokemontcg.io/sm11/120.png",
-    "local_image": "/cards/unm_120.png",
+    "image_filename": "unm_120.png",
+    "image_url": "https://images.pokemontcg.io/unm/120.png",
     "decks": []
   },
   {
@@ -2552,11 +2491,9 @@
     "is_foil": false,
     "extras": "",
     "comment": "",
-    "image_url": "https://images.pokemontcg.io/sm11/177.png",
-    "local_image": "/cards/unm_177.png",
-    "decks": [
-      "deck-5"
-    ]
+    "image_filename": "unm_177.png",
+    "image_url": "https://images.pokemontcg.io/unm/177.png",
+    "decks": []
   },
   {
     "id": "tcg-097",
@@ -2580,11 +2517,9 @@
     "is_foil": false,
     "extras": "",
     "comment": "",
-    "image_url": "https://images.pokemontcg.io/sm11/154.png",
-    "local_image": "/cards/unm_154.png",
-    "decks": [
-      "deck-3"
-    ]
+    "image_filename": "unm_154.png",
+    "image_url": "https://images.pokemontcg.io/unm/154.png",
+    "decks": []
   },
   {
     "id": "tcg-098",
@@ -2608,11 +2543,9 @@
     "is_foil": false,
     "extras": "",
     "comment": "",
-    "image_url": "https://images.pokemontcg.io/sm11/172.png",
-    "local_image": "/cards/unm_172.png",
-    "decks": [
-      "deck-4"
-    ]
+    "image_filename": "unm_172.png",
+    "image_url": "https://images.pokemontcg.io/unm/172.png",
+    "decks": []
   },
   {
     "id": "tcg-099",
@@ -2636,11 +2569,9 @@
     "is_foil": false,
     "extras": "",
     "comment": "",
-    "image_url": "https://images.pokemontcg.io/sm11/171.png",
-    "local_image": "/cards/unm_171.png",
-    "decks": [
-      "deck-4"
-    ]
+    "image_filename": "unm_171.png",
+    "image_url": "https://images.pokemontcg.io/unm/171.png",
+    "decks": []
   },
   {
     "id": "tcg-100",
@@ -2664,8 +2595,8 @@
     "is_foil": false,
     "extras": "",
     "comment": "",
-    "image_url": "https://images.pokemontcg.io/sm11/17.png",
-    "local_image": "/cards/unm_17.png",
+    "image_filename": "unm_17.png",
+    "image_url": "https://images.pokemontcg.io/unm/17.png",
     "decks": []
   },
   {
@@ -2690,8 +2621,8 @@
     "is_foil": false,
     "extras": "",
     "comment": "",
-    "image_url": "https://images.pokemontcg.io/sm11/108.png",
-    "local_image": "/cards/unm_108.png",
+    "image_filename": "unm_108.png",
+    "image_url": "https://images.pokemontcg.io/unm/108.png",
     "decks": []
   },
   {
@@ -2709,15 +2640,15 @@
     "rarity_code": "C",
     "rarity_name": "Comum",
     "color_code": "P",
-    "color_name": "Psíquica",
+    "color_name": "Psíquico",
     "color_slug": "psychic",
     "color_bg": "#F85888",
     "card_category": "Pokémon",
     "is_foil": false,
     "extras": "",
     "comment": "",
-    "image_url": "https://images.pokemontcg.io/sm11/100.png",
-    "local_image": "/cards/unm_100.png",
+    "image_filename": "unm_100.png",
+    "image_url": "https://images.pokemontcg.io/unm/100.png",
     "decks": []
   },
   {
@@ -2742,11 +2673,9 @@
     "is_foil": false,
     "extras": "",
     "comment": "",
-    "image_url": "https://images.pokemontcg.io/sm11/143.png",
-    "local_image": "/cards/unm_143.png",
-    "decks": [
-      "deck-5"
-    ]
+    "image_filename": "unm_143.png",
+    "image_url": "https://images.pokemontcg.io/unm/143.png",
+    "decks": []
   },
   {
     "id": "tcg-104",
@@ -2770,8 +2699,8 @@
     "is_foil": false,
     "extras": "",
     "comment": "",
-    "image_url": "https://images.pokemontcg.io/sm11/46.png",
-    "local_image": "/cards/unm_46.png",
+    "image_filename": "unm_46.png",
+    "image_url": "https://images.pokemontcg.io/unm/46.png",
     "decks": []
   },
   {
@@ -2796,8 +2725,8 @@
     "is_foil": false,
     "extras": "",
     "comment": "",
-    "image_url": "https://images.pokemontcg.io/sm11/105.png",
-    "local_image": "/cards/unm_105.png",
+    "image_filename": "unm_105.png",
+    "image_url": "https://images.pokemontcg.io/unm/105.png",
     "decks": []
   },
   {
@@ -2822,11 +2751,9 @@
     "is_foil": false,
     "extras": "",
     "comment": "",
-    "image_url": "https://images.pokemontcg.io/sm11/145.png",
-    "local_image": "/cards/unm_145.png",
-    "decks": [
-      "deck-5"
-    ]
+    "image_filename": "unm_145.png",
+    "image_url": "https://images.pokemontcg.io/unm/145.png",
+    "decks": []
   },
   {
     "id": "tcg-107",
@@ -2850,8 +2777,8 @@
     "is_foil": true,
     "extras": "Foil",
     "comment": "",
-    "image_url": "https://images.pokemontcg.io/sm11/48.png",
-    "local_image": "/cards/unm_48.png",
+    "image_filename": "unm_48.png",
+    "image_url": "https://images.pokemontcg.io/unm/48.png",
     "decks": []
   },
   {
@@ -2869,18 +2796,16 @@
     "rarity_code": "U",
     "rarity_name": "Incomum",
     "color_code": "P",
-    "color_name": "Psíquica",
+    "color_name": "Psíquico",
     "color_slug": "psychic",
     "color_bg": "#F85888",
     "card_category": "Pokémon",
     "is_foil": false,
     "extras": "",
     "comment": "",
-    "image_url": "https://images.pokemontcg.io/sm11/94.png",
-    "local_image": "/cards/unm_94.png",
-    "decks": [
-      "deck-4"
-    ]
+    "image_filename": "unm_94.png",
+    "image_url": "https://images.pokemontcg.io/unm/94.png",
+    "decks": []
   },
   {
     "id": "tcg-109",
@@ -2904,11 +2829,9 @@
     "is_foil": false,
     "extras": "",
     "comment": "",
-    "image_url": "https://images.pokemontcg.io/sm11/149.png",
-    "local_image": "/cards/unm_149.png",
-    "decks": [
-      "deck-3"
-    ]
+    "image_filename": "unm_149.png",
+    "image_url": "https://images.pokemontcg.io/unm/149.png",
+    "decks": []
   },
   {
     "id": "tcg-110",
@@ -2932,11 +2855,9 @@
     "is_foil": false,
     "extras": "",
     "comment": "",
-    "image_url": "https://images.pokemontcg.io/sm11/147.png",
-    "local_image": "/cards/unm_147.png",
-    "decks": [
-      "deck-3"
-    ]
+    "image_filename": "unm_147.png",
+    "image_url": "https://images.pokemontcg.io/unm/147.png",
+    "decks": []
   },
   {
     "id": "tcg-111",
@@ -2960,11 +2881,9 @@
     "is_foil": false,
     "extras": "",
     "comment": "",
-    "image_url": "https://images.pokemontcg.io/sm11/148.png",
-    "local_image": "/cards/unm_148.png",
-    "decks": [
-      "deck-3"
-    ]
+    "image_filename": "unm_148.png",
+    "image_url": "https://images.pokemontcg.io/unm/148.png",
+    "decks": []
   },
   {
     "id": "tcg-112",
@@ -2981,15 +2900,15 @@
     "rarity_code": "C",
     "rarity_name": "Comum",
     "color_code": "P",
-    "color_name": "Psíquica",
+    "color_name": "Psíquico",
     "color_slug": "psychic",
     "color_bg": "#F85888",
     "card_category": "Pokémon",
     "is_foil": false,
     "extras": "",
     "comment": "",
-    "image_url": "https://images.pokemontcg.io/sm11/80.png",
-    "local_image": "/cards/unm_80.png",
+    "image_filename": "unm_80.png",
+    "image_url": "https://images.pokemontcg.io/unm/80.png",
     "decks": []
   },
   {
@@ -3014,8 +2933,8 @@
     "is_foil": false,
     "extras": "",
     "comment": "",
-    "image_url": "https://images.pokemontcg.io/sm11/118.png",
-    "local_image": "/cards/unm_118.png",
+    "image_filename": "unm_118.png",
+    "image_url": "https://images.pokemontcg.io/unm/118.png",
     "decks": []
   },
   {
@@ -3040,11 +2959,9 @@
     "is_foil": false,
     "extras": "",
     "comment": "",
-    "image_url": "https://images.pokemontcg.io/sm11/157.png",
-    "local_image": "/cards/unm_157.png",
-    "decks": [
-      "deck-3"
-    ]
+    "image_filename": "unm_157.png",
+    "image_url": "https://images.pokemontcg.io/unm/157.png",
+    "decks": []
   },
   {
     "id": "tcg-115",
@@ -3068,8 +2985,8 @@
     "is_foil": false,
     "extras": "",
     "comment": "",
-    "image_url": "https://images.pokemontcg.io/sm11/10.png",
-    "local_image": "/cards/unm_10.png",
+    "image_filename": "unm_10.png",
+    "image_url": "https://images.pokemontcg.io/unm/10.png",
     "decks": []
   },
   {
@@ -3094,8 +3011,8 @@
     "is_foil": false,
     "extras": "",
     "comment": "",
-    "image_url": "https://images.pokemontcg.io/sve/1.png",
-    "local_image": "/cards/unm_213.png",
+    "image_filename": "unm_213.png",
+    "image_url": "https://images.pokemontcg.io/unm/213.png",
     "decks": []
   },
   {
@@ -3113,15 +3030,15 @@
     "rarity_code": "C",
     "rarity_name": "Comum",
     "color_code": "P",
-    "color_name": "Psíquica",
+    "color_name": "Psíquico",
     "color_slug": "psychic",
     "color_bg": "#F85888",
     "card_category": "Pokémon",
     "is_foil": false,
     "extras": "",
     "comment": "",
-    "image_url": "https://images.pokemontcg.io/sm11/73.png",
-    "local_image": "/cards/unm_73.png",
+    "image_filename": "unm_73.png",
+    "image_url": "https://images.pokemontcg.io/unm/73.png",
     "decks": []
   },
   {
@@ -3146,8 +3063,8 @@
     "is_foil": false,
     "extras": "",
     "comment": "",
-    "image_url": "https://images.pokemontcg.io/sm11/39.png",
-    "local_image": "/cards/unm_39.png",
+    "image_filename": "unm_39.png",
+    "image_url": "https://images.pokemontcg.io/unm/39.png",
     "decks": []
   },
   {
@@ -3172,8 +3089,8 @@
     "is_foil": false,
     "extras": "",
     "comment": "",
-    "image_url": "https://images.pokemontcg.io/sm11/31.png",
-    "local_image": "/cards/unm_31.png",
+    "image_filename": "unm_31.png",
+    "image_url": "https://images.pokemontcg.io/unm/31.png",
     "decks": []
   },
   {
@@ -3198,8 +3115,8 @@
     "is_foil": false,
     "extras": "",
     "comment": "",
-    "image_url": "https://images.pokemontcg.io/sm11/179.png",
-    "local_image": "/cards/unm_179.png",
+    "image_filename": "unm_179.png",
+    "image_url": "https://images.pokemontcg.io/unm/179.png",
     "decks": []
   },
   {
@@ -3224,8 +3141,8 @@
     "is_foil": false,
     "extras": "",
     "comment": "",
-    "image_url": "https://images.pokemontcg.io/sm11/15.png",
-    "local_image": "/cards/unm_15.png",
+    "image_filename": "unm_15.png",
+    "image_url": "https://images.pokemontcg.io/unm/15.png",
     "decks": []
   },
   {
@@ -3250,8 +3167,8 @@
     "is_foil": false,
     "extras": "",
     "comment": "",
-    "image_url": "https://images.pokemontcg.io/sm11/13.png",
-    "local_image": "/cards/unm_13.png",
+    "image_filename": "unm_13.png",
+    "image_url": "https://images.pokemontcg.io/unm/13.png",
     "decks": []
   },
   {
@@ -3276,11 +3193,9 @@
     "is_foil": false,
     "extras": "",
     "comment": "",
-    "image_url": "https://images.pokemontcg.io/sm11/155.png",
-    "local_image": "/cards/unm_155.png",
-    "decks": [
-      "deck-3"
-    ]
+    "image_filename": "unm_155.png",
+    "image_url": "https://images.pokemontcg.io/unm/155.png",
+    "decks": []
   },
   {
     "id": "tcg-124",
@@ -3304,8 +3219,8 @@
     "is_foil": false,
     "extras": "",
     "comment": "",
-    "image_url": "https://images.pokemontcg.io/sm11/113.png",
-    "local_image": "/cards/unm_113.png",
+    "image_filename": "unm_113.png",
+    "image_url": "https://images.pokemontcg.io/unm/113.png",
     "decks": []
   },
   {
@@ -3330,8 +3245,8 @@
     "is_foil": false,
     "extras": "",
     "comment": "",
-    "image_url": "https://images.pokemontcg.io/sm11/112.png",
-    "local_image": "/cards/unm_112.png",
+    "image_filename": "unm_112.png",
+    "image_url": "https://images.pokemontcg.io/unm/112.png",
     "decks": []
   },
   {
@@ -3349,15 +3264,15 @@
     "rarity_code": "C",
     "rarity_name": "Comum",
     "color_code": "D",
-    "color_name": "Escuridão",
+    "color_name": "Noturno",
     "color_slug": "darkness",
     "color_bg": "#705848",
     "card_category": "Pokémon",
     "is_foil": false,
     "extras": "",
     "comment": "",
-    "image_url": "https://images.pokemontcg.io/sm11/127.png",
-    "local_image": "/cards/unm_127.png",
+    "image_filename": "unm_127.png",
+    "image_url": "https://images.pokemontcg.io/unm/127.png",
     "decks": []
   },
   {
@@ -3382,8 +3297,8 @@
     "is_foil": false,
     "extras": "",
     "comment": "",
-    "image_url": "https://images.pokemontcg.io/sm11/107.png",
-    "local_image": "/cards/unm_107.png",
+    "image_filename": "unm_107.png",
+    "image_url": "https://images.pokemontcg.io/unm/107.png",
     "decks": []
   },
   {
@@ -3401,18 +3316,16 @@
     "rarity_code": "C",
     "rarity_name": "Comum",
     "color_code": "P",
-    "color_name": "Psíquica",
+    "color_name": "Psíquico",
     "color_slug": "psychic",
     "color_bg": "#F85888",
     "card_category": "Pokémon",
     "is_foil": false,
     "extras": "",
     "comment": "",
-    "image_url": "https://images.pokemontcg.io/sm11/92.png",
-    "local_image": "/cards/unm_92.png",
-    "decks": [
-      "deck-4"
-    ]
+    "image_filename": "unm_92.png",
+    "image_url": "https://images.pokemontcg.io/unm/92.png",
+    "decks": []
   },
   {
     "id": "tcg-129",
@@ -3429,18 +3342,16 @@
     "rarity_code": "C",
     "rarity_name": "Comum",
     "color_code": "P",
-    "color_name": "Psíquica",
+    "color_name": "Psíquico",
     "color_slug": "psychic",
     "color_bg": "#F85888",
     "card_category": "Pokémon",
     "is_foil": false,
     "extras": "",
     "comment": "",
-    "image_url": "https://images.pokemontcg.io/sm11/93.png",
-    "local_image": "/cards/unm_93.png",
-    "decks": [
-      "deck-4"
-    ]
+    "image_filename": "unm_93.png",
+    "image_url": "https://images.pokemontcg.io/unm/93.png",
+    "decks": []
   },
   {
     "id": "tcg-130",
@@ -3464,8 +3375,8 @@
     "is_foil": false,
     "extras": "",
     "comment": "",
-    "image_url": "https://images.pokemontcg.io/sm11/165.png",
-    "local_image": "/cards/unm_165.png",
+    "image_filename": "unm_165.png",
+    "image_url": "https://images.pokemontcg.io/unm/165.png",
     "decks": []
   },
   {
@@ -3490,8 +3401,8 @@
     "is_foil": false,
     "extras": "",
     "comment": "",
-    "image_url": "https://images.pokemontcg.io/sm11/61.png",
-    "local_image": "/cards/unm_61.png",
+    "image_filename": "unm_61.png",
+    "image_url": "https://images.pokemontcg.io/unm/61.png",
     "decks": []
   },
   {
@@ -3516,8 +3427,8 @@
     "is_foil": false,
     "extras": "",
     "comment": "",
-    "image_url": "https://images.pokemontcg.io/sm11/12.png",
-    "local_image": "/cards/unm_12.png",
+    "image_filename": "unm_12.png",
+    "image_url": "https://images.pokemontcg.io/unm/12.png",
     "decks": []
   },
   {
@@ -3542,8 +3453,8 @@
     "is_foil": false,
     "extras": "",
     "comment": "",
-    "image_url": "https://images.pokemontcg.io/sm11/185.png",
-    "local_image": "/cards/unm_185.png",
+    "image_filename": "unm_185.png",
+    "image_url": "https://images.pokemontcg.io/unm/185.png",
     "decks": []
   },
   {
@@ -3568,8 +3479,8 @@
     "is_foil": false,
     "extras": "",
     "comment": "",
-    "image_url": "https://images.pokemontcg.io/sm11/161.png",
-    "local_image": "/cards/unm_161.png",
+    "image_filename": "unm_161.png",
+    "image_url": "https://images.pokemontcg.io/unm/161.png",
     "decks": []
   },
   {
@@ -3594,8 +3505,8 @@
     "is_foil": false,
     "extras": "",
     "comment": "",
-    "image_url": "https://images.pokemontcg.io/sm11/40.png",
-    "local_image": "/cards/unm_40.png",
+    "image_filename": "unm_40.png",
+    "image_url": "https://images.pokemontcg.io/unm/40.png",
     "decks": []
   },
   {
@@ -3620,11 +3531,9 @@
     "is_foil": false,
     "extras": "",
     "comment": "",
-    "image_url": "https://images.pokemontcg.io/sm11/21.png",
-    "local_image": "/cards/unm_21.png",
-    "decks": [
-      "deck-2"
-    ]
+    "image_filename": "unm_21.png",
+    "image_url": "https://images.pokemontcg.io/unm/21.png",
+    "decks": []
   },
   {
     "id": "tcg-137",
@@ -3648,8 +3557,8 @@
     "is_foil": false,
     "extras": "",
     "comment": "",
-    "image_url": "https://images.pokemontcg.io/sm11/58.png",
-    "local_image": "/cards/unm_58.png",
+    "image_filename": "unm_58.png",
+    "image_url": "https://images.pokemontcg.io/unm/58.png",
     "decks": []
   },
   {
@@ -3667,15 +3576,15 @@
     "rarity_code": "C",
     "rarity_name": "Comum",
     "color_code": "P",
-    "color_name": "Psíquica",
+    "color_name": "Psíquico",
     "color_slug": "psychic",
     "color_bg": "#F85888",
     "card_category": "Pokémon",
     "is_foil": false,
     "extras": "",
     "comment": "",
-    "image_url": "https://images.pokemontcg.io/sm11/96.png",
-    "local_image": "/cards/unm_96.png",
+    "image_filename": "unm_96.png",
+    "image_url": "https://images.pokemontcg.io/unm/96.png",
     "decks": []
   },
   {
@@ -3700,8 +3609,8 @@
     "is_foil": false,
     "extras": "",
     "comment": "",
-    "image_url": "https://images.pokemontcg.io/sm11/109.png",
-    "local_image": "/cards/unm_109.png",
+    "image_filename": "unm_109.png",
+    "image_url": "https://images.pokemontcg.io/unm/109.png",
     "decks": []
   },
   {
@@ -3726,8 +3635,8 @@
     "is_foil": false,
     "extras": "",
     "comment": "",
-    "image_url": "https://images.pokemontcg.io/sm11/173.png",
-    "local_image": "/cards/unm_173.png",
+    "image_filename": "unm_173.png",
+    "image_url": "https://images.pokemontcg.io/unm/173.png",
     "decks": []
   },
   {
@@ -3745,15 +3654,15 @@
     "rarity_code": "C",
     "rarity_name": "Comum",
     "color_code": "P",
-    "color_name": "Psíquica",
+    "color_name": "Psíquico",
     "color_slug": "psychic",
     "color_bg": "#F85888",
     "card_category": "Pokémon",
     "is_foil": false,
     "extras": "",
     "comment": "",
-    "image_url": "https://images.pokemontcg.io/sm11/88.png",
-    "local_image": "/cards/unm_88.png",
+    "image_filename": "unm_88.png",
+    "image_url": "https://images.pokemontcg.io/unm/88.png",
     "decks": []
   },
   {
@@ -3771,15 +3680,15 @@
     "rarity_code": "C",
     "rarity_name": "Comum",
     "color_code": "D",
-    "color_name": "Escuridão",
+    "color_name": "Noturno",
     "color_slug": "darkness",
     "color_bg": "#705848",
     "card_category": "Pokémon",
     "is_foil": false,
     "extras": "",
     "comment": "",
-    "image_url": "https://images.pokemontcg.io/sm11/128.png",
-    "local_image": "/cards/unm_128.png",
+    "image_filename": "unm_128.png",
+    "image_url": "https://images.pokemontcg.io/unm/128.png",
     "decks": []
   },
   {
@@ -3797,15 +3706,15 @@
     "rarity_code": "C",
     "rarity_name": "Comum",
     "color_code": "D",
-    "color_name": "Escuridão",
+    "color_name": "Noturno",
     "color_slug": "darkness",
     "color_bg": "#705848",
     "card_category": "Pokémon",
     "is_foil": false,
     "extras": "",
     "comment": "",
-    "image_url": "https://images.pokemontcg.io/sm11/129.png",
-    "local_image": "/cards/unm_129.png",
+    "image_filename": "unm_129.png",
+    "image_url": "https://images.pokemontcg.io/unm/129.png",
     "decks": []
   },
   {
@@ -3830,8 +3739,8 @@
     "is_foil": false,
     "extras": "",
     "comment": "",
-    "image_url": "https://images.pokemontcg.io/sm11/166.png",
-    "local_image": "/cards/unm_166.png",
+    "image_filename": "unm_166.png",
+    "image_url": "https://images.pokemontcg.io/unm/166.png",
     "decks": []
   },
   {
@@ -3856,12 +3765,9 @@
     "is_foil": false,
     "extras": "",
     "comment": "",
-    "image_url": "https://images.pokemontcg.io/sm11/158.png",
-    "local_image": "/cards/unm_158.png",
-    "decks": [
-      "deck-1",
-      "deck-3"
-    ]
+    "image_filename": "unm_158.png",
+    "image_url": "https://images.pokemontcg.io/unm/158.png",
+    "decks": []
   },
   {
     "id": "tcg-146",
@@ -3885,8 +3791,8 @@
     "is_foil": false,
     "extras": "",
     "comment": "",
-    "image_url": "https://images.pokemontcg.io/sm11/203.png",
-    "local_image": "/cards/unm_203.png",
+    "image_filename": "unm_203.png",
+    "image_url": "https://images.pokemontcg.io/unm/203.png",
     "decks": []
   },
   {
@@ -3911,8 +3817,8 @@
     "is_foil": false,
     "extras": "",
     "comment": "",
-    "image_url": "https://images.pokemontcg.io/sm11/23.png",
-    "local_image": "/cards/unm_23.png",
+    "image_filename": "unm_23.png",
+    "image_url": "https://images.pokemontcg.io/unm/23.png",
     "decks": []
   },
   {
@@ -3937,8 +3843,8 @@
     "is_foil": false,
     "extras": "",
     "comment": "",
-    "image_url": "https://images.pokemontcg.io/sm11/103.png",
-    "local_image": "/cards/unm_103.png",
+    "image_filename": "unm_103.png",
+    "image_url": "https://images.pokemontcg.io/unm/103.png",
     "decks": []
   },
   {
@@ -3963,8 +3869,8 @@
     "is_foil": false,
     "extras": "",
     "comment": "",
-    "image_url": "https://images.pokemontcg.io/sm11/174.png",
-    "local_image": "/cards/unm_174.png",
+    "image_filename": "unm_174.png",
+    "image_url": "https://images.pokemontcg.io/unm/174.png",
     "decks": []
   },
   {
@@ -3989,8 +3895,8 @@
     "is_foil": false,
     "extras": "",
     "comment": "",
-    "image_url": "https://images.pokemontcg.io/sm11/55.png",
-    "local_image": "/cards/unm_55.png",
+    "image_filename": "unm_55.png",
+    "image_url": "https://images.pokemontcg.io/unm/55.png",
     "decks": []
   },
   {
@@ -4015,8 +3921,8 @@
     "is_foil": false,
     "extras": "",
     "comment": "",
-    "image_url": "https://images.pokemontcg.io/sm11/56.png",
-    "local_image": "/cards/unm_56.png",
+    "image_filename": "unm_56.png",
+    "image_url": "https://images.pokemontcg.io/unm/56.png",
     "decks": []
   },
   {
@@ -4034,15 +3940,15 @@
     "rarity_code": "C",
     "rarity_name": "Comum",
     "color_code": "P",
-    "color_name": "Psíquica",
+    "color_name": "Psíquico",
     "color_slug": "psychic",
     "color_bg": "#F85888",
     "card_category": "Pokémon",
     "is_foil": false,
     "extras": "",
     "comment": "",
-    "image_url": "https://images.pokemontcg.io/sm11/102.png",
-    "local_image": "/cards/unm_102.png",
+    "image_filename": "unm_102.png",
+    "image_url": "https://images.pokemontcg.io/unm/102.png",
     "decks": []
   },
   {
@@ -4060,15 +3966,15 @@
     "rarity_code": "C",
     "rarity_name": "Comum",
     "color_code": "D",
-    "color_name": "Escuridão",
+    "color_name": "Noturno",
     "color_slug": "darkness",
     "color_bg": "#705848",
     "card_category": "Pokémon",
     "is_foil": false,
     "extras": "",
     "comment": "",
-    "image_url": "https://images.pokemontcg.io/sm11/135.png",
-    "local_image": "/cards/unm_135.png",
+    "image_filename": "unm_135.png",
+    "image_url": "https://images.pokemontcg.io/unm/135.png",
     "decks": []
   },
   {
@@ -4093,8 +3999,8 @@
     "is_foil": false,
     "extras": "",
     "comment": "",
-    "image_url": "https://images.pokemontcg.io/sm11/115.png",
-    "local_image": "/cards/unm_115.png",
+    "image_filename": "unm_115.png",
+    "image_url": "https://images.pokemontcg.io/unm/115.png",
     "decks": []
   },
   {
@@ -4119,8 +4025,8 @@
     "is_foil": false,
     "extras": "",
     "comment": "",
-    "image_url": "https://images.pokemontcg.io/sm11/116.png",
-    "local_image": "/cards/unm_116.png",
+    "image_filename": "unm_116.png",
+    "image_url": "https://images.pokemontcg.io/unm/116.png",
     "decks": []
   },
   {
@@ -4138,15 +4044,15 @@
     "rarity_code": "U",
     "rarity_name": "Incomum",
     "color_code": "D",
-    "color_name": "Escuridão",
+    "color_name": "Noturno",
     "color_slug": "darkness",
     "color_bg": "#705848",
     "card_category": "Pokémon",
     "is_foil": false,
     "extras": "",
     "comment": "",
-    "image_url": "https://images.pokemontcg.io/sm11/133.png",
-    "local_image": "/cards/unm_133.png",
+    "image_filename": "unm_133.png",
+    "image_url": "https://images.pokemontcg.io/unm/133.png",
     "decks": []
   },
   {
@@ -4164,15 +4070,15 @@
     "rarity_code": "C",
     "rarity_name": "Comum",
     "color_code": "P",
-    "color_name": "Psíquica",
+    "color_name": "Psíquico",
     "color_slug": "psychic",
     "color_bg": "#F85888",
     "card_category": "Pokémon",
     "is_foil": false,
     "extras": "",
     "comment": "",
-    "image_url": "https://images.pokemontcg.io/sm11/98.png",
-    "local_image": "/cards/unm_98.png",
+    "image_filename": "unm_98.png",
+    "image_url": "https://images.pokemontcg.io/unm/98.png",
     "decks": []
   },
   {
@@ -4190,15 +4096,15 @@
     "rarity_code": "C",
     "rarity_name": "Comum",
     "color_code": "D",
-    "color_name": "Escuridão",
+    "color_name": "Noturno",
     "color_slug": "darkness",
     "color_bg": "#705848",
     "card_category": "Pokémon",
     "is_foil": false,
     "extras": "",
     "comment": "",
-    "image_url": "https://images.pokemontcg.io/sm11/137.png",
-    "local_image": "/cards/unm_137.png",
+    "image_filename": "unm_137.png",
+    "image_url": "https://images.pokemontcg.io/unm/137.png",
     "decks": []
   },
   {
@@ -4223,8 +4129,8 @@
     "is_foil": false,
     "extras": "",
     "comment": "",
-    "image_url": "https://images.pokemontcg.io/sm11/5.png",
-    "local_image": "/cards/unm_5.png",
+    "image_filename": "unm_5.png",
+    "image_url": "https://images.pokemontcg.io/unm/5.png",
     "decks": []
   },
   {
@@ -4242,15 +4148,15 @@
     "rarity_code": "C",
     "rarity_name": "Comum",
     "color_code": "P",
-    "color_name": "Psíquica",
+    "color_name": "Psíquico",
     "color_slug": "psychic",
     "color_bg": "#F85888",
     "card_category": "Pokémon",
     "is_foil": false,
     "extras": "",
     "comment": "",
-    "image_url": "https://images.pokemontcg.io/sm11/82.png",
-    "local_image": "/cards/unm_82.png",
+    "image_filename": "unm_82.png",
+    "image_url": "https://images.pokemontcg.io/unm/82.png",
     "decks": []
   },
   {
@@ -4275,8 +4181,8 @@
     "is_foil": false,
     "extras": "",
     "comment": "",
-    "image_url": "https://images.pokemontcg.io/sm11/167.png",
-    "local_image": "/cards/unm_167.png",
+    "image_filename": "unm_167.png",
+    "image_url": "https://images.pokemontcg.io/unm/167.png",
     "decks": []
   },
   {
@@ -4301,8 +4207,8 @@
     "is_foil": false,
     "extras": "",
     "comment": "",
-    "image_url": "https://images.pokemontcg.io/sm11/168.png",
-    "local_image": "/cards/unm_168.png",
+    "image_filename": "unm_168.png",
+    "image_url": "https://images.pokemontcg.io/unm/168.png",
     "decks": []
   },
   {
@@ -4320,18 +4226,16 @@
     "rarity_code": "C",
     "rarity_name": "Comum",
     "color_code": "D",
-    "color_name": "Escuridão",
+    "color_name": "Noturno",
     "color_slug": "darkness",
     "color_bg": "#705848",
     "card_category": "Pokémon",
     "is_foil": false,
     "extras": "",
     "comment": "",
-    "image_url": "https://images.pokemontcg.io/sm11/131.png",
-    "local_image": "/cards/unm_131.png",
-    "decks": [
-      "deck-1"
-    ]
+    "image_filename": "unm_131.png",
+    "image_url": "https://images.pokemontcg.io/unm/131.png",
+    "decks": []
   },
   {
     "id": "tcg-164",
@@ -4355,8 +4259,8 @@
     "is_foil": false,
     "extras": "",
     "comment": "",
-    "image_url": "https://images.pokemontcg.io/sm11/37.png",
-    "local_image": "/cards/unm_37.png",
+    "image_filename": "unm_37.png",
+    "image_url": "https://images.pokemontcg.io/unm/37.png",
     "decks": []
   },
   {
@@ -4381,8 +4285,8 @@
     "is_foil": false,
     "extras": "",
     "comment": "",
-    "image_url": "https://images.pokemontcg.io/sm11/67.png",
-    "local_image": "/cards/unm_67.png",
+    "image_filename": "unm_67.png",
+    "image_url": "https://images.pokemontcg.io/unm/67.png",
     "decks": []
   },
   {
@@ -4407,8 +4311,8 @@
     "is_foil": false,
     "extras": "",
     "comment": "",
-    "image_url": "https://images.pokemontcg.io/sm11/32.png",
-    "local_image": "/cards/unm_32.png",
+    "image_filename": "unm_32.png",
+    "image_url": "https://images.pokemontcg.io/unm/32.png",
     "decks": []
   },
   {
@@ -4433,8 +4337,8 @@
     "is_foil": false,
     "extras": "",
     "comment": "",
-    "image_url": "https://images.pokemontcg.io/sm11/164.png",
-    "local_image": "/cards/unm_164.png",
+    "image_filename": "unm_164.png",
+    "image_url": "https://images.pokemontcg.io/unm/164.png",
     "decks": []
   },
   {
@@ -4459,8 +4363,8 @@
     "is_foil": false,
     "extras": "",
     "comment": "",
-    "image_url": "https://images.pokemontcg.io/sm11/68.png",
-    "local_image": "/cards/unm_68.png",
+    "image_filename": "unm_68.png",
+    "image_url": "https://images.pokemontcg.io/unm/68.png",
     "decks": []
   },
   {
@@ -4485,8 +4389,8 @@
     "is_foil": false,
     "extras": "",
     "comment": "",
-    "image_url": "https://images.pokemontcg.io/sm11/183.png",
-    "local_image": "/cards/unm_183.png",
+    "image_filename": "unm_183.png",
+    "image_url": "https://images.pokemontcg.io/unm/183.png",
     "decks": []
   },
   {
@@ -4511,8 +4415,8 @@
     "is_foil": false,
     "extras": "",
     "comment": "",
-    "image_url": "https://images.pokemontcg.io/sm11/63.png",
-    "local_image": "/cards/unm_63.png",
+    "image_filename": "unm_63.png",
+    "image_url": "https://images.pokemontcg.io/unm/63.png",
     "decks": []
   },
   {
@@ -4537,8 +4441,8 @@
     "is_foil": false,
     "extras": "",
     "comment": "",
-    "image_url": "https://images.pokemontcg.io/sm11/64.png",
-    "local_image": "/cards/unm_64.png",
+    "image_filename": "unm_64.png",
+    "image_url": "https://images.pokemontcg.io/unm/64.png",
     "decks": []
   },
   {
@@ -4563,8 +4467,8 @@
     "is_foil": false,
     "extras": "",
     "comment": "",
-    "image_url": "https://images.pokemontcg.io/sm11/169.png",
-    "local_image": "/cards/unm_169.png",
+    "image_filename": "unm_169.png",
+    "image_url": "https://images.pokemontcg.io/unm/169.png",
     "decks": []
   },
   {
@@ -4589,11 +4493,9 @@
     "is_foil": true,
     "extras": "Foil",
     "comment": "",
-    "image_url": "https://images.pokemontcg.io/sm11/144.png",
-    "local_image": "/cards/unm_144.png",
-    "decks": [
-      "deck-5"
-    ]
+    "image_filename": "unm_144.png",
+    "image_url": "https://images.pokemontcg.io/unm/144.png",
+    "decks": []
   },
   {
     "id": "tcg-174",
@@ -4617,8 +4519,8 @@
     "is_foil": false,
     "extras": "",
     "comment": "",
-    "image_url": "https://images.pokemontcg.io/sm11/50.png",
-    "local_image": "/cards/unm_50.png",
+    "image_filename": "unm_50.png",
+    "image_url": "https://images.pokemontcg.io/unm/50.png",
     "decks": []
   },
   {
@@ -4643,8 +4545,8 @@
     "is_foil": false,
     "extras": "",
     "comment": "",
-    "image_url": "https://images.pokemontcg.io/sm11/180.png",
-    "local_image": "/cards/unm_180.png",
+    "image_filename": "unm_180.png",
+    "image_url": "https://images.pokemontcg.io/unm/180.png",
     "decks": []
   },
   {
@@ -4669,15 +4571,9 @@
     "is_foil": false,
     "extras": "",
     "comment": "",
-    "image_url": "https://images.pokemontcg.io/sm1/134.png",
-    "local_image": "/cards/sum_134.png",
-    "decks": [
-      "deck-1",
-      "deck-2",
-      "deck-3",
-      "deck-4",
-      "deck-5"
-    ]
+    "image_filename": "sum_134.png",
+    "image_url": "https://images.pokemontcg.io/sum/134.png",
+    "decks": []
   },
   {
     "id": "tcg-177",
@@ -4701,14 +4597,9 @@
     "is_foil": false,
     "extras": "",
     "comment": "",
-    "image_url": "https://images.pokemontcg.io/sm1/123.png",
-    "local_image": "/cards/sum_123.png",
-    "decks": [
-      "deck-1",
-      "deck-2",
-      "deck-3",
-      "deck-5"
-    ]
+    "image_filename": "sum_123.png",
+    "image_url": "https://images.pokemontcg.io/sum/123.png",
+    "decks": []
   },
   {
     "id": "tcg-178",
@@ -4732,8 +4623,8 @@
     "is_foil": true,
     "extras": "Foil",
     "comment": "",
-    "image_url": "https://images.pokemontcg.io/sm1/40.png",
-    "local_image": "/cards/sum_40.png",
+    "image_filename": "sum_40.png",
+    "image_url": "https://images.pokemontcg.io/sum/40.png",
     "decks": []
   },
   {
@@ -4751,15 +4642,15 @@
     "rarity_code": "C",
     "rarity_name": "Comum",
     "color_code": "P",
-    "color_name": "Psíquica",
+    "color_name": "Psíquico",
     "color_slug": "psychic",
     "color_bg": "#F85888",
     "card_category": "Pokémon",
     "is_foil": true,
     "extras": "Foil",
     "comment": "",
-    "image_url": "https://images.pokemontcg.io/sm1/59.png",
-    "local_image": "/cards/sum_59.png",
+    "image_filename": "sum_59.png",
+    "image_url": "https://images.pokemontcg.io/sum/59.png",
     "decks": []
   },
   {
@@ -4784,12 +4675,9 @@
     "is_foil": false,
     "extras": "",
     "comment": "",
-    "image_url": "https://images.pokemontcg.io/sm1/101.png",
-    "local_image": "/cards/sum_101.png",
-    "decks": [
-      "deck-1",
-      "deck-5"
-    ]
+    "image_filename": "sum_101.png",
+    "image_url": "https://images.pokemontcg.io/sum/101.png",
+    "decks": []
   },
   {
     "id": "tcg-181",
@@ -4804,20 +4692,18 @@
     "quality": "M",
     "language": "PT",
     "rarity_code": "RU",
-    "rarity_name": "Ultra Rara (GX/EX)",
+    "rarity_name": "Ultra Rara",
     "color_code": "D",
-    "color_name": "Escuridão",
+    "color_name": "Noturno",
     "color_slug": "darkness",
     "color_bg": "#705848",
     "card_category": "Pokémon",
-    "is_foil": true,
+    "is_foil": false,
     "extras": "",
     "comment": "",
-    "image_url": "https://images.pokemontcg.io/sm1/142.png",
-    "local_image": "/cards/sum_142.png",
-    "decks": [
-      "deck-1"
-    ]
+    "image_filename": "sum_142.png",
+    "image_url": "https://images.pokemontcg.io/sum/142.png",
+    "decks": []
   },
   {
     "id": "tcg-182",
@@ -4832,21 +4718,18 @@
     "quality": "M",
     "language": "PT",
     "rarity_code": "S",
-    "rarity_name": "Secreta / Especial",
+    "rarity_name": "Secreta Rara",
     "color_code": "R",
     "color_name": "Fogo",
     "color_slug": "fire",
     "color_bg": "#F08030",
     "card_category": "Pokémon",
-    "is_foil": true,
+    "is_foil": false,
     "extras": "",
     "comment": "",
+    "image_filename": "smp_SM211.png",
     "image_url": "https://images.pokemontcg.io/smp/SM211.png",
-    "local_image": "/cards/smp_sm211.png",
-    "decks": [
-      "deck-1",
-      "deck-2"
-    ]
+    "decks": []
   },
   {
     "id": "tcg-183",
@@ -4861,20 +4744,18 @@
     "quality": "M",
     "language": "PT",
     "rarity_code": "S",
-    "rarity_name": "Secreta / Especial",
+    "rarity_name": "Secreta Rara",
     "color_code": "P",
-    "color_name": "Psíquica",
+    "color_name": "Psíquico",
     "color_slug": "psychic",
     "color_bg": "#F85888",
     "card_category": "Pokémon",
     "is_foil": true,
     "extras": "Foil",
     "comment": "",
+    "image_filename": "smp_SM164.png",
     "image_url": "https://images.pokemontcg.io/smp/SM164.png",
-    "local_image": "/cards/smp_sm164.png",
-    "decks": [
-      "deck-3"
-    ]
+    "decks": []
   },
   {
     "id": "tcg-184",
@@ -4889,21 +4770,18 @@
     "quality": "M",
     "language": "PT",
     "rarity_code": "S",
-    "rarity_name": "Secreta / Especial",
+    "rarity_name": "Secreta Rara",
     "color_code": "P",
-    "color_name": "Psíquica",
+    "color_name": "Psíquico",
     "color_slug": "psychic",
     "color_bg": "#F85888",
     "card_category": "Pokémon",
-    "is_foil": true,
+    "is_foil": false,
     "extras": "",
     "comment": "",
+    "image_filename": "smp_SM191.png",
     "image_url": "https://images.pokemontcg.io/smp/SM191.png",
-    "local_image": "/cards/smp_sm191.png",
-    "decks": [
-      "deck-1",
-      "deck-3"
-    ]
+    "decks": []
   },
   {
     "id": "tcg-185",
@@ -4927,8 +4805,8 @@
     "is_foil": false,
     "extras": "",
     "comment": "",
-    "image_url": "https://images.pokemontcg.io/sm3/128.png",
-    "local_image": "/cards/bus_128.png",
+    "image_filename": "bus_128.png",
+    "image_url": "https://images.pokemontcg.io/bus/128.png",
     "decks": []
   },
   {
@@ -4953,8 +4831,8 @@
     "is_foil": false,
     "extras": "",
     "comment": "",
-    "image_url": "https://images.pokemontcg.io/sm3/1.png",
-    "local_image": "/cards/bus_1.png",
+    "image_filename": "bus_1.png",
+    "image_url": "https://images.pokemontcg.io/bus/1.png",
     "decks": []
   },
   {
@@ -4979,11 +4857,9 @@
     "is_foil": false,
     "extras": "",
     "comment": "",
-    "image_url": "https://images.pokemontcg.io/sm3/19.png",
-    "local_image": "/cards/bus_19.png",
-    "decks": [
-      "deck-2"
-    ]
+    "image_filename": "bus_19.png",
+    "image_url": "https://images.pokemontcg.io/bus/19.png",
+    "decks": []
   },
   {
     "id": "tcg-188",
@@ -5007,14 +4883,9 @@
     "is_foil": false,
     "extras": "",
     "comment": "",
-    "image_url": "https://images.pokemontcg.io/sm3/114.png",
-    "local_image": "/cards/bus_114.png",
-    "decks": [
-      "deck-1",
-      "deck-2",
-      "deck-3",
-      "deck-5"
-    ]
+    "image_filename": "bus_114.png",
+    "image_url": "https://images.pokemontcg.io/bus/114.png",
+    "decks": []
   },
   {
     "id": "tcg-189",
@@ -5038,8 +4909,8 @@
     "is_foil": false,
     "extras": "",
     "comment": "",
-    "image_url": "https://images.pokemontcg.io/sm3/73.png",
-    "local_image": "/cards/bus_73.png",
+    "image_filename": "bus_73.png",
+    "image_url": "https://images.pokemontcg.io/bus/73.png",
     "decks": []
   },
   {
@@ -5064,11 +4935,9 @@
     "is_foil": false,
     "extras": "",
     "comment": "",
-    "image_url": "https://images.pokemontcg.io/sm3/95.png",
-    "local_image": "/cards/bus_95.png",
-    "decks": [
-      "deck-5"
-    ]
+    "image_filename": "bus_95.png",
+    "image_url": "https://images.pokemontcg.io/bus/95.png",
+    "decks": []
   },
   {
     "id": "tcg-191",
@@ -5085,18 +4954,16 @@
     "rarity_code": "RH",
     "rarity_name": "Rara Holo",
     "color_code": "D",
-    "color_name": "Escuridão",
+    "color_name": "Noturno",
     "color_slug": "darkness",
     "color_bg": "#705848",
     "card_category": "Pokémon",
     "is_foil": true,
     "extras": "Foil",
     "comment": "",
-    "image_url": "https://images.pokemontcg.io/sm3/87.png",
-    "local_image": "/cards/bus_87.png",
-    "decks": [
-      "deck-1"
-    ]
+    "image_filename": "bus_87.png",
+    "image_url": "https://images.pokemontcg.io/bus/87.png",
+    "decks": []
   },
   {
     "id": "tcg-192",
@@ -5111,20 +4978,18 @@
     "quality": "M",
     "language": "PT",
     "rarity_code": "RU",
-    "rarity_name": "Ultra Rara (GX/EX)",
+    "rarity_name": "Ultra Rara",
     "color_code": "D",
-    "color_name": "Escuridão",
+    "color_name": "Noturno",
     "color_slug": "darkness",
     "color_bg": "#705848",
     "card_category": "Pokémon",
-    "is_foil": true,
+    "is_foil": false,
     "extras": "",
     "comment": "",
-    "image_url": "https://images.pokemontcg.io/sm3/88.png",
-    "local_image": "/cards/bus_88.png",
-    "decks": [
-      "deck-1"
-    ]
+    "image_filename": "bus_88.png",
+    "image_url": "https://images.pokemontcg.io/bus/88.png",
+    "decks": []
   },
   {
     "id": "tcg-193",
@@ -5148,8 +5013,8 @@
     "is_foil": false,
     "extras": "",
     "comment": "",
-    "image_url": "https://images.pokemontcg.io/sm3/14.png",
-    "local_image": "/cards/bus_14.png",
+    "image_filename": "bus_14.png",
+    "image_url": "https://images.pokemontcg.io/bus/14.png",
     "decks": []
   },
   {
@@ -5174,11 +5039,9 @@
     "is_foil": true,
     "extras": "Foil",
     "comment": "",
-    "image_url": "https://images.pokemontcg.io/sm3/94.png",
-    "local_image": "/cards/bus_94.png",
-    "decks": [
-      "deck-5"
-    ]
+    "image_filename": "bus_94.png",
+    "image_url": "https://images.pokemontcg.io/bus/94.png",
+    "decks": []
   },
   {
     "id": "tcg-195",
@@ -5195,15 +5058,15 @@
     "rarity_code": "U",
     "rarity_name": "Incomum",
     "color_code": "P",
-    "color_name": "Psíquica",
+    "color_name": "Psíquico",
     "color_slug": "psychic",
     "color_bg": "#F85888",
     "card_category": "Pokémon",
     "is_foil": false,
     "extras": "",
     "comment": "",
-    "image_url": "https://images.pokemontcg.io/sm3/52.png",
-    "local_image": "/cards/bus_52.png",
+    "image_filename": "bus_52.png",
+    "image_url": "https://images.pokemontcg.io/bus/52.png",
     "decks": []
   },
   {
@@ -5228,8 +5091,8 @@
     "is_foil": false,
     "extras": "",
     "comment": "",
-    "image_url": "https://images.pokemontcg.io/sm3/42.png",
-    "local_image": "/cards/bus_42.png",
+    "image_filename": "bus_42.png",
+    "image_url": "https://images.pokemontcg.io/bus/42.png",
     "decks": []
   },
   {
@@ -5254,12 +5117,9 @@
     "is_foil": true,
     "extras": "Foil",
     "comment": "",
-    "image_url": "https://images.pokemontcg.io/sm3/113.png",
-    "local_image": "/cards/bus_113.png",
-    "decks": [
-      "deck-4",
-      "deck-5"
-    ]
+    "image_filename": "bus_113.png",
+    "image_url": "https://images.pokemontcg.io/bus/113.png",
+    "decks": []
   },
   {
     "id": "tcg-198",
@@ -5283,8 +5143,8 @@
     "is_foil": false,
     "extras": "",
     "comment": "",
-    "image_url": "https://images.pokemontcg.io/sm3/106.png",
-    "local_image": "/cards/bus_106.png",
+    "image_filename": "bus_106.png",
+    "image_url": "https://images.pokemontcg.io/bus/106.png",
     "decks": []
   },
   {
@@ -5309,8 +5169,8 @@
     "is_foil": false,
     "extras": "",
     "comment": "",
-    "image_url": "https://images.pokemontcg.io/sm3/29.png",
-    "local_image": "/cards/bus_29.png",
+    "image_filename": "bus_29.png",
+    "image_url": "https://images.pokemontcg.io/bus/29.png",
     "decks": []
   },
   {
@@ -5328,15 +5188,15 @@
     "rarity_code": "C",
     "rarity_name": "Comum",
     "color_code": "D",
-    "color_name": "Escuridão",
+    "color_name": "Noturno",
     "color_slug": "darkness",
     "color_bg": "#705848",
     "card_category": "Pokémon",
     "is_foil": false,
     "extras": "",
     "comment": "",
-    "image_url": "https://images.pokemontcg.io/sm3/89.png",
-    "local_image": "/cards/bus_89.png",
+    "image_filename": "bus_89.png",
+    "image_url": "https://images.pokemontcg.io/bus/89.png",
     "decks": []
   },
   {
@@ -5361,8 +5221,8 @@
     "is_foil": false,
     "extras": "",
     "comment": "",
-    "image_url": "https://images.pokemontcg.io/sm3/9.png",
-    "local_image": "/cards/bus_9.png",
+    "image_filename": "bus_9.png",
+    "image_url": "https://images.pokemontcg.io/bus/9.png",
     "decks": []
   },
   {
@@ -5387,8 +5247,8 @@
     "is_foil": false,
     "extras": "",
     "comment": "",
-    "image_url": "https://images.pokemontcg.io/sm3/32.png",
-    "local_image": "/cards/bus_32.png",
+    "image_filename": "bus_32.png",
+    "image_url": "https://images.pokemontcg.io/bus/32.png",
     "decks": []
   },
   {
@@ -5413,8 +5273,8 @@
     "is_foil": false,
     "extras": "",
     "comment": "",
-    "image_url": "https://images.pokemontcg.io/sm3/118.png",
-    "local_image": "/cards/bus_118.png",
+    "image_filename": "bus_118.png",
+    "image_url": "https://images.pokemontcg.io/bus/118.png",
     "decks": []
   },
   {
@@ -5439,8 +5299,8 @@
     "is_foil": false,
     "extras": "",
     "comment": "",
-    "image_url": "https://images.pokemontcg.io/sm3/107.png",
-    "local_image": "/cards/bus_107.png",
+    "image_filename": "bus_107.png",
+    "image_url": "https://images.pokemontcg.io/bus/107.png",
     "decks": []
   },
   {
@@ -5465,12 +5325,9 @@
     "is_foil": false,
     "extras": "",
     "comment": "",
-    "image_url": "https://images.pokemontcg.io/sm3/109.png",
-    "local_image": "/cards/bus_109.png",
-    "decks": [
-      "deck-1",
-      "deck-3"
-    ]
+    "image_filename": "bus_109.png",
+    "image_url": "https://images.pokemontcg.io/bus/109.png",
+    "decks": []
   },
   {
     "id": "tcg-206",
@@ -5494,12 +5351,9 @@
     "is_foil": true,
     "extras": "Foil",
     "comment": "",
-    "image_url": "https://images.pokemontcg.io/sm3/109.png",
-    "local_image": "/cards/bus_109.png",
-    "decks": [
-      "deck-1",
-      "deck-3"
-    ]
+    "image_filename": "bus_109.png",
+    "image_url": "https://images.pokemontcg.io/bus/109.png",
+    "decks": []
   },
   {
     "id": "tcg-207",
@@ -5514,21 +5368,18 @@
     "quality": "M",
     "language": "PT",
     "rarity_code": "RU",
-    "rarity_name": "Ultra Rara (GX/EX)",
+    "rarity_name": "Ultra Rara",
     "color_code": "O",
     "color_name": "Dragão",
     "color_slug": "dragon",
     "color_bg": "#7038F8",
     "card_category": "Pokémon",
-    "is_foil": true,
+    "is_foil": false,
     "extras": "",
     "comment": "",
-    "image_url": "https://images.pokemontcg.io/sm3/141.png",
-    "local_image": "/cards/bus_141.png",
-    "decks": [
-      "deck-1",
-      "deck-3"
-    ]
+    "image_filename": "bus_141.png",
+    "image_url": "https://images.pokemontcg.io/bus/141.png",
+    "decks": []
   },
   {
     "id": "tcg-208",
@@ -5543,21 +5394,18 @@
     "quality": "M",
     "language": "PT",
     "rarity_code": "RU",
-    "rarity_name": "Ultra Rara (GX/EX)",
+    "rarity_name": "Ultra Rara",
     "color_code": "O",
     "color_name": "Dragão",
     "color_slug": "dragon",
     "color_bg": "#7038F8",
     "card_category": "Pokémon",
-    "is_foil": true,
+    "is_foil": false,
     "extras": "",
     "comment": "",
-    "image_url": "https://images.pokemontcg.io/sm3/160.png",
-    "local_image": "/cards/bus_160.png",
-    "decks": [
-      "deck-1",
-      "deck-3"
-    ]
+    "image_filename": "bus_160.png",
+    "image_url": "https://images.pokemontcg.io/bus/160.png",
+    "decks": []
   },
   {
     "id": "tcg-209",
@@ -5581,8 +5429,8 @@
     "is_foil": true,
     "extras": "Foil",
     "comment": "",
-    "image_url": "https://images.pokemontcg.io/sm3/126.png",
-    "local_image": "/cards/bus_126.png",
+    "image_filename": "bus_126.png",
+    "image_url": "https://images.pokemontcg.io/bus/126.png",
     "decks": []
   },
   {
@@ -5607,8 +5455,8 @@
     "is_foil": false,
     "extras": "",
     "comment": "",
-    "image_url": "https://images.pokemontcg.io/sm3/103.png",
-    "local_image": "/cards/bus_103.png",
+    "image_filename": "bus_103.png",
+    "image_url": "https://images.pokemontcg.io/bus/103.png",
     "decks": []
   },
   {
@@ -5633,8 +5481,8 @@
     "is_foil": false,
     "extras": "",
     "comment": "",
-    "image_url": "https://images.pokemontcg.io/sm3/104.png",
-    "local_image": "/cards/bus_104.png",
+    "image_filename": "bus_104.png",
+    "image_url": "https://images.pokemontcg.io/bus/104.png",
     "decks": []
   },
   {
@@ -5652,15 +5500,15 @@
     "rarity_code": "C",
     "rarity_name": "Comum",
     "color_code": "D",
-    "color_name": "Escuridão",
+    "color_name": "Noturno",
     "color_slug": "darkness",
     "color_bg": "#705848",
     "card_category": "Pokémon",
     "is_foil": false,
     "extras": "",
     "comment": "",
-    "image_url": "https://images.pokemontcg.io/sm3/81.png",
-    "local_image": "/cards/bus_81.png",
+    "image_filename": "bus_81.png",
+    "image_url": "https://images.pokemontcg.io/bus/81.png",
     "decks": []
   },
   {
@@ -5685,11 +5533,9 @@
     "is_foil": false,
     "extras": "",
     "comment": "",
-    "image_url": "https://images.pokemontcg.io/sm3/96.png",
-    "local_image": "/cards/bus_96.png",
-    "decks": [
-      "deck-5"
-    ]
+    "image_filename": "bus_96.png",
+    "image_url": "https://images.pokemontcg.io/bus/96.png",
+    "decks": []
   },
   {
     "id": "tcg-214",
@@ -5713,8 +5559,8 @@
     "is_foil": false,
     "extras": "",
     "comment": "",
-    "image_url": "https://images.pokemontcg.io/sm3/70.png",
-    "local_image": "/cards/bus_70.png",
+    "image_filename": "bus_70.png",
+    "image_url": "https://images.pokemontcg.io/bus/70.png",
     "decks": []
   },
   {
@@ -5739,8 +5585,8 @@
     "is_foil": false,
     "extras": "",
     "comment": "",
-    "image_url": "https://images.pokemontcg.io/sm3/72.png",
-    "local_image": "/cards/bus_72.png",
+    "image_filename": "bus_72.png",
+    "image_url": "https://images.pokemontcg.io/bus/72.png",
     "decks": []
   },
   {
@@ -5758,18 +5604,16 @@
     "rarity_code": "C",
     "rarity_name": "Comum",
     "color_code": "D",
-    "color_name": "Escuridão",
+    "color_name": "Noturno",
     "color_slug": "darkness",
     "color_bg": "#705848",
     "card_category": "Pokémon",
     "is_foil": false,
     "extras": "",
     "comment": "",
-    "image_url": "https://images.pokemontcg.io/sm3/85.png",
-    "local_image": "/cards/bus_85.png",
-    "decks": [
-      "deck-1"
-    ]
+    "image_filename": "bus_85.png",
+    "image_url": "https://images.pokemontcg.io/bus/85.png",
+    "decks": []
   },
   {
     "id": "tcg-217",
@@ -5793,11 +5637,9 @@
     "is_foil": false,
     "extras": "",
     "comment": "",
-    "image_url": "https://images.pokemontcg.io/sm3/26.png",
-    "local_image": "/cards/bus_26.png",
-    "decks": [
-      "deck-2"
-    ]
+    "image_filename": "bus_26.png",
+    "image_url": "https://images.pokemontcg.io/bus/26.png",
+    "decks": []
   },
   {
     "id": "tcg-218",
@@ -5814,15 +5656,15 @@
     "rarity_code": "C",
     "rarity_name": "Comum",
     "color_code": "P",
-    "color_name": "Psíquica",
+    "color_name": "Psíquico",
     "color_slug": "psychic",
     "color_bg": "#F85888",
     "card_category": "Pokémon",
     "is_foil": false,
     "extras": "",
     "comment": "",
-    "image_url": "https://images.pokemontcg.io/sm3/56.png",
-    "local_image": "/cards/bus_56.png",
+    "image_filename": "bus_56.png",
+    "image_url": "https://images.pokemontcg.io/bus/56.png",
     "decks": []
   },
   {
@@ -5847,8 +5689,8 @@
     "is_foil": false,
     "extras": "",
     "comment": "",
-    "image_url": "https://images.pokemontcg.io/sm3/121.png",
-    "local_image": "/cards/bus_121.png",
+    "image_filename": "bus_121.png",
+    "image_url": "https://images.pokemontcg.io/bus/121.png",
     "decks": []
   },
   {
@@ -5866,18 +5708,16 @@
     "rarity_code": "R",
     "rarity_name": "Rara",
     "color_code": "D",
-    "color_name": "Escuridão",
+    "color_name": "Noturno",
     "color_slug": "darkness",
     "color_bg": "#705848",
     "card_category": "Pokémon",
     "is_foil": false,
     "extras": "",
     "comment": "",
-    "image_url": "https://images.pokemontcg.io/sm3/86.png",
-    "local_image": "/cards/bus_86.png",
-    "decks": [
-      "deck-1"
-    ]
+    "image_filename": "bus_86.png",
+    "image_url": "https://images.pokemontcg.io/bus/86.png",
+    "decks": []
   },
   {
     "id": "tcg-221",
@@ -5901,8 +5741,8 @@
     "is_foil": false,
     "extras": "",
     "comment": "",
-    "image_url": "https://images.pokemontcg.io/sm7/147.png",
-    "local_image": "/cards/ces_147.png",
+    "image_filename": "ces_147.png",
+    "image_url": "https://images.pokemontcg.io/ces/147.png",
     "decks": []
   },
   {
@@ -5927,11 +5767,9 @@
     "is_foil": false,
     "extras": "",
     "comment": "",
-    "image_url": "https://images.pokemontcg.io/sm7/2.png",
-    "local_image": "/cards/ces_2.png",
-    "decks": [
-      "deck-4"
-    ]
+    "image_filename": "ces_2.png",
+    "image_url": "https://images.pokemontcg.io/ces/2.png",
+    "decks": []
   },
   {
     "id": "tcg-223",
@@ -5955,8 +5793,8 @@
     "is_foil": false,
     "extras": "",
     "comment": "",
-    "image_url": "https://images.pokemontcg.io/sm8/170.png",
-    "local_image": "/cards/lot_170.png",
+    "image_filename": "lot_170.png",
+    "image_url": "https://images.pokemontcg.io/lot/170.png",
     "decks": []
   },
   {
@@ -5981,8 +5819,8 @@
     "is_foil": false,
     "extras": "",
     "comment": "",
-    "image_url": "https://images.pokemontcg.io/sm8/161.png",
-    "local_image": "/cards/lot_161.png",
+    "image_filename": "lot_161.png",
+    "image_url": "https://images.pokemontcg.io/lot/161.png",
     "decks": []
   },
   {
@@ -6007,8 +5845,8 @@
     "is_foil": false,
     "extras": "",
     "comment": "",
-    "image_url": "https://images.pokemontcg.io/sm8/135.png",
-    "local_image": "/cards/lot_135.png",
+    "image_filename": "lot_135.png",
+    "image_url": "https://images.pokemontcg.io/lot/135.png",
     "decks": []
   },
   {
@@ -6026,15 +5864,15 @@
     "rarity_code": "RH",
     "rarity_name": "Rara Holo",
     "color_code": "P",
-    "color_name": "Psíquica",
+    "color_name": "Psíquico",
     "color_slug": "psychic",
     "color_bg": "#F85888",
     "card_category": "Pokémon",
     "is_foil": true,
     "extras": "Foil",
     "comment": "",
-    "image_url": "https://images.pokemontcg.io/sm8/108.png",
-    "local_image": "/cards/lot_108.png",
+    "image_filename": "lot_108.png",
+    "image_url": "https://images.pokemontcg.io/lot/108.png",
     "decks": []
   },
   {
@@ -6059,8 +5897,8 @@
     "is_foil": false,
     "extras": "",
     "comment": "",
-    "image_url": "https://images.pokemontcg.io/sm8/111.png",
-    "local_image": "/cards/lot_111.png",
+    "image_filename": "lot_111.png",
+    "image_url": "https://images.pokemontcg.io/lot/111.png",
     "decks": []
   },
   {
@@ -6085,8 +5923,8 @@
     "is_foil": false,
     "extras": "",
     "comment": "",
-    "image_url": "https://images.pokemontcg.io/sm8/35.png",
-    "local_image": "/cards/lot_35.png",
+    "image_filename": "lot_35.png",
+    "image_url": "https://images.pokemontcg.io/lot/35.png",
     "decks": []
   },
   {
@@ -6104,18 +5942,16 @@
     "rarity_code": "R",
     "rarity_name": "Rara",
     "color_code": "D",
-    "color_name": "Escuridão",
+    "color_name": "Noturno",
     "color_slug": "darkness",
     "color_bg": "#705848",
     "card_category": "Pokémon",
     "is_foil": false,
     "extras": "",
     "comment": "",
-    "image_url": "https://images.pokemontcg.io/sm8/120.png",
-    "local_image": "/cards/lot_120.png",
-    "decks": [
-      "deck-1"
-    ]
+    "image_filename": "lot_120.png",
+    "image_url": "https://images.pokemontcg.io/lot/120.png",
+    "decks": []
   },
   {
     "id": "tcg-230",
@@ -6139,11 +5975,9 @@
     "is_foil": false,
     "extras": "",
     "comment": "",
-    "image_url": "https://images.pokemontcg.io/sm5/26.png",
-    "local_image": "/cards/upr_26.png",
-    "decks": [
-      "deck-2"
-    ]
+    "image_filename": "upr_26.png",
+    "image_url": "https://images.pokemontcg.io/upr/26.png",
+    "decks": []
   },
   {
     "id": "tcg-231",
@@ -6167,13 +6001,9 @@
     "is_foil": false,
     "extras": "",
     "comment": "",
-    "image_url": "https://images.pokemontcg.io/sm5/122.png",
-    "local_image": "/cards/upr_122.png",
-    "decks": [
-      "deck-1",
-      "deck-3",
-      "deck-5"
-    ]
+    "image_filename": "upr_122.png",
+    "image_url": "https://images.pokemontcg.io/upr/122.png",
+    "decks": []
   },
   {
     "id": "tcg-232",
@@ -6197,12 +6027,9 @@
     "is_foil": false,
     "extras": "",
     "comment": "",
-    "image_url": "https://images.pokemontcg.io/sm9/146.png",
-    "local_image": "/cards/teu_146.png",
-    "decks": [
-      "deck-4",
-      "deck-5"
-    ]
+    "image_filename": "teu_146.png",
+    "image_url": "https://images.pokemontcg.io/teu/146.png",
+    "decks": []
   },
   {
     "id": "tcg-233",
@@ -6226,8 +6053,8 @@
     "is_foil": false,
     "extras": "",
     "comment": "",
-    "image_url": "https://images.pokemontcg.io/sm9/100.png",
-    "local_image": "/cards/teu_100.png",
+    "image_filename": "teu_100.png",
+    "image_url": "https://images.pokemontcg.io/teu/100.png",
     "decks": []
   },
   {
@@ -6252,11 +6079,9 @@
     "is_foil": false,
     "extras": "",
     "comment": "",
-    "image_url": "https://images.pokemontcg.io/sm9/11.png",
-    "local_image": "/cards/teu_11.png",
-    "decks": [
-      "deck-2"
-    ]
+    "image_filename": "teu_11.png",
+    "image_url": "https://images.pokemontcg.io/teu/11.png",
+    "decks": []
   },
   {
     "id": "tcg-235",
@@ -6273,15 +6098,15 @@
     "rarity_code": "C",
     "rarity_name": "Comum",
     "color_code": "P",
-    "color_name": "Psíquica",
+    "color_name": "Psíquico",
     "color_slug": "psychic",
     "color_bg": "#F85888",
     "card_category": "Pokémon",
     "is_foil": false,
     "extras": "",
     "comment": "",
-    "image_url": "https://images.pokemontcg.io/sm9/69.png",
-    "local_image": "/cards/teu_69.png",
+    "image_filename": "teu_69.png",
+    "image_url": "https://images.pokemontcg.io/teu/69.png",
     "decks": []
   },
   {
@@ -6306,11 +6131,9 @@
     "is_foil": false,
     "extras": "",
     "comment": "",
-    "image_url": "https://images.pokemontcg.io/sm9/108.png",
-    "local_image": "/cards/teu_108.png",
-    "decks": [
-      "deck-4"
-    ]
+    "image_filename": "teu_108.png",
+    "image_url": "https://images.pokemontcg.io/teu/108.png",
+    "decks": []
   },
   {
     "id": "tcg-237",
@@ -6334,8 +6157,8 @@
     "is_foil": false,
     "extras": "",
     "comment": "",
-    "image_url": "https://images.pokemontcg.io/sm9/139.png",
-    "local_image": "/cards/teu_139.png",
+    "image_filename": "teu_139.png",
+    "image_url": "https://images.pokemontcg.io/teu/139.png",
     "decks": []
   },
   {
@@ -6360,8 +6183,8 @@
     "is_foil": false,
     "extras": "",
     "comment": "",
-    "image_url": "https://images.pokemontcg.io/sm9/46.png",
-    "local_image": "/cards/teu_46.png",
+    "image_filename": "teu_46.png",
+    "image_url": "https://images.pokemontcg.io/teu/46.png",
     "decks": []
   },
   {
@@ -6386,8 +6209,8 @@
     "is_foil": false,
     "extras": "",
     "comment": "",
-    "image_url": "https://images.pokemontcg.io/sm9/102.png",
-    "local_image": "/cards/teu_102.png",
+    "image_filename": "teu_102.png",
+    "image_url": "https://images.pokemontcg.io/teu/102.png",
     "decks": []
   },
   {
@@ -6412,15 +6235,9 @@
     "is_foil": false,
     "extras": "",
     "comment": "",
-    "image_url": "https://images.pokemontcg.io/sm9/156.png",
-    "local_image": "/cards/teu_156.png",
-    "decks": [
-      "deck-1",
-      "deck-2",
-      "deck-3",
-      "deck-4",
-      "deck-5"
-    ]
+    "image_filename": "teu_156.png",
+    "image_url": "https://images.pokemontcg.io/teu/156.png",
+    "decks": []
   },
   {
     "id": "tcg-241",
@@ -6444,8 +6261,8 @@
     "is_foil": false,
     "extras": "",
     "comment": "",
-    "image_url": "https://images.pokemontcg.io/sm9/35.png",
-    "local_image": "/cards/teu_35.png",
+    "image_filename": "teu_35.png",
+    "image_url": "https://images.pokemontcg.io/teu/35.png",
     "decks": []
   },
   {
@@ -6463,15 +6280,15 @@
     "rarity_code": "C",
     "rarity_name": "Comum",
     "color_code": "P",
-    "color_name": "Psíquica",
+    "color_name": "Psíquico",
     "color_slug": "psychic",
     "color_bg": "#F85888",
     "card_category": "Pokémon",
     "is_foil": false,
     "extras": "",
     "comment": "",
-    "image_url": "https://images.pokemontcg.io/sm9/62.png",
-    "local_image": "/cards/teu_62.png",
+    "image_filename": "teu_62.png",
+    "image_url": "https://images.pokemontcg.io/teu/62.png",
     "decks": []
   },
   {
@@ -6496,8 +6313,8 @@
     "is_foil": false,
     "extras": "",
     "comment": "",
-    "image_url": "https://images.pokemontcg.io/sm9/49.png",
-    "local_image": "/cards/teu_49.png",
+    "image_filename": "teu_49.png",
+    "image_url": "https://images.pokemontcg.io/teu/49.png",
     "decks": []
   },
   {
@@ -6522,8 +6339,8 @@
     "is_foil": false,
     "extras": "",
     "comment": "",
-    "image_url": "https://images.pokemontcg.io/sm9/74.png",
-    "local_image": "/cards/teu_74.png",
+    "image_filename": "teu_74.png",
+    "image_url": "https://images.pokemontcg.io/teu/74.png",
     "decks": []
   },
   {
@@ -6548,11 +6365,9 @@
     "is_foil": false,
     "extras": "",
     "comment": "",
-    "image_url": "https://images.pokemontcg.io/sm9/107.png",
-    "local_image": "/cards/teu_107.png",
-    "decks": [
-      "deck-4"
-    ]
+    "image_filename": "teu_107.png",
+    "image_url": "https://images.pokemontcg.io/teu/107.png",
+    "decks": []
   },
   {
     "id": "tcg-246",
@@ -6576,8 +6391,8 @@
     "is_foil": false,
     "extras": "",
     "comment": "",
-    "image_url": "https://images.pokemontcg.io/sm9/47.png",
-    "local_image": "/cards/teu_47.png",
+    "image_filename": "teu_47.png",
+    "image_url": "https://images.pokemontcg.io/teu/47.png",
     "decks": []
   },
   {
@@ -6602,8 +6417,8 @@
     "is_foil": false,
     "extras": "",
     "comment": "",
-    "image_url": "https://images.pokemontcg.io/sm9/77.png",
-    "local_image": "/cards/teu_77.png",
+    "image_filename": "teu_77.png",
+    "image_url": "https://images.pokemontcg.io/teu/77.png",
     "decks": []
   },
   {
@@ -6628,11 +6443,9 @@
     "is_foil": true,
     "extras": "Foil",
     "comment": "",
-    "image_url": "https://images.pokemontcg.io/sm9/131.png",
-    "local_image": "/cards/teu_131.png",
-    "decks": [
-      "deck-3"
-    ]
+    "image_filename": "teu_131.png",
+    "image_url": "https://images.pokemontcg.io/teu/131.png",
+    "decks": []
   },
   {
     "id": "tcg-249",
@@ -6656,8 +6469,8 @@
     "is_foil": true,
     "extras": "Foil",
     "comment": "",
-    "image_url": "https://images.pokemontcg.io/sm9/71.png",
-    "local_image": "/cards/teu_71.png",
+    "image_filename": "teu_71.png",
+    "image_url": "https://images.pokemontcg.io/teu/71.png",
     "decks": []
   },
   {
@@ -6682,8 +6495,8 @@
     "is_foil": false,
     "extras": "",
     "comment": "",
-    "image_url": "https://images.pokemontcg.io/sm9/41.png",
-    "local_image": "/cards/teu_41.png",
+    "image_filename": "teu_41.png",
+    "image_url": "https://images.pokemontcg.io/teu/41.png",
     "decks": []
   },
   {
@@ -6705,14 +6518,12 @@
     "color_slug": "colorless",
     "color_bg": "#A8A878",
     "card_category": "Pokémon",
-    "is_foil": true,
+    "is_foil": false,
     "extras": "",
     "comment": "",
-    "image_url": "https://images.pokemontcg.io/sm9/134.png",
-    "local_image": "/cards/teu_134.png",
-    "decks": [
-      "deck-1"
-    ]
+    "image_filename": "teu_134.png",
+    "image_url": "https://images.pokemontcg.io/teu/134.png",
+    "decks": []
   },
   {
     "id": "tcg-252",
@@ -6729,15 +6540,15 @@
     "rarity_code": "R",
     "rarity_name": "Rara",
     "color_code": "P",
-    "color_name": "Psíquica",
+    "color_name": "Psíquico",
     "color_slug": "psychic",
     "color_bg": "#F85888",
     "card_category": "Pokémon",
     "is_foil": false,
     "extras": "",
     "comment": "",
-    "image_url": "https://images.pokemontcg.io/sm9/63.png",
-    "local_image": "/cards/teu_63.png",
+    "image_filename": "teu_63.png",
+    "image_url": "https://images.pokemontcg.io/teu/63.png",
     "decks": []
   },
   {
@@ -6755,15 +6566,15 @@
     "rarity_code": "C",
     "rarity_name": "Comum",
     "color_code": "P",
-    "color_name": "Psíquica",
+    "color_name": "Psíquico",
     "color_slug": "psychic",
     "color_bg": "#F85888",
     "card_category": "Pokémon",
     "is_foil": false,
     "extras": "",
     "comment": "",
-    "image_url": "https://images.pokemontcg.io/sm9/54.png",
-    "local_image": "/cards/teu_54.png",
+    "image_filename": "teu_54.png",
+    "image_url": "https://images.pokemontcg.io/teu/54.png",
     "decks": []
   },
   {
@@ -6788,11 +6599,9 @@
     "is_foil": false,
     "extras": "",
     "comment": "",
-    "image_url": "https://images.pokemontcg.io/sm9/16.png",
-    "local_image": "/cards/teu_16.png",
-    "decks": [
-      "deck-2"
-    ]
+    "image_filename": "teu_16.png",
+    "image_url": "https://images.pokemontcg.io/teu/16.png",
+    "decks": []
   },
   {
     "id": "tcg-255",
@@ -6816,8 +6625,8 @@
     "is_foil": false,
     "extras": "",
     "comment": "",
-    "image_url": "https://images.pokemontcg.io/sm9/148.png",
-    "local_image": "/cards/teu_148.png",
+    "image_filename": "teu_148.png",
+    "image_url": "https://images.pokemontcg.io/teu/148.png",
     "decks": []
   },
   {
@@ -6842,8 +6651,8 @@
     "is_foil": false,
     "extras": "",
     "comment": "",
-    "image_url": "https://images.pokemontcg.io/sm9/81.png",
-    "local_image": "/cards/teu_81.png",
+    "image_filename": "teu_81.png",
+    "image_url": "https://images.pokemontcg.io/teu/81.png",
     "decks": []
   },
   {
@@ -6868,11 +6677,9 @@
     "is_foil": false,
     "extras": "",
     "comment": "",
-    "image_url": "https://images.pokemontcg.io/sm9/6.png",
-    "local_image": "/cards/teu_6.png",
-    "decks": [
-      "deck-4"
-    ]
+    "image_filename": "teu_6.png",
+    "image_url": "https://images.pokemontcg.io/teu/6.png",
+    "decks": []
   },
   {
     "id": "tcg-258",
@@ -6896,11 +6703,9 @@
     "is_foil": false,
     "extras": "",
     "comment": "",
-    "image_url": "https://images.pokemontcg.io/sm9/7.png",
-    "local_image": "/cards/teu_7.png",
-    "decks": [
-      "deck-4"
-    ]
+    "image_filename": "teu_7.png",
+    "image_url": "https://images.pokemontcg.io/teu/7.png",
+    "decks": []
   },
   {
     "id": "tcg-259",
@@ -6924,8 +6729,8 @@
     "is_foil": true,
     "extras": "Foil",
     "comment": "",
-    "image_url": "https://images.pokemontcg.io/sm9/126.png",
-    "local_image": "/cards/teu_126.png",
+    "image_filename": "teu_126.png",
+    "image_url": "https://images.pokemontcg.io/teu/126.png",
     "decks": []
   },
   {
@@ -6950,8 +6755,8 @@
     "is_foil": false,
     "extras": "",
     "comment": "",
-    "image_url": "https://images.pokemontcg.io/sm9/122.png",
-    "local_image": "/cards/teu_122.png",
+    "image_filename": "teu_122.png",
+    "image_url": "https://images.pokemontcg.io/teu/122.png",
     "decks": []
   },
   {
@@ -6976,11 +6781,9 @@
     "is_foil": false,
     "extras": "",
     "comment": "",
-    "image_url": "https://images.pokemontcg.io/sm9/142.png",
-    "local_image": "/cards/teu_142.png",
-    "decks": [
-      "deck-5"
-    ]
+    "image_filename": "teu_142.png",
+    "image_url": "https://images.pokemontcg.io/teu/142.png",
+    "decks": []
   },
   {
     "id": "tcg-262",
@@ -7004,11 +6807,9 @@
     "is_foil": false,
     "extras": "",
     "comment": "",
-    "image_url": "https://images.pokemontcg.io/sm9/18.png",
-    "local_image": "/cards/teu_18.png",
-    "decks": [
-      "deck-2"
-    ]
+    "image_filename": "teu_18.png",
+    "image_url": "https://images.pokemontcg.io/teu/18.png",
+    "decks": []
   },
   {
     "id": "tcg-263",
@@ -7025,15 +6826,15 @@
     "rarity_code": "U",
     "rarity_name": "Incomum",
     "color_code": "D",
-    "color_name": "Escuridão",
+    "color_name": "Noturno",
     "color_slug": "darkness",
     "color_bg": "#705848",
     "card_category": "Pokémon",
     "is_foil": false,
     "extras": "",
     "comment": "",
-    "image_url": "https://images.pokemontcg.io/sm9/89.png",
-    "local_image": "/cards/teu_89.png",
+    "image_filename": "teu_89.png",
+    "image_url": "https://images.pokemontcg.io/teu/89.png",
     "decks": []
   },
   {
@@ -7051,15 +6852,15 @@
     "rarity_code": "C",
     "rarity_name": "Comum",
     "color_code": "P",
-    "color_name": "Psíquica",
+    "color_name": "Psíquico",
     "color_slug": "psychic",
     "color_bg": "#F85888",
     "card_category": "Pokémon",
     "is_foil": false,
     "extras": "",
     "comment": "",
-    "image_url": "https://images.pokemontcg.io/sm9/60.png",
-    "local_image": "/cards/teu_60.png",
+    "image_filename": "teu_60.png",
+    "image_url": "https://images.pokemontcg.io/teu/60.png",
     "decks": []
   },
   {
@@ -7077,15 +6878,15 @@
     "rarity_code": "RH",
     "rarity_name": "Rara Holo",
     "color_code": "D",
-    "color_name": "Escuridão",
+    "color_name": "Noturno",
     "color_slug": "darkness",
     "color_bg": "#705848",
     "card_category": "Pokémon",
     "is_foil": true,
     "extras": "Foil",
     "comment": "",
-    "image_url": "https://images.pokemontcg.io/sm9/85.png",
-    "local_image": "/cards/teu_85.png",
+    "image_filename": "teu_85.png",
+    "image_url": "https://images.pokemontcg.io/teu/85.png",
     "decks": []
   },
   {
@@ -7103,15 +6904,15 @@
     "rarity_code": "C",
     "rarity_name": "Comum",
     "color_code": "D",
-    "color_name": "Escuridão",
+    "color_name": "Noturno",
     "color_slug": "darkness",
     "color_bg": "#705848",
     "card_category": "Pokémon",
     "is_foil": false,
     "extras": "",
     "comment": "",
-    "image_url": "https://images.pokemontcg.io/sm9/92.png",
-    "local_image": "/cards/teu_92.png",
+    "image_filename": "teu_92.png",
+    "image_url": "https://images.pokemontcg.io/teu/92.png",
     "decks": []
   },
   {
@@ -7136,8 +6937,8 @@
     "is_foil": false,
     "extras": "",
     "comment": "",
-    "image_url": "https://images.pokemontcg.io/sm9/24.png",
-    "local_image": "/cards/teu_24.png",
+    "image_filename": "teu_24.png",
+    "image_url": "https://images.pokemontcg.io/teu/24.png",
     "decks": []
   },
   {
@@ -7162,8 +6963,8 @@
     "is_foil": false,
     "extras": "",
     "comment": "",
-    "image_url": "https://images.pokemontcg.io/sm9/3.png",
-    "local_image": "/cards/teu_3.png",
+    "image_filename": "teu_3.png",
+    "image_url": "https://images.pokemontcg.io/teu/3.png",
     "decks": []
   },
   {
@@ -7181,15 +6982,15 @@
     "rarity_code": "C",
     "rarity_name": "Comum",
     "color_code": "D",
-    "color_name": "Escuridão",
+    "color_name": "Noturno",
     "color_slug": "darkness",
     "color_bg": "#705848",
     "card_category": "Pokémon",
     "is_foil": false,
     "extras": "",
     "comment": "",
-    "image_url": "https://images.pokemontcg.io/sm9/90.png",
-    "local_image": "/cards/teu_90.png",
+    "image_filename": "teu_90.png",
+    "image_url": "https://images.pokemontcg.io/teu/90.png",
     "decks": []
   },
   {
@@ -7207,22 +7008,22 @@
     "rarity_code": "C",
     "rarity_name": "Comum",
     "color_code": "D",
-    "color_name": "Escuridão",
+    "color_name": "Noturno",
     "color_slug": "darkness",
     "color_bg": "#705848",
     "card_category": "Pokémon",
     "is_foil": true,
     "extras": "Foil",
     "comment": "",
-    "image_url": "https://images.pokemontcg.io/sm9/90.png",
-    "local_image": "/cards/teu_90.png",
+    "image_filename": "teu_90.png",
+    "image_url": "https://images.pokemontcg.io/teu/90.png",
     "decks": []
   },
   {
     "id": "tcg-271",
     "name_pt": "Charmeleon",
     "name_en": "Charmeleon",
-    "set_pt": "Cartas Promocionais / Básicas",
+    "set_pt": "",
     "set_en": "Mega Evolution Promos",
     "set_code": "MEP",
     "card_number": "079",
@@ -7231,7 +7032,7 @@
     "quality": "M",
     "language": "PT",
     "rarity_code": "S",
-    "rarity_name": "Secreta / Especial",
+    "rarity_name": "Secreta Rara",
     "color_code": "R",
     "color_name": "Fogo",
     "color_slug": "fire",
@@ -7240,20 +7041,18 @@
     "is_foil": true,
     "extras": "Foil",
     "comment": "",
-    "image_url": "https://images.pokemontcg.io/smp/79.png",
-    "local_image": "/cards/mep_079.png",
-    "decks": [
-      "deck-2"
-    ]
+    "image_filename": "mep_079.png",
+    "image_url": "https://images.pokemontcg.io/mep/79.png",
+    "decks": []
   },
   {
     "id": "tcg-272",
     "name_pt": "Energia de Metal Básica",
     "name_en": "Basic Metal Energy",
-    "set_pt": "Cartas Básicas / Energias",
+    "set_pt": "Cartas Promocionais / Básicas",
     "set_en": "Promotional / Basic",
-    "set_code": "BAS",
-    "card_number": "Energia",
+    "set_code": "SVE",
+    "card_number": "8",
     "total_in_set": "",
     "quantity": 8,
     "quality": "N",
@@ -7268,18 +7067,18 @@
     "is_foil": false,
     "extras": "",
     "comment": "",
+    "image_filename": "sve_8.png",
     "image_url": "https://images.pokemontcg.io/sve/8.png",
-    "local_image": "/cards/bas_energia.png",
     "decks": []
   },
   {
     "id": "tcg-273",
     "name_pt": "Energia de Planta Básica",
     "name_en": "Basic Grass Energy",
-    "set_pt": "Cartas Básicas / Energias",
+    "set_pt": "Cartas Promocionais / Básicas",
     "set_en": "Promotional / Basic",
-    "set_code": "BAS",
-    "card_number": "Energia",
+    "set_code": "SVE",
+    "card_number": "1",
     "total_in_set": "",
     "quantity": 11,
     "quality": "N",
@@ -7294,18 +7093,18 @@
     "is_foil": false,
     "extras": "",
     "comment": "",
+    "image_filename": "sve_1.png",
     "image_url": "https://images.pokemontcg.io/sve/1.png",
-    "local_image": "/cards/bas_energia.png",
     "decks": []
   },
   {
     "id": "tcg-274",
     "name_pt": "Energia de Fada Básica",
     "name_en": "Basic Fairy Energy",
-    "set_pt": "Cartas Básicas / Energias",
+    "set_pt": "Cartas Promocionais / Básicas",
     "set_en": "Promotional / Basic",
-    "set_code": "BAS",
-    "card_number": "Energia",
+    "set_code": "SM1",
+    "card_number": "169",
     "total_in_set": "",
     "quantity": 9,
     "quality": "N",
@@ -7320,18 +7119,18 @@
     "is_foil": false,
     "extras": "",
     "comment": "",
+    "image_filename": "sm1_169.png",
     "image_url": "https://images.pokemontcg.io/sm1/169.png",
-    "local_image": "/cards/bas_energia.png",
     "decks": []
   },
   {
     "id": "tcg-275",
     "name_pt": "Energia de Raios Básica",
     "name_en": "Basic Lightning Energy",
-    "set_pt": "Cartas Básicas / Energias",
+    "set_pt": "Cartas Promocionais / Básicas",
     "set_en": "Promotional / Basic",
-    "set_code": "BAS",
-    "card_number": "Energia",
+    "set_code": "SVE",
+    "card_number": "4",
     "total_in_set": "",
     "quantity": 2,
     "quality": "N",
@@ -7346,18 +7145,18 @@
     "is_foil": false,
     "extras": "",
     "comment": "",
+    "image_filename": "sve_4.png",
     "image_url": "https://images.pokemontcg.io/sve/4.png",
-    "local_image": "/cards/bas_energia.png",
     "decks": []
   },
   {
     "id": "tcg-276",
     "name_pt": "Energia de Fogo Básica",
     "name_en": "Basic Fire Energy",
-    "set_pt": "Cartas Básicas / Energias",
+    "set_pt": "Cartas Promocionais / Básicas",
     "set_en": "Promotional / Basic",
-    "set_code": "BAS",
-    "card_number": "Energia",
+    "set_code": "SVE",
+    "card_number": "2",
     "total_in_set": "",
     "quantity": 3,
     "quality": "N",
@@ -7372,18 +7171,18 @@
     "is_foil": false,
     "extras": "",
     "comment": "",
+    "image_filename": "sve_2.png",
     "image_url": "https://images.pokemontcg.io/sve/2.png",
-    "local_image": "/cards/bas_energia.png",
     "decks": []
   },
   {
     "id": "tcg-277",
     "name_pt": "Energia de Água Básica",
     "name_en": "Basic Water Energy",
-    "set_pt": "Cartas Básicas / Energias",
+    "set_pt": "Cartas Promocionais / Básicas",
     "set_en": "Promotional / Basic",
-    "set_code": "BAS",
-    "card_number": "Energia",
+    "set_code": "SVE",
+    "card_number": "3",
     "total_in_set": "",
     "quantity": 2,
     "quality": "N",
@@ -7398,18 +7197,18 @@
     "is_foil": false,
     "extras": "",
     "comment": "",
+    "image_filename": "sve_3.png",
     "image_url": "https://images.pokemontcg.io/sve/3.png",
-    "local_image": "/cards/bas_energia.png",
     "decks": []
   },
   {
     "id": "tcg-278",
     "name_pt": "Energia Psíquica Básica",
     "name_en": "Basic Psychic Energy",
-    "set_pt": "Cartas Básicas / Energias",
+    "set_pt": "Cartas Promocionais / Básicas",
     "set_en": "Promotional / Basic",
-    "set_code": "BAS",
-    "card_number": "Energia",
+    "set_code": "SVE",
+    "card_number": "5",
     "total_in_set": "",
     "quantity": 6,
     "quality": "N",
@@ -7417,25 +7216,25 @@
     "rarity_code": "C",
     "rarity_name": "Comum",
     "color_code": "P",
-    "color_name": "Psíquica",
+    "color_name": "Psíquico",
     "color_slug": "psychic",
     "color_bg": "#F85888",
     "card_category": "Energia",
     "is_foil": false,
     "extras": "",
     "comment": "",
+    "image_filename": "sve_5.png",
     "image_url": "https://images.pokemontcg.io/sve/5.png",
-    "local_image": "/cards/bas_energia.png",
     "decks": []
   },
   {
     "id": "tcg-279",
     "name_pt": "Energia de Escuridão Básica",
     "name_en": "Basic Darkness Energy",
-    "set_pt": "Cartas Básicas / Energias",
+    "set_pt": "Cartas Promocionais / Básicas",
     "set_en": "Promotional / Basic",
-    "set_code": "BAS",
-    "card_number": "Energia",
+    "set_code": "SVE",
+    "card_number": "7",
     "total_in_set": "",
     "quantity": 12,
     "quality": "N",
@@ -7443,15 +7242,15 @@
     "rarity_code": "C",
     "rarity_name": "Comum",
     "color_code": "D",
-    "color_name": "Escuridão",
+    "color_name": "Noturno",
     "color_slug": "darkness",
     "color_bg": "#705848",
     "card_category": "Energia",
     "is_foil": false,
     "extras": "",
     "comment": "",
+    "image_filename": "sve_7.png",
     "image_url": "https://images.pokemontcg.io/sve/7.png",
-    "local_image": "/cards/bas_energia.png",
     "decks": []
   }
 ]

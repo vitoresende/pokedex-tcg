@@ -9,6 +9,7 @@
     "preview": "vite preview",
     "download:cards": "python3 scripts/download_images.py",
     "upload:firebase": "node scripts/upload_to_firebase.js",
+    "import:csv": "python3 scripts/import_and_upload_csv.py",
     "firebase:sync": "node scripts/sync_firebase_config.js",
     "firebase:login": "firebase login",
     "firebase:deploy": "node scripts/sync_firebase_config.js && npm run build && firebase deploy",

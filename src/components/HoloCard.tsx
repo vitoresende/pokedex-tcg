@@ -50,27 +50,67 @@ export const HoloCard: React.FC<HoloCardProps> = ({ card, className = '', isDeta
     setRotateY(0);
   };
 
-  // Resolução de Imagem em Cascata (Firebase Storage -> CDN Oficial -> Fallback CDN -> Procedural CSS)
+  // Resolução de Imagem Prioritária (Firebase Storage -> Direct Storage/CDN URL -> Fallback CDN -> Procedural CSS)
   const getImageSource = () => {
-    const storageBucket = import.meta.env.VITE_FIREBASE_STORAGE_BUCKET;
+    const storageBucket = import.meta.env.VITE_FIREBASE_STORAGE_BUCKET || 'pokedex-tcg-782d5.firebasestorage.app';
     const cleanNum = card.card_number ? card.card_number.replace(/\D/g, '') || '1' : '1';
-    const cardFileName = `${(card.set_code || 'set').toLowerCase()}_${(card.card_number || '1').replace(/\//g, '_')}.png`;
+    const cleanSet = (card.set_code || 'set').toLowerCase();
+    
+    // Mapeamento específico e inequívoco para cada tipo de Carta de Energia Básica
+    const BASIC_ENERGY_FILES: Record<string, { file: string; url: string }> = {
+      'G': { file: 'sve_1.png', url: 'https://images.pokemontcg.io/sve/1.png' },
+      'R': { file: 'sve_2.png', url: 'https://images.pokemontcg.io/sve/2.png' },
+      'W': { file: 'sve_3.png', url: 'https://images.pokemontcg.io/sve/3.png' },
+      'L': { file: 'sve_4.png', url: 'https://images.pokemontcg.io/sve/4.png' },
+      'P': { file: 'sve_5.png', url: 'https://images.pokemontcg.io/sve/5.png' },
+      'F': { file: 'sve_6.png', url: 'https://images.pokemontcg.io/sve/6.png' },
+      'D': { file: 'sve_7.png', url: 'https://images.pokemontcg.io/sve/7.png' },
+      'M': { file: 'sve_8.png', url: 'https://images.pokemontcg.io/sve/8.png' },
+      'Y': { file: 'sm1_169.png', url: 'https://images.pokemontcg.io/sm1/169.png' }
+    };
+
+    const isBasicEnergy = 
+      card.card_category === 'Energy' || 
+      (card.card_category as string) === 'Energia' || 
+      card.set_code === 'BAS' || 
+      card.set_code === 'SVE' ||
+      card.card_number === 'Energia' ||
+      card.name_pt.toLowerCase().includes('básica') ||
+      card.name_en.toLowerCase().includes('basic');
+
+    let cardFileName = `${cleanSet}_${(card.card_number || '1').replace(/\//g, '_')}.png`;
+    let fallbackEnergyUrl = '';
+
+    if (isBasicEnergy && BASIC_ENERGY_FILES[card.color_code]) {
+      cardFileName = BASIC_ENERGY_FILES[card.color_code].file;
+      fallbackEnergyUrl = BASIC_ENERGY_FILES[card.color_code].url;
+    }
 
     const sources: string[] = [];
 
-    // 1. Firebase Storage (se o bucket estiver configurado e válido)
+    // 1. Firebase Storage Bucket padrão do projeto (com nome de arquivo corrigido)
     if (storageBucket && !storageBucket.includes('demo') && !storageBucket.includes('Example')) {
       sources.push(`https://firebasestorage.googleapis.com/v0/b/${storageBucket}/o/cards%2F${encodeURIComponent(cardFileName)}?alt=media`);
     }
 
-    // 2. CDN Direto / Oficial em Alta Resolução
-    if (card.image_url) {
+    // 2. Direct Cloud Storage URL (se a carta já tiver URL do Firebase Storage salva)
+    if (card.image_url && card.image_url.includes('firebasestorage.googleapis.com')) {
       sources.push(card.image_url);
     }
 
-    // 3. Fallback CDN complementar da comunidade
+    // 3. Fallback oficial específico para cartas de energia básica
+    if (fallbackEnergyUrl) {
+      sources.push(fallbackEnergyUrl);
+    }
+
+    // 4. Imagem customizada / URL direta
+    if (card.image_url && !sources.includes(card.image_url)) {
+      sources.push(card.image_url);
+    }
+
+    // 5. Fallback CDN complementar
     if (card.set_code) {
-      sources.push(`https://images.pokemontcg.io/${card.set_code.toLowerCase()}/${cleanNum}.png`);
+      sources.push(`https://images.pokemontcg.io/${cleanSet}/${cleanNum}.png`);
     }
 
     if (imageErrorLevel < sources.length) {

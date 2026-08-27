@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
-import { Plus, X, Upload, Sparkles, Check } from 'lucide-react';
+import { Plus, X, Upload, Sparkles, Check, Image as ImageIcon, Loader2 } from 'lucide-react';
 import { useCollection } from '../context/CollectionContext';
 import { soundEffects } from '../services/audio';
+import { uploadCardImageToStorage, downloadAndUploadImageToStorage } from '../services/firebase';
 
 interface AddCardModalProps {
   isOpen: boolean;
@@ -25,6 +26,9 @@ export const AddCardModal: React.FC<AddCardModalProps> = ({ isOpen, onClose }) =
   const [quality, setQuality] = useState('NM');
   const [isFoil, setIsFoil] = useState(false);
   const [imageUrl, setImageUrl] = useState('');
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [isUploadingImage, setIsUploadingImage] = useState(false);
   const [comment, setComment] = useState('');
 
   // CSV Import State
@@ -33,11 +37,47 @@ export const AddCardModal: React.FC<AddCardModalProps> = ({ isOpen, onClose }) =
 
   if (!isOpen) return null;
 
-  const handleManualSubmit = (e: React.FormEvent) => {
+  const handleImageFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setImageFile(file);
+      const previewUrl = URL.createObjectURL(file);
+      setImagePreview(previewUrl);
+    }
+  };
+
+  const handleManualSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!nameEn.trim() && !namePt.trim()) return;
 
     soundEffects.playScan();
+    setIsUploadingImage(true);
+
+    const cleanSet = setCode.trim().toLowerCase();
+    const cleanNum = cardNumber.trim().replace(/\D/g, '') || '1';
+    const targetFilename = `${cleanSet}_${cleanNum}.png`;
+
+    let finalImageUrl = imageUrl.trim();
+
+    try {
+      // 1. If user selected a local image file, upload directly to Firebase Storage
+      if (imageFile) {
+        finalImageUrl = await uploadCardImageToStorage(imageFile, targetFilename);
+      }
+      // 2. If user provided an external image URL, download and persist it to Firebase Storage
+      else if (finalImageUrl && !finalImageUrl.includes('firebasestorage.googleapis.com')) {
+        finalImageUrl = await downloadAndUploadImageToStorage(finalImageUrl, targetFilename);
+      }
+      // 3. Fallback default
+      else if (!finalImageUrl) {
+        finalImageUrl = `https://images.pokemontcg.io/${cleanSet}/${cleanNum}.png`;
+      }
+    } catch (err) {
+      console.warn('Storage upload warning, using fallback URL:', err);
+    } finally {
+      setIsUploadingImage(false);
+    }
+
     addNewCard({
       name_en: nameEn.trim() || namePt.trim(),
       name_pt: namePt.trim() || nameEn.trim(),
@@ -51,7 +91,7 @@ export const AddCardModal: React.FC<AddCardModalProps> = ({ isOpen, onClose }) =
       quantity: Number(quantity) || 1,
       quality,
       is_foil: isFoil,
-      image_url: imageUrl.trim() || `https://images.pokemontcg.io/${setCode.toLowerCase()}/${cardNumber.replace(/\D/g, '') || '1'}.png`,
+      image_url: finalImageUrl,
       comment: comment.trim()
     });
 
@@ -242,39 +282,75 @@ export const AddCardModal: React.FC<AddCardModalProps> = ({ isOpen, onClose }) =
                 </div>
               </div>
 
-              {/* URL & Foil Checkbox */}
-              <div className="space-y-2">
-                <div>
-                  <label className="text-slate-400 block text-[10px] uppercase mb-1">Direct Image URL (Optional - CDN or Cloud Storage)</label>
-                  <input
-                    type="url"
-                    value={imageUrl}
-                    onChange={(e) => setImageUrl(e.target.value)}
-                    placeholder="https://images.pokemontcg.io/sv1/54.png"
-                    className="w-full bg-pokedex-darker border border-slate-800 rounded-xl p-2.5 text-white focus:outline-none focus:border-pokedex-blue text-xs"
-                  />
+              {/* Image Upload & Firebase Storage Section */}
+              <div className="space-y-3 p-3 bg-pokedex-darker rounded-2xl border border-slate-800">
+                <div className="flex items-center justify-between">
+                  <label className="text-cyan-300 font-bold block text-[10px] uppercase flex items-center gap-1.5">
+                    <ImageIcon className="w-3.5 h-3.5" />
+                    <span>Card Image & Cloud Storage Upload</span>
+                  </label>
+                  <span className="text-[10px] text-slate-500 font-mono">Firebase Storage</span>
                 </div>
 
-                <div className="flex items-center space-x-2 pt-1">
-                  <input
-                    type="checkbox"
-                    id="foil-check"
-                    checked={isFoil}
-                    onChange={(e) => setIsFoil(e.target.checked)}
-                    className="w-4 h-4 rounded text-pokedex-red focus:ring-0 bg-pokedex-darker border-slate-800"
-                  />
-                  <label htmlFor="foil-check" className="text-slate-200 text-xs flex items-center gap-1 cursor-pointer">
-                    <Sparkles className="w-3.5 h-3.5 text-yellow-300" />
-                    <span>Holographic (Foil / Holo) Card</span>
-                  </label>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 items-center">
+                  <div>
+                    <label className="text-slate-400 block text-[10px] uppercase mb-1">Option A: Upload Image File</label>
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={handleImageFileChange}
+                      className="block w-full text-[11px] text-slate-400 file:mr-3 file:py-1.5 file:px-3 file:rounded-xl file:border-0 file:text-[11px] file:font-semibold file:bg-slate-800 file:text-yellow-300 hover:file:bg-slate-700 cursor-pointer"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="text-slate-400 block text-[10px] uppercase mb-1">Option B: External Image URL</label>
+                    <input
+                      type="url"
+                      value={imageUrl}
+                      onChange={(e) => setImageUrl(e.target.value)}
+                      placeholder="https://images.pokemontcg.io/sv1/54.png"
+                      className="w-full bg-black/50 border border-slate-700 rounded-xl p-2 text-white focus:outline-none focus:border-pokedex-blue text-xs"
+                    />
+                  </div>
                 </div>
+
+                {imagePreview && (
+                  <div className="flex items-center space-x-3 pt-1">
+                    <img src={imagePreview} alt="Preview" className="w-12 h-16 rounded-lg object-cover border border-slate-700 shadow-md" />
+                    <span className="text-[11px] text-emerald-400">✓ Image ready to upload to Cloud Storage on save</span>
+                  </div>
+                )}
+              </div>
+
+              {/* Foil Checkbox */}
+              <div className="flex items-center space-x-2 pt-1">
+                <input
+                  type="checkbox"
+                  id="foil-check"
+                  checked={isFoil}
+                  onChange={(e) => setIsFoil(e.target.checked)}
+                  className="w-4 h-4 rounded text-pokedex-red focus:ring-0 bg-pokedex-darker border-slate-800"
+                />
+                <label htmlFor="foil-check" className="text-slate-200 text-xs flex items-center gap-1 cursor-pointer">
+                  <Sparkles className="w-3.5 h-3.5 text-yellow-300" />
+                  <span>Holographic (Foil / Holo) Card</span>
+                </label>
               </div>
 
               <button
                 type="submit"
-                className="w-full bg-pokedex-red hover:bg-pokedex-lightred text-white font-bold py-3 rounded-2xl shadow-lg transition-all active:scale-95 text-xs uppercase tracking-wider"
+                disabled={isUploadingImage}
+                className="w-full bg-pokedex-red hover:bg-pokedex-lightred disabled:opacity-50 text-white font-bold py-3 rounded-2xl shadow-lg transition-all active:scale-95 text-xs uppercase tracking-wider flex items-center justify-center gap-2"
               >
-                Save Card to Collection
+                {isUploadingImage ? (
+                  <>
+                    <Loader2 className="w-4 h-4 animate-spin text-yellow-300" />
+                    <span>Uploading Image to Storage & Saving...</span>
+                  </>
+                ) : (
+                  <span>Save Card to Collection & Storage</span>
+                )}
               </button>
             </form>
           ) : (

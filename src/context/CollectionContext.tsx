@@ -90,6 +90,43 @@ const COLOR_MAP: Record<string, { name: string; slug: string; bg: string }> = {
   '': { name: 'Trainer', slug: 'trainer', bg: '#14B8A6' }
 };
 
+const BASIC_ENERGY_CONFIG: Record<string, { code: string; num: string; url: string }> = {
+  'G': { code: 'SVE', num: '1', url: 'https://images.pokemontcg.io/sve/1.png' },
+  'R': { code: 'SVE', num: '2', url: 'https://images.pokemontcg.io/sve/2.png' },
+  'W': { code: 'SVE', num: '3', url: 'https://images.pokemontcg.io/sve/3.png' },
+  'L': { code: 'SVE', num: '4', url: 'https://images.pokemontcg.io/sve/4.png' },
+  'P': { code: 'SVE', num: '5', url: 'https://images.pokemontcg.io/sve/5.png' },
+  'F': { code: 'SVE', num: '6', url: 'https://images.pokemontcg.io/sve/6.png' },
+  'D': { code: 'SVE', num: '7', url: 'https://images.pokemontcg.io/sve/7.png' },
+  'M': { code: 'SVE', num: '8', url: 'https://images.pokemontcg.io/sve/8.png' },
+  'Y': { code: 'SM1', num: '169', url: 'https://images.pokemontcg.io/sm1/169.png' },
+};
+
+const normalizeCards = (rawCards: Card[]): Card[] => {
+  return rawCards.map(c => {
+    const isBasicEnergy = 
+      c.card_category === 'Energy' || 
+      (c.card_category as string) === 'Energia' || 
+      c.set_code === 'BAS' || 
+      c.set_code === 'SVE' ||
+      c.card_number === 'Energia' ||
+      c.name_pt.toLowerCase().includes('básica') ||
+      c.name_en.toLowerCase().includes('basic');
+
+    if (isBasicEnergy && BASIC_ENERGY_CONFIG[c.color_code]) {
+      const meta = BASIC_ENERGY_CONFIG[c.color_code];
+      return {
+        ...c,
+        set_code: meta.code,
+        card_number: meta.num,
+        image_url: meta.url,
+        card_category: 'Energy'
+      };
+    }
+    return c;
+  });
+};
+
 const CollectionContext = createContext<CollectionContextType | undefined>(undefined);
 
 export const CollectionProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -97,7 +134,8 @@ export const CollectionProvider: React.FC<{ children: React.ReactNode }> = ({ ch
   
   const [cards, setCards] = useState<Card[]>(() => {
     const saved = localStorage.getItem('pokedex_tcg_cards');
-    return saved ? JSON.parse(saved) : (initialCards as Card[]);
+    const parsed = saved ? JSON.parse(saved) : (initialCards as Card[]);
+    return normalizeCards(parsed);
   });
 
   const [decks, setDecks] = useState<Deck[]>(() => {
@@ -161,12 +199,12 @@ export const CollectionProvider: React.FC<{ children: React.ReactNode }> = ({ ch
 
         if (data) {
           if (data.cards && Array.isArray(data.cards) && data.cards.length > 0) {
-            setCards(data.cards);
+            setCards(normalizeCards(data.cards));
           } else if (data.quantities) {
-            setCards(prev => prev.map(c => ({
+            setCards(prev => normalizeCards(prev.map(c => ({
               ...c,
               quantity: data.quantities[c.id] !== undefined ? data.quantities[c.id] : c.quantity
-            })));
+            }))));
           }
           if (data.favorites) setFavorites(data.favorites);
           if (data.notes) setNotes(data.notes);
@@ -176,13 +214,14 @@ export const CollectionProvider: React.FC<{ children: React.ReactNode }> = ({ ch
         } else {
           // New user first time: persist initial state so Firestore document is created immediately
           const quantities: Record<string, number> = {};
-          initialCards.forEach((c: any) => { quantities[c.id] = c.quantity || 0; });
+          const normalizedInitial = normalizeCards(initialCards as Card[]);
+          normalizedInitial.forEach((c: any) => { quantities[c.id] = c.quantity || 0; });
           await syncUserCollectionToFirestore(user!.uid, {
             quantities,
             notes: {},
             favorites: [],
             decks: initialDecks as any,
-            cards: initialCards as any
+            cards: normalizedInitial as any
           });
           setLastSyncedAt(new Date());
           setSyncStatus('synced');
@@ -347,8 +386,32 @@ export const CollectionProvider: React.FC<{ children: React.ReactNode }> = ({ ch
       const comment = parts[12] || '';
       const totalInSet = parts[13] || '100';
 
+      const isBasicEnergy = setCode === 'BAS' || cardNum.toLowerCase() === 'energia' || (cardPt.toLowerCase().includes('energia') && cardPt.toLowerCase().includes('básica'));
+      
+      let finalSetCode = setCode;
+      let finalCardNum = cardNum;
+      let finalImageUrl = `https://images.pokemontcg.io/${setCode.toLowerCase()}/${cardNum.replace(/\D/g, '') || '1'}.png`;
+
+      const BASIC_ENERGY_MAP: Record<string, { code: string; num: string; url: string }> = {
+        'G': { code: 'SVE', num: '1', url: 'https://images.pokemontcg.io/sve/1.png' },
+        'R': { code: 'SVE', num: '2', url: 'https://images.pokemontcg.io/sve/2.png' },
+        'W': { code: 'SVE', num: '3', url: 'https://images.pokemontcg.io/sve/3.png' },
+        'L': { code: 'SVE', num: '4', url: 'https://images.pokemontcg.io/sve/4.png' },
+        'P': { code: 'SVE', num: '5', url: 'https://images.pokemontcg.io/sve/5.png' },
+        'F': { code: 'SVE', num: '6', url: 'https://images.pokemontcg.io/sve/6.png' },
+        'D': { code: 'SVE', num: '7', url: 'https://images.pokemontcg.io/sve/7.png' },
+        'M': { code: 'SVE', num: '8', url: 'https://images.pokemontcg.io/sve/8.png' },
+        'Y': { code: 'SM1', num: '169', url: 'https://images.pokemontcg.io/sm1/169.png' },
+      };
+
+      if (isBasicEnergy && BASIC_ENERGY_MAP[color]) {
+        finalSetCode = BASIC_ENERGY_MAP[color].code;
+        finalCardNum = BASIC_ENERGY_MAP[color].num;
+        finalImageUrl = BASIC_ENERGY_MAP[color].url;
+      }
+
       const existingIndex = newCardsList.findIndex(c => 
-        c.set_code === setCode && c.card_number === cardNum && c.name_pt.toLowerCase() === cardPt.toLowerCase()
+        c.set_code === finalSetCode && c.card_number === finalCardNum && c.name_pt.toLowerCase() === cardPt.toLowerCase()
       );
 
       if (existingIndex >= 0) {
@@ -360,13 +423,13 @@ export const CollectionProvider: React.FC<{ children: React.ReactNode }> = ({ ch
       } else {
         const colorInfo = COLOR_MAP[color] || COLOR_MAP[''];
         newCardsList.push({
-          id: `imp-${setCode.toLowerCase()}-${cardNum}-${Date.now()}-${i}`,
+          id: `imp-${finalSetCode.toLowerCase()}-${finalCardNum}-${Date.now()}-${i}`,
           name_pt: cardPt,
           name_en: cardEn,
           set_pt: setPt,
           set_en: setEn,
-          set_code: setCode,
-          card_number: cardNum,
+          set_code: finalSetCode,
+          card_number: finalCardNum,
           total_in_set: totalInSet,
           quantity: qty,
           quality: quality,
@@ -377,11 +440,11 @@ export const CollectionProvider: React.FC<{ children: React.ReactNode }> = ({ ch
           color_name: colorInfo.name,
           color_slug: colorInfo.slug,
           color_bg: colorInfo.bg,
-          card_category: colorInfo.name === 'Trainer' ? 'Trainer' : colorInfo.name === 'Energy' ? 'Energy' : 'Pokémon',
+          card_category: (isBasicEnergy || colorInfo.name === 'Energy') ? 'Energy' : colorInfo.name === 'Trainer' ? 'Trainer' : 'Pokémon',
           is_foil: extras.toLowerCase().includes('foil') || extras.toLowerCase().includes('holo'),
           extras: extras,
           comment: comment,
-          image_url: '',
+          image_url: finalImageUrl,
           local_image: '',
           decks: []
         });
@@ -559,9 +622,33 @@ export const CollectionProvider: React.FC<{ children: React.ReactNode }> = ({ ch
       );
     }
 
-    // Type / Color
+    // Type / Color / Category
     if (filters.selectedColor !== 'ALL') {
-      result = result.filter(c => c.color_slug === filters.selectedColor || c.color_code === filters.selectedColor);
+      if (filters.selectedColor === 'energy') {
+        result = result.filter(c => 
+          c.card_category === 'Energy' || 
+          (c.card_category as string) === 'Energia' ||
+          c.color_code === 'E' || 
+          c.color_slug === 'energy' ||
+          c.set_code === 'SVE' ||
+          c.set_code === 'BAS' ||
+          c.name_pt.toLowerCase().includes('energia') ||
+          c.name_en.toLowerCase().includes('energy')
+        );
+      } else if (filters.selectedColor === 'trainer') {
+        result = result.filter(c => 
+          c.card_category === 'Trainer' || 
+          (c.card_category as string) === 'Treinador' ||
+          c.color_slug === 'trainer' || 
+          !c.color_code
+        );
+      } else {
+        result = result.filter(c => 
+          (c.color_slug === filters.selectedColor || c.color_code.toLowerCase() === filters.selectedColor.toLowerCase()) &&
+          c.card_category !== 'Trainer' && 
+          (c.card_category as string) !== 'Treinador'
+        );
+      }
     }
 
     // Set / Collection
@@ -574,9 +661,31 @@ export const CollectionProvider: React.FC<{ children: React.ReactNode }> = ({ ch
       result = result.filter(c => c.rarity_code === filters.selectedRarity);
     }
 
-    // Category
+    // Category Filter (All / Pokémon / Trainer / Energy)
     if (filters.selectedCategory !== 'ALL') {
-      result = result.filter(c => c.card_category === filters.selectedCategory);
+      if (filters.selectedCategory === 'Energy') {
+        result = result.filter(c => 
+          c.card_category === 'Energy' || 
+          (c.card_category as string) === 'Energia' ||
+          c.color_code === 'E' ||
+          c.set_code === 'SVE' ||
+          c.set_code === 'BAS' ||
+          c.name_pt.toLowerCase().includes('energia')
+        );
+      } else if (filters.selectedCategory === 'Trainer') {
+        result = result.filter(c => 
+          c.card_category === 'Trainer' || 
+          (c.card_category as string) === 'Treinador' ||
+          !c.color_code
+        );
+      } else if (filters.selectedCategory === 'Pokémon') {
+        result = result.filter(c => 
+          c.card_category === 'Pokémon' || 
+          (c.card_category as string) === 'Pokemon'
+        );
+      } else {
+        result = result.filter(c => c.card_category === filters.selectedCategory);
+      }
     }
 
     // Boolean flags
