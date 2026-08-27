@@ -18,8 +18,6 @@ interface AuthContextType {
   loginWithGoogle: () => Promise<void>;
   logout: () => Promise<void>;
   loginAsDemoUser: (asAuthorized?: boolean) => void;
-  unauthorizedModalOpen: boolean;
-  setUnauthorizedModalOpen: (open: boolean) => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -27,7 +25,6 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<AuthUser | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
-  const [unauthorizedModalOpen, setUnauthorizedModalOpen] = useState<boolean>(false);
   const allowedEmails = getAllowedEmails();
 
   useEffect(() => {
@@ -50,7 +47,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         });
         if (!allowed) {
           soundEffects.playAlert();
-          setUnauthorizedModalOpen(true);
         }
       } else {
         setUser(null);
@@ -78,7 +74,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         soundEffects.playScan();
       } else {
         soundEffects.playAlert();
-        setUnauthorizedModalOpen(true);
       }
     } catch (err: any) {
       if (err.code !== 'auth/popup-closed-by-user') {
@@ -113,7 +108,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       soundEffects.playScan();
     } else {
       soundEffects.playAlert();
-      setUnauthorizedModalOpen(true);
     }
   };
 
@@ -126,9 +120,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         allowedEmails,
         loginWithGoogle,
         logout,
-        loginAsDemoUser,
-        unauthorizedModalOpen,
-        setUnauthorizedModalOpen
+        loginAsDemoUser
       }}
     >
       {children}

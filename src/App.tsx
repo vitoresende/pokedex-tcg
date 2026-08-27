@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { AuthProvider } from './context/AuthContext';
 import { CollectionProvider } from './context/CollectionContext';
+import { AccessGate } from './components/AccessGate';
 import { PokedexHeader } from './components/PokedexHeader';
 import { BottomNavigation, NavTab } from './components/BottomNavigation';
-import { UnauthorizedModal } from './components/UnauthorizedModal';
 import { PokedexPage } from './pages/PokedexPage';
 import { DecksPage } from './pages/DecksPage';
 import { RulesAndTypesPage } from './pages/RulesAndTypesPage';
@@ -13,7 +13,7 @@ import { AuthProfilePage } from './pages/AuthProfilePage';
 const MainLayout: React.FC = () => {
   const [activeTab, setActiveTab] = useState<NavTab>('pokedex');
 
-  const handleNavigateToDeck = (deckId: string) => {
+  const handleNavigateToDeck = (_deckId: string) => {
     setActiveTab('decks');
   };
 
@@ -33,9 +33,6 @@ const MainLayout: React.FC = () => {
 
       {/* Tactile Mobile Bottom Bar */}
       <BottomNavigation activeTab={activeTab} onTabChange={setActiveTab} />
-
-      {/* Security Whitelist Notification Modal */}
-      <UnauthorizedModal />
     </div>
   );
 };
@@ -43,9 +40,11 @@ const MainLayout: React.FC = () => {
 export function App() {
   return (
     <AuthProvider>
-      <CollectionProvider>
-        <MainLayout />
-      </CollectionProvider>
+      <AccessGate>
+        <CollectionProvider>
+          <MainLayout />
+        </CollectionProvider>
+      </AccessGate>
     </AuthProvider>
   );
 }

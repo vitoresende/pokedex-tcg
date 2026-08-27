@@ -60,8 +60,7 @@ export function getAllowedEmails(): string[] {
 export function isEmailAllowed(email: string | null | undefined): boolean {
   if (!email) return false;
   const allowed = getAllowedEmails();
-  // If no emails configured, allow in development mode
-  if (allowed.length === 0) return true;
+  if (allowed.length === 0) return false;
   return allowed.includes(email.trim().toLowerCase());
 }
 
