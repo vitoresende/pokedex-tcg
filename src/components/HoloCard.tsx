@@ -70,13 +70,11 @@ export const HoloCard: React.FC<HoloCardProps> = ({ card, className = '', isDeta
     };
 
     const isBasicEnergy = 
-      card.card_category === 'Energy' || 
-      (card.card_category as string) === 'Energia' || 
       card.set_code === 'BAS' || 
       card.set_code === 'SVE' ||
       card.card_number === 'Energia' ||
       card.name_pt.toLowerCase().includes('básica') ||
-      card.name_en.toLowerCase().includes('basic');
+      card.name_en.toLowerCase().includes('basic energy');
 
     let cardFileName = `${cleanSet}_${(card.card_number || '1').replace(/\//g, '_')}.png`;
     let fallbackEnergyUrl = '';
@@ -88,9 +86,15 @@ export const HoloCard: React.FC<HoloCardProps> = ({ card, className = '', isDeta
 
     const sources: string[] = [];
 
-    // 1. Firebase Storage Bucket padrão do projeto (com nome de arquivo corrigido)
+    // 1. Firebase Storage Bucket padrão do projeto (com nome de arquivo principal)
     if (storageBucket && !storageBucket.includes('demo') && !storageBucket.includes('Example')) {
       sources.push(`https://firebasestorage.googleapis.com/v0/b/${storageBucket}/o/cards%2F${encodeURIComponent(cardFileName)}?alt=media`);
+      
+      // Fallback sem leading zero para o storage (ex: cri_84.png vs cri_084.png)
+      const altFileName = `${cleanSet}_${cleanNum}.png`;
+      if (altFileName !== cardFileName) {
+        sources.push(`https://firebasestorage.googleapis.com/v0/b/${storageBucket}/o/cards%2F${encodeURIComponent(altFileName)}?alt=media`);
+      }
     }
 
     // 2. Direct Cloud Storage URL (se a carta já tiver URL do Firebase Storage salva)

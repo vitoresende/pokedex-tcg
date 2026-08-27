@@ -104,14 +104,33 @@ const BASIC_ENERGY_CONFIG: Record<string, { code: string; num: string; url: stri
 
 const normalizeCards = (rawCards: Card[]): Card[] => {
   return rawCards.map(c => {
+    // Special Energy specific overrides
+    if (c.name_en.toLowerCase().includes('bubbly') || (c.set_code === 'CRI' && (c.card_number === '084' || c.card_number === '84'))) {
+      return {
+        ...c,
+        set_code: 'CRI',
+        card_number: '084',
+        card_category: 'Energy',
+        image_url: 'https://limitlesstcg.nyc3.cdn.digitaloceanspaces.com/tpci/CRI/CRI_084_R_PT.png'
+      };
+    }
+
+    if (c.name_en.toLowerCase().includes('weakness guard') || (c.set_code === 'UNM' && c.card_number === '213')) {
+      return {
+        ...c,
+        set_code: 'UNM',
+        card_number: '213',
+        card_category: 'Energy',
+        image_url: 'https://images.pokemontcg.io/sm11/213.png'
+      };
+    }
+
     const isBasicEnergy = 
-      c.card_category === 'Energy' || 
-      (c.card_category as string) === 'Energia' || 
       c.set_code === 'BAS' || 
       c.set_code === 'SVE' ||
       c.card_number === 'Energia' ||
       c.name_pt.toLowerCase().includes('básica') ||
-      c.name_en.toLowerCase().includes('basic');
+      c.name_en.toLowerCase().includes('basic energy');
 
     if (isBasicEnergy && BASIC_ENERGY_CONFIG[c.color_code]) {
       const meta = BASIC_ENERGY_CONFIG[c.color_code];
