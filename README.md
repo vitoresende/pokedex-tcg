@@ -14,7 +14,7 @@ A high-performance, mobile-optimized **Pokémon TCG Pokédex & Deck Builder** bu
 - **📖 Rules & 11 Elemental Types Matrix**: Complete interactive guide covering all 11 Pokémon TCG elemental types, competitive formats (Standard, Expanded, Casual), Trainer card categories, and Special Conditions.
 - **🔒 Firebase Auth & Email Whitelist**: Google Sign-In (Gmail) with strict environment-defined email whitelisting (`VITE_ALLOWED_EMAILS`).
 - **☁️ Cloud Storage & Firestore Sync**: Seamless synchronization of collection quantities, decklists, and personal card notes with automatic fallback from Firebase Storage to official CDNs and procedural CSS cards.
-- **⚡ gRPC & Connect-RPC Educational Hub**: Interactive Protobuf execution engine, wire payload size comparison (Protobuf vs JSON), and architecture masterclass.
+- **⚡ gRPC & Connect-RPC Architecture**: Complete Protocol Buffers contract, serverless Firebase Functions 2nd Gen API, and in-depth repository masterclass guide ([GRPC_CONNECT_RPC_GUIDE.md](GRPC_CONNECT_RPC_GUIDE.md)).
 
 ---
 

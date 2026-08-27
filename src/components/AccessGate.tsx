@@ -1,15 +1,13 @@
 import React from 'react';
 import { useAuth } from '../context/AuthContext';
 import { 
-  ShieldAlert, ShieldCheck, Lock, LogIn, LogOut, 
-  Sparkles, RefreshCw, AlertTriangle, CheckCircle2 
+  ShieldAlert, Lock, LogIn, LogOut, RefreshCw 
 } from 'lucide-react';
-import { soundEffects } from '../services/audio';
 
 export const AccessGate: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const { user, loading, isAllowed, allowedEmails, loginWithGoogle, logout, loginAsDemoUser } = useAuth();
+  const { user, loading, isAllowed, loginWithGoogle, logout } = useAuth();
 
-  // 1. Loading State: Futuristic Pokédex Boot Loader
+  // 1. Loading State: Pokédex Boot Loader
   if (loading) {
     return (
       <div className="min-h-screen bg-pokedex-darker flex flex-col items-center justify-center p-4 text-white font-mono">
@@ -19,9 +17,9 @@ export const AccessGate: React.FC<{ children: React.ReactNode }> = ({ children }
           </div>
         </div>
         <h2 className="font-display font-black text-xl uppercase tracking-widest">
-          Booting Pokédex Security OS...
+          Booting Pokédex OS...
         </h2>
-        <p className="text-xs text-slate-400 mt-2">Verifying biometric authorization tokens</p>
+        <p className="text-xs text-slate-400 mt-2">Verifying trainer credentials</p>
       </div>
     );
   }
@@ -47,7 +45,7 @@ export const AccessGate: React.FC<{ children: React.ReactNode }> = ({ children }
                   Access Denied
                 </h2>
                 <span className="font-mono text-[10px] text-yellow-300/90 font-bold">
-                  Security Protocol: Unauthorized Email
+                  Unauthorized Account
                 </span>
               </div>
             </div>
@@ -63,26 +61,11 @@ export const AccessGate: React.FC<{ children: React.ReactNode }> = ({ children }
             <div className="bg-red-950/60 border border-red-700/60 rounded-2xl p-4 space-y-2.5 shadow-inner">
               <div className="flex items-center space-x-2 text-red-300 font-bold">
                 <Lock className="w-4 h-4 shrink-0" />
-                <span>Account Not Whitelisted</span>
+                <span>Account Not Authorized</span>
               </div>
               <p className="text-slate-300 text-xs font-sans leading-relaxed">
-                You are currently signed in as <strong className="text-yellow-300 break-all">{user.email}</strong>, but this email address has not been granted access to this Pokédex application.
+                You are signed in as <strong className="text-yellow-300 break-all">{user.email}</strong>, but this email address is not authorized to access this Pokédex.
               </p>
-            </div>
-
-            {/* How to solve instructions */}
-            <div className="space-y-2">
-              <span className="text-slate-400 text-[10px] uppercase font-bold block">
-                How to Authorize this Email:
-              </span>
-              <div className="bg-pokedex-darker p-3.5 rounded-2xl border border-slate-800 space-y-2 text-[11px] font-sans text-slate-300">
-                <p>
-                  Add your email to the <code className="bg-slate-900 text-yellow-300 px-1 py-0.5 rounded font-mono">VITE_ALLOWED_EMAILS</code> environment variable in your project's <code className="bg-slate-900 text-yellow-300 px-1 py-0.5 rounded font-mono">.env</code>:
-                </p>
-                <div className="bg-black/70 p-2.5 rounded-xl border border-slate-800 font-mono text-[10px] text-cyan-300 overflow-x-auto">
-                  VITE_ALLOWED_EMAILS={user.email || 'trainer@gmail.com'},other@gmail.com
-                </div>
-              </div>
             </div>
 
             {/* Action Buttons */}
@@ -101,17 +84,6 @@ export const AccessGate: React.FC<{ children: React.ReactNode }> = ({ children }
               >
                 <LogOut className="w-4 h-4 text-red-400" />
                 <span>Sign Out</span>
-              </button>
-            </div>
-
-            {/* Demo Testing Helper */}
-            <div className="pt-3 border-t border-slate-800/80 flex items-center justify-between text-[10px] text-slate-500">
-              <span>Testing simulator:</span>
-              <button
-                onClick={() => loginAsDemoUser(true)}
-                className="text-emerald-400 hover:underline font-bold"
-              >
-                Simulate Authorized Whitelisted Login
               </button>
             </div>
           </div>
@@ -144,7 +116,7 @@ export const AccessGate: React.FC<{ children: React.ReactNode }> = ({ children }
           </div>
 
           <span className="font-mono text-xs font-bold text-yellow-300 tracking-wider uppercase">
-            Security Gate
+            Sign In
           </span>
         </div>
 
@@ -158,51 +130,18 @@ export const AccessGate: React.FC<{ children: React.ReactNode }> = ({ children }
               Pokédex TCG Master
             </h2>
             <p className="text-xs text-slate-300 font-sans leading-relaxed">
-              Authentication required. Only authorized Pokémon trainers with whitelisted Google email addresses can access the Pokédex and card database.
+              Sign in with your authorized Google account to access your Pokémon collection and decks.
             </p>
           </div>
 
           {/* Sign In Action */}
-          <div className="space-y-3">
-            <button
-              onClick={loginWithGoogle}
-              className="w-full bg-pokedex-red hover:bg-pokedex-lightred text-white font-bold py-3.5 px-6 rounded-2xl shadow-xl transition-all active:scale-95 flex items-center justify-center space-x-3 text-xs font-mono uppercase tracking-wider border border-white/20"
-            >
-              <LogIn className="w-4 h-4 text-yellow-300" />
-              <span>Sign In with Google (Gmail)</span>
-            </button>
-
-            {/* Allowed Emails Info */}
-            {allowedEmails.length > 0 && (
-              <div className="bg-pokedex-darker p-3 rounded-2xl border border-slate-800 text-left font-mono text-[11px] space-y-1.5">
-                <span className="text-slate-400 text-[10px] uppercase font-bold block">
-                  Whitelisted Access Policy:
-                </span>
-                <p className="text-slate-400 text-[10px] font-sans">
-                  Access is strictly limited to authorized emails defined in <code className="text-yellow-300">.env</code>.
-                </p>
-              </div>
-            )}
-          </div>
-
-          {/* Testing Simulator Helper */}
-          <div className="pt-4 border-t border-slate-800/80 space-y-2 text-xs font-mono">
-            <span className="text-slate-500 text-[10px] uppercase block">Developer Testing Modes:</span>
-            <div className="flex flex-col sm:flex-row gap-2">
-              <button
-                onClick={() => loginAsDemoUser(true)}
-                className="flex-1 bg-emerald-950/60 hover:bg-emerald-900/80 text-emerald-300 border border-emerald-500/40 py-2 rounded-xl text-[11px] font-bold transition-colors"
-              >
-                Simulate Authorized User
-              </button>
-              <button
-                onClick={() => loginAsDemoUser(false)}
-                className="flex-1 bg-amber-950/60 hover:bg-amber-900/80 text-amber-300 border border-amber-500/40 py-2 rounded-xl text-[11px] font-bold transition-colors"
-              >
-                Simulate Blocked User
-              </button>
-            </div>
-          </div>
+          <button
+            onClick={loginWithGoogle}
+            className="w-full bg-pokedex-red hover:bg-pokedex-lightred text-white font-bold py-3.5 px-6 rounded-2xl shadow-xl transition-all active:scale-95 flex items-center justify-center space-x-3 text-xs font-mono uppercase tracking-wider border border-white/20"
+          >
+            <LogIn className="w-4 h-4 text-yellow-300" />
+            <span>Sign In with Google (Gmail)</span>
+          </button>
         </div>
       </div>
     </div>

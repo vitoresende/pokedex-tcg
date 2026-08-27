@@ -1,5 +1,6 @@
 import React from 'react';
 import { Search, X, Sparkles, Layers, CheckCircle2, CircleDashed } from 'lucide-react';
+import { PokemonTypeIcon } from './PokemonTypeIcon';
 import { useCollection } from '../context/CollectionContext';
 import { soundEffects } from '../services/audio';
 
@@ -144,7 +145,7 @@ export const FilterBar: React.FC = () => {
             <button
               key={pill.id}
               onClick={() => handleColorSelect(pill.id)}
-              className={`px-3 py-1 rounded-full whitespace-nowrap transition-all flex items-center space-x-1.5 border ${
+              className={`px-2.5 py-1 rounded-full whitespace-nowrap transition-all flex items-center space-x-1.5 border ${
                 isSelected
                   ? 'text-white font-bold shadow-md scale-105'
                   : 'bg-pokedex-darker text-slate-300 border-slate-800 hover:border-slate-700'
@@ -154,10 +155,14 @@ export const FilterBar: React.FC = () => {
                 borderColor: isSelected ? '#FFFFFF88' : undefined,
               }}
             >
-              <span 
-                className="w-2 h-2 rounded-full" 
-                style={{ backgroundColor: pill.color }}
-              ></span>
+              {pill.id !== 'ALL' && pill.id !== 'trainer' && pill.id !== 'energy' ? (
+                <PokemonTypeIcon type={pill.id} size="xs" />
+              ) : (
+                <span 
+                  className="w-2 h-2 rounded-full" 
+                  style={{ backgroundColor: pill.color }}
+                ></span>
+              )}
               <span>{pill.label}</span>
             </button>
           );

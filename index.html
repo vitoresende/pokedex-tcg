@@ -1,15 +1,37 @@
 <!DOCTYPE html>
-<html lang="pt-BR" class="dark">
+<html lang="en" class="dark">
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="alternate icon" type="image/x-icon" href="/favicon.ico" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
     <meta name="theme-color" content="#DC0A2D" />
-    <meta name="description" content="Pokédex TCG - Gestão de Coleção, Estratégias de Decks, Guia de Formatos e gRPC Hub" />
+    <meta name="description" content="Pokédex TCG Master - Collection Manager, Deck Builder, and Strategy Playbooks" />
+    
+    <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Rajdhani:wght@500;600;700&family=Orbitron:wght@600;800;900&display=swap" rel="stylesheet">
-    <title>Pokédex TCG Master | Coleção & Decks</title>
+    
+    <title>Pokédex TCG Master</title>
+
+    <!-- Auto-unregister any stale Service Workers / PWA caches on localhost -->
+    <script>
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.getRegistrations().then(function(registrations) {
+          for(var reg of registrations) {
+            reg.unregister();
+          }
+        });
+      }
+      if ('caches' in window) {
+        caches.keys().then(function(names) {
+          for (var name of names) {
+            caches.delete(name);
+          }
+        });
+      }
+    </script>
   </head>
   <body class="bg-pokedex-darker text-slate-100 min-h-screen antialiased selection:bg-pokedex-red selection:text-white">
     <div id="root"></div>

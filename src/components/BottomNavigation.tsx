@@ -1,8 +1,8 @@
 import React from 'react';
-import { Layers, Sparkles, BookOpen, Server, User } from 'lucide-react';
+import { Layers, Sparkles, BookOpen, User } from 'lucide-react';
 import { soundEffects } from '../services/audio';
 
-export type NavTab = 'pokedex' | 'decks' | 'rules' | 'grpc' | 'auth';
+export type NavTab = 'pokedex' | 'decks' | 'rules' | 'auth';
 
 interface BottomNavigationProps {
   activeTab: NavTab;
@@ -14,7 +14,6 @@ export const BottomNavigation: React.FC<BottomNavigationProps> = ({ activeTab, o
     { id: 'pokedex' as NavTab, label: 'Pokédex', icon: Sparkles },
     { id: 'decks' as NavTab, label: 'Decks', icon: Layers },
     { id: 'rules' as NavTab, label: 'Rules & Types', icon: BookOpen },
-    { id: 'grpc' as NavTab, label: 'gRPC Hub', icon: Server },
     { id: 'auth' as NavTab, label: 'Profile', icon: User },
   ];
 
@@ -34,7 +33,7 @@ export const BottomNavigation: React.FC<BottomNavigationProps> = ({ activeTab, o
             <button
               key={tab.id}
               onClick={() => handleSelect(tab.id)}
-              className={`flex flex-col items-center justify-center py-1 px-3 rounded-xl transition-all duration-200 relative ${
+              className={`flex flex-col items-center justify-center py-1 px-4 rounded-xl transition-all duration-200 relative ${
                 isActive
                   ? 'text-yellow-300 font-bold scale-105'
                   : 'text-slate-400 hover:text-slate-200'

@@ -7,7 +7,6 @@ import { BottomNavigation, NavTab } from './components/BottomNavigation';
 import { PokedexPage } from './pages/PokedexPage';
 import { DecksPage } from './pages/DecksPage';
 import { RulesAndTypesPage } from './pages/RulesAndTypesPage';
-import { GrpcLearningHub } from './pages/GrpcLearningHub';
 import { AuthProfilePage } from './pages/AuthProfilePage';
 
 const MainLayout: React.FC = () => {
@@ -27,7 +26,6 @@ const MainLayout: React.FC = () => {
         {activeTab === 'pokedex' && <PokedexPage onNavigateToDeck={handleNavigateToDeck} />}
         {activeTab === 'decks' && <DecksPage />}
         {activeTab === 'rules' && <RulesAndTypesPage />}
-        {activeTab === 'grpc' && <GrpcLearningHub />}
         {activeTab === 'auth' && <AuthProfilePage />}
       </main>
 

@@ -3,10 +3,10 @@ import typesData from '../data/types_info.json';
 import rulesData from '../data/rules.json';
 import { CardTypeInfo, FormatRule, TrainerTypeRule, SpecialConditionRule } from '../types';
 import { 
-  BookOpen, Sparkles, Shield, AlertTriangle, 
-  Layers, CheckCircle2, ChevronRight, Zap, Flame, Droplets, Eye, 
-  Moon, Hammer, CircleDot
+  BookOpen, Sparkles, Layers, CheckCircle2, ChevronRight,
+  Shield, AlertTriangle
 } from 'lucide-react';
+import { PokemonTypeIcon } from '../components/PokemonTypeIcon';
 import { soundEffects } from '../services/audio';
 
 export const RulesAndTypesPage: React.FC = () => {
@@ -21,21 +21,6 @@ export const RulesAndTypesPage: React.FC = () => {
   const handleSelectType = (typeInfo: CardTypeInfo) => {
     soundEffects.playClick();
     setSelectedType(typeInfo);
-  };
-
-  const getIcon = (iconName: string) => {
-    switch (iconName) {
-      case 'flame': return <Flame className="w-5 h-5" />;
-      case 'droplet': return <Droplets className="w-5 h-5" />;
-      case 'zap': return <Zap className="w-5 h-5" />;
-      case 'eye': return <Eye className="w-5 h-5" />;
-      case 'shield': return <Shield className="w-5 h-5" />;
-      case 'moon': return <Moon className="w-5 h-5" />;
-      case 'hammer': return <Hammer className="w-5 h-5" />;
-      case 'sparkles': return <Sparkles className="w-5 h-5" />;
-      case 'circle-dot': return <CircleDot className="w-5 h-5" />;
-      default: return <Sparkles className="w-5 h-5" />;
-    }
   };
 
   return (
@@ -106,20 +91,23 @@ export const RulesAndTypesPage: React.FC = () => {
                 <button
                   key={typeItem.id}
                   onClick={() => handleSelectType(typeItem)}
-                  className={`p-2.5 rounded-2xl border transition-all duration-200 flex flex-col items-center justify-center space-y-1 ${
+                  className={`p-2 rounded-2xl border transition-all duration-200 flex flex-col items-center justify-center space-y-1.5 ${
                     isSelected
-                      ? 'shadow-lg scale-105 border-white'
-                      : 'bg-pokedex-card/80 border-slate-800 hover:border-slate-700'
+                      ? 'shadow-lg scale-105 border-white bg-pokedex-card/90'
+                      : 'bg-pokedex-card/70 border-slate-800 hover:border-slate-700 hover:bg-pokedex-card'
                   }`}
                   style={{
-                    backgroundColor: isSelected ? typeItem.color : undefined,
-                    color: isSelected ? '#FFFFFF' : typeItem.color
+                    borderColor: isSelected ? typeItem.color : undefined,
+                    boxShadow: isSelected ? `0 0 15px ${typeItem.color}60` : undefined,
                   }}
                 >
-                  <div className="p-1.5 rounded-full bg-black/30">
-                    {getIcon(typeItem.icon)}
-                  </div>
-                  <span className="text-[11px] font-mono font-bold tracking-tight text-white">{typeItem.name}</span>
+                  <PokemonTypeIcon type={typeItem.id} size="md" />
+                  <span 
+                    className="text-[11px] font-mono font-bold tracking-tight"
+                    style={{ color: isSelected ? typeItem.color : '#E2E8F0' }}
+                  >
+                    {typeItem.name}
+                  </span>
                 </button>
               );
             })}
@@ -133,27 +121,30 @@ export const RulesAndTypesPage: React.FC = () => {
             />
 
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-5">
-              <div className="flex items-center space-x-3">
-                <div 
-                  className="w-12 h-12 rounded-2xl flex items-center justify-center text-white shadow-lg"
-                  style={{ backgroundColor: selectedType.color }}
-                >
-                  {getIcon(selectedType.icon)}
-                </div>
+              <div className="flex items-center space-x-3.5">
+                <PokemonTypeIcon type={selectedType.id} size="xl" className="shadow-lg" />
                 <div>
                   <h3 className="text-2xl font-black font-display text-white">{selectedType.name} Type</h3>
-                  <span className="text-xs font-mono text-slate-400">Pokémon TCG Elemental Type</span>
+                  <span className="text-xs font-mono text-slate-400">Official Pokémon TCG Energy & Elemental Type</span>
                 </div>
               </div>
 
               <div className="flex items-center space-x-3 text-xs font-mono">
-                <div className="bg-pokedex-darker px-3 py-1.5 rounded-xl border border-slate-800">
-                  <span className="text-slate-400">Weakness: </span>
-                  <span className="text-red-400 font-bold">{selectedType.weakness}</span>
+                <div className="bg-pokedex-darker px-3 py-2 rounded-2xl border border-slate-800 flex items-center space-x-2">
+                  <span className="text-slate-400">Weakness:</span>
+                  <div className="flex items-center space-x-1">
+                    <PokemonTypeIcon type={selectedType.weakness.split(' ')[0]} size="xs" />
+                    <span className="text-red-400 font-bold">{selectedType.weakness}</span>
+                  </div>
                 </div>
-                <div className="bg-pokedex-darker px-3 py-1.5 rounded-xl border border-slate-800">
-                  <span className="text-slate-400">Resistance: </span>
-                  <span className="text-emerald-400 font-bold">{selectedType.resistance}</span>
+                <div className="bg-pokedex-darker px-3 py-2 rounded-2xl border border-slate-800 flex items-center space-x-2">
+                  <span className="text-slate-400">Resistance:</span>
+                  <div className="flex items-center space-x-1">
+                    {selectedType.resistance !== 'None' && selectedType.resistance !== '-' ? (
+                      <PokemonTypeIcon type={selectedType.resistance.split(' ')[0]} size="xs" />
+                    ) : null}
+                    <span className="text-emerald-400 font-bold">{selectedType.resistance}</span>
+                  </div>
                 </div>
               </div>
             </div>
@@ -179,7 +170,7 @@ export const RulesAndTypesPage: React.FC = () => {
 
             {/* Notable Cards */}
             <div className="mt-4 pt-4 border-t border-slate-800 text-xs font-mono text-slate-400 flex items-center justify-between">
-              <span>Example Cards:</span>
+              <span>Representative Iconic Cards:</span>
               <span className="text-yellow-300 font-bold">{selectedType.sample_card}</span>
             </div>
           </div>

@@ -5,20 +5,17 @@ import { expressConnectMiddleware } from "@connectrpc/connect-express";
 import { ConnectRouter } from "@connectrpc/connect";
 import { initializeApp, getApps } from "firebase-admin/app";
 import { getFirestore } from "firebase-admin/firestore";
-import { getAuth } from "firebase-admin/auth";
 
 if (!getApps().length) {
   initializeApp();
 }
 
 const db = getFirestore();
-const auth = getAuth();
 
 /**
  * Connect-RPC Routes & Service Implementations
  */
 function routes(router: ConnectRouter) {
-  // Service registry for Pokedex RPC
   router.service({
     typeName: "pokedex.v1.PokedexService",
     methods: {

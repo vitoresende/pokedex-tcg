@@ -8,9 +8,10 @@ import {
 import { soundEffects } from '../services/audio';
 
 export const AuthProfilePage: React.FC = () => {
-  const { user, isAllowed, allowedEmails, loginWithGoogle, logout, loginAsDemoUser } = useAuth();
+  const { user, isAllowed, allowedEmails, loginWithGoogle, logout } = useAuth();
   const { syncToCloud, syncing, stats } = useCollection();
   const [syncSuccess, setSyncSuccess] = useState<boolean>(false);
+  const [photoError, setPhotoError] = useState<boolean>(false);
 
   const handleSync = async () => {
     const success = await syncToCloud();
@@ -37,14 +38,17 @@ export const AuthProfilePage: React.FC = () => {
       <div className="bg-pokedex-card/95 rounded-3xl border border-slate-800 p-5 sm:p-6 shadow-xl space-y-4">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div className="flex items-center space-x-4">
-            {user?.photoURL ? (
+            {user?.photoURL && !photoError ? (
               <img 
                 src={user.photoURL} 
                 alt={user.displayName || 'User'} 
+                referrerPolicy="no-referrer"
+                crossOrigin="anonymous"
+                onError={() => setPhotoError(true)}
                 className="w-14 h-14 rounded-2xl object-cover border-2 border-slate-700 shadow-md"
               />
             ) : (
-              <div className="w-14 h-14 rounded-2xl bg-pokedex-red/30 border border-pokedex-red/60 text-pokedex-lightred flex items-center justify-center font-display font-black text-xl">
+              <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-pokedex-blue to-blue-700 border-2 border-white/60 text-white flex items-center justify-center font-display font-black text-xl shadow-md">
                 {user ? (user.displayName?.[0] || user.email?.[0] || 'U').toUpperCase() : 'P'}
               </div>
             )}
@@ -92,23 +96,6 @@ export const AuthProfilePage: React.FC = () => {
               </button>
             )}
           </div>
-        </div>
-
-        {/* Demo Fast Switch Buttons (Development Helper) */}
-        <div className="pt-3 border-t border-slate-800/80 flex flex-wrap items-center gap-2 text-xs font-mono">
-          <span className="text-slate-500 text-[10px] uppercase">Testing Simulator:</span>
-          <button
-            onClick={() => loginAsDemoUser(true)}
-            className="bg-emerald-950/60 hover:bg-emerald-900/80 text-emerald-300 border border-emerald-500/40 px-3 py-1 rounded-xl text-[11px] font-bold transition-colors"
-          >
-            Simulate Authorized Login
-          </button>
-          <button
-            onClick={() => loginAsDemoUser(false)}
-            className="bg-amber-950/60 hover:bg-amber-900/80 text-amber-300 border border-amber-500/40 px-3 py-1 rounded-xl text-[11px] font-bold transition-colors"
-          >
-            Simulate Unauthorized Login (Blocked)
-          </button>
         </div>
       </div>
 

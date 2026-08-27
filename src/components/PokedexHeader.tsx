@@ -1,5 +1,5 @@
-import React from 'react';
-import { Volume2, VolumeX, ShieldCheck, ShieldAlert, Sparkles } from 'lucide-react';
+import React, { useState } from 'react';
+import { Volume2, VolumeX, ShieldCheck, ShieldAlert, Sparkles, User as UserIcon } from 'lucide-react';
 import { useCollection } from '../context/CollectionContext';
 import { useAuth } from '../context/AuthContext';
 import { soundEffects } from '../services/audio';
@@ -11,10 +11,13 @@ interface PokedexHeaderProps {
 export const PokedexHeader: React.FC<PokedexHeaderProps> = ({ onNavigateToAuth }) => {
   const { isMuted, toggleMute } = useCollection();
   const { user, isAllowed } = useAuth();
+  const [photoError, setPhotoError] = useState<boolean>(false);
 
   const handleSensorClick = () => {
     soundEffects.playScan();
   };
+
+  const userInitial = (user?.displayName?.[0] || user?.email?.[0] || 'U').toUpperCase();
 
   return (
     <header className="sticky top-0 z-40 bg-pokedex-red border-b-4 border-pokedex-darkred shadow-lg select-none">
@@ -67,38 +70,46 @@ export const PokedexHeader: React.FC<PokedexHeaderProps> = ({ onNavigateToAuth }
             {isMuted ? <VolumeX className="w-4 h-4 text-slate-300" /> : <Volume2 className="w-4 h-4 text-yellow-300 animate-pulse" />}
           </button>
 
-          {/* User Auth Status Pill */}
+          {/* User Auth Status Pill (Top Right) */}
           <button
             onClick={onNavigateToAuth}
-            className="flex items-center space-x-2 bg-pokedex-darker/90 hover:bg-pokedex-darker text-white px-3 py-1.5 rounded-lg border border-white/20 text-xs font-medium transition-all"
+            className="flex items-center space-x-2 bg-pokedex-darker hover:bg-black/60 text-white px-3 py-1.5 rounded-xl border border-white/20 text-xs font-medium transition-all shadow-md active:scale-95"
           >
             {user ? (
               <>
                 <div className="relative">
-                  {user.photoURL ? (
-                    <img src={user.photoURL} alt={user.displayName || 'User'} className="w-5 h-5 rounded-full object-cover border border-white/50" />
+                  {user.photoURL && !photoError ? (
+                    <img 
+                      src={user.photoURL} 
+                      alt={user.displayName || 'User'} 
+                      referrerPolicy="no-referrer"
+                      crossOrigin="anonymous"
+                      onError={() => setPhotoError(true)}
+                      className="w-6 h-6 rounded-full object-cover border border-white/70 shadow-sm"
+                    />
                   ) : (
-                    <div className="w-5 h-5 rounded-full bg-pokedex-blue text-white flex items-center justify-center text-[10px] font-bold">
-                      {user.email?.[0].toUpperCase() || 'U'}
+                    <div className="w-6 h-6 rounded-full bg-gradient-to-br from-pokedex-blue to-blue-700 text-white flex items-center justify-center text-xs font-bold border border-white/60 shadow-sm">
+                      {userInitial}
                     </div>
                   )}
                   {isAllowed ? (
-                    <div className="absolute -bottom-0.5 -right-0.5 w-2 h-2 rounded-full bg-emerald-500 border border-slate-900"></div>
+                    <div className="absolute -bottom-0.5 -right-0.5 w-2 h-2 rounded-full bg-emerald-400 border border-slate-950 shadow-sm"></div>
                   ) : (
-                    <div className="absolute -bottom-0.5 -right-0.5 w-2 h-2 rounded-full bg-amber-500 border border-slate-900"></div>
+                    <div className="absolute -bottom-0.5 -right-0.5 w-2 h-2 rounded-full bg-amber-400 border border-slate-950 shadow-sm"></div>
                   )}
                 </div>
-                <span className="hidden md:inline truncate max-w-[100px] text-slate-200">
+                <span className="hidden md:inline truncate max-w-[100px] text-slate-200 font-semibold">
                   {user.displayName?.split(' ')[0] || user.email?.split('@')[0]}
                 </span>
                 {isAllowed ? (
-                  <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
+                  <ShieldCheck className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
                 ) : (
-                  <ShieldAlert className="w-3.5 h-3.5 text-amber-400" />
+                  <ShieldAlert className="w-3.5 h-3.5 text-amber-400 shrink-0" />
                 )}
               </>
             ) : (
-              <span className="text-yellow-300 font-semibold flex items-center gap-1">
+              <span className="text-yellow-300 font-semibold flex items-center gap-1.5">
+                <UserIcon className="w-4 h-4" />
                 <span>Sign In</span>
               </span>
             )}
