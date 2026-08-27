@@ -87,24 +87,24 @@ export async function logoutUser(): Promise<void> {
 }
 
 /**
- * Sync user collection and custom decks to Cloud Firestore
+ * Sync user collection, custom cards, and decks to Cloud Firestore
  */
 export async function syncUserCollectionToFirestore(
   userId: string, 
-  quantities: Record<string, number>, 
-  notes: Record<string, string>,
-  favorites: string[],
-  decks?: any[]
+  data: {
+    quantities: Record<string, number>;
+    notes: Record<string, string>;
+    favorites: string[];
+    decks?: any[];
+    cards?: any[];
+  }
 ) {
-  if (!db || !userId) return;
+  if (!db || !userId) return false;
   try {
     const userRef = doc(db, 'users', userId);
     await setDoc(userRef, {
-      lastUpdated: new Date().toISOString(),
-      quantities,
-      notes,
-      favorites,
-      ...(decks ? { decks } : {})
+      ...data,
+      lastUpdated: new Date().toISOString()
     }, { merge: true });
     return true;
   } catch (error) {

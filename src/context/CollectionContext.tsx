@@ -1,7 +1,7 @@
-import React, { createContext, useContext, useState, useMemo, useEffect } from 'react';
+import React, { createContext, useContext, useState, useMemo, useEffect, useRef } from 'react';
 import initialCards from '../data/cards.json';
 import initialDecks from '../data/decks.json';
-import { Card, Deck, DeckCardItem } from '../types';
+import { Card, Deck } from '../types';
 import { soundEffects } from '../services/audio';
 import { useAuth } from './AuthContext';
 import { syncUserCollectionToFirestore, loadUserCollectionFromFirestore } from '../services/firebase';
@@ -20,6 +20,8 @@ interface FilterState {
   sortDirection: 'asc' | 'desc';
 }
 
+export type CloudSyncStatus = 'idle' | 'syncing' | 'synced' | 'error';
+
 interface CollectionContextType {
   cards: Card[];
   decks: Deck[];
@@ -31,6 +33,8 @@ interface CollectionContextType {
   notes: Record<string, string>;
   isMuted: boolean;
   syncing: boolean;
+  syncStatus: CloudSyncStatus;
+  lastSyncedAt: Date | null;
   stats: {
     totalOwnedCards: number;
     uniqueCardsCount: number;
@@ -86,17 +90,6 @@ const COLOR_MAP: Record<string, { name: string; slug: string; bg: string }> = {
   '': { name: 'Trainer', slug: 'trainer', bg: '#14B8A6' }
 };
 
-const RARITY_MAP: Record<string, string> = {
-  C: 'Common',
-  U: 'Uncommon',
-  R: 'Rare',
-  RH: 'Rare Holo',
-  RU: 'Ultra Rare (GX/EX)',
-  RD: 'Double Rare (ex)',
-  IR: 'Illustration Rare',
-  S: 'Secret Rare'
-};
-
 const CollectionContext = createContext<CollectionContextType | undefined>(undefined);
 
 export const CollectionProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -128,6 +121,9 @@ export const CollectionProvider: React.FC<{ children: React.ReactNode }> = ({ ch
 
   const [isMuted, setIsMuted] = useState<boolean>(false);
   const [syncing, setSyncing] = useState<boolean>(false);
+  const [syncStatus, setSyncStatus] = useState<CloudSyncStatus>('idle');
+  const [lastSyncedAt, setLastSyncedAt] = useState<Date | null>(null);
+  const [isInitializedFromCloud, setIsInitializedFromCloud] = useState<boolean>(false);
 
   // Local storage persistence
   useEffect(() => {
@@ -148,10 +144,25 @@ export const CollectionProvider: React.FC<{ children: React.ReactNode }> = ({ ch
 
   // Load from Firestore on user login
   useEffect(() => {
-    if (user?.uid && isAllowed) {
-      loadUserCollectionFromFirestore(user.uid).then(data => {
+    if (!user?.uid || !isAllowed) {
+      setIsInitializedFromCloud(false);
+      return;
+    }
+
+    let isMounted = true;
+
+    async function loadCloudData() {
+      try {
+        setSyncStatus('syncing');
+        setSyncing(true);
+        const data = await loadUserCollectionFromFirestore(user!.uid);
+        
+        if (!isMounted) return;
+
         if (data) {
-          if (data.quantities) {
+          if (data.cards && Array.isArray(data.cards) && data.cards.length > 0) {
+            setCards(data.cards);
+          } else if (data.quantities) {
             setCards(prev => prev.map(c => ({
               ...c,
               quantity: data.quantities[c.id] !== undefined ? data.quantities[c.id] : c.quantity
@@ -160,10 +171,72 @@ export const CollectionProvider: React.FC<{ children: React.ReactNode }> = ({ ch
           if (data.favorites) setFavorites(data.favorites);
           if (data.notes) setNotes(data.notes);
           if (data.decks) setDecks(data.decks);
+          setLastSyncedAt(data.lastUpdated ? new Date(data.lastUpdated) : new Date());
+          setSyncStatus('synced');
+        } else {
+          // New user first time: persist initial state so Firestore document is created immediately
+          const quantities: Record<string, number> = {};
+          initialCards.forEach((c: any) => { quantities[c.id] = c.quantity || 0; });
+          await syncUserCollectionToFirestore(user!.uid, {
+            quantities,
+            notes: {},
+            favorites: [],
+            decks: initialDecks as any,
+            cards: initialCards as any
+          });
+          setLastSyncedAt(new Date());
+          setSyncStatus('synced');
         }
-      });
+      } catch (err) {
+        console.error('Error loading cloud collection:', err);
+        setSyncStatus('error');
+      } finally {
+        if (isMounted) {
+          setSyncing(false);
+          setIsInitializedFromCloud(true);
+        }
+      }
     }
+
+    loadCloudData();
+
+    return () => {
+      isMounted = false;
+    };
   }, [user?.uid, isAllowed]);
+
+  // Continuous Automatic Debounced Sync to Firestore (Real-Time Background Sync)
+  useEffect(() => {
+    if (!isInitializedFromCloud || !user?.uid || !isAllowed) return;
+
+    setSyncStatus('syncing');
+    setSyncing(true);
+
+    const timer = setTimeout(async () => {
+      try {
+        const quantities: Record<string, number> = {};
+        cards.forEach(c => { quantities[c.id] = c.quantity; });
+        
+        await syncUserCollectionToFirestore(user.uid, {
+          quantities,
+          notes,
+          favorites,
+          decks,
+          cards
+        });
+
+        setSyncStatus('synced');
+        setSyncing(false);
+        setLastSyncedAt(new Date());
+      } catch (err) {
+        console.error('Auto-sync to Firestore error:', err);
+        setSyncStatus('error');
+        setSyncing(false);
+      }
+    }, 800);
+
+    return () => clearTimeout(timer);
+  }, [cards, favorites, notes, decks, isInitializedFromCloud, user?.uid, isAllowed]);
 
   const toggleMute = () => {
     const next = !isMuted;
@@ -219,17 +292,18 @@ export const CollectionProvider: React.FC<{ children: React.ReactNode }> = ({ ch
       quality: cardData.quality || 'NM',
       language: cardData.language || 'EN',
       rarity_code: cardData.rarity_code || 'C',
-      rarity_name: RARITY_MAP[cardData.rarity_code || 'C'] || 'Common',
+      rarity_name: cardData.rarity_name || 'Common',
       color_code: cardData.color_code || '',
       color_name: colorInfo.name,
       color_slug: colorInfo.slug,
       color_bg: colorInfo.bg,
-      card_category: cardData.card_category || (cardData.color_code === '' ? 'Trainer' : 'Pokémon'),
+      card_category: cardData.card_category || (colorInfo.name === 'Trainer' ? 'Trainer' : colorInfo.name === 'Energy' ? 'Energy' : 'Pokémon'),
       is_foil: !!cardData.is_foil,
-      extras: cardData.extras || (cardData.is_foil ? 'Foil' : ''),
+      extras: cardData.extras || '',
       comment: cardData.comment || '',
-      image_url: cardData.image_url || `https://images.pokemontcg.io/${(cardData.set_code || 'sv1').toLowerCase()}/${cardData.card_number || '1'}.png`,
-      decks: cardData.decks || []
+      image_url: cardData.image_url || '',
+      local_image: '',
+      decks: []
     };
 
     setCards(prev => [newCard, ...prev]);
@@ -286,7 +360,7 @@ export const CollectionProvider: React.FC<{ children: React.ReactNode }> = ({ ch
       } else {
         const colorInfo = COLOR_MAP[color] || COLOR_MAP[''];
         newCardsList.push({
-          id: `imp-${Date.now()}-${i}`,
+          id: `imp-${setCode.toLowerCase()}-${cardNum}-${Date.now()}-${i}`,
           name_pt: cardPt,
           name_en: cardEn,
           set_pt: setPt,
@@ -298,16 +372,17 @@ export const CollectionProvider: React.FC<{ children: React.ReactNode }> = ({ ch
           quality: quality,
           language: lang,
           rarity_code: rarity,
-          rarity_name: RARITY_MAP[rarity] || 'Common',
+          rarity_name: rarity,
           color_code: color,
           color_name: colorInfo.name,
           color_slug: colorInfo.slug,
           color_bg: colorInfo.bg,
-          card_category: color === '' ? 'Trainer' : (color === 'E' ? 'Energy' : 'Pokémon'),
-          is_foil: extras.includes('Foil') || ['RH', 'RU', 'RD', 'IR', 'S'].includes(rarity),
+          card_category: colorInfo.name === 'Trainer' ? 'Trainer' : colorInfo.name === 'Energy' ? 'Energy' : 'Pokémon',
+          is_foil: extras.toLowerCase().includes('foil') || extras.toLowerCase().includes('holo'),
           extras: extras,
           comment: comment,
-          image_url: `https://images.pokemontcg.io/${setCode.toLowerCase()}/${cardNum.replace(/\D/g, '') || '1'}.png`,
+          image_url: '',
+          local_image: '',
           decks: []
         });
         added++;
@@ -320,35 +395,27 @@ export const CollectionProvider: React.FC<{ children: React.ReactNode }> = ({ ch
 
   const createNewDeck = (deckData: Partial<Deck>): Deck => {
     soundEffects.playScan();
-    const newId = `custom-deck-${Date.now()}`;
+    const newId = `custom-deck-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`;
+    
     const newDeck: Deck = {
       id: newId,
-      name: deckData.name || 'Custom Deck',
+      name: deckData.name || 'New Custom Deck',
       format: deckData.format || 'Standard',
-      format_slug: (deckData.format_slug || 'standard') as any,
-      archetype: deckData.archetype || 'Custom Deck',
-      badge_color: deckData.badge_color || 'from-pokedex-red to-red-950',
-      accent_color: deckData.accent_color || '#DC0A2D',
-      summary: deckData.summary || 'Custom strategy built in Pokédex TCG.',
-      win_condition: deckData.win_condition || 'Knock out primary attackers and take 6 Prize cards.',
-      stats: {
-        pokemon: deckData.cards?.filter(c => c.section === 'pokemon').reduce((a, b) => a + b.count, 0) || 0,
-        trainers: deckData.cards?.filter(c => c.section === 'trainers').reduce((a, b) => a + b.count, 0) || 0,
-        energies: deckData.cards?.filter(c => c.section === 'energies').reduce((a, b) => a + b.count, 0) || 0,
-        total: deckData.cards?.reduce((a, b) => a + b.count, 0) || 0,
-      },
-      energy_breakdown: deckData.energy_breakdown || {
-        owned: 'Energies configured',
-        needed: 'None',
-        missing_count: 0
-      },
+      format_slug: (deckData.format_slug || 'standard') as 'expanded' | 'casual' | 'standard',
+      archetype: deckData.archetype || 'Custom Rogue',
+      badge_color: deckData.badge_color || 'bg-blue-600',
+      accent_color: deckData.accent_color || 'border-blue-500',
+      summary: deckData.summary || 'Custom strategic deck build.',
+      win_condition: deckData.win_condition || 'Take all 6 prize cards.',
+      stats: deckData.stats || { pokemon: 0, trainers: 0, energies: 0, total: 0 },
+      energy_breakdown: deckData.energy_breakdown || { owned: '0/0', needed: '0', missing_count: 0 },
       cards: deckData.cards || [],
       strategy_guide: deckData.strategy_guide || {
-        opening: { title: '1. Opening Plan', steps: ['Start with your active Basic Pokémon and establish bench.'] },
-        midgame: { title: '2. Midgame Plan', steps: ['Evolve attackers and attach energy each turn.'] },
-        lategame: { title: '3. Endgame Plan', steps: ['Execute finishing attacks to claim all Prize cards.'] },
+        opening: { title: 'Early Game', steps: ['Setup Active Basic Pokémon and bench engine.'] },
+        midgame: { title: 'Mid Game', steps: ['Attach Energy and attack opponent active Pokémon.'] },
+        lategame: { title: 'End Game', steps: ['Close out remaining Prize Cards.'] }
       },
-      prize_trade_tip: deckData.prize_trade_tip || 'Carefully manage prize trade advantages.'
+      prize_trade_tip: deckData.prize_trade_tip || 'Manage your prize race efficiently.'
     };
 
     setDecks(prev => [newDeck, ...prev]);
@@ -366,48 +433,36 @@ export const CollectionProvider: React.FC<{ children: React.ReactNode }> = ({ ch
 
   const addCardToDeck = (deckId: string, card: Card, count: number = 1) => {
     soundEffects.playClick();
-    setDecks(prev => prev.map(deck => {
-      if (deck.id !== deckId) return deck;
-      
-      const existingCard = deck.cards.find(c => c.name.toLowerCase() === card.name_pt.toLowerCase());
-      let updatedCards: DeckCardItem[];
+    setDecks(prev => prev.map(d => {
+      if (d.id !== deckId) return d;
 
-      if (existingCard) {
-        updatedCards = deck.cards.map(c => 
-          c.name.toLowerCase() === card.name_pt.toLowerCase()
-            ? { ...c, count: Math.min(4, c.count + count), owned: card.quantity }
-            : c
-        );
+      const existingIndex = d.cards.findIndex(item => item.name === card.name_pt || item.name === card.name_en);
+      let updatedCards = [...d.cards];
+
+      const section: 'pokemon' | 'trainers' | 'energies' = 
+        card.card_category === 'Trainer' ? 'trainers' : 
+        card.card_category === 'Energy' ? 'energies' : 'pokemon';
+
+      if (existingIndex >= 0) {
+        const currentCount = updatedCards[existingIndex].count;
+        updatedCards[existingIndex] = {
+          ...updatedCards[existingIndex],
+          count: currentCount + count,
+          owned: card.quantity
+        };
       } else {
-        const section: 'pokemon' | 'trainers' | 'energies' = 
-          card.card_category === 'Pokémon' ? 'pokemon' : (card.card_category === 'Trainer' ? 'trainers' : 'energies');
-        
-        updatedCards = [
-          ...deck.cards,
-          {
-            section,
-            name: card.name_pt,
-            set: `${card.set_pt} - ${card.set_code} ${card.card_number}`,
-            count: Math.min(4, count),
-            owned: card.quantity,
-            rarity: card.rarity_code
-          }
-        ];
+        updatedCards.push({
+          name: card.name_pt,
+          set: card.set_code,
+          count: count,
+          owned: card.quantity,
+          section
+        });
       }
 
-      const pokemonCount = updatedCards.filter(c => c.section === 'pokemon').reduce((a, b) => a + b.count, 0);
-      const trainersCount = updatedCards.filter(c => c.section === 'trainers').reduce((a, b) => a + b.count, 0);
-      const energiesCount = updatedCards.filter(c => c.section === 'energies').reduce((a, b) => a + b.count, 0);
-
       const updated = {
-        ...deck,
-        cards: updatedCards,
-        stats: {
-          pokemon: pokemonCount,
-          trainers: trainersCount,
-          energies: energiesCount,
-          total: pokemonCount + trainersCount + energiesCount
-        }
+        ...d,
+        cards: updatedCards
       };
 
       if (selectedDeck?.id === deckId) {
@@ -420,23 +475,13 @@ export const CollectionProvider: React.FC<{ children: React.ReactNode }> = ({ ch
 
   const removeCardFromDeck = (deckId: string, cardName: string) => {
     soundEffects.playClick();
-    setDecks(prev => prev.map(deck => {
-      if (deck.id !== deckId) return deck;
-      
-      const updatedCards = deck.cards.filter(c => c.name.toLowerCase() !== cardName.toLowerCase());
-      const pokemonCount = updatedCards.filter(c => c.section === 'pokemon').reduce((a, b) => a + b.count, 0);
-      const trainersCount = updatedCards.filter(c => c.section === 'trainers').reduce((a, b) => a + b.count, 0);
-      const energiesCount = updatedCards.filter(c => c.section === 'energies').reduce((a, b) => a + b.count, 0);
+    setDecks(prev => prev.map(d => {
+      if (d.id !== deckId) return d;
 
+      const updatedCards = d.cards.filter(item => item.name !== cardName);
       const updated = {
-        ...deck,
-        cards: updatedCards,
-        stats: {
-          pokemon: pokemonCount,
-          trainers: trainersCount,
-          energies: energiesCount,
-          total: pokemonCount + trainersCount + energiesCount
-        }
+        ...d,
+        cards: updatedCards
       };
 
       if (selectedDeck?.id === deckId) {
@@ -450,14 +495,25 @@ export const CollectionProvider: React.FC<{ children: React.ReactNode }> = ({ ch
   const syncToCloud = async (): Promise<boolean> => {
     if (!user?.uid) return false;
     setSyncing(true);
+    setSyncStatus('syncing');
     soundEffects.playScan();
     try {
       const quantities: Record<string, number> = {};
       cards.forEach(c => { quantities[c.id] = c.quantity; });
-      await syncUserCollectionToFirestore(user.uid, quantities, notes, favorites, decks);
+      await syncUserCollectionToFirestore(user.uid, {
+        quantities,
+        notes,
+        favorites,
+        decks,
+        cards
+      });
+      setSyncStatus('synced');
+      setLastSyncedAt(new Date());
       setSyncing(false);
       return true;
     } catch (err) {
+      console.error('Manual sync to Firestore error:', err);
+      setSyncStatus('error');
       setSyncing(false);
       return false;
     }
@@ -571,6 +627,8 @@ export const CollectionProvider: React.FC<{ children: React.ReactNode }> = ({ ch
         notes,
         isMuted,
         syncing,
+        syncStatus,
+        lastSyncedAt,
         stats,
         setFilters,
         resetFilters,
