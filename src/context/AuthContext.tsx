@@ -15,6 +15,8 @@ interface AuthContextType {
   loading: boolean;
   isAllowed: boolean;
   allowedEmails: string[];
+  authError: string | null;
+  clearAuthError: () => void;
   loginWithGoogle: () => Promise<void>;
   logout: () => Promise<void>;
   loginAsDemoUser: (asAuthorized?: boolean) => void;
@@ -25,7 +27,12 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<AuthUser | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
+  const [authError, setAuthError] = useState<string | null>(null);
   const allowedEmails = getAllowedEmails();
+
+  const clearAuthError = () => {
+    setAuthError(null);
+  };
 
   useEffect(() => {
     if (!auth) {
@@ -59,6 +66,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const loginWithGoogle = async () => {
     try {
+      setAuthError(null);
       soundEffects.playClick();
       const { user: fbUser, isAllowed: allowed } = await fbLoginWithGoogle();
       const token = await fbUser.getIdToken().catch(() => undefined);
@@ -76,8 +84,26 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         soundEffects.playAlert();
       }
     } catch (err: any) {
-      if (err.code !== 'auth/popup-closed-by-user') {
-        console.error('Login error:', err);
+      if (err.code === 'auth/popup-closed-by-user' || err.code === 'auth/cancelled-popup-request') {
+        // User voluntarily dismissed popup
+        return;
+      }
+
+      soundEffects.playAlert();
+      console.error('Firebase Auth Error:', err);
+
+      if (err.code === 'auth/configuration-not-found') {
+        setAuthError('Firebase Authentication is not activated on this project. Please deploy auth settings by running: npm run firebase:auth');
+      } else if (err.code === 'auth/unauthorized-domain') {
+        setAuthError('This domain is not listed in Authorized Domains. Please add it to VITE_AUTHORIZED_DOMAINS in .env and run: npm run firebase:auth');
+      } else if (err.code === 'auth/popup-blocked') {
+        setAuthError('Sign-in popup was blocked by your browser. Please allow popups for this site and try again.');
+      } else if (err.code === 'auth/network-request-failed') {
+        setAuthError('Network communication error. Please check your internet connection.');
+      } else if (err.code === 'auth/invalid-api-key') {
+        setAuthError('Invalid Firebase API key. Please check your VITE_FIREBASE_API_KEY in .env.');
+      } else {
+        setAuthError(err.message || 'An error occurred during authentication. Please check console.');
       }
     }
   };
@@ -86,6 +112,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     soundEffects.playClick();
     await fbLogoutUser();
     setUser(null);
+    setAuthError(null);
   };
 
   const loginAsDemoUser = (asAuthorized: boolean = true) => {
@@ -118,6 +145,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         loading,
         isAllowed: user ? user.isAllowed : false,
         allowedEmails,
+        authError,
+        clearAuthError,
         loginWithGoogle,
         logout,
         loginAsDemoUser

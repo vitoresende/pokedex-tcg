@@ -151,18 +151,41 @@ npm run upload:firebase your-project.appspot.com
 
 ## ☁️ Firebase Deployment
 
-Deploy both the Vite frontend and the Connect-RPC Cloud Functions backend:
+The repository uses automated configuration synchronization driven by your local `.env` file (which is ignored by Git to protect personal data).
 
+### 1. Enable Firebase Authentication & Google Sign-In (Console 1-Time Setup)
+Because Google OAuth requires Google Identity Client ID credentials, activate it in the Firebase Console:
+1. Open [Firebase Console > Authentication](https://console.firebase.google.com/).
+2. Under **Sign-in method**, click **Add new provider** ➡️ select **Google** ➡️ enable and choose your support email.
+3. Under **Settings > Authorized domains**, click **Add domain** and enter your custom domain (e.g. `pokemon.vitoresende.dev` or `yourdomain.com`).
+
+### 2. Login to Firebase CLI
 ```bash
-# 1. Login to Firebase CLI
-npx firebase login
+# Ensure Node 20 LTS is active:
+nvm use
 
-# 2. Set active project
-npx firebase use your-project-id
-
-# 3. Deploy Firestore rules, Storage rules, Functions, and Hosting:
-npx firebase deploy
+# Login to Firebase CLI:
+npm run firebase:login
 ```
+
+### 3. Deploy Application Services
+```bash
+# Syncs .env, builds React production bundle, and deploys all services (Hosting, Functions, Firestore, Storage):
+npm run firebase:deploy
+
+# Or deploy only the Frontend (Hosting):
+npm run firebase:hosting
+
+# Or deploy only the Backend Serverless API (Cloud Functions):
+npm run firebase:functions
+```
+
+### 📋 Available Firebase Scripts
+- `npm run firebase:deploy`: Full deployment (React Hosting + Cloud Functions 2nd Gen + Firestore Rules/Indexes + Storage Rules).
+- `npm run firebase:hosting`: Builds and deploys only the frontend React application.
+- `npm run firebase:functions`: Builds and deploys only the Connect-RPC backend Cloud Functions.
+- `npm run firebase:sync`: Manually syncs your `.env` variables to `.firebaserc` and `firebase.json`.
+- `npm run firebase:emulators`: Launches local Firebase emulators for offline development.
 
 ---
 
@@ -170,44 +193,50 @@ npx firebase deploy
 
 ```
 pokedex-tcg/
+├── GRPC_CONNECT_RPC_GUIDE.md        # Comprehensive gRPC & Connect-RPC architectural guide
 ├── proto/                          # Protocol Buffers Schemas (.proto)
 │   ├── pokedex/v1/pokedex.proto    # Pokedex RPC service definitions
 │   └── user/v1/user.proto          # User profile RPC service definitions
 ├── functions/                      # Firebase Cloud Functions 2nd Gen Backend
 │   ├── src/index.ts                # Express + Connect-RPC Serverless API
 │   └── package.json
-├── public/                         # Static Assets & Favicon
+├── public/                         # Static Assets
+│   ├── energy/                     # Official Pokémon TCG Card Energy Symbols (11 Types)
+│   ├── favicon.ico                 # Fallback Favicon
+│   └── favicon.svg                 # Pokédex SVG Favicon
 ├── scripts/                        # Utility Scripts
 │   ├── download_images.py          # Multithreaded card image downloader
-│   └── upload_to_firebase.js       # Firebase Storage upload script
+│   ├── upload_to_firebase.js       # Firebase Storage upload script
+│   └── sync_firebase_config.js     # Dynamic .env to Firebase config synchronizer
 ├── src/
 │   ├── components/                 # React UI Components
+│   │   ├── AccessGate.tsx          # Full-screen Google Sign-In & Whitelist security gate
 │   │   ├── AddCardModal.tsx        # Add card & CSV import modal
 │   │   ├── BottomNavigation.tsx    # Mobile-optimized bottom navigation
 │   │   ├── CardDetailModal.tsx     # Card inspection, notes & deck inclusion
 │   │   ├── CardGrid.tsx            # Card grid with pagination
 │   │   ├── CardItem.tsx            # Individual card item with quantity +/-
 │   │   ├── CreateDeckModal.tsx     # Custom deck builder modal
-│   │   ├── FilterBar.tsx           # Type pills, search & attribute filters
+│   │   ├── FilterBar.tsx           # Type pills with official energy icons & filters
 │   │   ├── HoloCard.tsx            # 3D parallax holographic card component
-│   │   ├── PokedexHeader.tsx       # Header with lens, LEDs & audio switch
-│   │   └── UnauthorizedModal.tsx   # Whitelist security warning modal
-│   ├── context/                    # React Contexts (Auth, Collection)
+│   │   ├── PokedexHeader.tsx       # Header with lens, LEDs, audio switch & profile
+│   │   └── PokemonTypeIcon.tsx     # Official Pokémon TCG Card Energy icon component
+│   ├── context/                    # React Contexts (AuthContext, CollectionContext)
 │   ├── data/                       # Initial JSON Datasets (Types, Rules, Decks)
 │   ├── pages/                      # Application Views
 │   │   ├── AuthProfilePage.tsx     # Google Auth, whitelist & cloud sync
 │   │   ├── DecksPage.tsx           # Deck management & strategy playbooks
-│   │   ├── GrpcLearningHub.tsx     # gRPC / Connect-RPC educational hub
 │   │   ├── PokedexPage.tsx         # Main Pokédex collection view
-│   │   └── RulesAndTypesPage.tsx   # 11 elemental types & battle formats
+│   │   └── RulesAndTypesPage.tsx   # 11 elemental types with official energy icons & rules
 │   ├── services/                   # Web Audio, Firebase & Connect-RPC clients
 │   ├── types/                      # TypeScript definitions & interfaces
 │   ├── App.tsx                     # App layout & routing
 │   └── main.tsx                    # React DOM entry point
-├── .env.example                    # Environment variable template
-├── .gitignore                      # Git ignore rules (protects private data)
+├── .env.example                    # Environment variable template with documentation
+├── .gitignore                      # Git ignore rules (protects private CSVs, keys & configs)
 ├── .nvmrc                          # Recommended Node.js version (20 LTS)
-├── firebase.json                   # Firebase deployment configuration
+├── firebase.template.json          # Clean Firebase template (tracked in Git)
+├── firestore.indexes.json          # Cloud Firestore index configuration
 ├── firestore.rules                 # Cloud Firestore security rules
 ├── storage.rules                   # Firebase Storage security rules
 ├── package.json                    # Dependencies & scripts

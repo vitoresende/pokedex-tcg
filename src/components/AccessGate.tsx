@@ -1,11 +1,11 @@
 import React from 'react';
 import { useAuth } from '../context/AuthContext';
 import { 
-  ShieldAlert, Lock, LogIn, LogOut, RefreshCw 
+  ShieldAlert, Lock, LogIn, LogOut, RefreshCw, AlertTriangle, X 
 } from 'lucide-react';
 
 export const AccessGate: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const { user, loading, isAllowed, loginWithGoogle, logout } = useAuth();
+  const { user, loading, isAllowed, authError, clearAuthError, loginWithGoogle, logout } = useAuth();
 
   // 1. Loading State: Pokédex Boot Loader
   if (loading) {
@@ -133,6 +133,27 @@ export const AccessGate: React.FC<{ children: React.ReactNode }> = ({ children }
               Sign in with your authorized Google account to access your Pokémon collection and decks.
             </p>
           </div>
+
+          {/* Authentication Error Banner */}
+          {authError && (
+            <div className="bg-red-950/80 border-2 border-red-500/80 rounded-2xl p-4 text-left font-mono text-xs space-y-2 relative shadow-lg animate-in fade-in zoom-in-95">
+              <div className="flex items-start justify-between">
+                <div className="flex items-center space-x-2 text-red-300 font-bold">
+                  <AlertTriangle className="w-4 h-4 text-amber-400 shrink-0" />
+                  <span>Authentication Error</span>
+                </div>
+                <button
+                  onClick={clearAuthError}
+                  className="text-slate-400 hover:text-white p-0.5 rounded-lg"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              </div>
+              <p className="text-slate-200 text-xs font-sans leading-relaxed">
+                {authError}
+              </p>
+            </div>
+          )}
 
           {/* Sign In Action */}
           <button

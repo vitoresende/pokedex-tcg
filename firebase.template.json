@@ -50,13 +50,5 @@
   },
   "storage": {
     "rules": "storage.rules"
-  },
-  "auth": {
-    "providers": {
-      "googleSignIn": {
-        "oAuthBrandDisplayName": "Pokedex TCG Master",
-        "supportEmail": "vitoresende.dev@gmail.com"
-      }
-    }
   }
 }

@@ -9,11 +9,12 @@
     "preview": "vite preview",
     "download:cards": "python3 scripts/download_images.py",
     "upload:firebase": "node scripts/upload_to_firebase.js",
-    "firebase:login": "npx -y firebase-tools@latest login",
-    "firebase:deploy": "npm run build && npx -y firebase-tools@latest deploy",
-    "firebase:functions": "npx -y firebase-tools@latest deploy --only functions",
-    "firebase:hosting": "npm run build && npx -y firebase-tools@latest deploy --only hosting",
-    "firebase:emulators": "npx -y firebase-tools@latest emulators:start"
+    "firebase:sync": "node scripts/sync_firebase_config.js",
+    "firebase:login": "firebase login",
+    "firebase:deploy": "node scripts/sync_firebase_config.js && npm run build && firebase deploy",
+    "firebase:functions": "node scripts/sync_firebase_config.js && firebase deploy --only functions",
+    "firebase:hosting": "node scripts/sync_firebase_config.js && npm run build && firebase deploy --only hosting",
+    "firebase:emulators": "node scripts/sync_firebase_config.js && firebase emulators:start"
   },
   "dependencies": {
     "@bufbuild/protobuf": "^1.10.0",
@@ -34,7 +35,6 @@
     "@types/react-dom": "^18.3.1",
     "@vitejs/plugin-react": "^4.3.3",
     "autoprefixer": "^10.4.20",
-    "firebase-tools": "^13.29.1",
     "postcss": "^8.4.47",
     "tailwindcss": "^3.4.15",
     "typescript": "^5.6.3",

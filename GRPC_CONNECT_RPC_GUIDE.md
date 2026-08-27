@@ -275,7 +275,7 @@ npx @bufbuild/buf generate
 
 ### Frontend Web Client & Interceptors
 
-Located in [`src/services/connectRpc.ts`](file:///home/vresende/Documents/vitoresende-dev/pokedex-tcg/src/services/connectRpc.ts):
+Located in [`src/services/connectRpc.ts`](src/services/connectRpc.ts):
 
 ```typescript
 import { createConnectTransport } from '@connectrpc/connect-web';
@@ -312,7 +312,7 @@ export function getConnectTransport(useBinary: boolean = true, token?: string) {
 
 ### Backend Serverless Implementation (Firebase Functions 2nd Gen)
 
-Located in [`functions/src/index.ts`](file:///home/vresende/Documents/vitoresende-dev/pokedex-tcg/functions/src/index.ts):
+Located in [`functions/src/index.ts`](functions/src/index.ts):
 
 ```typescript
 import { onRequest } from "firebase-functions/v2/https";
@@ -393,12 +393,12 @@ export const api = onRequest({ region: "southamerica-east1", cors: true }, app);
 ## 8. Developer Workflow & How to Extend
 
 ### 1. Adding a New RPC Method
-1. Edit [`proto/pokedex/v1/pokedex.proto`](file:///home/vresende/Documents/vitoresende-dev/pokedex-tcg/proto/pokedex/v1/pokedex.proto) and add your new RPC and message types.
+1. Edit [`proto/pokedex/v1/pokedex.proto`](proto/pokedex/v1/pokedex.proto) and add your new RPC and message types.
 2. Run code generation:
    ```bash
    npx @bufbuild/buf generate
    ```
-3. Implement the handler in [`functions/src/index.ts`](file:///home/vresende/Documents/vitoresende-dev/pokedex-tcg/functions/src/index.ts).
+3. Implement the handler in [`functions/src/index.ts`](functions/src/index.ts).
 4. Deploy the updated backend:
    ```bash
    npm run firebase:functions

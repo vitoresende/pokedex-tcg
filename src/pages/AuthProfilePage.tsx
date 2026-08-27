@@ -8,7 +8,7 @@ import {
 import { soundEffects } from '../services/audio';
 
 export const AuthProfilePage: React.FC = () => {
-  const { user, isAllowed, allowedEmails, loginWithGoogle, logout } = useAuth();
+  const { user, isAllowed, allowedEmails, authError, clearAuthError, loginWithGoogle, logout } = useAuth();
   const { syncToCloud, syncing, stats } = useCollection();
   const [syncSuccess, setSyncSuccess] = useState<boolean>(false);
   const [photoError, setPhotoError] = useState<boolean>(false);
@@ -97,6 +97,19 @@ export const AuthProfilePage: React.FC = () => {
             )}
           </div>
         </div>
+
+        {/* Authentication Error Banner */}
+        {authError && (
+          <div className="mt-4 bg-red-950/80 border-2 border-red-500/80 rounded-2xl p-4 text-left font-mono text-xs space-y-2 relative shadow-lg animate-in fade-in">
+            <div className="flex items-center space-x-2 text-red-300 font-bold">
+              <AlertTriangle className="w-4 h-4 text-amber-400 shrink-0" />
+              <span>Authentication Error</span>
+            </div>
+            <p className="text-slate-200 text-xs font-sans leading-relaxed">
+              {authError}
+            </p>
+          </div>
+        )}
       </div>
 
       {/* Whitelist Configuration Display */}

@@ -31,7 +31,9 @@ dist-ssr
 
 # Firebase
 .firebase
+.firebaserc
 .firebaserc.local
+firebase.json
 serviceAccountKey.json
 functions/node_modules
 functions/lib
