@@ -3,7 +3,6 @@ import { Card } from '../types';
 import { HoloCard } from './HoloCard';
 import { Heart, Plus, Minus, Layers } from 'lucide-react';
 import { useCollection } from '../context/CollectionContext';
-import { useAuth } from '../context/AuthContext';
 import { soundEffects } from '../services/audio';
 
 interface CardItemProps {
@@ -13,7 +12,6 @@ interface CardItemProps {
 
 export const CardItem: React.FC<CardItemProps> = ({ card, onSelect }) => {
   const { favorites, toggleFavorite, updateCardQuantity } = useCollection();
-  const { isAllowed } = useAuth();
   const isFavorite = favorites.includes(card.id);
 
   const handleCardClick = () => {
@@ -47,7 +45,7 @@ export const CardItem: React.FC<CardItemProps> = ({ card, onSelect }) => {
         {/* Favorite Button */}
         <button
           onClick={handleFavoriteClick}
-          aria-label={isFavorite ? "Remover dos favoritos" : "Adicionar aos favoritos"}
+          aria-label={isFavorite ? "Remove from favorites" : "Add to favorites"}
           className={`absolute top-2 left-2 z-30 p-1.5 rounded-full backdrop-blur-md transition-transform active:scale-90 ${
             isFavorite 
               ? 'bg-red-500/90 text-white shadow-md' 
@@ -71,7 +69,7 @@ export const CardItem: React.FC<CardItemProps> = ({ card, onSelect }) => {
           <div className="absolute bottom-2 left-2 z-30 flex items-center space-x-1">
             <span className="bg-purple-900/90 border border-purple-400/40 text-purple-200 text-[10px] font-bold px-1.5 py-0.5 rounded-md flex items-center gap-1 shadow">
               <Layers className="w-2.5 h-2.5" />
-              <span>D{card.decks.map(d => d.replace('deck-', '')).join(',') }</span>
+              <span>D{card.decks.map(d => d.replace('deck-', '')).join(',')}</span>
             </span>
           </div>
         )}
@@ -80,8 +78,8 @@ export const CardItem: React.FC<CardItemProps> = ({ card, onSelect }) => {
       {/* Card Information */}
       <div className="space-y-1">
         <div className="flex items-start justify-between gap-1">
-          <h3 className="font-bold text-xs text-white truncate group-hover:text-pokedex-cyan transition-colors" title={card.name_pt}>
-            {card.name_pt}
+          <h3 className="font-bold text-xs text-white truncate group-hover:text-pokedex-cyan transition-colors" title={card.name_en || card.name_pt}>
+            {card.name_en || card.name_pt}
           </h3>
           <span 
             className="text-[10px] font-mono font-bold px-1.5 py-0.2 rounded border uppercase tracking-wider shrink-0"
@@ -96,11 +94,11 @@ export const CardItem: React.FC<CardItemProps> = ({ card, onSelect }) => {
         </div>
 
         <div className="flex items-center justify-between text-[10px] text-slate-400 font-mono">
-          <span className="truncate max-w-[90px]">{card.set_pt}</span>
+          <span className="truncate max-w-[90px]">{card.set_en || card.set_pt}</span>
           <span className="bg-slate-800 px-1 rounded text-slate-300">#{card.card_number}</span>
         </div>
 
-        {/* Quick Quantity Modifier (Always available or when authenticated) */}
+        {/* Quick Quantity Modifier */}
         <div className="pt-1.5 border-t border-slate-800/80 flex items-center justify-between">
           <span className="text-[10px] text-slate-400 font-mono">
             {card.rarity_name}
@@ -109,7 +107,7 @@ export const CardItem: React.FC<CardItemProps> = ({ card, onSelect }) => {
             <button
               onClick={(e) => handleQuantityDelta(e, -1)}
               disabled={card.quantity <= 0}
-              aria-label="Diminuir quantidade"
+              aria-label="Decrease quantity"
               className="w-6 h-6 rounded bg-slate-800 hover:bg-slate-700 disabled:opacity-30 text-slate-200 flex items-center justify-center text-xs active:scale-95 transition-all"
             >
               <Minus className="w-3 h-3" />
@@ -119,7 +117,7 @@ export const CardItem: React.FC<CardItemProps> = ({ card, onSelect }) => {
             </span>
             <button
               onClick={(e) => handleQuantityDelta(e, 1)}
-              aria-label="Aumentar quantidade"
+              aria-label="Increase quantity"
               className="w-6 h-6 rounded bg-pokedex-blue/80 hover:bg-pokedex-blue text-white flex items-center justify-center text-xs active:scale-95 transition-all shadow"
             >
               <Plus className="w-3 h-3" />

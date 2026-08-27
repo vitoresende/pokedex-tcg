@@ -3,17 +3,16 @@ import { useAuth } from '../context/AuthContext';
 import { useCollection } from '../context/CollectionContext';
 import { 
   User, ShieldCheck, ShieldAlert, LogIn, LogOut, Cloud, 
-  Terminal, Database, UploadCloud, CheckCircle2, Sparkles, AlertTriangle
+  CheckCircle2, AlertTriangle, Sparkles, UploadCloud 
 } from 'lucide-react';
 import { soundEffects } from '../services/audio';
 
 export const AuthProfilePage: React.FC = () => {
   const { user, isAllowed, allowedEmails, loginWithGoogle, logout, loginAsDemoUser } = useAuth();
-  const { stats, syncToCloud, syncing } = useCollection();
+  const { syncToCloud, syncing, stats } = useCollection();
   const [syncSuccess, setSyncSuccess] = useState<boolean>(false);
 
   const handleSync = async () => {
-    soundEffects.playClick();
     const success = await syncToCloud();
     if (success) {
       setSyncSuccess(true);
@@ -23,86 +22,92 @@ export const AuthProfilePage: React.FC = () => {
 
   return (
     <div className="space-y-6 pb-24 animate-in fade-in duration-300">
+      {/* Header */}
+      <div>
+        <h2 className="text-xl font-black font-display text-white flex items-center gap-2">
+          <User className="w-5 h-5 text-yellow-300" />
+          <span>User Authentication & Cloud Storage</span>
+        </h2>
+        <p className="text-xs text-slate-400 font-mono">
+          Google OAuth 2.0 (Gmail), security whitelist enforcement, and Cloud Firestore sync
+        </p>
+      </div>
+
       {/* User Status Card */}
       <div className="bg-pokedex-card/95 rounded-3xl border border-slate-800 p-5 sm:p-6 shadow-xl space-y-4">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div className="flex items-center space-x-4">
-            <div className="relative">
-              {user?.photoURL ? (
-                <img 
-                  src={user.photoURL} 
-                  alt={user.displayName || 'Treinador'} 
-                  className="w-16 h-16 rounded-3xl object-cover border-2 border-white/40 shadow-lg"
-                />
-              ) : (
-                <div className="w-16 h-16 rounded-3xl bg-pokedex-red text-white flex items-center justify-center font-display font-black text-2xl border-2 border-pokedex-darkred shadow-lg">
-                  {user?.email ? user.email[0].toUpperCase() : <User className="w-8 h-8" />}
-                </div>
-              )}
-              {user && (
-                <span className={`absolute -bottom-1 -right-1 p-1 rounded-full border-2 border-slate-900 ${
-                  isAllowed ? 'bg-emerald-500 text-white' : 'bg-amber-500 text-white'
-                }`}>
-                  {isAllowed ? <ShieldCheck className="w-3.5 h-3.5" /> : <ShieldAlert className="w-3.5 h-3.5" />}
-                </span>
-              )}
-            </div>
+            {user?.photoURL ? (
+              <img 
+                src={user.photoURL} 
+                alt={user.displayName || 'User'} 
+                className="w-14 h-14 rounded-2xl object-cover border-2 border-slate-700 shadow-md"
+              />
+            ) : (
+              <div className="w-14 h-14 rounded-2xl bg-pokedex-red/30 border border-pokedex-red/60 text-pokedex-lightred flex items-center justify-center font-display font-black text-xl">
+                {user ? (user.displayName?.[0] || user.email?.[0] || 'U').toUpperCase() : 'P'}
+              </div>
+            )}
 
             <div>
               <div className="flex items-center space-x-2">
-                <h2 className="text-xl font-bold font-sans text-white">
-                  {user ? (user.displayName || 'Treinador Pokémon') : 'Sessão Não Iniciada'}
-                </h2>
+                <h3 className="text-lg font-bold font-sans text-white">
+                  {user ? (user.displayName || 'Authenticated User') : 'Guest Mode (Anonymous)'}
+                </h3>
                 {user && (
-                  <span className={`text-[10px] font-mono font-bold px-2 py-0.5 rounded-full ${
-                    isAllowed ? 'bg-emerald-950 text-emerald-300 border border-emerald-500/40' : 'bg-amber-950 text-amber-300 border border-amber-500/40'
-                  }`}>
-                    {isAllowed ? 'Acesso Total' : 'Modo Visitante'}
-                  </span>
+                  isAllowed ? (
+                    <span className="bg-emerald-950 text-emerald-300 text-[10px] font-mono px-2 py-0.5 rounded-full border border-emerald-800 flex items-center gap-1 font-bold">
+                      <ShieldCheck className="w-3 h-3" /> Whitelisted
+                    </span>
+                  ) : (
+                    <span className="bg-amber-950 text-amber-300 text-[10px] font-mono px-2 py-0.5 rounded-full border border-amber-800 flex items-center gap-1 font-bold">
+                      <ShieldAlert className="w-3 h-3" /> Restricted
+                    </span>
+                  )
                 )}
               </div>
-              <p className="text-xs font-mono text-slate-400 mt-0.5">
-                {user ? user.email : 'Conecte sua conta do Google (Gmail) para gerenciar seu acervo'}
+              <p className="text-xs text-slate-400 font-mono mt-0.5">
+                {user ? user.email : 'Sign in with your Google account to sync collection to Firestore'}
               </p>
             </div>
           </div>
 
-          {/* Login / Logout Button */}
+          {/* Login / Logout Action */}
           <div>
             {user ? (
               <button
                 onClick={logout}
-                className="bg-slate-800 hover:bg-red-600/80 text-white font-bold px-5 py-2.5 rounded-2xl border border-slate-700 text-xs flex items-center space-x-2 transition-all active:scale-95 shadow"
+                className="w-full sm:w-auto bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold px-4 py-2 rounded-xl text-xs flex items-center justify-center space-x-2 border border-slate-700 transition-colors"
               >
-                <LogOut className="w-4 h-4" />
-                <span>Desconectar</span>
+                <LogOut className="w-4 h-4 text-red-400" />
+                <span>Sign Out</span>
               </button>
             ) : (
               <button
                 onClick={loginWithGoogle}
-                className="bg-pokedex-red hover:bg-pokedex-lightred text-white font-bold px-5 py-2.5 rounded-2xl border border-white/20 text-xs flex items-center space-x-2 transition-all active:scale-95 shadow-md shadow-pokedex-red/30"
+                className="w-full sm:w-auto bg-pokedex-red hover:bg-pokedex-lightred text-white font-bold px-5 py-2.5 rounded-xl text-xs flex items-center justify-center space-x-2 shadow-lg transition-all active:scale-95 border border-white/20"
               >
                 <LogIn className="w-4 h-4 text-yellow-300" />
-                <span>Entrar com Gmail (Google)</span>
+                <span>Sign In with Google (Gmail)</span>
               </button>
             )}
           </div>
         </div>
 
-        {/* Quick Testing Switchers (Demo Mode) */}
+        {/* Demo Fast Switch Buttons (Development Helper) */}
         <div className="pt-3 border-t border-slate-800/80 flex flex-wrap items-center gap-2 text-xs font-mono">
-          <span className="text-slate-400 text-[10px] uppercase">Simulação para testes locais:</span>
+          <span className="text-slate-500 text-[10px] uppercase">Testing Simulator:</span>
           <button
             onClick={() => loginAsDemoUser(true)}
             className="bg-emerald-950/60 hover:bg-emerald-900/80 text-emerald-300 border border-emerald-500/40 px-3 py-1 rounded-xl text-[11px] font-bold transition-colors"
           >
-            Simular Login Autorizado (Whitelist OK)
+            Simulate Authorized Login
           </button>
           <button
             onClick={() => loginAsDemoUser(false)}
             className="bg-amber-950/60 hover:bg-amber-900/80 text-amber-300 border border-amber-500/40 px-3 py-1 rounded-xl text-[11px] font-bold transition-colors"
           >
-            Simular Login Não Autorizado (Bloqueio)
+            Simulate Unauthorized Login (Blocked)
           </button>
         </div>
       </div>
@@ -111,10 +116,10 @@ export const AuthProfilePage: React.FC = () => {
       <div className="bg-pokedex-card/90 rounded-3xl border border-slate-800 p-5 space-y-3 font-mono text-xs shadow-md">
         <div className="flex items-center space-x-2 text-white font-bold">
           <ShieldCheck className="w-4 h-4 text-emerald-400" />
-          <span>E-mails Autorizados no .env (VITE_ALLOWED_EMAILS)</span>
+          <span>Authorized Whitelisted Emails (VITE_ALLOWED_EMAILS)</span>
         </div>
         <p className="text-slate-400 font-sans text-[11px]">
-          Apenas usuários autenticados cujos e-mails estejam definidos nesta lista terão permissão de salvar no banco de dados.
+          Only authenticated users whose email address appears in this list are authorized to sync and persist changes to the cloud database.
         </p>
         <div className="bg-pokedex-darker p-3 rounded-2xl border border-slate-800 space-y-1">
           {allowedEmails.length > 0 ? (
@@ -125,7 +130,7 @@ export const AuthProfilePage: React.FC = () => {
               </div>
             ))
           ) : (
-            <div className="text-slate-400 italic">Nenhum e-mail especificado (modo aberto para testes).</div>
+            <div className="text-slate-400 italic">No emails configured (open development mode).</div>
           )}
         </div>
       </div>
@@ -135,17 +140,17 @@ export const AuthProfilePage: React.FC = () => {
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-2">
             <Cloud className="w-5 h-5 text-pokedex-blue" />
-            <h3 className="font-bold text-sm text-white font-mono uppercase">Sincronização em Nuvem (Cloud Firestore)</h3>
+            <h3 className="font-bold text-sm text-white font-mono uppercase">Cloud Database Sync (Cloud Firestore)</h3>
           </div>
           {syncSuccess && (
             <span className="text-emerald-400 text-xs font-mono font-bold flex items-center gap-1">
-              <CheckCircle2 className="w-4 h-4" /> Sincronizado com Sucesso!
+              <CheckCircle2 className="w-4 h-4" /> Successfully Synced!
             </span>
           )}
         </div>
 
         <p className="text-xs text-slate-300 font-sans">
-          Envie as alterações de quantidades, notas pessoais e favoritos da sua coleção para a sua conta no Cloud Firestore.
+          Sync your card collection quantities, personal strategic notes, custom decks, and favorites to Cloud Firestore.
         </p>
 
         <button
@@ -154,35 +159,35 @@ export const AuthProfilePage: React.FC = () => {
           className="w-full bg-pokedex-blue hover:bg-blue-600 disabled:opacity-40 text-white font-bold py-3 rounded-2xl shadow-lg transition-all active:scale-95 flex items-center justify-center space-x-2 text-xs font-mono uppercase"
         >
           <Cloud className="w-4 h-4" />
-          <span>{syncing ? 'Sincronizando com Firestore...' : 'Sincronizar Acervo na Nuvem'}</span>
+          <span>{syncing ? 'Syncing with Firestore...' : 'Sync Collection to Cloud'}</span>
         </button>
 
         {!isAllowed && user && (
           <div className="text-amber-400 text-[11px] font-mono flex items-center gap-1.5">
             <AlertTriangle className="w-3.5 h-3.5 shrink-0" />
-            <span>Adicione seu e-mail em VITE_ALLOWED_EMAILS para habilitar sincronização em nuvem.</span>
+            <span>Add your email to VITE_ALLOWED_EMAILS in .env to enable cloud synchronization.</span>
           </div>
         )}
       </div>
 
-      {/* Firebase Storage Guide & CLI commands */}
+      {/* Firebase Storage Guide & CLI Commands */}
       <div className="bg-pokedex-darker rounded-3xl border border-slate-800 p-5 space-y-3 font-mono text-xs">
         <div className="flex items-center space-x-2 text-cyan-300 font-bold">
           <UploadCloud className="w-4 h-4" />
-          <span>Script de Imagens & Firebase Storage</span>
+          <span>Firebase Storage Image Pipeline</span>
         </div>
         <p className="text-slate-400 font-sans text-[11px]">
-          Todas as 279 imagens de cartas do seu acervo já estão baixadas na pasta local <code className="bg-slate-800 text-yellow-300 px-1 py-0.5 rounded">public/cards/</code>.
+          Cards automatically resolve high-resolution images from official CDNs or your private <strong>Firebase Storage</strong> bucket configured in <code className="bg-slate-800 text-yellow-300 px-1 py-0.5 rounded">.env</code>.
         </p>
 
         <div className="bg-black/60 p-3 rounded-2xl border border-slate-800 space-y-2 text-[11px] text-slate-300">
-          <div className="text-slate-400"># 1. Para rodar o download de novas cartas novamente:</div>
+          <div className="text-slate-400"># 1. Download card images in batch to temporary storage:</div>
           <div className="text-yellow-300">npm run download:cards</div>
           
-          <div className="text-slate-400 pt-1"># 2. Para fazer o upload em massa para o seu Firebase Storage:</div>
-          <div className="text-yellow-300">npm run upload:firebase &lt;seu-bucket.appspot.com&gt;</div>
+          <div className="text-slate-400 pt-1"># 2. Upload all downloaded images to Firebase Storage:</div>
+          <div className="text-yellow-300">npm run upload:firebase &lt;your-bucket.appspot.com&gt;</div>
 
-          <div className="text-slate-400 pt-1"># 3. Para fazer o deploy da aplicação no Firebase Hosting:</div>
+          <div className="text-slate-400 pt-1"># 3. Deploy full frontend and backend to Firebase Hosting:</div>
           <div className="text-yellow-300">firebase deploy</div>
         </div>
       </div>

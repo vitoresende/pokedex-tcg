@@ -9,7 +9,7 @@ import {
 } from 'firebase/auth';
 import { getFirestore, doc, setDoc, getDoc, collection, Firestore } from 'firebase/firestore';
 
-// Configuração lida do ambiente (.env)
+// Configuration read from environment variables (.env)
 const firebaseConfig = {
   apiKey: import.meta.env.VITE_FIREBASE_API_KEY || 'AIzaSyDemoKeyForPokedexDev123',
   authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN || 'pokedex-tcg-master.firebaseapp.com',
@@ -19,7 +19,7 @@ const firebaseConfig = {
   appId: import.meta.env.VITE_FIREBASE_APP_ID || '1:1234567890:web:abcdef123456'
 };
 
-// Inicialização segura
+// Safe initialization
 let app: FirebaseApp;
 let auth: ReturnType<typeof getAuth>;
 let db: Firestore;
@@ -35,7 +35,7 @@ try {
   db = getFirestore(app);
   isFirebaseConfigured = true;
 } catch (err) {
-  console.warn('Firebase em modo local/offline:', err);
+  console.warn('Firebase running in local/offline mode:', err);
 }
 
 const googleProvider = new GoogleAuthProvider();
@@ -44,7 +44,7 @@ googleProvider.setCustomParameters({
 });
 
 /**
- * Obtém a lista de e-mails permitidos a partir do .env
+ * Returns allowed email addresses defined in .env
  */
 export function getAllowedEmails(): string[] {
   const envEmails = import.meta.env.VITE_ALLOWED_EMAILS || '';
@@ -55,22 +55,22 @@ export function getAllowedEmails(): string[] {
 }
 
 /**
- * Verifica se um determinado e-mail está na lista de permissões (.env)
+ * Checks if a given email is whitelisted in .env
  */
 export function isEmailAllowed(email: string | null | undefined): boolean {
   if (!email) return false;
   const allowed = getAllowedEmails();
-  // Se não houver e-mails configurados, permite todos em modo de desenvolvimento
+  // If no emails configured, allow in development mode
   if (allowed.length === 0) return true;
   return allowed.includes(email.trim().toLowerCase());
 }
 
 /**
- * Login com Google (Gmail)
+ * Google OAuth Sign-In (Gmail)
  */
 export async function loginWithGoogle(): Promise<{ user: FirebaseUser; isAllowed: boolean }> {
   if (!auth) {
-    throw new Error('Firebase Auth não inicializado');
+    throw new Error('Firebase Auth not initialized');
   }
   const result = await signInWithPopup(auth, googleProvider);
   const user = result.user;
@@ -79,7 +79,7 @@ export async function loginWithGoogle(): Promise<{ user: FirebaseUser; isAllowed
 }
 
 /**
- * Logout do Firebase
+ * Sign out current user
  */
 export async function logoutUser(): Promise<void> {
   if (auth) {
@@ -88,13 +88,14 @@ export async function logoutUser(): Promise<void> {
 }
 
 /**
- * Salva as alterações da coleção do usuário no Firestore
+ * Sync user collection and custom decks to Cloud Firestore
  */
 export async function syncUserCollectionToFirestore(
   userId: string, 
   quantities: Record<string, number>, 
   notes: Record<string, string>,
-  favorites: string[]
+  favorites: string[],
+  decks?: any[]
 ) {
   if (!db || !userId) return;
   try {
@@ -103,17 +104,18 @@ export async function syncUserCollectionToFirestore(
       lastUpdated: new Date().toISOString(),
       quantities,
       notes,
-      favorites
+      favorites,
+      ...(decks ? { decks } : {})
     }, { merge: true });
     return true;
   } catch (error) {
-    console.error('Erro ao sincronizar com Firestore:', error);
+    console.error('Error syncing to Firestore:', error);
     throw error;
   }
 }
 
 /**
- * Carrega a coleção do usuário a partir do Firestore
+ * Load user collection and custom decks from Cloud Firestore
  */
 export async function loadUserCollectionFromFirestore(userId: string) {
   if (!db || !userId) return null;
@@ -125,7 +127,7 @@ export async function loadUserCollectionFromFirestore(userId: string) {
     }
     return null;
   } catch (error) {
-    console.error('Erro ao carregar do Firestore:', error);
+    console.error('Error loading from Firestore:', error);
     return null;
   }
 }

@@ -7,8 +7,8 @@ import decksData from '../data/decks.json';
 const CONNECT_RPC_BASE_URL = import.meta.env.VITE_CONNECT_RPC_URL || 'https://southamerica-east1-pokedex-tcg-master.cloudfunctions.net/api';
 
 /**
- * Interceptor de Autenticação para Connect-RPC:
- * Injeta o token Bearer do Firebase Auth no cabeçalho Authorization
+ * Authentication Interceptor for Connect-RPC:
+ * Injects Firebase Auth JWT Bearer token into Authorization header
  */
 export function createAuthInterceptor(authToken?: string): Interceptor {
   return (next) => async (req) => {
@@ -21,7 +21,7 @@ export function createAuthInterceptor(authToken?: string): Interceptor {
 }
 
 /**
- * Cria o transporte Connect-RPC configurado para a Web
+ * Creates configured Connect-RPC web transport
  */
 export function getConnectTransport(useBinary: boolean = true, token?: string) {
   return createConnectTransport({
@@ -32,26 +32,26 @@ export function getConnectTransport(useBinary: boolean = true, token?: string) {
 }
 
 /**
- * Motor Simulado & Live do Playground gRPC / Connect-RPC:
- * Executa chamadas e calcula métricas precisas de economia de banda (Protobuf vs JSON)
+ * Simulated & Live Connect-RPC Playground Engine:
+ * Executes RPC calls and calculates precise wire size reduction metrics (Protobuf vs JSON)
  */
 export class ConnectRpcPlayground {
   private callHistory: RpcCallRecord[] = [];
 
   /**
-   * Calcula o tamanho aproximado de bytes de um payload serializado
+   * Calculates approximate byte lengths for serialized payloads
    */
   private calculateSizes(data: any): { jsonBytes: number; protoBytes: number } {
     const jsonStr = JSON.stringify(data);
     const jsonBytes = new TextEncoder().encode(jsonStr).length;
-    // O Protobuf binário elimina nomes de campos textuais e empacota inteiros via varint/tags numéricas,
-    // alcançando tipicamente entre 60% e 75% de redução de tamanho de transporte.
+    // Binary Protobuf omits string field names and packs integers with varints/field tags,
+    // typically achieving between 60% and 75% wire size reduction.
     const protoBytes = Math.max(12, Math.round(jsonBytes * 0.32));
     return { jsonBytes, protoBytes };
   }
 
   /**
-   * Executa uma chamada RPC simulada ou live com medição completa
+   * Executes a simulated or live RPC call with telemetry
    */
   public async executeRpcCall(
     service: string,
@@ -62,7 +62,7 @@ export class ConnectRpcPlayground {
   ): Promise<RpcCallRecord> {
     const startTime = performance.now();
     
-    // Simula atraso realista de rede se for chamada simulada
+    // Simulate realistic network delay
     await new Promise((resolve) => setTimeout(resolve, 80 + Math.random() * 70));
 
     let responseData: any;
@@ -73,8 +73,8 @@ export class ConnectRpcPlayground {
         if (method === 'GetUser') {
           responseData = {
             userId: params.userId || 'usr_78912',
-            displayName: 'Vitor Resende',
-            email: 'vitoresende.dev@gmail.com',
+            displayName: 'Trainer Ash',
+            email: 'trainer@pokemon.com',
             createdAt: '1724688000000',
             isAllowed: true,
             favoriteCardIds: ['tcg-001', 'tcg-026', 'tcg-048']
@@ -90,7 +90,7 @@ export class ConnectRpcPlayground {
           const limit = params.pageSize || 10;
           const query = (params.query || '').toLowerCase();
           const filtered = (cardsData as any[]).filter(c => 
-            c.name_pt.toLowerCase().includes(query) || c.name_en.toLowerCase().includes(query)
+            c.name_pt.toLowerCase().includes(query) || (c.name_en && c.name_en.toLowerCase().includes(query))
           ).slice(0, limit);
           
           responseData = {
@@ -145,11 +145,11 @@ export class ConnectRpcPlayground {
           };
         }
       } else {
-        throw new Error(`Serviço desconhecido: ${service}`);
+        throw new Error(`Unknown service: ${service}`);
       }
     } catch (err: any) {
       isSuccess = false;
-      responseData = { error: err.message || 'Falha na chamada RPC' };
+      responseData = { error: err.message || 'RPC Call Failed' };
     }
 
     const durationMs = Math.round(performance.now() - startTime);

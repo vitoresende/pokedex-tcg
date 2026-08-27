@@ -1,505 +1,473 @@
 import React, { useState } from 'react';
+import { 
+  Server, Zap, Shield, CheckCircle2, XCircle, Code, 
+  Terminal, ArrowRight, Play, RefreshCw, FileCode, Check 
+} from 'lucide-react';
+import { soundEffects } from '../services/audio';
 import { rpcPlayground } from '../services/connectRpc';
 import { RpcCallRecord } from '../types';
-import { 
-  Server, Cpu, Layers, CheckCircle2, XCircle, ArrowRight, 
-  Terminal, ShieldCheck, Zap, RefreshCw, Code, BookOpen, Clock, Activity, HardDrive
-} from 'lucide-react';
-import { useAuth } from '../context/AuthContext';
-import { soundEffects } from '../services/audio';
 
 export const GrpcLearningHub: React.FC = () => {
-  const { user } = useAuth();
-  
-  // Playground State
-  const [selectedService, setSelectedService] = useState<'UserService' | 'PokedexService'>('PokedexService');
-  const [selectedMethod, setSelectedMethod] = useState<string>('GetCard');
-  const [useBinaryFormat, setUseBinaryFormat] = useState<boolean>(true);
-  const [requestPayloadText, setRequestPayloadText] = useState<string>('{\n  "cardId": "tcg-026"\n}');
-  const [executing, setExecuting] = useState<boolean>(false);
-  const [lastRecord, setLastRecord] = useState<RpcCallRecord | null>(null);
   const [activeTab, setActiveTab] = useState<'tutorial' | 'playground' | 'proto' | 'comparison'>('tutorial');
+  
+  // Interactive RPC Playground State
+  const [selectedService, setSelectedService] = useState<'PokedexService' | 'UserService'>('PokedexService');
+  const [selectedMethod, setSelectedMethod] = useState<string>('ListCards');
+  const [payloadFormat, setPayloadFormat] = useState<'Protobuf (Binary)' | 'JSON (Connect)'>('Protobuf (Binary)');
+  const [requestQuery, setRequestQuery] = useState<string>('Charizard');
+  const [pageSize, setPageSize] = useState<number>(10);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [lastRecord, setLastRecord] = useState<RpcCallRecord | null>(null);
+  const [history, setHistory] = useState<RpcCallRecord[]>([]);
 
-  const methodOptions: Record<string, { methods: string[]; defaultParams: Record<string, string> }> = {
-    UserService: {
-      methods: ['GetUser', 'UpdateFavorites'],
-      defaultParams: {
-        GetUser: '{\n  "userId": "usr_78912"\n}',
-        UpdateFavorites: '{\n  "userId": "usr_78912",\n  "favoriteCardIds": ["tcg-001", "tcg-026"]\n}'
-      }
-    },
-    PokedexService: {
-      methods: ['GetCard', 'ListCards', 'ListDecks', 'SyncCollection'],
-      defaultParams: {
-        GetCard: '{\n  "cardId": "tcg-026"\n}',
-        ListCards: '{\n  "query": "Charizard",\n  "pageSize": 5,\n  "page": 1\n}',
-        ListDecks: '{}',
-        SyncCollection: '{\n  "userId": "usr_78912",\n  "cardQuantities": {\n    "tcg-001": 2,\n    "tcg-026": 1\n  }\n}'
-      }
-    }
-  };
-
-  const handleServiceChange = (service: 'UserService' | 'PokedexService') => {
+  const handleSelectTab = (tab: 'tutorial' | 'playground' | 'proto' | 'comparison') => {
     soundEffects.playClick();
-    setSelectedService(service);
-    const firstMethod = methodOptions[service].methods[0];
-    setSelectedMethod(firstMethod);
-    setRequestPayloadText(methodOptions[service].defaultParams[firstMethod]);
-  };
-
-  const handleMethodChange = (method: string) => {
-    soundEffects.playClick();
-    setSelectedMethod(method);
-    setRequestPayloadText(methodOptions[selectedService].defaultParams[method] || '{}');
+    setActiveTab(tab);
   };
 
   const handleExecuteCall = async () => {
-    soundEffects.playClick();
-    setExecuting(true);
-    try {
-      let params = {};
-      try {
-        params = JSON.parse(requestPayloadText);
-      } catch (err) {
-        // Fallback for empty
-      }
+    soundEffects.playScan();
+    setLoading(true);
 
-      const format = useBinaryFormat ? 'Protobuf (Binary)' : 'JSON (Connect)';
-      const record = await rpcPlayground.executeRpcCall(
+    const params: any = {};
+    if (selectedService === 'PokedexService') {
+      if (selectedMethod === 'ListCards') {
+        params.query = requestQuery;
+        params.pageSize = Number(pageSize) || 10;
+        params.page = 1;
+      } else if (selectedMethod === 'GetCard') {
+        params.cardId = 'tcg-026';
+      } else if (selectedMethod === 'ListDecks') {
+        params.format = 'expanded';
+      }
+    } else {
+      if (selectedMethod === 'GetUser') {
+        params.userId = 'usr_ash_ketchum_001';
+      } else if (selectedMethod === 'UpdateFavorites') {
+        params.favoriteCardIds = ['tcg-001', 'tcg-054', 'tcg-108'];
+      }
+    }
+
+    try {
+      const result = await rpcPlayground.executeRpcCall(
         selectedService,
         selectedMethod,
         params,
-        format,
-        user?.token
+        payloadFormat
       );
-      setLastRecord(record);
-      soundEffects.playScan();
-    } finally {
-      setExecuting(false);
+      setLastRecord(result);
+      setHistory(rpcPlayground.getHistory());
+      setLoading(false);
+    } catch (err) {
+      setLoading(false);
     }
   };
 
   return (
     <div className="space-y-6 pb-24 animate-in fade-in duration-300">
-      {/* Sub-Navigation */}
-      <div className="flex items-center space-x-2 overflow-x-auto pb-1 no-scrollbar text-xs font-mono">
+      {/* Header */}
+      <div>
+        <div className="flex items-center space-x-2">
+          <Server className="w-5 h-5 text-cyan-400" />
+          <h2 className="text-xl font-black font-display text-white">
+            gRPC & Connect-RPC Masterclass
+          </h2>
+          <span className="bg-cyan-950 text-cyan-300 text-[10px] font-mono font-bold px-2 py-0.5 rounded-full border border-cyan-800/60">
+            HTTP/2 & HTTP/3 + Protobuf
+          </span>
+        </div>
+        <p className="text-xs text-slate-400 font-mono mt-1">
+          Complete guide, architectural deep-dive, Protocol Buffers schema viewer, and interactive live RPC playground
+        </p>
+      </div>
+
+      {/* Nav Switcher */}
+      <div className="flex bg-pokedex-card/90 p-1.5 rounded-2xl border border-slate-800 space-x-1 text-xs font-mono overflow-x-auto no-scrollbar">
         <button
-          onClick={() => { soundEffects.playClick(); setActiveTab('tutorial'); }}
-          className={`px-4 py-2 rounded-2xl whitespace-nowrap transition-all border flex items-center space-x-2 ${
+          onClick={() => handleSelectTab('tutorial')}
+          className={`flex-1 py-2 px-3 rounded-xl whitespace-nowrap transition-all font-bold ${
             activeTab === 'tutorial'
-              ? 'bg-pokedex-red text-white font-bold border-yellow-400/80 shadow-md'
-              : 'bg-pokedex-card/90 text-slate-300 border-slate-800'
+              ? 'bg-pokedex-red text-white shadow-md'
+              : 'text-slate-400 hover:text-slate-200'
           }`}
         >
-          <BookOpen className="w-4 h-4 text-yellow-300" />
-          <span>Guia Completo & Arquitetura</span>
+          1. Concept & Architecture
         </button>
-
         <button
-          onClick={() => { soundEffects.playClick(); setActiveTab('playground'); }}
-          className={`px-4 py-2 rounded-2xl whitespace-nowrap transition-all border flex items-center space-x-2 ${
-            activeTab === 'playground'
-              ? 'bg-pokedex-red text-white font-bold border-yellow-400/80 shadow-md'
-              : 'bg-pokedex-card/90 text-slate-300 border-slate-800'
-          }`}
-        >
-          <Terminal className="w-4 h-4 text-yellow-300" />
-          <span>Playground Interativo RPC</span>
-        </button>
-
-        <button
-          onClick={() => { soundEffects.playClick(); setActiveTab('comparison'); }}
-          className={`px-4 py-2 rounded-2xl whitespace-nowrap transition-all border flex items-center space-x-2 ${
+          onClick={() => handleSelectTab('comparison')}
+          className={`flex-1 py-2 px-3 rounded-xl whitespace-nowrap transition-all font-bold ${
             activeTab === 'comparison'
-              ? 'bg-pokedex-red text-white font-bold border-yellow-400/80 shadow-md'
-              : 'bg-pokedex-card/90 text-slate-300 border-slate-800'
+              ? 'bg-pokedex-red text-white shadow-md'
+              : 'text-slate-400 hover:text-slate-200'
           }`}
         >
-          <Activity className="w-4 h-4 text-yellow-300" />
-          <span>Matriz: gRPC vs REST vs GraphQL</span>
+          2. Comparison Matrix
         </button>
-
         <button
-          onClick={() => { soundEffects.playClick(); setActiveTab('proto'); }}
-          className={`px-4 py-2 rounded-2xl whitespace-nowrap transition-all border flex items-center space-x-2 ${
+          onClick={() => handleSelectTab('proto')}
+          className={`flex-1 py-2 px-3 rounded-xl whitespace-nowrap transition-all font-bold ${
             activeTab === 'proto'
-              ? 'bg-pokedex-red text-white font-bold border-yellow-400/80 shadow-md'
-              : 'bg-pokedex-card/90 text-slate-300 border-slate-800'
+              ? 'bg-pokedex-red text-white shadow-md'
+              : 'text-slate-400 hover:text-slate-200'
           }`}
         >
-          <Code className="w-4 h-4 text-yellow-300" />
-          <span>Contratos .proto & Buf</span>
+          3. Protobuf Contracts (.proto)
+        </button>
+        <button
+          onClick={() => handleSelectTab('playground')}
+          className={`flex-1 py-2 px-3 rounded-xl whitespace-nowrap transition-all font-bold ${
+            activeTab === 'playground'
+              ? 'bg-pokedex-red text-white shadow-md'
+              : 'text-slate-400 hover:text-slate-200'
+          }`}
+        >
+          4. Live RPC Playground
         </button>
       </div>
 
-      {/* TAB 1: TUTORIAL & ARQUITETURA */}
+      {/* TAB 1: TUTORIAL & ARCHITECTURE */}
       {activeTab === 'tutorial' && (
-        <div className="space-y-5">
-          {/* Hero Banner */}
-          <div className="bg-pokedex-card/95 rounded-3xl p-5 sm:p-6 border border-slate-800 shadow-xl space-y-3">
-            <div className="flex items-center space-x-2 text-xs font-mono text-cyan-400 uppercase tracking-wider">
-              <Server className="w-4 h-4" />
-              <span>Modern RPC Architecture // Google Cloud & Firebase</span>
-            </div>
-            <h2 className="text-xl sm:text-2xl font-black font-display text-white">
-              Dominando gRPC & Connect RPC na Web Moderna
-            </h2>
-            <p className="text-xs sm:text-sm text-slate-300 leading-relaxed font-sans">
-              O <strong>gRPC</strong> é um framework RPC de altíssimo desempenho criado pelo Google. No entanto, sua adoção direta em navegadores tradicionais sempre enfrentou o obstáculo dos frames HTTP/2. Descubra como a evolução para o <strong>Connect RPC (Buf)</strong> resolveu isso para aplicações Serverless no Firebase sem necessidade de proxies intermediários.
+        <div className="space-y-6">
+          {/* Executive Overview */}
+          <div className="bg-pokedex-card/95 rounded-3xl border border-slate-800 p-5 sm:p-6 shadow-xl space-y-4">
+            <h3 className="text-lg font-bold font-display text-white flex items-center gap-2">
+              <Zap className="w-5 h-5 text-yellow-300" />
+              <span>What is gRPC & Why Does Connect-RPC Solve Browser Limitations?</span>
+            </h3>
+            
+            <p className="text-xs text-slate-300 leading-relaxed font-sans">
+              <strong>gRPC (Google Remote Procedure Call)</strong> is an open-source high-performance RPC framework created by Google. Instead of transferring verbose human-readable JSON over standard HTTP/1.1 REST endpoints, gRPC serializes data into compact binary payloads using <strong>Protocol Buffers (Protobuf)</strong> and multiplexes streams over <strong>HTTP/2</strong>.
             </p>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-3 pt-2">
+              <div className="bg-pokedex-darker p-4 rounded-2xl border border-slate-800 space-y-1.5">
+                <span className="text-xs font-bold text-yellow-300 font-mono block">1. Ultra-Compact Wire Size</span>
+                <p className="text-[11px] text-slate-300 font-sans">
+                  Protobuf encodes keys as integer tags (varints) rather than repeating long JSON string property keys, achieving <strong>60% to 75% smaller payloads</strong> on the wire.
+                </p>
+              </div>
+
+              <div className="bg-pokedex-darker p-4 rounded-2xl border border-slate-800 space-y-1.5">
+                <span className="text-xs font-bold text-cyan-300 font-mono block">2. Strict Type Safety</span>
+                <p className="text-[11px] text-slate-300 font-sans">
+                  The <code className="text-yellow-300">.proto</code> schema is the single source of truth. TypeScript, Go, Java, and Python clients are automatically generated at compile time.
+                </p>
+              </div>
+
+              <div className="bg-pokedex-darker p-4 rounded-2xl border border-slate-800 space-y-1.5">
+                <span className="text-xs font-bold text-emerald-300 font-mono block">3. Connect-RPC in Browsers</span>
+                <p className="text-[11px] text-slate-300 font-sans">
+                  Standard gRPC requires raw HTTP/2 framing and trailers which standard web browsers cannot send without an Envoy proxy. <strong>Connect-RPC</strong> works natively with standard HTTP POST requests with zero proxy dependencies.
+                </p>
+              </div>
+            </div>
           </div>
 
-          {/* 4 Pillars of Knowledge Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs font-sans">
-            {/* Pillar 1: O Que é gRPC? */}
-            <div className="bg-pokedex-card/90 rounded-3xl p-5 border border-slate-800 space-y-3 shadow-md">
-              <div className="flex items-center space-x-2 text-yellow-300 font-mono font-bold">
-                <Cpu className="w-4 h-4" />
-                <span>1. O Que é gRPC e Protocol Buffers?</span>
+          {/* Pros and Cons */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {/* Advantages */}
+            <div className="bg-pokedex-card/90 rounded-3xl border border-emerald-900/40 p-5 space-y-3 shadow-md">
+              <div className="flex items-center space-x-2 text-emerald-400 font-bold font-mono text-sm uppercase">
+                <CheckCircle2 className="w-5 h-5" />
+                <span>Key Advantages of gRPC / Connect-RPC</span>
               </div>
-              <p className="text-slate-300 leading-relaxed">
-                Ao contrário de APIs REST convencionais que trocam textos JSON verbosos via URLs dinâmicas, o gRPC define <strong>contratos estritos agnósticos</strong> através de arquivos <code className="bg-slate-800 text-yellow-300 px-1 rounded font-mono">.proto</code> (Protocol Buffers v3).
-              </p>
-              <ul className="space-y-1.5 text-slate-300 font-mono text-[11px]">
-                <li className="flex items-center gap-1.5"><CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 shrink-0" /> Serialização binária ultracompacta (economiza até 70% de banda)</li>
-                <li className="flex items-center gap-1.5"><CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 shrink-0" /> Tipagem de ponta a ponta gerada automaticamente para TypeScript</li>
-                <li className="flex items-center gap-1.5"><CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 shrink-0" /> Multiplexação nativa sobre uma única conexão TCP</li>
+              <ul className="space-y-2 text-xs text-slate-300 font-sans">
+                <li className="flex items-start space-x-2">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 mt-1.5 shrink-0"></span>
+                  <span><strong>Blazing Serialization Speed:</strong> Protobuf encodes and decodes in native binary at up to 6x the speed of <code>JSON.parse()</code> and <code>JSON.stringify()</code>.</span>
+                </li>
+                <li className="flex items-start space-x-2">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 mt-1.5 shrink-0"></span>
+                  <span><strong>Zero Schema Drift:</strong> Breaking schema changes fail instantly at compile time rather than crashing in production runtime.</span>
+                </li>
+                <li className="flex items-start space-x-2">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 mt-1.5 shrink-0"></span>
+                  <span><strong>Full Streaming Support:</strong> Native support for Server Streaming, Client Streaming, and Bidirectional Streaming.</span>
+                </li>
               </ul>
             </div>
 
-            {/* Pillar 2: O Desafio dos Browsers */}
-            <div className="bg-pokedex-card/90 rounded-3xl p-5 border border-slate-800 space-y-3 shadow-md">
-              <div className="flex items-center space-x-2 text-pokedex-lightred font-mono font-bold">
-                <XCircle className="w-4 h-4" />
-                <span>2. O Obstáculo Histórico: Browsers vs gRPC Nativo</span>
+            {/* Disadvantages / Concerns */}
+            <div className="bg-pokedex-card/90 rounded-3xl border border-red-900/40 p-5 space-y-3 shadow-md">
+              <div className="flex items-center space-x-2 text-red-400 font-bold font-mono text-sm uppercase">
+                <XCircle className="w-5 h-5" />
+                <span>Trade-offs & Considerations</span>
               </div>
-              <p className="text-slate-300 leading-relaxed">
-                Os navegadores modernos não expõem através da Fetch API ou XMLHttpRequest controle granular sobre frames HTTP/2 binários puros e <strong>HTTP Trailers</strong> (utilizados pelo gRPC para retornar status codes de término de chamada).
-              </p>
-              <div className="bg-red-950/30 p-3 rounded-2xl border border-red-900/40 text-[11px] text-red-200 font-mono">
-                <strong>O Problema do Envoy:</strong> Tradicionalmente, era obrigatório subir e pagar servidores dedicados (ex: Envoy Proxy) apenas para traduzir requisições de navegadores para o backend.
-              </div>
-            </div>
-
-            {/* Pillar 3: A Solução Connect RPC */}
-            <div className="bg-pokedex-card/90 rounded-3xl p-5 border border-slate-800 space-y-3 shadow-md">
-              <div className="flex items-center space-x-2 text-cyan-300 font-mono font-bold">
-                <Zap className="w-4 h-4" />
-                <span>3. A Revolução: Connect RPC (Sem Proxies!)</span>
-              </div>
-              <p className="text-slate-300 leading-relaxed">
-                O <strong>Connect RPC</strong> (desenvolvido pela Buf) é um protocolo RPC moderno 100% interoperável com gRPC e gRPC-Web. Ele funciona diretamente via requisições <strong>HTTP POST padrão (HTTP/1.1 e HTTP/2)</strong> tanto com Protobuf binário quanto com JSON tipado.
-              </p>
-              <div className="bg-cyan-950/30 p-3 rounded-2xl border border-cyan-900/40 text-[11px] text-cyan-200 font-mono">
-                ✨ <strong>Zero Servidores Proxy:</strong> Funciona nativamente direto no Firebase Cloud Functions (2nd Gen) e Cloud Run com autoscaling a zero!
-              </div>
-            </div>
-
-            {/* Pillar 4: Autenticação via Interceptors */}
-            <div className="bg-pokedex-card/90 rounded-3xl p-5 border border-slate-800 space-y-3 shadow-md">
-              <div className="flex items-center space-x-2 text-emerald-300 font-mono font-bold">
-                <ShieldCheck className="w-4 h-4" />
-                <span>4. Autenticação & Segurança com Firebase</span>
-              </div>
-              <p className="text-slate-300 leading-relaxed">
-                No Connect RPC, a passagem de tokens JWT do Firebase Authentication ocorre através de <strong>Interceptors</strong> de cliente, injetando o cabeçalho <code className="bg-slate-800 text-yellow-300 px-1 rounded font-mono">Authorization: Bearer &lt;token&gt;</code> em todas as chamadas. No backend, a validação é feita com <code className="bg-slate-800 text-yellow-300 px-1 rounded font-mono">firebase-admin/auth</code>.
-              </p>
-            </div>
-          </div>
-
-          {/* Topology Diagram Box */}
-          <div className="bg-pokedex-darker rounded-3xl border border-slate-800 p-5 sm:p-6 shadow-xl space-y-4 font-mono text-xs">
-            <h3 className="text-sm font-bold text-yellow-300 uppercase tracking-wider flex items-center gap-2">
-              <Terminal className="w-4 h-4" />
-              <span>Diagrama da Topologia Serverless (Connect RPC + Firebase)</span>
-            </h3>
-
-            <div className="p-4 bg-black/60 rounded-2xl border border-slate-800 overflow-x-auto text-[11px] leading-relaxed text-slate-300">
-              <pre className="text-cyan-400">{`[ CAMADA DE APRESENTAÇÃO (Frontend) ]
-  • React SPA (Vite / TypeScript)
-  • Hospedagem: Firebase Hosting (Edge CDN Global)
-  • Cliente: @connectrpc/connect-web
-         │
-         │  Requisições HTTP POST (Connect Protocol)
-         │  Payloads Binários Protobuf ou JSON Tipado
-         ▼
-[ CAMADA SERVERLESS (Backend) ]
-  • Firebase Cloud Functions (2nd Gen) sobre Cloud Run
-  • Middleware: @connectrpc/connect-express
-  • Validação: Firebase Auth Bearer Tokens
-         │
-         │  SDK Nativo Google Cloud Firestore (Admin SDK)
-         ▼
-[ CAMADA DE PERSISTÊNCIA (Database) ]
-  • Cloud Firestore (Coleções: cards, decks, users)
-  • Transações ACID & Escalabilidade Global`}</pre>
+              <ul className="space-y-2 text-xs text-slate-300 font-sans">
+                <li className="flex items-start space-x-2">
+                  <span className="w-1.5 h-1.5 rounded-full bg-red-400 mt-1.5 shrink-0"></span>
+                  <span><strong>Non-Human Readable Wire Payloads:</strong> Inspecting raw binary Protobuf streams in browser DevTools requires decoding tooling.</span>
+                </li>
+                <li className="flex items-start space-x-2">
+                  <span className="w-1.5 h-1.5 rounded-full bg-red-400 mt-1.5 shrink-0"></span>
+                  <span><strong>Build Toolchain Setup:</strong> Requires Protobuf compilers (like <code>buf</code> or <code>protoc</code>) integrated into your CI/CD pipeline.</span>
+                </li>
+                <li className="flex items-start space-x-2">
+                  <span className="w-1.5 h-1.5 rounded-full bg-red-400 mt-1.5 shrink-0"></span>
+                  <span><strong>Public API Adoption:</strong> Third-party external developers still largely prefer standard REST/OpenAPI documentation.</span>
+                </li>
+              </ul>
             </div>
           </div>
         </div>
       )}
 
-      {/* TAB 2: PLAYGROUND INTERATIVO RPC */}
-      {activeTab === 'playground' && (
-        <div className="space-y-5">
-          <div className="bg-pokedex-card/95 rounded-3xl p-5 border border-slate-800 space-y-2">
-            <div className="flex items-center justify-between">
-              <h2 className="text-lg font-bold font-sans text-white flex items-center gap-2">
-                <Terminal className="w-5 h-5 text-yellow-300" />
-                <span>Playground Interativo Connect-RPC</span>
-              </h2>
-              <span className="bg-emerald-950/80 text-emerald-300 border border-emerald-500/40 text-[10px] font-mono px-2.5 py-0.5 rounded-full flex items-center gap-1">
-                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-                Endpoint Online
-              </span>
-            </div>
-            <p className="text-xs text-slate-400">
-              Execute chamadas RPC reais e simuladas, alterne entre Protobuf binário e JSON, e visualize a redução real de payload e cabeçalhos de rede.
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
-            {/* Left Column: Request Builder */}
-            <div className="bg-pokedex-card/90 rounded-3xl border border-slate-800 p-5 space-y-4 text-xs font-mono shadow-md">
-              <h3 className="font-bold text-white uppercase tracking-wider text-xs flex items-center justify-between border-b border-slate-800 pb-2">
-                <span>Configuração da Requisição RPC</span>
-                <span className="text-yellow-300 font-normal">POST /api/{selectedService}/{selectedMethod}</span>
-              </h3>
-
-              {/* Service & Method Selectors */}
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="text-slate-400 block text-[10px] uppercase mb-1">Serviço Proto:</label>
-                  <select
-                    value={selectedService}
-                    onChange={(e) => handleServiceChange(e.target.value as any)}
-                    className="w-full bg-pokedex-darker border border-slate-800 rounded-xl p-2 text-slate-200 focus:outline-none focus:border-pokedex-blue text-xs"
-                  >
-                    <option value="PokedexService">pokedex.v1.PokedexService</option>
-                    <option value="UserService">user.v1.UserService</option>
-                  </select>
-                </div>
-
-                <div>
-                  <label className="text-slate-400 block text-[10px] uppercase mb-1">Método RPC:</label>
-                  <select
-                    value={selectedMethod}
-                    onChange={(e) => handleMethodChange(e.target.value)}
-                    className="w-full bg-pokedex-darker border border-slate-800 rounded-xl p-2 text-slate-200 focus:outline-none focus:border-pokedex-blue text-xs"
-                  >
-                    {methodOptions[selectedService].methods.map(m => (
-                      <option key={m} value={m}>{m}</option>
-                    ))}
-                  </select>
-                </div>
-              </div>
-
-              {/* Format Toggle: Protobuf vs JSON */}
-              <div className="p-3 bg-pokedex-darker rounded-2xl border border-slate-800 flex items-center justify-between">
-                <div>
-                  <span className="font-bold text-white block">Formato de Transporte:</span>
-                  <span className="text-[10px] text-slate-400">
-                    {useBinaryFormat ? 'application/proto (Serialização Binária)' : 'application/json (Connect JSON)'}
-                  </span>
-                </div>
-                <button
-                  onClick={() => { soundEffects.playClick(); setUseBinaryFormat(!useBinaryFormat); }}
-                  className={`px-3 py-1.5 rounded-xl font-bold transition-colors ${
-                    useBinaryFormat 
-                      ? 'bg-pokedex-blue text-white shadow-md' 
-                      : 'bg-slate-800 text-slate-300'
-                  }`}
-                >
-                  {useBinaryFormat ? 'Protobuf Binário' : 'JSON Textual'}
-                </button>
-              </div>
-
-              {/* Request Payload JSON editor */}
-              <div className="space-y-1.5">
-                <label className="text-slate-400 block text-[10px] uppercase">Payload da Mensagem (JSON Input):</label>
-                <textarea
-                  value={requestPayloadText}
-                  onChange={(e) => setRequestPayloadText(e.target.value)}
-                  rows={4}
-                  className="w-full bg-black/60 font-mono text-cyan-300 border border-slate-800 rounded-xl p-3 focus:outline-none focus:border-pokedex-blue text-xs"
-                />
-              </div>
-
-              {/* Submit Trigger */}
-              <button
-                onClick={handleExecuteCall}
-                disabled={executing}
-                className="w-full bg-pokedex-red hover:bg-pokedex-lightred text-white font-bold py-3 rounded-2xl shadow-lg transition-all active:scale-95 flex items-center justify-center space-x-2 text-xs uppercase tracking-wider"
-              >
-                {executing ? (
-                  <RefreshCw className="w-4 h-4 animate-spin text-yellow-300" />
-                ) : (
-                  <Zap className="w-4 h-4 text-yellow-300" />
-                )}
-                <span>{executing ? 'Executando gRPC Call...' : 'Disparar Chamada Connect RPC'}</span>
-              </button>
-            </div>
-
-            {/* Right Column: Response & Wire Inspector */}
-            <div className="bg-pokedex-card/90 rounded-3xl border border-slate-800 p-5 space-y-4 text-xs font-mono shadow-md flex flex-col justify-between">
-              <h3 className="font-bold text-white uppercase tracking-wider text-xs flex items-center justify-between border-b border-slate-800 pb-2">
-                <span>Inspetor de Resposta & Métricas</span>
-                {lastRecord && (
-                  <span className="text-emerald-400 font-bold flex items-center gap-1">
-                    <Clock className="w-3.5 h-3.5" /> {lastRecord.durationMs}ms
-                  </span>
-                )}
-              </h3>
-
-              {lastRecord ? (
-                <div className="space-y-3">
-                  {/* Wire Size Savings Metric */}
-                  <div className="bg-gradient-to-r from-emerald-950 to-teal-950 border border-emerald-800/60 p-3 rounded-2xl flex items-center justify-between">
-                    <div>
-                      <span className="text-[10px] text-emerald-300 uppercase block font-bold">Economia de Banda</span>
-                      <span className="text-base font-black text-emerald-400">-{lastRecord.savingsPercentage}% de Payload</span>
-                    </div>
-                    <div className="text-right text-[11px] text-slate-300">
-                      <div>Protobuf: <strong className="text-white">{lastRecord.payloadSizeBytes} bytes</strong></div>
-                      <div>JSON: <strong className="text-slate-400">{lastRecord.jsonEquivalentBytes} bytes</strong></div>
-                    </div>
-                  </div>
-
-                  {/* Headers Inspector */}
-                  <div className="bg-pokedex-darker p-3 rounded-2xl border border-slate-800 space-y-1">
-                    <span className="text-slate-400 block text-[10px] uppercase font-bold">Cabeçalhos HTTP / Connect:</span>
-                    {Object.entries(lastRecord.headers).map(([k, v]) => (
-                      <div key={k} className="text-[10px] text-slate-300 flex justify-between">
-                        <span className="text-cyan-400">{k}:</span>
-                        <span className="text-slate-400 truncate max-w-[200px]">{v}</span>
-                      </div>
-                    ))}
-                  </div>
-
-                  {/* Response Body JSON */}
-                  <div className="space-y-1">
-                    <span className="text-slate-400 block text-[10px] uppercase font-bold">Payload de Retorno Deserializado:</span>
-                    <pre className="p-3 bg-black/70 rounded-2xl border border-slate-800 text-emerald-300 overflow-x-auto text-[11px] max-h-48">
-                      {JSON.stringify(lastRecord.responseData, null, 2)}
-                    </pre>
-                  </div>
-                </div>
-              ) : (
-                <div className="my-auto py-12 text-center text-slate-500">
-                  <Terminal className="w-10 h-10 mx-auto mb-2 opacity-40" />
-                  <p>Selecione um método e clique em "Disparar Chamada" para inspecionar os bytes e tempo de resposta.</p>
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* TAB 3: MATRIZ DE COMPARAÇÃO */}
+      {/* TAB 2: COMPARISON MATRIX */}
       {activeTab === 'comparison' && (
-        <div className="space-y-4">
-          <div className="bg-pokedex-card/95 rounded-3xl p-5 border border-slate-800">
-            <h2 className="text-xl font-black font-display text-white flex items-center gap-2">
-              <Activity className="w-6 h-6 text-yellow-300" />
-              <span>Matriz Comparativa: Connect RPC vs REST vs GraphQL</span>
-            </h2>
-            <p className="text-xs text-slate-400 mt-1">
-              Avaliação técnica dos trade-offs, vantagens e preocupações ao escolher o protocolo para o frontend.
-            </p>
-          </div>
+        <div className="bg-pokedex-card/90 rounded-3xl border border-slate-800 p-5 shadow-lg overflow-x-auto space-y-4">
+          <h3 className="text-base font-bold text-white font-mono uppercase tracking-wider">
+            Architecture Comparison: REST vs gRPC (Connect) vs GraphQL
+          </h3>
 
-          <div className="bg-pokedex-card/90 rounded-3xl border border-slate-800 overflow-hidden shadow-lg">
-            <div className="overflow-x-auto">
-              <table className="w-full text-left text-xs font-sans">
-                <thead className="bg-pokedex-darker text-slate-300 font-mono uppercase text-[10px] border-b border-slate-800">
-                  <tr>
-                    <th className="p-4">Dimensão Técnica</th>
-                    <th className="p-4 text-amber-400">REST Tradicional (JSON)</th>
-                    <th className="p-4 text-cyan-400">Connect RPC / Protobuf</th>
-                    <th className="p-4 text-purple-400">GraphQL</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-slate-800 font-mono text-[11px] text-slate-300">
-                  <tr className="hover:bg-slate-800/40">
-                    <td className="p-4 font-bold text-white font-sans">Segurança de Tipos (Type-Safety)</td>
-                    <td className="p-4 text-slate-400">Manual / OpenAPI (propenso a drift)</td>
-                    <td className="p-4 text-emerald-400 font-bold">100% Estrita em tempo de compilação via .proto</td>
-                    <td className="p-4 text-purple-300">Boa via GraphQL Code Generator</td>
-                  </tr>
-                  <tr className="hover:bg-slate-800/40">
-                    <td className="p-4 font-bold text-white font-sans">Tamanho do Payload</td>
-                    <td className="p-4 text-slate-400">JSON textual com nomes de campos repetidos</td>
-                    <td className="p-4 text-emerald-400 font-bold">Binário compacto (até 70% menor)</td>
-                    <td className="p-4 text-slate-400">JSON textual com campos sob medida</td>
-                  </tr>
-                  <tr className="hover:bg-slate-800/40">
-                    <td className="p-4 font-bold text-white font-sans">Complexidade de Infraestrutura</td>
-                    <td className="p-4 text-emerald-400">Simples (qualquer servidor web)</td>
-                    <td className="p-4 text-emerald-400 font-bold">Zero Proxy (Cloud Functions 2nd Gen)</td>
-                    <td className="p-4 text-amber-400">Gateway dedicado / Parser pesado</td>
-                  </tr>
-                  <tr className="hover:bg-slate-800/40">
-                    <td className="p-4 font-bold text-white font-sans">Suporte a Streaming</td>
-                    <td className="p-4 text-slate-400">SSE / WebSockets separados</td>
-                    <td className="p-4 text-emerald-400 font-bold">Nativo Server-Streaming e Bidi RPC</td>
-                    <td className="p-4 text-slate-400">Subscriptions via WebSockets</td>
-                  </tr>
-                  <tr className="hover:bg-slate-800/40">
-                    <td className="p-4 font-bold text-white font-sans">Curva de Aprendizado</td>
-                    <td className="p-4 text-emerald-400">Baixa (Padrão de mercado)</td>
-                    <td className="p-4 text-yellow-300">Média (Aprender sintaxe .proto e Buf)</td>
-                    <td className="p-4 text-amber-400">Média-Alta (N+1 queries, schemas)</td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-          </div>
+          <table className="w-full text-xs font-mono text-left border-collapse">
+            <thead>
+              <tr className="border-b border-slate-700 bg-pokedex-darker text-yellow-300">
+                <th className="p-3">Feature</th>
+                <th className="p-3 text-red-400">REST (JSON / OpenAPI)</th>
+                <th className="p-3 text-cyan-300 bg-cyan-950/40 border-l border-r border-cyan-800/50">gRPC & Connect-RPC</th>
+                <th className="p-3 text-purple-400">GraphQL</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-slate-800 text-slate-300">
+              <tr>
+                <td className="p-3 font-bold text-white">Serialization Format</td>
+                <td className="p-3 text-red-300">Text / JSON (Heavy)</td>
+                <td className="p-3 text-cyan-300 bg-cyan-950/20 border-l border-r border-cyan-800/30 font-bold">Binary Protobuf / JSON</td>
+                <td className="p-3 text-purple-300">Text / JSON</td>
+              </tr>
+              <tr>
+                <td className="p-3 font-bold text-white">Transport Protocol</td>
+                <td className="p-3">HTTP/1.1 or HTTP/2</td>
+                <td className="p-3 text-cyan-300 bg-cyan-950/20 border-l border-r border-cyan-800/30 font-bold">HTTP/2 & HTTP/3</td>
+                <td className="p-3">HTTP/1.1 or HTTP/2</td>
+              </tr>
+              <tr>
+                <td className="p-3 font-bold text-white">Type Safety & Contract</td>
+                <td className="p-3">Optional (OpenAPI/Swagger)</td>
+                <td className="p-3 text-cyan-300 bg-cyan-950/20 border-l border-r border-cyan-800/30 font-bold">Strict Strict (.proto contract)</td>
+                <td className="p-3">Strict (GraphQL Schema)</td>
+              </tr>
+              <tr>
+                <td className="p-3 font-bold text-white">Wire Bandwidth</td>
+                <td className="p-3 text-red-400">High (repeats keys)</td>
+                <td className="p-3 text-emerald-400 bg-cyan-950/20 border-l border-r border-cyan-800/30 font-bold">Minimal (-70% smaller)</td>
+                <td className="p-3 text-yellow-400">Moderate</td>
+              </tr>
+              <tr>
+                <td className="p-3 font-bold text-white">Client Code Generation</td>
+                <td className="p-3">Third-party tooling</td>
+                <td className="p-3 text-cyan-300 bg-cyan-950/20 border-l border-r border-cyan-800/30 font-bold">Native First-Class (Buf/Protoc)</td>
+                <td className="p-3">Codegen plugins</td>
+              </tr>
+            </tbody>
+          </table>
         </div>
       )}
 
-      {/* TAB 4: CONTRATOS .PROTO */}
+      {/* TAB 3: PROTOBUF CONTRACTS */}
       {activeTab === 'proto' && (
-        <div className="space-y-4 font-mono text-xs">
-          <div className="bg-pokedex-card/95 rounded-3xl p-5 border border-slate-800">
-            <h2 className="text-xl font-black font-display text-white flex items-center gap-2">
-              <Code className="w-6 h-6 text-cyan-400" />
-              <span>Contratos de Interface Protobuf v3</span>
-            </h2>
-            <p className="text-xs text-slate-400 mt-1 font-sans">
-              Os arquivos .proto servem como fonte única da verdade (Single Source of Truth) para o backend e frontend.
-            </p>
-          </div>
-
-          <div className="bg-pokedex-card/90 rounded-3xl border border-slate-800 p-5 space-y-3">
-            <div className="flex items-center justify-between text-yellow-300 font-bold">
-              <span>proto/pokedex/v1/pokedex.proto</span>
-              <span className="text-[10px] text-slate-400">Buf Syntax v3</span>
+        <div className="space-y-4">
+          <div className="bg-pokedex-card/90 rounded-3xl border border-slate-800 p-5 shadow-lg space-y-3 font-mono text-xs">
+            <div className="flex items-center justify-between">
+              <span className="text-yellow-300 font-bold flex items-center gap-2">
+                <FileCode className="w-4 h-4" /> proto/pokedex/v1/pokedex.proto
+              </span>
+              <span className="text-slate-500 text-[10px]">Buf Toolchain Ready</span>
             </div>
-            <pre className="p-4 bg-black/70 rounded-2xl border border-slate-800 text-cyan-300 overflow-x-auto text-[11px] leading-relaxed">
+
+            <pre className="bg-black/80 text-emerald-400 p-4 rounded-2xl border border-slate-800 overflow-x-auto text-[11px] leading-relaxed">
 {`syntax = "proto3";
 
 package pokedex.v1;
 
-message Card {
+service PokedexService {
+  rpc GetCard(GetCardRequest) returns (GetCardResponse);
+  rpc ListCards(ListCardsRequest) returns (ListCardsResponse);
+  rpc ListDecks(ListDecksRequest) returns (ListDecksResponse);
+  rpc SyncCollection(SyncCollectionRequest) returns (SyncCollectionResponse);
+}
+
+message GetCardRequest {
+  string card_id = 1;
+}
+
+message GetCardResponse {
   string id = 1;
   string name_pt = 2;
   string name_en = 3;
   string set_code = 4;
-  string card_number = 6;
-  int32 quantity = 7;
-  string rarity = 8;
-  string color = 9;
-  bool is_foil = 10;
-  string image_url = 11;
+  string card_number = 5;
+  int32 quantity = 6;
+  string rarity = 7;
+  string color = 8;
+  bool is_foil = 9;
+  string image_url = 10;
+  repeated string deck_ids = 11;
 }
 
-service PokedexService {
-  rpc ListCards (ListCardsRequest) returns (ListCardsResponse);
-  rpc GetCard (GetCardRequest) returns (Card);
-  rpc ListDecks (ListDecksRequest) returns (ListDecksResponse);
-  rpc SyncCollection (SyncCollectionRequest) returns (SyncCollectionResponse);
+message ListCardsRequest {
+  string query = 1;
+  string set_code = 2;
+  string type = 3;
+  int32 page = 4;
+  int32 page_size = 5;
+}
+
+message ListCardsResponse {
+  repeated GetCardResponse cards = 1;
+  int32 total_count = 2;
+  int32 page = 3;
+  int32 total_pages = 4;
 }`}
             </pre>
           </div>
+        </div>
+      )}
+
+      {/* TAB 4: LIVE RPC PLAYGROUND */}
+      {activeTab === 'playground' && (
+        <div className="space-y-6">
+          <div className="bg-pokedex-card/95 rounded-3xl border border-slate-800 p-5 sm:p-6 shadow-xl space-y-4">
+            <div className="flex items-center justify-between">
+              <h3 className="text-base font-bold text-white font-mono uppercase tracking-wider flex items-center gap-2">
+                <Terminal className="w-5 h-5 text-cyan-400" />
+                <span>Interactive Connect-RPC Execution Engine</span>
+              </h3>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs font-mono">
+              <div>
+                <label className="text-slate-400 block text-[10px] uppercase mb-1">Target Service</label>
+                <select
+                  value={selectedService}
+                  onChange={(e) => {
+                    soundEffects.playClick();
+                    setSelectedService(e.target.value as any);
+                    setSelectedMethod(e.target.value === 'PokedexService' ? 'ListCards' : 'GetUser');
+                  }}
+                  className="w-full bg-pokedex-darker border border-slate-800 rounded-xl p-2.5 text-white focus:outline-none focus:border-pokedex-blue"
+                >
+                  <option value="PokedexService">pokedex.v1.PokedexService</option>
+                  <option value="UserService">user.v1.UserService</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="text-slate-400 block text-[10px] uppercase mb-1">RPC Method</label>
+                <select
+                  value={selectedMethod}
+                  onChange={(e) => {
+                    soundEffects.playClick();
+                    setSelectedMethod(e.target.value);
+                  }}
+                  className="w-full bg-pokedex-darker border border-slate-800 rounded-xl p-2.5 text-white focus:outline-none focus:border-pokedex-blue"
+                >
+                  {selectedService === 'PokedexService' ? (
+                    <>
+                      <option value="ListCards">ListCards(query, pageSize)</option>
+                      <option value="GetCard">GetCard(cardId)</option>
+                      <option value="ListDecks">ListDecks()</option>
+                    </>
+                  ) : (
+                    <>
+                      <option value="GetUser">GetUser(userId)</option>
+                      <option value="UpdateFavorites">UpdateFavorites(cardIds)</option>
+                    </>
+                  )}
+                </select>
+              </div>
+
+              <div>
+                <label className="text-slate-400 block text-[10px] uppercase mb-1">Wire Serialization</label>
+                <select
+                  value={payloadFormat}
+                  onChange={(e) => {
+                    soundEffects.playClick();
+                    setPayloadFormat(e.target.value as any);
+                  }}
+                  className="w-full bg-pokedex-darker border border-slate-800 rounded-xl p-2.5 text-yellow-300 font-bold focus:outline-none focus:border-pokedex-blue"
+                >
+                  <option value="Protobuf (Binary)">application/proto (Binary Protobuf)</option>
+                  <option value="JSON (Connect)">application/json (Connect JSON)</option>
+                </select>
+              </div>
+            </div>
+
+            {/* Dynamic Inputs */}
+            {selectedMethod === 'ListCards' && (
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs font-mono">
+                <div>
+                  <label className="text-slate-400 block text-[10px] uppercase mb-1">Search Query Parameter</label>
+                  <input
+                    type="text"
+                    value={requestQuery}
+                    onChange={(e) => setRequestQuery(e.target.value)}
+                    placeholder="Ex: Charizard, Darkrai, Mewtwo..."
+                    className="w-full bg-pokedex-darker border border-slate-800 rounded-xl p-2.5 text-white focus:outline-none focus:border-pokedex-blue"
+                  />
+                </div>
+
+                <div>
+                  <label className="text-slate-400 block text-[10px] uppercase mb-1">Page Size</label>
+                  <input
+                    type="number"
+                    value={pageSize}
+                    onChange={(e) => setPageSize(parseInt(e.target.value) || 10)}
+                    min="1"
+                    max="50"
+                    className="w-full bg-pokedex-darker border border-slate-800 rounded-xl p-2.5 text-white focus:outline-none focus:border-pokedex-blue"
+                  />
+                </div>
+              </div>
+            )}
+
+            <button
+              onClick={handleExecuteCall}
+              disabled={loading}
+              className="w-full bg-cyan-600 hover:bg-cyan-500 disabled:opacity-50 text-white font-bold py-3 rounded-2xl shadow-lg transition-all active:scale-95 text-xs font-mono uppercase tracking-wider flex items-center justify-center space-x-2"
+            >
+              {loading ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Play className="w-4 h-4" />}
+              <span>Execute Connect-RPC Call</span>
+            </button>
+          </div>
+
+          {/* Telemetry Result & Savings Monitor */}
+          {lastRecord && (
+            <div className="bg-pokedex-card/95 rounded-3xl border border-cyan-800/60 p-5 shadow-xl space-y-4">
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-mono font-bold text-emerald-400 flex items-center gap-1.5">
+                  <Check className="w-4 h-4" /> RPC Call Succeeded ({lastRecord.durationMs}ms)
+                </span>
+                <span className="text-[10px] font-mono text-slate-400">{lastRecord.timestamp}</span>
+              </div>
+
+              {/* Wire Comparison KPI Cards */}
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs font-mono">
+                <div className="bg-pokedex-darker p-3 rounded-2xl border border-slate-800">
+                  <span className="text-slate-400 text-[10px] uppercase block">Protobuf Wire Size</span>
+                  <span className="text-lg font-black text-cyan-300">{lastRecord.payloadSizeBytes} bytes</span>
+                </div>
+
+                <div className="bg-pokedex-darker p-3 rounded-2xl border border-slate-800">
+                  <span className="text-slate-400 text-[10px] uppercase block">JSON Equivalent Size</span>
+                  <span className="text-lg font-black text-slate-300">{lastRecord.jsonEquivalentBytes} bytes</span>
+                </div>
+
+                <div className="bg-pokedex-darker p-3 rounded-2xl border border-slate-800">
+                  <span className="text-slate-400 text-[10px] uppercase block">Bandwidth Reduction</span>
+                  <span className="text-lg font-black text-emerald-400">-{lastRecord.savingsPercentage}%</span>
+                </div>
+              </div>
+
+              {/* Response Inspector */}
+              <div className="space-y-1.5">
+                <span className="text-slate-400 text-[10px] uppercase font-mono block">Response Body:</span>
+                <pre className="bg-black/90 text-cyan-300 p-4 rounded-2xl border border-slate-800 text-[11px] font-mono overflow-x-auto max-h-64 leading-relaxed">
+                  {JSON.stringify(lastRecord.responseData, null, 2)}
+                </pre>
+              </div>
+            </div>
+          )}
         </div>
       )}
     </div>

@@ -1,15 +1,11 @@
 /**
- * Sintetizador de Efeitos Sonoros Pokédex utilizando Web Audio API.
- * Não requer downloads de arquivos MP3 externos e responde instantaneamente com baixa latência.
+ * Synthesized Pokédex Sound Effects using the Web Audio API.
+ * Instant low-latency audio without requiring external MP3 downloads.
  */
 
 class PokedexSoundEffects {
   private ctx: AudioContext | null = null;
   private isMuted: boolean = false;
-
-  constructor() {
-    // AudioContext will be initialized on first user interaction
-  }
 
   private getContext(): AudioContext | null {
     if (this.isMuted) return null;
@@ -34,7 +30,7 @@ class PokedexSoundEffects {
   }
 
   /**
-   * Som de clique do botão Pokédex (beep agudo curto)
+   * Pokédex Button Click Sound (Short crisp sine tone)
    */
   public playClick() {
     const ctx = this.getContext();
@@ -43,7 +39,7 @@ class PokedexSoundEffects {
       const osc = ctx.createOscillator();
       const gain = ctx.createGain();
       osc.type = 'sine';
-      osc.frequency.setValueAtTime(880, ctx.currentTime); // A5
+      osc.frequency.setValueAtTime(880, ctx.currentTime);
       osc.frequency.exponentialRampToValueAtTime(440, ctx.currentTime + 0.05);
 
       gain.gain.setValueAtTime(0.08, ctx.currentTime);
@@ -55,12 +51,12 @@ class PokedexSoundEffects {
       osc.start();
       osc.stop(ctx.currentTime + 0.05);
     } catch {
-      // Ignore audio failure
+      // Ignore audio context issues
     }
   }
 
   /**
-   * Som de abertura / scan da Pokédex (arpeggio futurista)
+   * Pokédex Scan / Open Sound (Futuristic arpeggio)
    */
   public playScan() {
     const ctx = this.getContext();
@@ -89,7 +85,7 @@ class PokedexSoundEffects {
   }
 
   /**
-   * Som de Foil / Carta Rara (brilho cristalino)
+   * Foil Shimmer / Rare Card Sound (Crystalline chime)
    */
   public playFoilShine() {
     const ctx = this.getContext();
@@ -118,7 +114,7 @@ class PokedexSoundEffects {
   }
 
   /**
-   * Som de Alerta / Erro / Não autorizado
+   * Alert / Error / Warning Sound
    */
   public playAlert() {
     const ctx = this.getContext();

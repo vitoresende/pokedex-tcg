@@ -9,7 +9,7 @@ interface PokedexHeaderProps {
 }
 
 export const PokedexHeader: React.FC<PokedexHeaderProps> = ({ onNavigateToAuth }) => {
-  const { isMuted, toggleMute, stats } = useCollection();
+  const { isMuted, toggleMute } = useCollection();
   const { user, isAllowed } = useAuth();
 
   const handleSensorClick = () => {
@@ -25,7 +25,7 @@ export const PokedexHeader: React.FC<PokedexHeaderProps> = ({ onNavigateToAuth }
           {/* Main Blue Lens / Sensor */}
           <button
             onClick={handleSensorClick}
-            aria-label="Sensor Pokédex"
+            aria-label="Pokédex Optical Sensor"
             className="relative w-12 h-12 rounded-full bg-white p-1 shadow-md hover:scale-105 active:scale-95 transition-transform flex items-center justify-center focus:outline-none"
           >
             <div className="w-full h-full rounded-full bg-gradient-to-br from-cyan-300 via-pokedex-blue to-blue-700 shadow-inner flex items-center justify-center relative overflow-hidden border-2 border-white">
@@ -56,12 +56,12 @@ export const PokedexHeader: React.FC<PokedexHeaderProps> = ({ onNavigateToAuth }
           </div>
         </div>
 
-        {/* Action Controls: Audio, Cloud Sync & User Profile */}
+        {/* Action Controls: Audio & User Profile */}
         <div className="flex items-center space-x-2">
           {/* Mute/Sound Button */}
           <button
             onClick={toggleMute}
-            aria-label={isMuted ? "Ativar sons" : "Mutar sons"}
+            aria-label={isMuted ? "Enable sounds" : "Mute sounds"}
             className="w-9 h-9 rounded-lg bg-pokedex-darkred/80 hover:bg-pokedex-darkred text-white flex items-center justify-center border border-white/20 transition-colors"
           >
             {isMuted ? <VolumeX className="w-4 h-4 text-slate-300" /> : <Volume2 className="w-4 h-4 text-yellow-300 animate-pulse" />}
@@ -99,7 +99,7 @@ export const PokedexHeader: React.FC<PokedexHeaderProps> = ({ onNavigateToAuth }
               </>
             ) : (
               <span className="text-yellow-300 font-semibold flex items-center gap-1">
-                <span>Entrar</span>
+                <span>Sign In</span>
               </span>
             )}
           </button>

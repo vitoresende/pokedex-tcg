@@ -16,7 +16,7 @@ export interface Card {
   color_name: string;
   color_slug: string;
   color_bg: string;
-  card_category: 'Pokémon' | 'Treinador' | 'Energia';
+  card_category: 'Pokémon' | 'Trainer' | 'Energy';
   is_foil: boolean;
   extras: string;
   comment: string;

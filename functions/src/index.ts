@@ -15,10 +15,10 @@ const db = getFirestore();
 const auth = getAuth();
 
 /**
- * Rotas e Serviços Connect-RPC
+ * Connect-RPC Routes & Service Implementations
  */
 function routes(router: ConnectRouter) {
-  // Mock/Service registry for Pokedex RPC
+  // Service registry for Pokedex RPC
   router.service({
     typeName: "pokedex.v1.PokedexService",
     methods: {
@@ -59,9 +59,9 @@ function routes(router: ConnectRouter) {
       };
     },
     async getCard(req: any) {
-      if (!req.cardId) throw new Error("cardId obrigatório");
+      if (!req.cardId) throw new Error("cardId is required");
       const doc = await db.collection("cards").doc(req.cardId).get();
-      if (!doc.exists) throw new Error("Carta não encontrada");
+      if (!doc.exists) throw new Error("Card not found");
       return { id: doc.id, ...doc.data() };
     },
     async listDecks() {
@@ -70,7 +70,7 @@ function routes(router: ConnectRouter) {
       return { decks };
     },
     async syncCollection(req: any) {
-      if (!req.userId) throw new Error("userId obrigatório");
+      if (!req.userId) throw new Error("userId is required");
       const batch = db.batch();
       const userRef = db.collection("users").doc(req.userId);
       batch.set(userRef, { lastSyncedAt: Date.now(), cardQuantities: req.cardQuantities }, { merge: true });
@@ -88,5 +88,5 @@ const app = express();
 app.use(cors({ origin: true, credentials: true }));
 app.use(expressConnectMiddleware({ routes }));
 
-// Export Cloud Functions 2nd Gen
+// Export Cloud Functions 2nd Gen HTTPS endpoint
 export const api = onRequest({ region: "southamerica-east1", cors: true }, app);

@@ -1,17 +1,41 @@
 import React, { useState } from 'react';
 import { useCollection } from '../context/CollectionContext';
 import { Deck, DeckCardItem } from '../types';
-import { Layers, Zap, Shield, Sparkles, Copy, Check, AlertCircle, ChevronRight, Swords, Trophy } from 'lucide-react';
+import { 
+  Layers, Copy, Check, AlertCircle, 
+  Swords, Trophy, Plus, Trash2, Sparkles 
+} from 'lucide-react';
 import { soundEffects } from '../services/audio';
 import { CardDetailModal } from '../components/CardDetailModal';
+import { CreateDeckModal } from '../components/CreateDeckModal';
 
 export const DecksPage: React.FC = () => {
-  const { decks, cards, selectedCard, setSelectedCard } = useCollection();
+  const { decks, cards, selectedCard, setSelectedCard, deleteDeck, removeCardFromDeck } = useCollection();
   const [activeDeckId, setActiveDeckId] = useState<string>(decks[0]?.id || 'deck-1');
   const [copied, setCopied] = useState<boolean>(false);
   const [activeGuideTab, setActiveGuideTab] = useState<'opening' | 'midgame' | 'lategame'>('opening');
+  const [createModalOpen, setCreateModalOpen] = useState<boolean>(false);
 
-  const currentDeck = decks.find(d => d.id === activeDeckId) || decks[0];
+  const currentDeck = decks.find(d => d.id === activeDeckId) || decks[0] || {
+    id: 'empty',
+    name: 'No Decks Available',
+    format: 'Standard',
+    format_slug: 'standard',
+    archetype: 'Empty',
+    badge_color: 'from-slate-800 to-slate-950',
+    accent_color: '#64748B',
+    summary: 'Build your first deck by clicking the button above.',
+    win_condition: 'Configure your custom deck strategy.',
+    stats: { pokemon: 0, trainers: 0, energies: 0, total: 0 },
+    energy_breakdown: { owned: '0', needed: 'None', missing_count: 0 },
+    cards: [],
+    strategy_guide: {
+      opening: { title: '1. Opening Plan', steps: ['Add cards to the deck.'] },
+      midgame: { title: '2. Midgame Plan', steps: ['Develop your board state.'] },
+      lategame: { title: '3. Endgame Plan', steps: ['Claim Prize cards.'] },
+    },
+    prize_trade_tip: 'Aim for a solid 60-card synergy.'
+  };
 
   const handleSelectDeck = (deckId: string) => {
     soundEffects.playClick();
@@ -19,22 +43,33 @@ export const DecksPage: React.FC = () => {
     setActiveGuideTab('opening');
   };
 
+  const handleDeleteCurrentDeck = () => {
+    if (confirm(`Are you sure you want to delete "${currentDeck.name}"?`)) {
+      soundEffects.playClick();
+      deleteDeck(currentDeck.id);
+      const remaining = decks.filter(d => d.id !== currentDeck.id);
+      if (remaining.length > 0) {
+        setActiveDeckId(remaining[0].id);
+      }
+    }
+  };
+
   const handleCopyDecklist = () => {
     soundEffects.playScan();
     const text = [
       `=== ${currentDeck.name} (${currentDeck.format}) ===`,
-      `Arquétipo: ${currentDeck.archetype}`,
+      `Archetype: ${currentDeck.archetype}`,
       '',
       '## Pokémon (' + currentDeck.stats.pokemon + ')',
       ...currentDeck.cards.filter(c => c.section === 'pokemon').map(c => `${c.count}x ${c.name} (${c.set})`),
       '',
-      '## Treinadores (' + currentDeck.stats.trainers + ')',
+      '## Trainers (' + currentDeck.stats.trainers + ')',
       ...currentDeck.cards.filter(c => c.section === 'trainers').map(c => `${c.count}x ${c.name} (${c.set})`),
       '',
-      '## Energias (' + currentDeck.stats.energies + ')',
+      '## Energies (' + currentDeck.stats.energies + ')',
       ...currentDeck.cards.filter(c => c.section === 'energies').map(c => `${c.count}x ${c.name} (${c.set})`),
       '',
-      'Estratégia: ' + currentDeck.win_condition
+      'Strategy: ' + currentDeck.win_condition
     ].join('\n');
 
     navigator.clipboard.writeText(text);
@@ -45,8 +80,8 @@ export const DecksPage: React.FC = () => {
   const handleCardClick = (cardItem: DeckCardItem) => {
     soundEffects.playClick();
     const matchedCard = cards.find(c => 
-      c.name_pt.toLowerCase().includes(cardItem.name.toLowerCase()) ||
-      c.name_en.toLowerCase().includes(cardItem.name.toLowerCase())
+      c.name_en.toLowerCase().includes(cardItem.name.toLowerCase()) ||
+      c.name_pt.toLowerCase().includes(cardItem.name.toLowerCase())
     );
     if (matchedCard) {
       setSelectedCard(matchedCard);
@@ -55,6 +90,27 @@ export const DecksPage: React.FC = () => {
 
   return (
     <div className="space-y-6 pb-24 animate-in fade-in duration-300">
+      {/* Top Deck Management Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <div>
+          <h2 className="text-xl font-black font-display text-white flex items-center gap-2">
+            <Layers className="w-5 h-5 text-yellow-300" />
+            <span>Deck Management ({decks.length})</span>
+          </h2>
+          <p className="text-xs text-slate-400 font-mono">
+            Explore turn playbooks, craft custom archetypes, or export lists to PTCG Live
+          </p>
+        </div>
+
+        <button
+          onClick={() => { soundEffects.playClick(); setCreateModalOpen(true); }}
+          className="bg-pokedex-red hover:bg-pokedex-lightred text-white font-bold px-4 py-2 rounded-2xl shadow-lg transition-all active:scale-95 text-xs font-mono flex items-center justify-center space-x-2 border border-white/20"
+        >
+          <Plus className="w-4 h-4 text-yellow-300" />
+          <span>Create New Deck</span>
+        </button>
+      </div>
+
       {/* Horizontal Deck Selector Bar */}
       <div className="flex items-center space-x-2 overflow-x-auto pb-2 no-scrollbar">
         {decks.map((deck, idx) => {
@@ -95,7 +151,7 @@ export const DecksPage: React.FC = () => {
           <div>
             <div className="flex items-center space-x-2 mb-1.5">
               <span className="bg-pokedex-red text-white text-[10px] font-bold px-2.5 py-0.5 rounded-full font-mono uppercase tracking-wider">
-                Deck de 60 Cartas
+                {currentDeck.stats.total || 60}-Card Deck
               </span>
               <span className="bg-slate-800 text-yellow-300 text-[10px] font-bold px-2.5 py-0.5 rounded-full font-mono">
                 {currentDeck.format}
@@ -108,52 +164,64 @@ export const DecksPage: React.FC = () => {
             <p className="text-slate-300 text-xs mt-1 max-w-2xl">{currentDeck.summary}</p>
           </div>
 
-          {/* Copy Decklist Action Button */}
-          <button
-            onClick={handleCopyDecklist}
-            className="self-start lg:self-center bg-pokedex-darker hover:bg-slate-800 text-slate-100 font-bold px-4 py-2 rounded-xl border border-slate-700 text-xs flex items-center space-x-2 transition-all active:scale-95 shadow-md shrink-0"
-          >
-            {copied ? <Check className="w-4 h-4 text-emerald-400" /> : <Copy className="w-4 h-4 text-yellow-300" />}
-            <span>{copied ? 'Lista Copiada!' : 'Copiar Decklist (PTCG Live)'}</span>
-          </button>
+          {/* Action Buttons: Copy & Delete */}
+          <div className="flex items-center gap-2">
+            <button
+              onClick={handleCopyDecklist}
+              className="bg-pokedex-darker hover:bg-slate-800 text-slate-100 font-bold px-4 py-2 rounded-xl border border-slate-700 text-xs flex items-center space-x-2 transition-all active:scale-95 shadow-md shrink-0"
+            >
+              {copied ? <Check className="w-4 h-4 text-emerald-400" /> : <Copy className="w-4 h-4 text-yellow-300" />}
+              <span>{copied ? 'Decklist Copied!' : 'Export Decklist (PTCG Live)'}</span>
+            </button>
+
+            {decks.length > 1 && (
+              <button
+                onClick={handleDeleteCurrentDeck}
+                title="Delete Deck"
+                className="p-2 rounded-xl bg-red-950/60 hover:bg-red-900 border border-red-800/60 text-red-300 transition-colors"
+              >
+                <Trash2 className="w-4 h-4" />
+              </button>
+            )}
+          </div>
         </div>
 
         {/* Deck Composition Ratio & Energy Requirement */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-3 pt-4 border-t border-slate-800/80 text-xs font-mono">
           {/* Card Ratio */}
           <div className="bg-pokedex-darker p-3 rounded-2xl border border-slate-800 space-y-1.5">
-            <span className="text-slate-400 block text-[10px] uppercase">Distribuição (60 Cartas)</span>
+            <span className="text-slate-400 block text-[10px] uppercase">Composition ({currentDeck.stats.total} Cards)</span>
             <div className="flex items-center justify-between font-bold">
               <span className="text-blue-400">{currentDeck.stats.pokemon} Pokémon</span>
-              <span className="text-teal-400">{currentDeck.stats.trainers} Treinadores</span>
-              <span className="text-amber-400">{currentDeck.stats.energies} Energias</span>
+              <span className="text-teal-400">{currentDeck.stats.trainers} Trainers</span>
+              <span className="text-amber-400">{currentDeck.stats.energies} Energy</span>
             </div>
             {/* Visual Bar */}
             <div className="w-full h-2 rounded-full overflow-hidden flex">
-              <div style={{ width: `${(currentDeck.stats.pokemon / 60) * 100}%` }} className="bg-blue-500"></div>
-              <div style={{ width: `${(currentDeck.stats.trainers / 60) * 100}%` }} className="bg-teal-500"></div>
-              <div style={{ width: `${(currentDeck.stats.energies / 60) * 100}%` }} className="bg-amber-500"></div>
+              <div style={{ width: `${currentDeck.stats.total ? (currentDeck.stats.pokemon / currentDeck.stats.total) * 100 : 0}%` }} className="bg-blue-500"></div>
+              <div style={{ width: `${currentDeck.stats.total ? (currentDeck.stats.trainers / currentDeck.stats.total) * 100 : 0}%` }} className="bg-teal-500"></div>
+              <div style={{ width: `${currentDeck.stats.total ? (currentDeck.stats.energies / currentDeck.stats.total) * 100 : 0}%` }} className="bg-amber-500"></div>
             </div>
           </div>
 
           {/* Energy Status */}
           <div className="bg-pokedex-darker p-3 rounded-2xl border border-slate-800 space-y-1">
-            <span className="text-slate-400 block text-[10px] uppercase">Energias no Acervo</span>
+            <span className="text-slate-400 block text-[10px] uppercase">Energy Breakdown</span>
             <div className="text-slate-200 font-semibold text-xs">{currentDeck.energy_breakdown.owned}</div>
             {currentDeck.energy_breakdown.missing_count > 0 ? (
               <div className="flex items-center space-x-1.5 text-amber-300 font-bold text-[11px] pt-1">
                 <AlertCircle className="w-3.5 h-3.5" />
-                <span>Necessária: {currentDeck.energy_breakdown.needed}</span>
+                <span>Required: {currentDeck.energy_breakdown.needed}</span>
               </div>
             ) : (
-              <div className="text-emerald-400 font-bold text-[11px] pt-1">Energias completas!</div>
+              <div className="text-emerald-400 font-bold text-[11px] pt-1">Energy complete!</div>
             )}
           </div>
 
           {/* Win Condition */}
           <div className="bg-pokedex-darker p-3 rounded-2xl border border-slate-800 space-y-1">
             <span className="text-slate-400 block text-[10px] uppercase flex items-center gap-1">
-              <Trophy className="w-3 h-3 text-yellow-400" /> Condição de Vitória
+              <Trophy className="w-3 h-3 text-yellow-400" /> Win Condition
             </span>
             <p className="text-slate-300 text-[11px] font-sans line-clamp-2">
               {currentDeck.win_condition}
@@ -162,13 +230,13 @@ export const DecksPage: React.FC = () => {
         </div>
       </div>
 
-      {/* Strategic Playbook Tabs (Turno 1-2, Meio de Jogo, Fechamento) */}
+      {/* Strategic Playbook Tabs */}
       <div className="bg-pokedex-card/90 rounded-3xl border border-slate-800 p-5 shadow-lg space-y-4">
         <div className="flex items-center justify-between border-b border-slate-800 pb-3">
           <div className="flex items-center space-x-2">
             <Swords className="w-5 h-5 text-pokedex-lightred" />
             <h3 className="font-bold text-sm text-white uppercase tracking-wider font-mono">
-              Manual Estratégico de Pilotagem
+              Strategic Turn Playbook
             </h3>
           </div>
 
@@ -179,7 +247,7 @@ export const DecksPage: React.FC = () => {
                 activeGuideTab === 'opening' ? 'bg-pokedex-red text-white font-bold' : 'text-slate-400 hover:text-slate-200'
               }`}
             >
-              1. Abertura
+              1. Opening
             </button>
             <button
               onClick={() => { soundEffects.playClick(); setActiveGuideTab('midgame'); }}
@@ -187,7 +255,7 @@ export const DecksPage: React.FC = () => {
                 activeGuideTab === 'midgame' ? 'bg-pokedex-red text-white font-bold' : 'text-slate-400 hover:text-slate-200'
               }`}
             >
-              2. Meio de Jogo
+              2. Midgame
             </button>
             <button
               onClick={() => { soundEffects.playClick(); setActiveGuideTab('lategame'); }}
@@ -195,7 +263,7 @@ export const DecksPage: React.FC = () => {
                 activeGuideTab === 'lategame' ? 'bg-pokedex-red text-white font-bold' : 'text-slate-400 hover:text-slate-200'
               }`}
             >
-              3. Fechamento
+              3. Endgame
             </button>
           </div>
         </div>
@@ -219,17 +287,17 @@ export const DecksPage: React.FC = () => {
         <div className="p-3 bg-purple-950/30 rounded-2xl border border-purple-800/40 text-xs font-mono flex items-start space-x-2.5">
           <Sparkles className="w-4 h-4 text-purple-300 shrink-0 mt-0.5" />
           <div>
-            <span className="font-bold text-purple-300">Dica de Troca de Prêmios (Prize Trade): </span>
+            <span className="font-bold text-purple-300">Prize Trade Tip: </span>
             <span className="text-purple-200">{currentDeck.prize_trade_tip}</span>
           </div>
         </div>
       </div>
 
-      {/* Complete 60 Cards List Grouped */}
+      {/* Complete Cards List Grouped */}
       <div className="space-y-4">
         <h3 className="font-bold text-base text-white flex items-center space-x-2">
           <Layers className="w-5 h-5 text-yellow-300" />
-          <span>Lista Completa do Baralho ({currentDeck.cards.reduce((acc, c) => acc + c.count, 0)} Cartas)</span>
+          <span>Deck Card List ({currentDeck.cards.reduce((acc, c) => acc + c.count, 0)} Cards)</span>
         </h3>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -242,14 +310,22 @@ export const DecksPage: React.FC = () => {
               {currentDeck.cards.filter(c => c.section === 'pokemon').map((c, i) => (
                 <div
                   key={i}
-                  onClick={() => handleCardClick(c)}
-                  className="flex items-center justify-between p-2 rounded-xl bg-pokedex-darker hover:bg-slate-800/90 border border-slate-800 cursor-pointer transition-colors text-xs"
+                  className="flex items-center justify-between p-2 rounded-xl bg-pokedex-darker hover:bg-slate-800/90 border border-slate-800 transition-colors text-xs"
                 >
-                  <div className="flex items-center space-x-2 truncate">
+                  <div 
+                    onClick={() => handleCardClick(c)}
+                    className="flex items-center space-x-2 truncate cursor-pointer flex-1"
+                  >
                     <span className="font-mono font-bold text-yellow-300">{c.count}x</span>
                     <span className="text-slate-100 font-semibold truncate hover:text-cyan-300">{c.name}</span>
                   </div>
-                  <span className="text-[10px] text-slate-400 font-mono truncate max-w-[80px]">{c.set.split('-')[0]}</span>
+                  <button
+                    onClick={() => removeCardFromDeck(currentDeck.id, c.name)}
+                    title="Remove from deck"
+                    className="text-slate-500 hover:text-red-400 p-1"
+                  >
+                    <Trash2 className="w-3 h-3" />
+                  </button>
                 </div>
               ))}
             </div>
@@ -258,20 +334,28 @@ export const DecksPage: React.FC = () => {
           {/* Trainers Column */}
           <div className="bg-pokedex-card/90 rounded-2xl border border-slate-800 p-4 space-y-3">
             <div className="flex items-center justify-between border-b border-slate-800 pb-2">
-              <span className="font-bold text-xs text-teal-400 font-mono uppercase">Treinadores ({currentDeck.stats.trainers})</span>
+              <span className="font-bold text-xs text-teal-400 font-mono uppercase">Trainers ({currentDeck.stats.trainers})</span>
             </div>
             <div className="space-y-1.5">
               {currentDeck.cards.filter(c => c.section === 'trainers').map((c, i) => (
                 <div
                   key={i}
-                  onClick={() => handleCardClick(c)}
-                  className="flex items-center justify-between p-2 rounded-xl bg-pokedex-darker hover:bg-slate-800/90 border border-slate-800 cursor-pointer transition-colors text-xs"
+                  className="flex items-center justify-between p-2 rounded-xl bg-pokedex-darker hover:bg-slate-800/90 border border-slate-800 transition-colors text-xs"
                 >
-                  <div className="flex items-center space-x-2 truncate">
+                  <div 
+                    onClick={() => handleCardClick(c)}
+                    className="flex items-center space-x-2 truncate cursor-pointer flex-1"
+                  >
                     <span className="font-mono font-bold text-yellow-300">{c.count}x</span>
                     <span className="text-slate-100 font-semibold truncate hover:text-cyan-300">{c.name}</span>
                   </div>
-                  <span className="text-[10px] text-slate-400 font-mono">{c.type}</span>
+                  <button
+                    onClick={() => removeCardFromDeck(currentDeck.id, c.name)}
+                    title="Remove from deck"
+                    className="text-slate-500 hover:text-red-400 p-1"
+                  >
+                    <Trash2 className="w-3 h-3" />
+                  </button>
                 </div>
               ))}
             </div>
@@ -280,22 +364,28 @@ export const DecksPage: React.FC = () => {
           {/* Energies Column */}
           <div className="bg-pokedex-card/90 rounded-2xl border border-slate-800 p-4 space-y-3">
             <div className="flex items-center justify-between border-b border-slate-800 pb-2">
-              <span className="font-bold text-xs text-amber-400 font-mono uppercase">Energias ({currentDeck.stats.energies})</span>
+              <span className="font-bold text-xs text-amber-400 font-mono uppercase">Energies ({currentDeck.stats.energies})</span>
             </div>
             <div className="space-y-1.5">
               {currentDeck.cards.filter(c => c.section === 'energies').map((c, i) => (
                 <div
                   key={i}
-                  onClick={() => handleCardClick(c)}
-                  className="flex items-center justify-between p-2 rounded-xl bg-pokedex-darker hover:bg-slate-800/90 border border-slate-800 cursor-pointer transition-colors text-xs"
+                  className="flex items-center justify-between p-2 rounded-xl bg-pokedex-darker hover:bg-slate-800/90 border border-slate-800 transition-colors text-xs"
                 >
-                  <div className="flex items-center space-x-2 truncate">
+                  <div 
+                    onClick={() => handleCardClick(c)}
+                    className="flex items-center space-x-2 truncate cursor-pointer flex-1"
+                  >
                     <span className="font-mono font-bold text-yellow-300">{c.count}x</span>
                     <span className="text-slate-100 font-semibold truncate hover:text-cyan-300">{c.name}</span>
                   </div>
-                  <span className="text-[10px] text-amber-300 font-mono font-bold">
-                    {c.owned}/{c.count}
-                  </span>
+                  <button
+                    onClick={() => removeCardFromDeck(currentDeck.id, c.name)}
+                    title="Remove from deck"
+                    className="text-slate-500 hover:text-red-400 p-1"
+                  >
+                    <Trash2 className="w-3 h-3" />
+                  </button>
                 </div>
               ))}
             </div>
@@ -308,6 +398,12 @@ export const DecksPage: React.FC = () => {
         card={selectedCard}
         onClose={() => setSelectedCard(null)}
         onNavigateToDeck={(deckId) => setActiveDeckId(deckId)}
+      />
+
+      {/* Create New Deck Modal */}
+      <CreateDeckModal
+        isOpen={createModalOpen}
+        onClose={() => setCreateModalOpen(false)}
       />
     </div>
   );

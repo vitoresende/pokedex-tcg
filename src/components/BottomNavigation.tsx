@@ -1,5 +1,5 @@
 import React from 'react';
-import { Layers, ShieldAlert, Sparkles, BookOpen, Server, User } from 'lucide-react';
+import { Layers, Sparkles, BookOpen, Server, User } from 'lucide-react';
 import { soundEffects } from '../services/audio';
 
 export type NavTab = 'pokedex' | 'decks' | 'rules' | 'grpc' | 'auth';
@@ -13,9 +13,9 @@ export const BottomNavigation: React.FC<BottomNavigationProps> = ({ activeTab, o
   const tabs = [
     { id: 'pokedex' as NavTab, label: 'Pokédex', icon: Sparkles },
     { id: 'decks' as NavTab, label: 'Decks', icon: Layers },
-    { id: 'rules' as NavTab, label: 'Regras & Tipos', icon: BookOpen },
+    { id: 'rules' as NavTab, label: 'Rules & Types', icon: BookOpen },
     { id: 'grpc' as NavTab, label: 'gRPC Hub', icon: Server },
-    { id: 'auth' as NavTab, label: 'Perfil', icon: User },
+    { id: 'auth' as NavTab, label: 'Profile', icon: User },
   ];
 
   const handleSelect = (tab: NavTab) => {

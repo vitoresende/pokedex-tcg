@@ -2,13 +2,13 @@
   {
     "id": "deck-1",
     "name": "Darkness Beatdown & Tag Team Rush",
-    "format": "Expandido",
+    "format": "Expanded",
     "format_slug": "expanded",
-    "archetype": "Aggro / Toolbox GX",
+    "archetype": "Aggro / GX Toolbox",
     "badge_color": "from-purple-900 to-indigo-950",
     "accent_color": "#705848",
-    "summary": "Agressivo com múltiplas opções de ataque, focado em nocautes rápidos e punição contra decks com muitas habilidades.",
-    "win_condition": "Obter 6 cartas de Prêmio rapidamente através de nocautes pesados e punição contra decks com muitas habilidades.",
+    "summary": "Aggressive archetype with multiple heavy attack options, punishing ability-heavy decks and rushing knockouts.",
+    "win_condition": "Secure 6 Prize Cards swiftly with heavy knockouts and punishing ability-dependent enemy engines.",
     "stats": {
       "pokemon": 21,
       "trainers": 19,
@@ -16,8 +16,8 @@
       "total": 60
     },
     "energy_breakdown": {
-      "owned": "12 Escuridão, 3 Fogo, 4 Psíquica",
-      "needed": "+1 Fogo Básica",
+      "owned": "12 Darkness, 3 Fire, 4 Psychic",
+      "needed": "+1 Basic Fire Energy",
       "missing_count": 1
     },
     "cards": [
@@ -216,42 +216,41 @@
     ],
     "strategy_guide": {
       "opening": {
-        "title": "Plano de Abertura (Turnos 1 e 2)",
+        "title": "1. Opening Plan (Turns 1 & 2)",
         "steps": [
-          "Objetivo Imediato: Colocar Mewtwo & Mew-GX ou Eevee como ativos, baixando Sneasel no banco imediatamente.",
-          "Uso da Floresta de Viridian: Use o estádio no Turno 1 para descartar intencionalmente cartas GX pesadas da sua mão (como Charizard-GX ou Darkrai-GX) e buscar a energia necessária.",
-          "Vantagem Tática: A habilidade Perfeição do Mewtwo & Mew-GX copia ataques de cartas GX no descarte, transformando descarte em munição ofensiva instantânea."
+          "Immediate Objective: Set Mewtwo & Mew-GX or Eevee active, benching Sneasel immediately.",
+          "Viridian Forest Value: Use Viridian Forest on Turn 1 to discard heavy GX cards (like Charizard-GX or Darkrai-GX) and fetch required energy.",
+          "Perfection Engine: Mewtwo & Mew-GX Perfection ability copies attacks of GX Pokémon in your discard pile."
         ]
       },
       "midgame": {
-        "title": "Desenvolvimento e Meio de Jogo (Turnos 3 a 5)",
+        "title": "2. Midgame Development (Turns 3 to 5)",
         "steps": [
-          "O Motor do Weavile: Evolua seus Sneasel para Weavile. O ataque Regra de Conduta causa dano multiplicado pela quantidade de Pokémon com habilidades em jogo.",
-          "Punição Barata: Contra motores como Gardevoir/Bibarel/Dedenne, Weavile nocauteia Pokémon pesados gastando apenas 1 Energia de Escuridão.",
-          "Pressão com Mewtwo & Mew-GX: Utilize Fenda da Noite ou Morte Noturna GX (nocaute imediato se sob Condição Especial).",
-          "Defesa com Mercado Negro Prisma: Enquanto este estádio estiver em campo, se seu Pokémon de Escuridão for nocauteado, o oponente pega 1 carta de Prêmio a menos."
+          "Weavile Punishment: Evolve Sneasel into Weavile. Rule of Evil / Mind Jack deals scaled damage based on enemy abilities.",
+          "Low-Cost OHKO: Against popular engines (Gardevoir/Bibarel/Dedenne), Weavile knocks out heavy attackers for just 1 Darkness Energy.",
+          "Black Market Prism Shield: While Black Market ◇ is active, when your Darkness Pokémon with energy is knocked out, opponent takes 1 less Prize."
         ]
       },
       "lategame": {
-        "title": "Fechamento de Partida (Late Game)",
+        "title": "3. Endgame Execution",
         "steps": [
-          "Caso o adversário suba um Pokémon de Vida alta (250+ HP), utilize Asas Carmesim ou ataque GX do Charizard-GX copiado por Mewtwo & Mew-GX para 300 de dano devastador.",
-          "Gerencie as trocas de prêmio para vencer na corrida de 6 prêmios."
+          "Against high-HP threats (250+ HP), copy Crimson Wings or Charizard-GX attacks via Mewtwo & Mew-GX for 300 devastating damage to close the game.",
+          "Maintain prize advantage to win the 6-prize race."
         ]
       }
     },
-    "prize_trade_tip": "Ao jogar com Pokémon-GX, cada nocaute sofrido entrega 2 cartas de Prêmio. Use atacantes de 1 Prêmio (como Weavile) para forçar o oponente a comprar 6 nocautes individuais."
+    "prize_trade_tip": "When fielding GX Pokémon, each knockout yields 2 prizes. Use single-prize attackers (Weavile) to force the opponent into 6 separate knockouts."
   },
   {
     "id": "deck-2",
     "name": "Charizard Turbo & Beatdown",
-    "format": "Expandido",
+    "format": "Expanded",
     "format_slug": "expanded",
-    "archetype": "Aggro Pesado / One-Hit Knockout",
+    "archetype": "Heavy Beatdown / OHKO",
     "badge_color": "from-red-900 to-amber-950",
     "accent_color": "#F08030",
-    "summary": "Dano Bruto Massivo e OHKO (One-Hit Knockout), acelerando energias de Fogo para nocautes catastróficos.",
-    "win_condition": "Nocautear os atacantes principais do oponente em 1 único golpe, drenando os Prêmios em 3 nocautes de Pokémon de 2 Prêmios.",
+    "summary": "Massive raw damage output and One-Hit Knockout (OHKO) pressure, accelerating Fire Energy for high-impact attacks.",
+    "win_condition": "Knock out enemy core attackers in a single strike, draining 6 prizes in 3 high-value knockouts.",
     "stats": {
       "pokemon": 19,
       "trainers": 21,
@@ -259,8 +258,8 @@
       "total": 60
     },
     "energy_breakdown": {
-      "owned": "3 Fogo Básica",
-      "needed": "+17 Fogo Básica",
+      "owned": "3 Basic Fire Energy",
+      "needed": "+17 Basic Fire Energy",
       "missing_count": 17
     },
     "cards": [
@@ -451,40 +450,40 @@
     ],
     "strategy_guide": {
       "opening": {
-        "title": "Plano de Abertura (Turnos 1 e 2)",
+        "title": "1. Opening Plan (Turns 1 & 2)",
         "steps": [
-          "Atacante Provisório: Inicie com Turtonator ou Magmar no ativo com 1 ou 2 energias para pressionar os primeiros básicos do oponente.",
-          "Montagem de Banco: Use as Bolas de Ninho para priorizar colocar Charmander e Vulpix no banco no Turno 1."
+          "Opening Attacker: Open with Turtonator or Magmar active. They deal quick functional damage for 1 or 2 energy.",
+          "Bench Setup: Prioritize benching Charmander and Vulpix on Turn 1 using Nest Ball."
         ]
       },
       "midgame": {
-        "title": "Desenvolvimento e Gerenciamento de Recursos",
+        "title": "2. Midgame Energy & Resource Flow",
         "steps": [
-          "Bastão do Desejo: Anexe no seu atacante principal ativo. Se ele for nocauteado, mova até 3 energias básicas de Fogo para o Charizard no banco.",
-          "Compart. Exp.: Anexe em um Charmeleon no banco para acumular energias passivamente durante os nocautes.",
-          "Política de Fraqueza: Anexe caso o adversário use atacantes de Água, neutralizando o dano dobrado por fraqueza."
+          "Wishful Baton: Attach to your active attacker. When knocked out, move up to 3 Basic Fire Energy to benched Charizard.",
+          "Exp. Share: Attach to benched Charmeleon to passively hoard energy during knockouts.",
+          "Weakness Policy: Attach if facing Water attackers to eliminate double weakness damage."
         ]
       },
       "lategame": {
-        "title": "Fechamento de Partida (Late Game)",
+        "title": "3. Endgame Finishers",
         "steps": [
-          "Suba o Charizard-GX totalmente carregado e utilize Cratera Escaldante GX ou ataques pesados para nocautear qualquer ameaça ativa em 1 hit.",
-          "Use a Maca de Resgate para retornar cópias descartadas de Charizard ou Charmeleon para sua mão e manter a pressão."
+          "Promote fully-charged Charizard-GX and execute explosive GX attacks to OHKO any active threat.",
+          "Use Rescue Stretcher to recycle discarded Charizard and keep maximum offensive momentum."
         ]
       }
     },
-    "prize_trade_tip": "Turtonator e Magmar compram tempo valioso enquanto você prepara o Charizard-GX no banco com segurança."
+    "prize_trade_tip": "Turtonator and Magmar buy critical turns while safely charging Charizard-GX on the bench."
   },
   {
     "id": "deck-3",
     "name": "Dragon Lock & Item Denial",
-    "format": "Expandido",
+    "format": "Expanded",
     "format_slug": "expanded",
-    "archetype": "Controle / Trava de Mão",
+    "archetype": "Control / Hand Lockdown",
     "badge_color": "from-indigo-950 to-purple-950",
     "accent_color": "#7038F8",
-    "summary": "Controle absoluto negando ao adversário o uso de Itens e Energias Especiais da mão com Noivern-GX e Absol.",
-    "win_condition": "Negar a capacidade do adversário de jogar cartas essenciais da mão, travando-o sem recursos e vencendo por desgaste ou nocautes cirúrgicos.",
+    "summary": "Absolute control denying opponent Item cards and Special Energy from hand with Noivern-GX and Absol.",
+    "win_condition": "Deny enemy access to core items and special energy, starving opponent out of resources to win by attrition.",
     "stats": {
       "pokemon": 21,
       "trainers": 19,
@@ -492,8 +491,8 @@
       "total": 60
     },
     "energy_breakdown": {
-      "owned": "12 Escuridão, 6 Psíquica",
-      "needed": "+2 Psíquica Básica",
+      "owned": "12 Darkness, 6 Psychic",
+      "needed": "+2 Basic Psychic Energy",
       "missing_count": 2
     },
     "cards": [
@@ -692,39 +691,39 @@
     ],
     "strategy_guide": {
       "opening": {
-        "title": "Plano de Abertura (Turnos 1 e 2)",
+        "title": "1. Opening Plan (Turns 1 & 2)",
         "steps": [
-          "Montagem da Linha de Noivern: Priorize colocar 2 Noibat no banco usando Bola de Ninho.",
-          "Absol Passivo: Coloque Absol no banco. Sua habilidade passiva adiciona +1 ao custo de recuo do Pokémon básico ativo do oponente, travando suportes de compra na posição ativa."
+          "Noivern Line Setup: Bench 2 Noibat on Turn 1 using Nest Ball.",
+          "Passive Absol: Bench Absol. Its passive ability adds +1 Retreat Cost to enemy active Basic Pokémon, trapping draw engines."
         ]
       },
       "midgame": {
-        "title": "Aplicação da Trava (Lock Engine)",
+        "title": "2. Applying the Lock Engine",
         "steps": [
-          "Contra Decks Rápidos de Itens: Use Onda Distorcida (Distortion) do Noivern-GX a cada turno para impedir o oponente de jogar qualquer Item da mão.",
-          "Contra Decks de Energia Especial: Use Explosão Sonora (Sonic Volume) para impedir a descida de qualquer Energia Especial da mão.",
-          "Destruição de Recursos: Use Martelo Avançado para descartar energias especiais ativas e Ventilador de Campo para limpar ferramentas e estádios do adversário."
+          "Against Item-Heavy Decks: Use Noivern-GX Distortion every turn to completely lock out all Item cards from hand.",
+          "Against Special Energy: Use Sonic Volume to prevent playing any Special Energy from hand.",
+          "Disruption: Use Enhanced Hammer and Field Blower to strip away existing energies, tools, and stadiums."
         ]
       },
       "lategame": {
-        "title": "Fechamento de Partida (Late Game)",
+        "title": "3. Endgame Sweep",
         "steps": [
-          "Quando o oponente estiver totalmente sem cartas e recursos, use Sincronia Booming GX do Noivern-GX ou copie com Mewtwo & Mew-GX para espalhar dano e nocautear múltiplos alvos juntos."
+          "Once the opponent is starved of cards, unleash Noivern-GX Booming GX or copy with Mewtwo & Mew-GX to spread spread damage and sweep multiple targets simultaneously."
         ]
       }
     },
-    "prize_trade_tip": "A trava de itens atrasa o adversário em 3 a 5 turnos, permitindo que você controle o ritmo da partida sem sofrer retaliação."
+    "prize_trade_tip": "Item lock delays enemy setup by 3-5 turns, giving full tempo dominance."
   },
   {
     "id": "deck-4",
     "name": "Poison Trap & Metal Fortress",
     "format": "Casual",
     "format_slug": "casual",
-    "archetype": "Status / Controle Defensivo",
+    "archetype": "Status / Defensive Wall",
     "badge_color": "from-emerald-950 to-slate-900",
     "accent_color": "#78C850",
-    "summary": "Envenena e Confunde o oponente com Victreebel e Parasect enquanto resiste a ataques com muralhas de Metal.",
-    "win_condition": "Envenenar e Confundir o Pokémon adversário enquanto absorve dano através de ferramentas e resistências de Metal.",
+    "summary": "Inflicts Poison and Confusion with Victreebel and Parasect while withstanding hits behind fortified Metal walls.",
+    "win_condition": "Poison and Confuse the opposing Pokémon while absorbing damage with Metal tools and resistances.",
     "stats": {
       "pokemon": 26,
       "trainers": 14,
@@ -732,8 +731,8 @@
       "total": 60
     },
     "energy_breakdown": {
-      "owned": "11 Planta, 8 Metal",
-      "needed": "+1 Metal Básica",
+      "owned": "11 Grass, 8 Metal",
+      "needed": "+1 Basic Metal Energy",
       "missing_count": 1
     },
     "cards": [
@@ -892,39 +891,39 @@
     ],
     "strategy_guide": {
       "opening": {
-        "title": "Plano de Abertura (Turnos 1 e 2)",
+        "title": "1. Opening Plan (Turns 1 & 2)",
         "steps": [
-          "Abra com Bellsprout ou Honedge no ativo.",
-          "Baixe Bidoof no banco para preparar Bibarel, que funcionará como motor contínuo de compra de cartas da mão."
+          "Open with Bellsprout or Honedge active.",
+          "Bench Bidoof to evolve into Bibarel as your continuous hand draw engine."
         ]
       },
       "midgame": {
-        "title": "Aplicação da Armadilha de Veneno & Muralha",
+        "title": "2. Poison Trap & Metal Wall",
         "steps": [
-          "Evolua para Victreebel e Parasect, aplicando Veneno e Confusão constantes.",
-          "Suba Doublade com Óculos de Metal (-30 dano e imune a marcadores) ou Frigideira de Metal (-30 dano e anula fraqueza).",
-          "O adversário toma dano entre os turnos e tem 50% de chance de se machucar ao tentar atacar."
+          "Evolve into Victreebel and Parasect to inflict continuous Poison and Confusion.",
+          "Promote Doublade with Metal Goggles (-30 damage & immune to damage counters) or Metal Frying Pan (-30 damage & removes Fire weakness).",
+          "Opponents take tick damage between turns and have 50% coin-flip risk when attempting to attack."
         ]
       },
       "lategame": {
-        "title": "Fechamento Defensivo",
+        "title": "3. Defensive Attrition",
         "steps": [
-          "Drene os pontos de vida do atacante oponente enquanto seu Doublade fortificado sustenta múltiplos turnos em campo."
+          "Drain opposing HP while your fortified Doublade survives multiple turns in combat."
         ]
       }
     },
-    "prize_trade_tip": "Como este deck usa apenas Pokémon de 1 Prêmio, o oponente é forçado a realizar 6 nocautes trabalhosos enquanto sofre veneno a cada turno."
+    "prize_trade_tip": "This deck consists only of 1-prize Pokémon, forcing the opponent to score 6 difficult knockouts."
   },
   {
     "id": "deck-5",
     "name": "Fairy Swarm & Healing Guard",
     "format": "Casual",
     "format_slug": "casual",
-    "archetype": "Motor de Busca / Suporte & Cura",
+    "archetype": "Search Engine / Healing Support",
     "badge_color": "from-pink-950 to-rose-950",
     "accent_color": "#EE99AC",
-    "summary": "Aceleração ininterrupta de energias com Ribombee, proteção mágica com Clefable e Diancie, e bloqueio de danos com Pingente de Fada.",
-    "win_condition": "Montar uma bancada protegida com Ribombee e Clefable, curando e bloqueando danos até superar o adversário em recursos.",
+    "summary": "Continuous energy acceleration with Ribombee, magical protection with Clefable & Diancie, and damage blocking with Fairy Charm.",
+    "win_condition": "Assemble a protected bench with Ribombee and Clefable, healing and negating damage until out-resourcing the opponent.",
     "stats": {
       "pokemon": 21,
       "trainers": 19,
@@ -932,8 +931,8 @@
       "total": 60
     },
     "energy_breakdown": {
-      "owned": "9 Fada, 4 Planta",
-      "needed": "+7 Fada Básica",
+      "owned": "9 Fairy, 4 Grass",
+      "needed": "+7 Basic Fairy Energy",
       "missing_count": 7
     },
     "cards": [
@@ -1148,27 +1147,27 @@
     ],
     "strategy_guide": {
       "opening": {
-        "title": "Plano de Abertura (Turnos 1 e 2)",
+        "title": "1. Opening Plan (Turns 1 & 2)",
         "steps": [
-          "Priorize colocar múltiplos Cutiefly no banco com Bola de Ninho.",
-          "Coloque Clefairy ou Diancie na frente para absorver os primeiros turnos de ataque adversário."
+          "Bench multiple Cutiefly with Nest Ball.",
+          "Place Clefairy or Diancie active to absorb early turns."
         ]
       },
       "midgame": {
-        "title": "Motor de Busca e Proteção Mágica",
+        "title": "2. Search Engine & Magical Guard",
         "steps": [
-          "Habilidade do Ribombee: Uma vez por turno, Ribombee busca energias básicas no baralho e coloca na mão, garantindo consistência total.",
-          "Proteção de Efeitos: Clefable e Diancie protegem seus Pokémon contra condições especiais e efeitos secundários de ataques.",
-          "Pingente de Fada: Previne todo o dano recebido de determinados tipos de atacantes do adversário."
+          "Ribombee Search: Once per turn, search basic energy from deck straight to hand for 100% attachment consistency.",
+          "Effect Protection: Clefable and Diancie prevent special conditions and attack side-effects.",
+          "Fairy Charm: Completely block damage from specific enemy Pokémon types."
         ]
       },
       "lategame": {
-        "title": "Supremacia de Recursos",
+        "title": "3. Resource Supremacy",
         "steps": [
-          "Supere o adversário pela constância ininterrupta de energias e cura passiva."
+          "Outlast the opponent through consistent energy flow and continuous team healing."
         ]
       }
     },
-    "prize_trade_tip": "Deck tático ideal para jogos prolongados e controle defensivo com atacantes não-GX."
+    "prize_trade_tip": "Ideal for extended casual games with non-GX resilience."
   }
 ]

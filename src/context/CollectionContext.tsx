@@ -71,30 +71,30 @@ const defaultFilters: FilterState = {
 };
 
 const COLOR_MAP: Record<string, { name: string; slug: string; bg: string }> = {
-  G: { name: 'Planta', slug: 'grass', bg: '#78C850' },
-  R: { name: 'Fogo', slug: 'fire', bg: '#F08030' },
-  W: { name: 'Água', slug: 'water', bg: '#6890F0' },
-  L: { name: 'Raios', slug: 'lightning', bg: '#F8D030' },
-  P: { name: 'Psíquica', slug: 'psychic', bg: '#F85888' },
-  F: { name: 'Luta', slug: 'fighting', bg: '#C03028' },
-  D: { name: 'Escuridão', slug: 'darkness', bg: '#705848' },
+  G: { name: 'Grass', slug: 'grass', bg: '#78C850' },
+  R: { name: 'Fire', slug: 'fire', bg: '#F08030' },
+  W: { name: 'Water', slug: 'water', bg: '#6890F0' },
+  L: { name: 'Lightning', slug: 'lightning', bg: '#F8D030' },
+  P: { name: 'Psychic', slug: 'psychic', bg: '#F85888' },
+  F: { name: 'Fighting', slug: 'fighting', bg: '#C03028' },
+  D: { name: 'Darkness', slug: 'darkness', bg: '#705848' },
   M: { name: 'Metal', slug: 'metal', bg: '#B8B8D0' },
-  Y: { name: 'Fada', slug: 'fairy', bg: '#EE99AC' },
-  O: { name: 'Dragão', slug: 'dragon', bg: '#7038F8' },
-  C: { name: 'Incolor', slug: 'colorless', bg: '#A8A878' },
-  E: { name: 'Energia', slug: 'energy', bg: '#F59E0B' },
-  '': { name: 'Treinador', slug: 'trainer', bg: '#14B8A6' }
+  Y: { name: 'Fairy', slug: 'fairy', bg: '#EE99AC' },
+  O: { name: 'Dragon', slug: 'dragon', bg: '#7038F8' },
+  C: { name: 'Colorless', slug: 'colorless', bg: '#A8A878' },
+  E: { name: 'Energy', slug: 'energy', bg: '#F59E0B' },
+  '': { name: 'Trainer', slug: 'trainer', bg: '#14B8A6' }
 };
 
 const RARITY_MAP: Record<string, string> = {
-  C: 'Comum',
-  U: 'Incomum',
-  R: 'Rara',
-  RH: 'Rara Holo',
-  RU: 'Ultra Rara (GX/EX)',
-  RD: 'Rara Dupla (ex)',
-  IR: 'Ilustração Rara',
-  S: 'Secreta / Especial'
+  C: 'Common',
+  U: 'Uncommon',
+  R: 'Rare',
+  RH: 'Rare Holo',
+  RU: 'Ultra Rare (GX/EX)',
+  RD: 'Double Rare (ex)',
+  IR: 'Illustration Rare',
+  S: 'Secret Rare'
 };
 
 const CollectionContext = createContext<CollectionContextType | undefined>(undefined);
@@ -129,7 +129,7 @@ export const CollectionProvider: React.FC<{ children: React.ReactNode }> = ({ ch
   const [isMuted, setIsMuted] = useState<boolean>(false);
   const [syncing, setSyncing] = useState<boolean>(false);
 
-  // Persistência local
+  // Local storage persistence
   useEffect(() => {
     localStorage.setItem('pokedex_tcg_cards', JSON.stringify(cards));
   }, [cards]);
@@ -146,7 +146,7 @@ export const CollectionProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     localStorage.setItem('pokedex_tcg_notes', JSON.stringify(notes));
   }, [notes]);
 
-  // Carrega do Firestore quando o usuário loga
+  // Load from Firestore on user login
   useEffect(() => {
     if (user?.uid && isAllowed) {
       loadUserCollectionFromFirestore(user.uid).then(data => {
@@ -208,23 +208,23 @@ export const CollectionProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     
     const newCard: Card = {
       id: newId,
-      name_pt: cardData.name_pt || 'Nova Carta',
+      name_pt: cardData.name_pt || 'New Card',
       name_en: cardData.name_en || cardData.name_pt || 'New Card',
-      set_pt: cardData.set_pt || 'Coleção Personalizada',
+      set_pt: cardData.set_pt || 'Custom Collection',
       set_en: cardData.set_en || 'Custom Set',
       set_code: (cardData.set_code || 'CUS').toUpperCase(),
       card_number: cardData.card_number || '1',
       total_in_set: cardData.total_in_set || '100',
       quantity: cardData.quantity !== undefined ? cardData.quantity : 1,
       quality: cardData.quality || 'NM',
-      language: cardData.language || 'PT',
+      language: cardData.language || 'EN',
       rarity_code: cardData.rarity_code || 'C',
-      rarity_name: RARITY_MAP[cardData.rarity_code || 'C'] || 'Comum',
+      rarity_name: RARITY_MAP[cardData.rarity_code || 'C'] || 'Common',
       color_code: cardData.color_code || '',
       color_name: colorInfo.name,
       color_slug: colorInfo.slug,
       color_bg: colorInfo.bg,
-      card_category: cardData.card_category || (cardData.color_code === '' ? 'Treinador' : 'Pokémon'),
+      card_category: cardData.card_category || (cardData.color_code === '' ? 'Trainer' : 'Pokémon'),
       is_foil: !!cardData.is_foil,
       extras: cardData.extras || (cardData.is_foil ? 'Foil' : ''),
       comment: cardData.comment || '',
@@ -249,7 +249,6 @@ export const CollectionProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     const lines = csvContent.replace(/\r\n/g, '\n').replace(/\r/g, '\n').split('\n').filter(l => l.trim().length > 0);
     if (lines.length <= 1) return { added: 0, updated: 0 };
 
-    const header = lines[0].split(',').map(h => h.trim().replace(/^[\uFEFF\ufeff]/, ''));
     let added = 0;
     let updated = 0;
 
@@ -259,14 +258,14 @@ export const CollectionProvider: React.FC<{ children: React.ReactNode }> = ({ ch
       const parts = lines[i].split(',').map(p => p.trim());
       if (parts.length < 4) continue;
 
-      const setPt = parts[0] || 'Coleção Importada';
+      const setPt = parts[0] || 'Imported Set';
       const setEn = parts[1] || setPt;
       const setCode = (parts[2] || 'IMP').toUpperCase();
-      const cardPt = parts[3] || 'Carta';
+      const cardPt = parts[3] || 'Card';
       const cardEn = parts[4] || cardPt;
       const qty = parseInt(parts[5] || '1') || 1;
       const quality = parts[6] || 'NM';
-      const lang = parts[7] || 'PT';
+      const lang = parts[7] || 'EN';
       const rarity = parts[8] || 'C';
       const color = parts[9] || '';
       const extras = parts[10] || '';
@@ -299,12 +298,12 @@ export const CollectionProvider: React.FC<{ children: React.ReactNode }> = ({ ch
           quality: quality,
           language: lang,
           rarity_code: rarity,
-          rarity_name: RARITY_MAP[rarity] || 'Comum',
+          rarity_name: RARITY_MAP[rarity] || 'Common',
           color_code: color,
           color_name: colorInfo.name,
           color_slug: colorInfo.slug,
           color_bg: colorInfo.bg,
-          card_category: color === '' ? 'Treinador' : (color === 'E' ? 'Energia' : 'Pokémon'),
+          card_category: color === '' ? 'Trainer' : (color === 'E' ? 'Energy' : 'Pokémon'),
           is_foil: extras.includes('Foil') || ['RH', 'RU', 'RD', 'IR', 'S'].includes(rarity),
           extras: extras,
           comment: comment,
@@ -324,14 +323,14 @@ export const CollectionProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     const newId = `custom-deck-${Date.now()}`;
     const newDeck: Deck = {
       id: newId,
-      name: deckData.name || 'Novo Baralho Personalizado',
+      name: deckData.name || 'Custom Deck',
       format: deckData.format || 'Standard',
       format_slug: (deckData.format_slug || 'standard') as any,
       archetype: deckData.archetype || 'Custom Deck',
       badge_color: deckData.badge_color || 'from-pokedex-red to-red-950',
       accent_color: deckData.accent_color || '#DC0A2D',
-      summary: deckData.summary || 'Estratégia personalizada construída no Pokédex TCG.',
-      win_condition: deckData.win_condition || 'Nocautear os atacantes principais e coletar 6 Prêmios.',
+      summary: deckData.summary || 'Custom strategy built in Pokédex TCG.',
+      win_condition: deckData.win_condition || 'Knock out primary attackers and take 6 Prize cards.',
       stats: {
         pokemon: deckData.cards?.filter(c => c.section === 'pokemon').reduce((a, b) => a + b.count, 0) || 0,
         trainers: deckData.cards?.filter(c => c.section === 'trainers').reduce((a, b) => a + b.count, 0) || 0,
@@ -339,17 +338,17 @@ export const CollectionProvider: React.FC<{ children: React.ReactNode }> = ({ ch
         total: deckData.cards?.reduce((a, b) => a + b.count, 0) || 0,
       },
       energy_breakdown: deckData.energy_breakdown || {
-        owned: 'Energias configuradas',
-        needed: 'Nenhuma',
+        owned: 'Energies configured',
+        needed: 'None',
         missing_count: 0
       },
       cards: deckData.cards || [],
       strategy_guide: deckData.strategy_guide || {
-        opening: { title: '1. Abertura', steps: ['Inicie com seu Pokémon Básico ativo e posicione o banco.'] },
-        midgame: { title: '2. Meio de Jogo', steps: ['Evolua seus atacantes e ligue energias a cada turno.'] },
-        lategame: { title: '3. Fechamento', steps: ['Execute nocautes finais para comprar todos os Prêmios.'] },
+        opening: { title: '1. Opening Plan', steps: ['Start with your active Basic Pokémon and establish bench.'] },
+        midgame: { title: '2. Midgame Plan', steps: ['Evolve attackers and attach energy each turn.'] },
+        lategame: { title: '3. Endgame Plan', steps: ['Execute finishing attacks to claim all Prize cards.'] },
       },
-      prize_trade_tip: deckData.prize_trade_tip || 'Gerencie as trocas de prêmio com cautela.'
+      prize_trade_tip: deckData.prize_trade_tip || 'Carefully manage prize trade advantages.'
     };
 
     setDecks(prev => [newDeck, ...prev]);
@@ -381,7 +380,7 @@ export const CollectionProvider: React.FC<{ children: React.ReactNode }> = ({ ch
         );
       } else {
         const section: 'pokemon' | 'trainers' | 'energies' = 
-          card.card_category === 'Pokémon' ? 'pokemon' : (card.card_category === 'Treinador' ? 'trainers' : 'energies');
+          card.card_category === 'Pokémon' ? 'pokemon' : (card.card_category === 'Trainer' ? 'trainers' : 'energies');
         
         updatedCards = [
           ...deck.cards,
@@ -455,7 +454,7 @@ export const CollectionProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     try {
       const quantities: Record<string, number> = {};
       cards.forEach(c => { quantities[c.id] = c.quantity; });
-      await syncUserCollectionToFirestore(user.uid, quantities, notes, favorites);
+      await syncUserCollectionToFirestore(user.uid, quantities, notes, favorites, decks);
       setSyncing(false);
       return true;
     } catch (err) {
@@ -469,7 +468,7 @@ export const CollectionProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     setFilters(defaultFilters);
   };
 
-  // Estatísticas calculadas
+  // Calculated statistics
   const stats = useMemo(() => {
     const totalOwned = cards.reduce((acc, c) => acc + c.quantity, 0);
     const uniqueCount = cards.filter(c => c.quantity > 0).length;
@@ -486,11 +485,11 @@ export const CollectionProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     };
   }, [cards]);
 
-  // Filtragem e ordenação das cartas
+  // Filtered & sorted cards
   const filteredCards = useMemo(() => {
     let result = [...cards];
 
-    // Busca textual
+    // Text query
     if (filters.searchQuery.trim()) {
       const q = filters.searchQuery.toLowerCase().trim();
       result = result.filter(c => 
@@ -504,27 +503,27 @@ export const CollectionProvider: React.FC<{ children: React.ReactNode }> = ({ ch
       );
     }
 
-    // Tipo / Cor
+    // Type / Color
     if (filters.selectedColor !== 'ALL') {
       result = result.filter(c => c.color_slug === filters.selectedColor || c.color_code === filters.selectedColor);
     }
 
-    // Coleção / Set
+    // Set / Collection
     if (filters.selectedSet !== 'ALL') {
       result = result.filter(c => c.set_code === filters.selectedSet);
     }
 
-    // Raridade
+    // Rarity
     if (filters.selectedRarity !== 'ALL') {
       result = result.filter(c => c.rarity_code === filters.selectedRarity);
     }
 
-    // Categoria
+    // Category
     if (filters.selectedCategory !== 'ALL') {
       result = result.filter(c => c.card_category === filters.selectedCategory);
     }
 
-    // Filtros booleanos
+    // Boolean flags
     if (filters.onlyFoil) {
       result = result.filter(c => c.is_foil);
     }
@@ -538,7 +537,7 @@ export const CollectionProvider: React.FC<{ children: React.ReactNode }> = ({ ch
       result = result.filter(c => c.decks && c.decks.length > 0);
     }
 
-    // Ordenação
+    // Sorting
     result.sort((a, b) => {
       let comparison = 0;
       if (filters.sortBy === 'number') {
@@ -599,7 +598,7 @@ export const CollectionProvider: React.FC<{ children: React.ReactNode }> = ({ ch
 export const useCollection = () => {
   const context = useContext(CollectionContext);
   if (!context) {
-    throw new Error('useCollection deve ser usado dentro de um CollectionProvider');
+    throw new Error('useCollection must be used within a CollectionProvider');
   }
   return context;
 };

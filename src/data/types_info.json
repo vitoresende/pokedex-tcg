@@ -1,122 +1,122 @@
 [
   {
     "id": "grass",
-    "name": "Planta",
+    "name": "Grass",
     "name_en": "Grass",
     "icon": "leaf",
     "color": "#78C850",
     "gradient": "from-emerald-600 to-green-800",
-    "description": "Os Pokémon de tipo Planta muitas vezes possuem ataques que os curam ou que Envenenam seus oponentes.",
-    "sample_card": "Vivillon / Victreebel",
+    "description": "Grass-type Pokémon often have attacks that heal themselves or inflict Poison on their opponents.",
+    "sample_card": "Vivillon / Victreebel / Decidueye",
     "strengths": [
-      "Cura contínua de HP",
-      "Aplicação rápida de Veneno",
-      "Controle de campo"
+      "Continuous HP healing",
+      "Rapid Poison infliction",
+      "Board disruption & stall"
     ],
-    "weakness": "Fogo",
-    "resistance": "Água"
+    "weakness": "Fire",
+    "resistance": "Water"
   },
   {
     "id": "fire",
-    "name": "Fogo",
+    "name": "Fire",
     "name_en": "Fire",
     "icon": "flame",
     "color": "#F08030",
     "gradient": "from-orange-500 to-red-700",
-    "description": "Os Pokémon de tipo Fogo possuem grandes ataques! Eles podem deixar seus oponentes Queimados, porém, podem demorar um pouco para reabastecer.",
-    "sample_card": "Charizard-GX / Houndoom",
+    "description": "Fire-type Pokémon possess immense attack power! They can leave opponents Burned, though they may take time to recharge.",
+    "sample_card": "Charizard-GX / Houndoom / Turtonator",
     "strengths": [
-      "Altíssimo dano bruto (OHKO)",
-      "Condição de Queimado",
-      "Poder de nocaute imediato"
+      "Massive raw damage output (OHKO)",
+      "Burn status condition",
+      "Instant knockout pressure"
     ],
-    "weakness": "Água",
-    "resistance": "Planta / Metal"
+    "weakness": "Water",
+    "resistance": "Grass / Metal"
   },
   {
     "id": "water",
-    "name": "Água",
+    "name": "Water",
     "name_en": "Water",
     "icon": "droplet",
     "color": "#6890F0",
     "gradient": "from-blue-500 to-cyan-700",
-    "description": "Os Pokémon de tipo Água podem manipular Energia e mover os Pokémon de outra equipe.",
+    "description": "Water-type Pokémon can manipulate Energy and force switches among the opposing team.",
     "sample_card": "Lapras / Tatsugiri / Keldeo",
     "strengths": [
-      "Manipulação e aceleração de Energia",
-      "Troca forçada de Pokémon adversário",
-      "Alta flexibilidade"
+      "Energy acceleration & manipulation",
+      "Forced opponent bench switches",
+      "High tactical flexibility"
     ],
-    "weakness": "Raios / Planta",
-    "resistance": "Fogo"
+    "weakness": "Lightning / Grass",
+    "resistance": "Fire"
   },
   {
     "id": "lightning",
-    "name": "Raios",
+    "name": "Lightning",
     "name_en": "Lightning",
     "icon": "zap",
     "color": "#F8D030",
     "gradient": "from-yellow-400 to-amber-600",
-    "description": "Os Pokémon de tipo Raios podem recuperar Energias da pilha de descarte e deixar os seus oponentes Paralisados.",
+    "description": "Lightning-type Pokémon can recover Energy from the discard pile and leave their opponents Paralyzed.",
     "sample_card": "Pikachu / Rotom / Raichu",
     "strengths": [
-      "Recuperação de energias do descarte",
-      "Imposição de Paralisia",
-      "Velocidade de ataque"
+      "Discard pile energy recovery",
+      "Paralysis lockdown",
+      "High-speed fast tempo"
     ],
-    "weakness": "Luta",
+    "weakness": "Fighting",
     "resistance": "Metal"
   },
   {
     "id": "psychic",
-    "name": "Psíquica",
+    "name": "Psychic",
     "name_en": "Psychic",
     "icon": "eye",
     "color": "#F85888",
     "gradient": "from-pink-500 to-purple-800",
-    "description": "Os Pokémon de tipo Psíquico dominam os poderes especiais! Os seus oponentes acabam muitas vezes Adormecidos, Confusos ou Envenenados.",
-    "sample_card": "Mewtwo & Mew-GX / Drowzee",
+    "description": "Psychic-type Pokémon master mystical powers! Their opponents frequently end up Asleep, Confused, or Poisoned.",
+    "sample_card": "Mewtwo & Mew-GX / Drowzee / Deoxys",
     "strengths": [
-      "Manipulação de marcadores de dano",
-      "Múltiplas condições especiais",
-      "Habilidades de cópia"
+      "Damage counter manipulation",
+      "Multiple special conditions",
+      "Attack copying abilities"
     ],
-    "weakness": "Escuridão / Psíquico",
-    "resistance": "Luta"
+    "weakness": "Darkness / Psychic",
+    "resistance": "Fighting"
   },
   {
     "id": "fighting",
-    "name": "Luta",
+    "name": "Fighting",
     "name_en": "Fighting",
     "icon": "shield",
     "color": "#C03028",
     "gradient": "from-red-700 to-amber-900",
-    "description": "Os Pokémon de tipo Luta podem correr maiores riscos para causar dano a mais e alguns podem até jogar moedas para combinar ataques.",
+    "description": "Fighting-type Pokémon can take greater calculated risks for extra damage and some flip coins to trigger devastating combos.",
     "sample_card": "Krookodile / Donphan / Geodude",
     "strengths": [
-      "Dano adicional com riscos calculados",
-      "Jogadas de moeda explosivas",
-      "Super efetivo contra Raios e Incolor"
+      "Bonus damage with high risk/reward",
+      "Coin-flip power spikes",
+      "Super effective against Lightning & Colorless"
     ],
-    "weakness": "Psíquico / Planta",
-    "resistance": "Nenhuma"
+    "weakness": "Psychic / Grass",
+    "resistance": "None"
   },
   {
     "id": "darkness",
-    "name": "Escuridão",
+    "name": "Darkness",
     "name_en": "Darkness",
     "icon": "moon",
     "color": "#705848",
     "gradient": "from-neutral-800 to-stone-950",
-    "description": "Os Pokémon de tipo Escuridão possuem ataques sorrateiros que muitas vezes fazem com que os seus oponentes descartem cartas! Eles também podem deixar seus oponentes Envenenados!",
-    "sample_card": "Darkrai-GX / Umbreon / Seviper",
+    "description": "Darkness-type Pokémon have sneaky attacks that often force opponents to discard cards! They can also inflict Poison.",
+    "sample_card": "Darkrai-GX / Umbreon-GX / Weavile",
     "strengths": [
-      "Descarte e controle de recursos",
-      "Punição por habilidades ativas",
-      "Condição de Veneno sorrateiro"
+      "Hand & resource discard control",
+      "Ability-based punishment",
+      "Sneaky Poison status"
     ],
-    "weakness": "Luta / Fada",
-    "resistance": "Psíquico"
+    "weakness": "Fighting / Fairy",
+    "resistance": "Psychic"
   },
   {
     "id": "metal",
@@ -125,65 +125,65 @@
     "icon": "hammer",
     "color": "#B8B8D0",
     "gradient": "from-slate-400 to-zinc-700",
-    "description": "Os Pokémon de tipo Metal podem resistir a ataques por mais tempo do que quase todos os outros Pokémon.",
+    "description": "Metal-type Pokémon can endure and resist incoming attacks longer than almost all other Pokémon.",
     "sample_card": "Forretress / Doublade / Honedge",
     "strengths": [
-      "Redução maciça de dano recebido",
-      "Imunidade a efeitos e marcadores",
-      "Alta durabilidade"
+      "Massive incoming damage reduction",
+      "Immunity to damage markers & effects",
+      "High sustained wall durability"
     ],
-    "weakness": "Fogo",
-    "resistance": "Planta / Psíquico"
+    "weakness": "Fire",
+    "resistance": "Grass / Psychic"
   },
   {
     "id": "fairy",
-    "name": "Fada",
+    "name": "Fairy",
     "name_en": "Fairy",
     "icon": "sparkles",
     "color": "#EE99AC",
     "gradient": "from-pink-400 to-rose-600",
-    "description": "Os Pokémon de tipo Fada possuem truques que farão com que os ataques dos Pokémon oponentes sejam menos efetivos. Desde Espada e Escudo, você encontrará alguns Pokémon que eram de tipo Fada aparecendo como Pokémon de tipo Psíquico.",
-    "sample_card": "Cutiefly / Ribombee / Clefable",
+    "description": "Fairy-type Pokémon possess magical tricks that reduce enemy attack effectiveness. In recent sets, classic Fairy Pokémon are represented under Psychic.",
+    "sample_card": "Cutiefly / Ribombee / Clefable / Diancie",
     "strengths": [
-      "Prevenção total de danos de Pokémon-GX/EX",
-      "Busca de energias sem custo",
-      "Cura de equipe"
+      "Full damage prevention from GX/EX Pokémon",
+      "Free continuous energy searching",
+      "Team healing & cleanse"
     ],
     "weakness": "Metal",
-    "resistance": "Escuridão / Dragão (Imunidade TCG clássica)"
+    "resistance": "Darkness / Dragon (Classic TCG Immunity)"
   },
   {
     "id": "dragon",
-    "name": "Dragão",
+    "name": "Dragon",
     "name_en": "Dragon",
     "icon": "flame-kindling",
     "color": "#7038F8",
     "gradient": "from-amber-600 via-purple-700 to-indigo-900",
-    "description": "Os Pokémon de tipo Dragão possuem ataques muito fortes, mas geralmente necessitam de 2 tipos de Energia para usá-los.",
+    "description": "Dragon-type Pokémon boast extremely powerful attacks, but typically require 2 distinct types of Energy to execute them.",
     "sample_card": "Dragonite / Noivern-GX / Dratini",
     "strengths": [
-      "Ataques massivos com efeitos de trava",
-      "Sem fraqueza elemental em coleções modernas",
-      "Versatilidade"
+      "Massive attacks with lock effects",
+      "No elemental weakness in modern sets",
+      "High endgame versatility"
     ],
-    "weakness": "Fada (em gerações SM/XY)",
-    "resistance": "Nenhuma"
+    "weakness": "Fairy (in SM/XY blocks)",
+    "resistance": "None"
   },
   {
     "id": "colorless",
-    "name": "Incolor",
+    "name": "Colorless",
     "name_en": "Colorless",
     "icon": "circle-dot",
     "color": "#A8A878",
     "gradient": "from-stone-300 to-zinc-600",
-    "description": "Os Pokémon de tipo Incolor possuem muitos movimentos diferentes e funcionam com qualquer tipo de baralho.",
+    "description": "Colorless-type Pokémon have diverse movesets and can seamlessly integrate into any deck archetype.",
     "sample_card": "Indeedee / Eevee / Lugia / Drampa-GX",
     "strengths": [
-      "Podem usar qualquer tipo de energia básica",
-      "Encaixam em qualquer deck",
-      "Altíssima utilidade de suporte"
+      "Usable with any basic energy type",
+      "Universal deck compatibility",
+      "Versatile support & draw utility"
     ],
-    "weakness": "Luta / Raios",
-    "resistance": "Nenhuma"
+    "weakness": "Fighting / Lightning",
+    "resistance": "None"
   }
 ]

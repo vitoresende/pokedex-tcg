@@ -2,124 +2,124 @@
   "formats": [
     {
       "id": "standard",
-      "name": "Standard (Padrão)",
-      "tag": "Competitivo Oficial",
-      "status_badge": "Rotativo",
-      "description": "O formato mais jogado em torneios oficiais do circuito mundial Pokémon Championship. Permite apenas cartas das coleções mais recentes (com marcas de regulamentação válidas, ex: F, G, H).",
-      "deck_size": "Exatamente 60 cartas",
-      "copy_limit": "Máximo de 4 cópias de qualquer carta com o mesmo nome (exceto Energias Básicas)",
-      "prizes": "6 cartas de Prêmio",
+      "name": "Standard Format",
+      "tag": "Official Competitive",
+      "status_badge": "Rotating Regulation Marks",
+      "description": "The primary competitive format played in official Pokémon World Championships. Uses cards with modern regulation marks.",
+      "deck_size": "Exactly 60 cards",
+      "copy_limit": "Maximum 4 copies of any card with the same name (except Basic Energy)",
+      "prizes": "6 Prize Cards",
       "advantages": [
-        "Ambiente equilibrado",
-        "Menor complexidade de cartas antigas",
-        "Atualizado anualmente"
+        "Balanced competitive environment",
+        "Lower barrier of entry from older sets",
+        "Annual refreshing metagame"
       ],
       "disadvantages": [
-        "Necessidade de renovar o acervo a cada rotação anual"
+        "Cards rotate out annually"
       ]
     },
     {
       "id": "expanded",
-      "name": "Expanded (Expandido)",
-      "tag": "Competitivo Amplo",
-      "status_badge": "Preto e Branco até Hoje",
-      "description": "Formato que permite cartas desde a série Black & White (2011) até as coleções mais recentes de Scarlet & Violet. Possibilita combos poderosos e sinergias GX/EX lendárias como os Decks 1, 2 e 3 do seu acervo.",
-      "deck_size": "Exatamente 60 cartas",
-      "copy_limit": "Máximo de 4 cópias de qualquer carta com o mesmo nome",
-      "prizes": "6 cartas de Prêmio",
+      "name": "Expanded Format",
+      "tag": "Broad Competitive",
+      "status_badge": "Black & White to Present",
+      "description": "Permits cards starting from the Black & White series (2011) to the latest modern releases. Enables explosive GX/EX combos and deep synergy archetypes.",
+      "deck_size": "Exactly 60 cards",
+      "copy_limit": "Maximum 4 copies of any card with the same name",
+      "prizes": "6 Prize Cards",
       "advantages": [
-        "Suas cartas nunca rotacionam",
-        "Combos explosivos e arquetípicos ricos",
-        "Valoriza coleções históricas Sol e Lua"
+        "Cards never rotate out",
+        "Rich combos & legendary GX strategies",
+        "High deck archetype variety"
       ],
       "disadvantages": [
-        "Exige conhecimento de uma lista extensa de cartas banidas"
+        "Requires familiarity with the Expanded banlist"
       ]
     },
     {
       "id": "casual",
-      "name": "Casual / Amistoso (Mesa de Casa)",
-      "tag": "Livre & Temático",
-      "status_badge": "Sem Restrições",
-      "description": "Formato livre para jogos entre amigos e família, perfeito para experimentar estratégias temáticas (como o Deck de Veneno/Metal e o Deck de Fadas) sem a pressão do metagame competitivo.",
-      "deck_size": "60 cartas (ou 40/30 para partidas rápidas de aprendizado)",
-      "copy_limit": "Geralmente 4 cópias, ajustável conforme o acordo entre jogadores",
-      "prizes": "6 cartas de Prêmio (ou 4 para jogos rápidos)",
+      "name": "Casual / Kitchen Table",
+      "tag": "Friendly & Thematic",
+      "status_badge": "No Restrictions",
+      "description": "Open format designed for friendly matches with friends and family. Perfect for experimenting with fun thematic decks without competitive pressure.",
+      "deck_size": "60 cards (or 40/30 for quick learning games)",
+      "copy_limit": "Generally 4 copies, customizable per house rules",
+      "prizes": "6 Prize Cards (or 4 for speed matches)",
       "advantages": [
-        "Diversão pura e experimentação",
-        "Uso de qualquer carta do acervo",
-        "Ótimo para novos jogadores"
+        "Pure fun and unrestricted experimentation",
+        "Use any card in your collection",
+        "Great for teaching new players"
       ],
       "disadvantages": [
-        "Pode haver desequilíbrio se um jogador usar cartas competitivas extremas"
+        "Potential power disparity if unmatched cards are used"
       ]
     }
   ],
   "deck_building_rules": [
     {
-      "title": "Regra das 60 Cartas",
-      "content": "Todo baralho deve conter exatamente 60 cartas — nem uma a mais, nem uma a menos. Ao final do jogo, o baralho não pode estar vazio quando for sua vez de comprar."
+      "title": "The 60-Card Rule",
+      "content": "Every deck must contain exactly 60 cards — no more, no less. Your deck cannot run out of cards when drawing at the start of your turn, or you lose the game."
     },
     {
-      "title": "Limite de 4 Cópias por Nome",
-      "content": "Você só pode ter no máximo 4 cópias de cartas que compartilham exatamente o mesmo nome (ex: no máximo 4 'Eevee', mesmo que sejam de artes ou coleções diferentes). A única exceção são as Energias Básicas, que não possuem limite."
+      "title": "4-Copy Limit per Name",
+      "content": "You may include up to 4 copies of cards sharing the exact same name (e.g. max 4 Eevee, even with different artwork). Basic Energy cards have no quantity limit."
     },
     {
-      "title": "Presença de Pokémon Básico",
-      "content": "Seu deck DEVE ter pelo menos 1 Pokémon Básico para permitir a inicialização da partida. Se na mão inicial de 7 cartas você não tiver nenhum Pokémon Básico, você deve declarar Mulligan (embaralhar e comprar 7 novas cartas, dando 1 compra extra ao oponente)."
+      "title": "Basic Pokémon Requirement",
+      "content": "Your deck MUST contain at least 1 Basic Pokémon to start the match. If your opening 7-card hand contains no Basic Pokémon, declare a Mulligan (reshuffle and draw 7 new cards, granting the opponent 1 extra card)."
     },
     {
-      "title": "Regra dos Prêmios (Prize Trade)",
-      "content": "Nocautear um Pokémon normal concede 1 Prêmio. Nocautear um Pokémon-GX ou Pokémon-ex concede 2 Prêmios. Nocautear um Pokémon Aliados (TAG TEAM) concede 3 Prêmios. Quem comprar todos os seus 6 Prêmios primeiro vence a partida!"
+      "title": "Prize Trade Mechanics",
+      "content": "Knocking out a regular Pokémon awards 1 Prize card. Knocking out a Pokémon-GX or Pokémon-ex awards 2 Prizes. Knocking out a TAG TEAM awards 3 Prizes. The first player to take all 6 Prizes wins!"
     }
   ],
   "trainer_types": [
     {
-      "type": "Itens (Items)",
-      "rule": "Você pode jogar quantas cartas de Item quiser durante o seu turno.",
-      "examples": "Bola de Ninho, Bola Tempo, Substituição, Corda de Fuga, Maca de Resgate"
+      "type": "Items",
+      "rule": "You may play as many Item cards as you like during your turn.",
+      "examples": "Nest Ball, Timer Ball, Switch, Escape Rope, Rescue Stretcher"
     },
     {
-      "type": "Apoiadores (Supporters)",
-      "rule": "Você só pode jogar 1 carta de Apoiador por turno. (No Turno 1 de quem joga primeiro, não é permitido jogar Apoiador).",
-      "examples": "Professor's Research, Boss's Orders, Cynthia, Guza"
+      "type": "Supporters",
+      "rule": "You may only play 1 Supporter card per turn. (The player going first cannot play a Supporter on Turn 1).",
+      "examples": "Professor's Research, Boss's Orders, Cynthia, Guzma"
     },
     {
-      "type": "Estádios (Stadiums)",
-      "rule": "Você só pode jogar 1 Estádio por turno. O Estádio fica em campo aplicando seu efeito a ambos os jogadores até que outro Estádio seja jogado.",
-      "examples": "Floresta de Viridian, Mercado Negro Estrela Prisma"
+      "type": "Stadiums",
+      "rule": "You may play only 1 Stadium per turn. The Stadium stays in play providing global effects to both players until a new Stadium replaces it.",
+      "examples": "Viridian Forest, Black Market ◇"
     },
     {
-      "type": "Ferramentas Pokémon (Pokémon Tools)",
-      "rule": "Você pode ligar 1 Ferramenta por Pokémon (a menos que uma habilidade permita mais). A ferramenta permanece ligada até o Pokémon ser nocauteado ou a ferramenta removida.",
-      "examples": "Skate de Fuga, Óculos de Metal, Bastão do Desejo, Política de Fraqueza"
+      "type": "Pokémon Tools",
+      "rule": "You may attach 1 Tool per Pokémon (unless an ability permits more). The tool remains attached until the Pokémon is knocked out or discarded.",
+      "examples": "Escape Board, Metal Goggles, Wishful Baton, Weakness Policy"
     }
   ],
   "special_conditions": [
     {
-      "name": "Envenenado (Poisoned)",
-      "effect": "Coloque 1 marcador de dano (10 de dano ou mais conforme a carta) no Pokémon Envenenado entre cada turno.",
-      "cure": "Recuar para o banco, evoluir ou usar uma carta de cura/Substituição."
+      "name": "Poisoned",
+      "effect": "Place 1 damage counter (10 damage or more) on the Poisoned Pokémon between turns.",
+      "cure": "Retreating to the bench, evolving, or playing a card like Switch."
     },
     {
-      "name": "Queimado (Burned)",
-      "effect": "Coloque 2 marcadores de dano (20 de dano) entre cada turno. Em seguida, jogue uma moeda: se der cara, a condição é curada.",
-      "cure": "Tirar cara na moeda entre turnos, recuar para o banco ou evoluir."
+      "name": "Burned",
+      "effect": "Place 2 damage counters (20 damage) between turns. Then flip a coin: heads cures the condition.",
+      "cure": "Flipping heads between turns, retreating to the bench, or evolving."
     },
     {
-      "name": "Adormecido (Asleep)",
-      "effect": "Vire a carta 90 graus para a esquerda. O Pokémon Adormecido não pode atacar nem recuar. Entre turnos jogue uma moeda: cara acorda.",
-      "cure": "Cara na moeda, evoluir ou trocar de posição com cartas como Substituição."
+      "name": "Asleep",
+      "effect": "Turn the card 90 degrees counter-clockwise. The Asleep Pokémon cannot attack or retreat. Flip a coin between turns: heads wakes up.",
+      "cure": "Flipping heads, evolving, or using switching cards like Switch."
     },
     {
-      "name": "Paralisado (Paralyzed)",
-      "effect": "Vire a carta 90 graus para a direita. O Pokémon Paralisado não pode atacar nem recuar. Dura até o fim do próximo turno do dono.",
-      "cure": "Cura automaticamente após o término do turno do jogador, ou via troca/evolução."
+      "name": "Paralyzed",
+      "effect": "Turn the card 90 degrees clockwise. The Paralyzed Pokémon cannot attack or retreat. Lasts until the end of its owner next turn.",
+      "cure": "Cures automatically after the player turn ends, or via switching/evolving."
     },
     {
-      "name": "Confuso (Confused)",
-      "effect": "Vire a carta 180 graus de cabeça para baixo. Quando tentar atacar, jogue uma moeda: se der coroa, o ataque falha e o Pokémon toma 30 de dano em si mesmo!",
-      "cure": "Recuar para o banco ou evoluir."
+      "name": "Confused",
+      "effect": "Turn the card 180 degrees upside down. When attempting to attack, flip a coin: tails means the attack fails and the Pokémon takes 30 damage to itself!",
+      "cure": "Retreating to the bench or evolving."
     }
   ]
 }

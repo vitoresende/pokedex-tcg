@@ -82,7 +82,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       }
     } catch (err: any) {
       if (err.code !== 'auth/popup-closed-by-user') {
-        console.error('Erro de login:', err);
+        console.error('Login error:', err);
       }
     }
   };
@@ -96,14 +96,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const loginAsDemoUser = (asAuthorized: boolean = true) => {
     soundEffects.playClick();
     const demoEmail = asAuthorized 
-      ? (allowedEmails[0] || 'vitoresende.dev@gmail.com') 
-      : 'treinador_nao_autorizado@gmail.com';
+      ? (allowedEmails[0] || 'admin@pokedex.dev') 
+      : 'unauthorized_trainer@pokemon.com';
     const allowed = isEmailAllowed(demoEmail);
     
     setUser({
       uid: asAuthorized ? 'demo-authorized-uid-123' : 'demo-unauthorized-uid-999',
       email: demoEmail,
-      displayName: asAuthorized ? 'Treinador Autorizado' : 'Visitante Sem Permissão',
+      displayName: asAuthorized ? 'Authorized Trainer' : 'Guest Visitor',
       photoURL: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&h=100&fit=crop&crop=face',
       isAllowed: allowed,
       token: 'demo-jwt-bearer-token-connectrpc'
@@ -139,7 +139,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 export const useAuth = () => {
   const context = useContext(AuthContext);
   if (!context) {
-    throw new Error('useAuth deve ser usado dentro de um AuthProvider');
+    throw new Error('useAuth must be used within an AuthProvider');
   }
   return context;
 };
