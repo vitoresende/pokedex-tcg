@@ -277,6 +277,77 @@ npm run firebase:functions
 
 ---
 
+## 🛠️ CI/CD Automático com Google Cloud Build & Secret Manager
+
+O repositório inclui um arquivo [`cloudbuild.yaml`](cloudbuild.yaml) pronto para fazer o **deploy automático para o Firebase** a cada push no repositório, garantindo **Zero Informações Pessoais** no código-fonte através do **Google Secret Manager**.
+
+```mermaid
+flowchart LR
+    GIT["Git Push (GitHub)"] --> CLOUDBUILD["Google Cloud Build"]
+    SECRETS["Secret Manager (dotenv-pokedex)"] -->|Injeta .env| CLOUDBUILD
+    CLOUDBUILD -->|npm ci & build| ASSETS["Geração de Build & Configs"]
+    ASSETS -->|firebase deploy| FIREBASE["Firebase (Hosting, Functions, Firestore, Storage)"]
+```
+
+### 1. Criar o Secret no Google Secret Manager
+Salve as variáveis do seu `.env` com o nome padrão `dotenv-pokedex`:
+
+```bash
+# Cria o Secret no projeto:
+gcloud secrets create dotenv-pokedex --data-file=.env
+
+# (Caso queira atualizar os valores no futuro):
+gcloud secrets versions add dotenv-pokedex --data-file=.env
+```
+
+### 2. Conceder Permissões para a Conta de Serviço do Cloud Build
+A conta de serviço do Cloud Build precisa de permissão para ler o secret e fazer o deploy no Firebase:
+
+```bash
+# Obtenha o número do seu projeto GCP:
+PROJECT_NUMBER=$(gcloud projects describe $(gcloud config get-value project) --format="value(projectNumber)")
+CB_SA="${PROJECT_NUMBER}@cloudbuild.gserviceaccount.com"
+
+# Permissão para acessar o Secret Manager:
+gcloud projects add-iam-policy-binding $(gcloud config get-value project) \
+  --member="serviceAccount:${CB_SA}" \
+  --role="roles/secretmanager.secretAccessor"
+
+# Permissão de Administrador do Firebase:
+gcloud projects add-iam-policy-binding $(gcloud config get-value project) \
+  --member="serviceAccount:${CB_SA}" \
+  --role="roles/firebase.admin"
+
+# Permissões adicionais para Cloud Functions e Cloud Run (Functions 2nd Gen):
+gcloud projects add-iam-policy-binding $(gcloud config get-value project) \
+  --member="serviceAccount:${CB_SA}" \
+  --role="roles/cloudfunctions.admin"
+
+gcloud projects add-iam-policy-binding $(gcloud config get-value project) \
+  --member="serviceAccount:${CB_SA}" \
+  --role="roles/iam.serviceAccountUser"
+
+gcloud projects add-iam-policy-binding $(gcloud config get-value project) \
+  --member="serviceAccount:${CB_SA}" \
+  --role="roles/run.admin"
+```
+
+### 3. Criar o Trigger no Cloud Build
+1. Abra o [Google Cloud Build Triggers](https://console.cloud.google.com/cloud-build/triggers).
+2. Clique em **Create Trigger**.
+3. Conecte o repositório GitHub (`pokedex-tcg`).
+4. Selecione o evento: **Push to a branch** (ex: `^main$`).
+5. Em **Configuration**, escolha **Cloud Build configuration file (yaml or json)** com o caminho `cloudbuild.yaml`.
+6. Clique em **Create**.
+
+### 4. Executar um Build Manual pelo Terminal (Opcional)
+Para testar o pipeline imediatamente sem fazer push:
+```bash
+gcloud builds submit --config=cloudbuild.yaml
+```
+
+---
+
 ## 📂 Project Structure
 
 ```
