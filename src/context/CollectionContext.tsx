@@ -104,6 +104,28 @@ const BASIC_ENERGY_CONFIG: Record<string, { code: string; num: string; url: stri
 
 const normalizeCards = (rawCards: Card[]): Card[] => {
   return rawCards.map(c => {
+    // Determine standard category
+    let category: 'Pokémon' | 'Trainer' | 'Energy' = 'Pokémon';
+    const catLower = (c.card_category || '').toLowerCase();
+    if (
+      catLower === 'energy' || 
+      catLower === 'energia' || 
+      c.color_code === 'E' || 
+      c.color_slug === 'energy' || 
+      c.set_code === 'SVE' || 
+      c.set_code === 'BAS' || 
+      c.name_pt.toLowerCase().includes('energia')
+    ) {
+      category = 'Energy';
+    } else if (
+      catLower === 'trainer' || 
+      catLower === 'treinador' || 
+      c.color_slug === 'trainer' || 
+      !c.color_code
+    ) {
+      category = 'Trainer';
+    }
+
     // Special Energy specific overrides
     if (c.name_en.toLowerCase().includes('bubbly') || (c.set_code === 'CRI' && (c.card_number === '084' || c.card_number === '84'))) {
       return {
@@ -111,6 +133,8 @@ const normalizeCards = (rawCards: Card[]): Card[] => {
         set_code: 'CRI',
         card_number: '084',
         card_category: 'Energy',
+        color_slug: 'energy',
+        color_code: 'E',
         image_url: 'https://limitlesstcg.nyc3.cdn.digitaloceanspaces.com/tpci/CRI/CRI_084_R_PT.png'
       };
     }
@@ -121,6 +145,8 @@ const normalizeCards = (rawCards: Card[]): Card[] => {
         set_code: 'UNM',
         card_number: '213',
         card_category: 'Energy',
+        color_slug: 'energy',
+        color_code: 'C',
         image_url: 'https://images.pokemontcg.io/sm11/213.png'
       };
     }
@@ -139,10 +165,15 @@ const normalizeCards = (rawCards: Card[]): Card[] => {
         set_code: meta.code,
         card_number: meta.num,
         image_url: meta.url,
-        card_category: 'Energy'
+        card_category: 'Energy',
+        color_slug: 'energy'
       };
     }
-    return c;
+
+    return {
+      ...c,
+      card_category: category
+    };
   });
 };
 
@@ -641,7 +672,42 @@ export const CollectionProvider: React.FC<{ children: React.ReactNode }> = ({ ch
       );
     }
 
-    // Type / Color / Category
+    // Set / Collection Filter
+    if (filters.selectedSet !== 'ALL') {
+      result = result.filter(c => (c.set_code || '').trim().toUpperCase() === filters.selectedSet.trim().toUpperCase());
+    }
+
+    // Category Filter (All / Pokémon / Trainer / Energy)
+    if (filters.selectedCategory !== 'ALL') {
+      const targetCat = filters.selectedCategory.toLowerCase();
+      if (targetCat === 'energy' || targetCat === 'energia') {
+        result = result.filter(c => 
+          c.card_category === 'Energy' || 
+          (c.card_category as string) === 'Energia' ||
+          c.color_code === 'E' ||
+          c.color_slug === 'energy' ||
+          c.set_code === 'SVE' ||
+          c.set_code === 'BAS' ||
+          c.name_pt.toLowerCase().includes('energia')
+        );
+      } else if (targetCat === 'trainer' || targetCat === 'treinador') {
+        result = result.filter(c => 
+          c.card_category === 'Trainer' || 
+          (c.card_category as string) === 'Treinador' ||
+          c.color_slug === 'trainer' ||
+          !c.color_code
+        );
+      } else if (targetCat === 'pokémon' || targetCat === 'pokemon') {
+        result = result.filter(c => 
+          (c.card_category === 'Pokémon' || (c.card_category as string) === 'Pokemon') &&
+          c.color_slug !== 'trainer' &&
+          c.color_slug !== 'energy' &&
+          c.color_code !== 'E'
+        );
+      }
+    }
+
+    // Type / Color Filter (Elemental Types, Trainer, Energy)
     if (filters.selectedColor !== 'ALL') {
       if (filters.selectedColor === 'energy') {
         result = result.filter(c => 
@@ -663,48 +729,15 @@ export const CollectionProvider: React.FC<{ children: React.ReactNode }> = ({ ch
         );
       } else {
         result = result.filter(c => 
-          (c.color_slug === filters.selectedColor || c.color_code.toLowerCase() === filters.selectedColor.toLowerCase()) &&
-          c.card_category !== 'Trainer' && 
-          (c.card_category as string) !== 'Treinador'
+          c.color_slug === filters.selectedColor || 
+          (c.color_code && c.color_code.toLowerCase() === filters.selectedColor.toLowerCase())
         );
       }
     }
 
-    // Set / Collection
-    if (filters.selectedSet !== 'ALL') {
-      result = result.filter(c => c.set_code === filters.selectedSet);
-    }
-
-    // Rarity
+    // Rarity Filter
     if (filters.selectedRarity !== 'ALL') {
-      result = result.filter(c => c.rarity_code === filters.selectedRarity);
-    }
-
-    // Category Filter (All / Pokémon / Trainer / Energy)
-    if (filters.selectedCategory !== 'ALL') {
-      if (filters.selectedCategory === 'Energy') {
-        result = result.filter(c => 
-          c.card_category === 'Energy' || 
-          (c.card_category as string) === 'Energia' ||
-          c.color_code === 'E' ||
-          c.set_code === 'SVE' ||
-          c.set_code === 'BAS' ||
-          c.name_pt.toLowerCase().includes('energia')
-        );
-      } else if (filters.selectedCategory === 'Trainer') {
-        result = result.filter(c => 
-          c.card_category === 'Trainer' || 
-          (c.card_category as string) === 'Treinador' ||
-          !c.color_code
-        );
-      } else if (filters.selectedCategory === 'Pokémon') {
-        result = result.filter(c => 
-          c.card_category === 'Pokémon' || 
-          (c.card_category as string) === 'Pokemon'
-        );
-      } else {
-        result = result.filter(c => c.card_category === filters.selectedCategory);
-      }
+      result = result.filter(c => (c.rarity_code || '').trim().toUpperCase() === filters.selectedRarity.trim().toUpperCase());
     }
 
     // Boolean flags

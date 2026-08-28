@@ -38,7 +38,21 @@ export const FilterBar: React.FC = () => {
 
   const handleColorSelect = (colorId: string) => {
     soundEffects.playClick();
-    setFilters(prev => ({ ...prev, selectedColor: colorId }));
+    setFilters(prev => ({ 
+      ...prev, 
+      selectedColor: colorId,
+      selectedCategory: (colorId === 'trainer' || colorId === 'energy') ? 'ALL' : prev.selectedCategory
+    }));
+  };
+
+  const handleCategoryChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    soundEffects.playClick();
+    const newCategory = e.target.value;
+    setFilters(prev => ({ 
+      ...prev, 
+      selectedCategory: newCategory,
+      selectedColor: (prev.selectedColor === 'trainer' || prev.selectedColor === 'energy') ? 'ALL' : prev.selectedColor
+    }));
   };
 
   const toggleBooleanFilter = (key: 'onlyFoil' | 'onlyOwned' | 'onlyMissing' | 'onlyDeckCards') => {
@@ -57,6 +71,7 @@ export const FilterBar: React.FC = () => {
     filters.selectedColor !== 'ALL' ||
     filters.selectedSet !== 'ALL' ||
     filters.selectedRarity !== 'ALL' ||
+    filters.selectedCategory !== 'ALL' ||
     filters.onlyFoil ||
     filters.onlyOwned ||
     filters.onlyMissing ||
@@ -91,10 +106,7 @@ export const FilterBar: React.FC = () => {
         <div className="flex flex-wrap sm:flex-nowrap gap-2">
           <select
             value={filters.selectedCategory}
-            onChange={(e) => {
-              soundEffects.playClick();
-              setFilters(prev => ({ ...prev, selectedCategory: e.target.value }));
-            }}
+            onChange={handleCategoryChange}
             aria-label="Filter by Category"
             className="bg-pokedex-darker border border-slate-800 rounded-xl px-3 py-2 text-xs font-mono text-slate-200 focus:outline-none focus:border-pokedex-blue"
           >
