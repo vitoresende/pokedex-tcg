@@ -19,9 +19,12 @@ steps:
     args:
       - '-c'
       - |
+        TARGET_PROJECT=$$(grep VITE_FIREBASE_PROJECT_ID .env | cut -d'=' -f2 | tr -d ' "\r\n')
+        echo "✔ Projeto Firebase de destino identificado: $${TARGET_PROJECT}"
+        export GCLOUD_PROJECT="$${TARGET_PROJECT}"
         node scripts/sync_firebase_config.js
         npm run build
-        npx -y firebase-tools deploy --non-interactive
+        npx -y firebase-tools deploy --non-interactive --project "$${TARGET_PROJECT}"
 
 options:
   logging: CLOUD_LOGGING_ONLY
