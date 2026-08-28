@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Plus, X, Upload, Sparkles, Check, Image as ImageIcon, Loader2 } from 'lucide-react';
+import { Plus, X, Upload, Sparkles, Check, Image as ImageIcon, Loader2, Layers } from 'lucide-react';
 import { useCollection } from '../context/CollectionContext';
 import { soundEffects } from '../services/audio';
 import { uploadCardImageToStorage, downloadAndUploadImageToStorage } from '../services/firebase';
@@ -10,7 +10,7 @@ interface AddCardModalProps {
 }
 
 export const AddCardModal: React.FC<AddCardModalProps> = ({ isOpen, onClose }) => {
-  const { addNewCard, importCardsFromCsv } = useCollection();
+  const { addNewCard, importCardsFromCsv, decks } = useCollection();
   const [tab, setTab] = useState<'manual' | 'csv'>('manual');
 
   // Manual Form State
@@ -33,7 +33,11 @@ export const AddCardModal: React.FC<AddCardModalProps> = ({ isOpen, onClose }) =
 
   // CSV Import State
   const [csvText, setCsvText] = useState('');
-  const [importResult, setImportResult] = useState<{ added: number; updated: number } | null>(null);
+  const [deckMode, setDeckMode] = useState<'none' | 'existing' | 'new'>('none');
+  const [targetDeckId, setTargetDeckId] = useState<string>(decks[0]?.id || '');
+  const [newDeckName, setNewDeckName] = useState<string>('');
+  const [newDeckFormat, setNewDeckFormat] = useState<'Standard' | 'Expanded' | 'Casual'>('Standard');
+  const [importResult, setImportResult] = useState<{ added: number; updated: number; deckName?: string } | null>(null);
 
   if (!isOpen) return null;
 
@@ -100,23 +104,35 @@ export const AddCardModal: React.FC<AddCardModalProps> = ({ isOpen, onClose }) =
 
   const handleCsvImport = () => {
     if (!csvText.trim()) return;
-    const res = importCardsFromCsv(csvText);
+    const res = importCardsFromCsv(csvText, {
+      mode: deckMode,
+      existingDeckId: deckMode === 'existing' ? targetDeckId : undefined,
+      newDeckName: deckMode === 'new' ? newDeckName : undefined,
+      newDeckFormat: deckMode === 'new' ? newDeckFormat : undefined,
+    });
     setImportResult(res);
     setTimeout(() => {
       setImportResult(null);
       onClose();
-    }, 2000);
+    }, 2500);
   };
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
+      if (!newDeckName) {
+        const cleanName = file.name
+          .replace(/\.[^/.]+$/, '')
+          .replace(/^export_/, 'Deck ')
+          .substring(0, 30);
+        setNewDeckName(cleanName);
+      }
       const reader = new FileReader();
       reader.onload = (event) => {
         const text = event.target?.result as string;
         if (text) setCsvText(text);
       };
-      reader.readAsText(file);
+      reader.readAsText(file, 'latin1');
     }
   };
 
@@ -372,14 +388,112 @@ export const AddCardModal: React.FC<AddCardModalProps> = ({ isOpen, onClose }) =
                 value={csvText}
                 onChange={(e) => setCsvText(e.target.value)}
                 placeholder="Set Name (PT),Set Name (EN),Set Code,Card Name (PT),Card Name (EN),Quantity,Quality,Language,Rarity,Color,Extras,Card #,Comment,Total In Set"
-                rows={6}
+                rows={5}
                 className="w-full bg-black/60 font-mono text-cyan-300 border border-slate-800 rounded-xl p-3 focus:outline-none focus:border-pokedex-blue text-[11px]"
               />
 
+              {/* Deck Destination Controls */}
+              <div className="bg-pokedex-darker p-3.5 rounded-2xl border border-slate-800 space-y-3">
+                <div className="flex items-center justify-between">
+                  <span className="text-[10px] text-slate-300 uppercase font-bold flex items-center gap-1.5 font-mono">
+                    <Layers className="w-3.5 h-3.5 text-yellow-400" />
+                    <span>Deck Assignment:</span>
+                  </span>
+                  <span className="text-[9px] text-slate-500 font-mono">Optional</span>
+                </div>
+
+                {/* Segment Options */}
+                <div className="grid grid-cols-3 gap-1.5 bg-black/60 p-1 rounded-xl border border-slate-800 font-mono">
+                  <button
+                    type="button"
+                    onClick={() => setDeckMode('none')}
+                    className={`py-2 px-2 rounded-lg text-[10px] font-bold transition-all truncate text-center ${
+                      deckMode === 'none'
+                        ? 'bg-slate-800 text-yellow-300 shadow border border-slate-700'
+                        : 'text-slate-400 hover:text-slate-200'
+                    }`}
+                  >
+                    Collection Only
+                  </button>
+                  <button
+                    type="button"
+                    disabled={decks.length === 0}
+                    onClick={() => setDeckMode('existing')}
+                    className={`py-2 px-2 rounded-lg text-[10px] font-bold transition-all truncate text-center disabled:opacity-30 ${
+                      deckMode === 'existing'
+                        ? 'bg-pokedex-blue text-white shadow border border-blue-400/40'
+                        : 'text-slate-400 hover:text-slate-200'
+                    }`}
+                  >
+                    Existing Deck
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setDeckMode('new')}
+                    className={`py-2 px-2 rounded-lg text-[10px] font-bold transition-all truncate text-center ${
+                      deckMode === 'new'
+                        ? 'bg-emerald-600 text-white shadow border border-emerald-400/40'
+                        : 'text-slate-400 hover:text-slate-200'
+                    }`}
+                  >
+                    + New Deck
+                  </button>
+                </div>
+
+                {/* Sub-form: Existing Deck Dropdown */}
+                {deckMode === 'existing' && (
+                  <div className="space-y-1.5 animate-in fade-in">
+                    <label className="text-slate-400 block text-[10px] uppercase font-mono">Select Existing Deck:</label>
+                    <select
+                      value={targetDeckId}
+                      onChange={(e) => setTargetDeckId(e.target.value)}
+                      className="w-full bg-black/60 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-pokedex-blue font-sans"
+                    >
+                      {decks.map(d => (
+                        <option key={d.id} value={d.id}>{d.name} ({d.format})</option>
+                      ))}
+                    </select>
+                  </div>
+                )}
+
+                {/* Sub-form: Create New Deck Fields */}
+                {deckMode === 'new' && (
+                  <div className="space-y-2.5 animate-in fade-in">
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                      <div className="sm:col-span-2">
+                        <label className="text-slate-400 block text-[10px] uppercase mb-1 font-mono">New Deck Name *</label>
+                        <input
+                          type="text"
+                          value={newDeckName}
+                          onChange={(e) => setNewDeckName(e.target.value)}
+                          placeholder="Ex: Malamar Necrozma Turbo"
+                          className="w-full bg-black/60 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-pokedex-blue font-sans"
+                        />
+                      </div>
+                      <div>
+                        <label className="text-slate-400 block text-[10px] uppercase mb-1 font-mono">Format</label>
+                        <select
+                          value={newDeckFormat}
+                          onChange={(e) => setNewDeckFormat(e.target.value as any)}
+                          className="w-full bg-black/60 border border-slate-700 rounded-xl px-2.5 py-2 text-xs text-white focus:outline-none focus:border-pokedex-blue font-sans"
+                        >
+                          <option value="Standard">Standard</option>
+                          <option value="Expanded">Expanded</option>
+                          <option value="Casual">Casual</option>
+                        </select>
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+
               {importResult && (
-                <div className="bg-emerald-950 border border-emerald-500/40 p-3 rounded-xl text-emerald-300 text-xs flex items-center gap-2">
-                  <Check className="w-4 h-4" />
-                  <span>Import finished: {importResult.added} added, {importResult.updated} updated!</span>
+                <div className="bg-emerald-950 border border-emerald-500/40 p-3 rounded-xl text-emerald-300 text-xs flex items-center gap-2 animate-in fade-in">
+                  <Check className="w-4 h-4 text-emerald-400 shrink-0" />
+                  <span>
+                    Import finished: {importResult.added} added, {importResult.updated} updated
+                    {importResult.deckName ? ` (assigned to deck "${importResult.deckName}")` : ''}!
+                  </span>
                 </div>
               )}
 
@@ -389,7 +503,13 @@ export const AddCardModal: React.FC<AddCardModalProps> = ({ isOpen, onClose }) =
                 className="w-full bg-pokedex-blue hover:bg-blue-600 disabled:opacity-40 text-white font-bold py-3 rounded-2xl shadow-lg transition-all active:scale-95 text-xs uppercase tracking-wider flex items-center justify-center gap-2"
               >
                 <Upload className="w-4 h-4" />
-                <span>Process CSV Import</span>
+                <span>
+                  {deckMode === 'new' && newDeckName.trim()
+                    ? `Import & Create Deck "${newDeckName.trim()}"`
+                    : deckMode === 'existing'
+                    ? 'Import & Add to Existing Deck'
+                    : 'Process CSV Import'}
+                </span>
               </button>
             </div>
           )}

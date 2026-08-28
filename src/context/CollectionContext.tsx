@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useState, useMemo, useEffect, useRef } from 'react';
 import initialCards from '../data/cards.json';
 import initialDecks from '../data/decks.json';
-import { Card, Deck } from '../types';
+import { Card, Deck, DeckCardItem } from '../types';
 import { soundEffects } from '../services/audio';
 import { useAuth } from './AuthContext';
 import { syncUserCollectionToFirestore, loadUserCollectionFromFirestore } from '../services/firebase';
@@ -21,6 +21,13 @@ interface FilterState {
 }
 
 export type CloudSyncStatus = 'idle' | 'syncing' | 'synced' | 'error';
+
+export interface DeckImportOption {
+  mode: 'none' | 'existing' | 'new';
+  existingDeckId?: string;
+  newDeckName?: string;
+  newDeckFormat?: 'Standard' | 'Expanded' | 'Casual';
+}
 
 interface CollectionContextType {
   cards: Card[];
@@ -53,7 +60,7 @@ interface CollectionContextType {
   syncToCloud: () => Promise<boolean>;
   addNewCard: (card: Partial<Card>) => Card;
   deleteCard: (cardId: string) => void;
-  importCardsFromCsv: (csvContent: string) => { added: number; updated: number };
+  importCardsFromCsv: (csvContent: string, deckOption?: DeckImportOption) => { added: number; updated: number; deckName?: string };
   createNewDeck: (deck: Partial<Deck>) => Deck;
   deleteDeck: (deckId: string) => void;
   addCardToDeck: (deckId: string, card: Card, count?: number) => void;
@@ -420,7 +427,10 @@ export const CollectionProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     }
   };
 
-  const importCardsFromCsv = (csvContent: string): { added: number; updated: number } => {
+  const importCardsFromCsv = (
+    csvContent: string, 
+    deckOption?: DeckImportOption
+  ): { added: number; updated: number; deckName?: string } => {
     soundEffects.playScan();
     const lines = csvContent.replace(/\r\n/g, '\n').replace(/\r/g, '\n').split('\n').filter(l => l.trim().length > 0);
     if (lines.length <= 1) return { added: 0, updated: 0 };
@@ -429,9 +439,35 @@ export const CollectionProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     let updated = 0;
 
     const newCardsList = [...cards];
+    const importedDeckItems: DeckCardItem[] = [];
+
+    // Helper for robust CSV parsing with quotes support
+    const parseCsvLine = (line: string): string[] => {
+      const parts: string[] = [];
+      let current = '';
+      let inQuotes = false;
+      for (let j = 0; j < line.length; j++) {
+        const char = line[j];
+        if (char === '"') {
+          inQuotes = !inQuotes;
+        } else if (char === ',' && !inQuotes) {
+          parts.push(current.trim().replace(/^"|"$/g, ''));
+          current = '';
+        } else {
+          current += char;
+        }
+      }
+      parts.push(current.trim().replace(/^"|"$/g, ''));
+      return parts;
+    };
+
+    const targetDeckId = 
+      deckOption?.mode === 'new' 
+        ? `deck-${Date.now()}` 
+        : (deckOption?.mode === 'existing' ? deckOption.existingDeckId : undefined);
 
     for (let i = 1; i < lines.length; i++) {
-      const parts = lines[i].split(',').map(p => p.trim());
+      const parts = parseCsvLine(lines[i]);
       if (parts.length < 4) continue;
 
       const setPt = parts[0] || 'Imported Set';
@@ -441,50 +477,70 @@ export const CollectionProvider: React.FC<{ children: React.ReactNode }> = ({ ch
       const cardEn = parts[4] || cardPt;
       const qty = parseInt(parts[5] || '1') || 1;
       const quality = parts[6] || 'NM';
-      const lang = parts[7] || 'EN';
+      const lang = parts[7] || 'PT';
       const rarity = parts[8] || 'C';
-      const color = parts[9] || '';
+      const color = (parts[9] || '').toUpperCase();
       const extras = parts[10] || '';
       const cardNum = parts[11] || `${i}`;
       const comment = parts[12] || '';
       const totalInSet = parts[13] || '100';
 
-      const isBasicEnergy = setCode === 'BAS' || cardNum.toLowerCase() === 'energia' || (cardPt.toLowerCase().includes('energia') && cardPt.toLowerCase().includes('básica'));
+      const colorInfo = COLOR_MAP[color] || COLOR_MAP[''];
+      const isBasicEnergy = 
+        setCode === 'BAS' || 
+        setCode === 'SVE' || 
+        cardNum.toLowerCase() === 'energia' || 
+        (cardPt.toLowerCase().includes('energia') && cardPt.toLowerCase().includes('básica')) ||
+        (color === 'E' && Boolean(BASIC_ENERGY_CONFIG[color]));
       
       let finalSetCode = setCode;
       let finalCardNum = cardNum;
-      let finalImageUrl = `https://images.pokemontcg.io/${setCode.toLowerCase()}/${cardNum.replace(/\D/g, '') || '1'}.png`;
+      let finalImageUrl = getStorageCardUrl(`${setCode.toLowerCase()}_${cardNum}.png`);
 
-      const BASIC_ENERGY_MAP: Record<string, { code: string; num: string; url: string }> = {
-        'G': { code: 'SVE', num: '1', url: 'https://images.pokemontcg.io/sve/1.png' },
-        'R': { code: 'SVE', num: '2', url: 'https://images.pokemontcg.io/sve/2.png' },
-        'W': { code: 'SVE', num: '3', url: 'https://images.pokemontcg.io/sve/3.png' },
-        'L': { code: 'SVE', num: '4', url: 'https://images.pokemontcg.io/sve/4.png' },
-        'P': { code: 'SVE', num: '5', url: 'https://images.pokemontcg.io/sve/5.png' },
-        'F': { code: 'SVE', num: '6', url: 'https://images.pokemontcg.io/sve/6.png' },
-        'D': { code: 'SVE', num: '7', url: 'https://images.pokemontcg.io/sve/7.png' },
-        'M': { code: 'SVE', num: '8', url: 'https://images.pokemontcg.io/sve/8.png' },
-        'Y': { code: 'SM1', num: '169', url: 'https://images.pokemontcg.io/sm1/169.png' },
-      };
-
-      if (isBasicEnergy && BASIC_ENERGY_MAP[color]) {
-        finalSetCode = BASIC_ENERGY_MAP[color].code;
-        finalCardNum = BASIC_ENERGY_MAP[color].num;
-        finalImageUrl = BASIC_ENERGY_MAP[color].url;
+      if (isBasicEnergy && BASIC_ENERGY_CONFIG[color]) {
+        finalSetCode = BASIC_ENERGY_CONFIG[color].code;
+        finalCardNum = BASIC_ENERGY_CONFIG[color].num;
+        finalImageUrl = getStorageCardUrl(BASIC_ENERGY_CONFIG[color].filename);
       }
 
+      const category: 'Pokémon' | 'Trainer' | 'Energy' = 
+        (isBasicEnergy || colorInfo.name === 'Energy' || color === 'E' || cardPt.toLowerCase().includes('energia'))
+          ? 'Energy'
+          : (colorInfo.name === 'Trainer' || !color) 
+            ? 'Trainer' 
+            : 'Pokémon';
+
+      const section: 'pokemon' | 'trainers' | 'energies' = 
+        category === 'Trainer' ? 'trainers' : category === 'Energy' ? 'energies' : 'pokemon';
+
+      // Record for deck assignment
+      importedDeckItems.push({
+        name: cardEn || cardPt,
+        set: finalSetCode,
+        count: qty,
+        owned: qty,
+        section
+      });
+
       const existingIndex = newCardsList.findIndex(c => 
-        c.set_code === finalSetCode && c.card_number === finalCardNum && c.name_pt.toLowerCase() === cardPt.toLowerCase()
+        c.set_code.toUpperCase() === finalSetCode.toUpperCase() && 
+        c.card_number === finalCardNum
       );
 
       if (existingIndex >= 0) {
+        const existingCard = newCardsList[existingIndex];
+        const newDecks = targetDeckId && !existingCard.decks.includes(targetDeckId)
+          ? [...existingCard.decks, targetDeckId]
+          : existingCard.decks;
+
         newCardsList[existingIndex] = {
-          ...newCardsList[existingIndex],
-          quantity: newCardsList[existingIndex].quantity + qty
+          ...existingCard,
+          quantity: existingCard.quantity + qty,
+          decks: newDecks
         };
         updated++;
       } else {
-        const colorInfo = COLOR_MAP[color] || COLOR_MAP[''];
+        const newCardDecks = targetDeckId ? [targetDeckId] : [];
         newCardsList.push({
           id: `imp-${finalSetCode.toLowerCase()}-${finalCardNum}-${Date.now()}-${i}`,
           name_pt: cardPt,
@@ -503,20 +559,94 @@ export const CollectionProvider: React.FC<{ children: React.ReactNode }> = ({ ch
           color_name: colorInfo.name,
           color_slug: colorInfo.slug,
           color_bg: colorInfo.bg,
-          card_category: (isBasicEnergy || colorInfo.name === 'Energy') ? 'Energy' : colorInfo.name === 'Trainer' ? 'Trainer' : 'Pokémon',
+          card_category: category,
           is_foil: extras.toLowerCase().includes('foil') || extras.toLowerCase().includes('holo'),
           extras: extras,
           comment: comment,
           image_url: finalImageUrl,
           local_image: '',
-          decks: []
+          decks: newCardDecks
         });
         added++;
       }
     }
 
+    // Process Deck creation or update
+    let resultingDeckName: string | undefined = undefined;
+
+    // Group deck items by name
+    const consolidatedDeckCards: DeckCardItem[] = [];
+    importedDeckItems.forEach(item => {
+      const existing = consolidatedDeckCards.find(c => c.name.toLowerCase() === item.name.toLowerCase());
+      if (existing) {
+        existing.count += item.count;
+      } else {
+        consolidatedDeckCards.push({ ...item });
+      }
+    });
+
+    if (deckOption?.mode === 'new' && deckOption.newDeckName?.trim() && targetDeckId) {
+      const pokeCount = consolidatedDeckCards.filter(c => c.section === 'pokemon').reduce((a, b) => a + b.count, 0);
+      const trainerCount = consolidatedDeckCards.filter(c => c.section === 'trainers').reduce((a, b) => a + b.count, 0);
+      const energyCount = consolidatedDeckCards.filter(c => c.section === 'energies').reduce((a, b) => a + b.count, 0);
+      const totalCount = pokeCount + trainerCount + energyCount;
+
+      const createdDeck: Deck = {
+        id: targetDeckId,
+        name: deckOption.newDeckName.trim(),
+        format: deckOption.newDeckFormat || 'Standard',
+        format_slug: (deckOption.newDeckFormat?.toLowerCase() || 'standard') as any,
+        archetype: 'Custom Imported',
+        badge_color: 'bg-red-600',
+        accent_color: '#EF4444',
+        summary: `Tournament deck imported with ${totalCount} cards.`,
+        win_condition: 'Configure your custom deck strategy in the deck builder.',
+        stats: { pokemon: pokeCount, trainers: trainerCount, energies: energyCount, total: totalCount },
+        energy_breakdown: { owned: `${energyCount}`, needed: 'Standard', missing_count: 0 },
+        cards: consolidatedDeckCards,
+        strategy_guide: {
+          opening: { title: '1. Opening Plan', steps: ['Setup Active Basic Pokémon and bench engine.'] },
+          midgame: { title: '2. Midgame Plan', steps: ['Attach Energy and attack opponent active Pokémon.'] },
+          lategame: { title: '3. Endgame Plan', steps: ['Close out remaining Prize Cards.'] }
+        },
+        prize_trade_tip: 'Aim for a solid prize trade advantage.'
+      };
+
+      setDecks(prev => [createdDeck, ...prev]);
+      setSelectedDeck(createdDeck);
+      resultingDeckName = createdDeck.name;
+    } else if (deckOption?.mode === 'existing' && deckOption.existingDeckId) {
+      const existingDeck = decks.find(d => d.id === deckOption.existingDeckId);
+      if (existingDeck) {
+        setDecks(prev => prev.map(d => {
+          if (d.id !== deckOption.existingDeckId) return d;
+          const merged = [...d.cards];
+          consolidatedDeckCards.forEach(item => {
+            const foundIdx = merged.findIndex(c => c.name.toLowerCase() === item.name.toLowerCase());
+            if (foundIdx >= 0) {
+              merged[foundIdx] = {
+                ...merged[foundIdx],
+                count: merged[foundIdx].count + item.count
+              };
+            } else {
+              merged.push({ ...item });
+            }
+          });
+          const pokeCount = merged.filter(c => c.section === 'pokemon').reduce((a, b) => a + b.count, 0);
+          const trainerCount = merged.filter(c => c.section === 'trainers').reduce((a, b) => a + b.count, 0);
+          const energyCount = merged.filter(c => c.section === 'energies').reduce((a, b) => a + b.count, 0);
+          return {
+            ...d,
+            cards: merged,
+            stats: { pokemon: pokeCount, trainers: trainerCount, energies: energyCount, total: pokeCount + trainerCount + energyCount }
+          };
+        }));
+        resultingDeckName = existingDeck.name;
+      }
+    }
+
     setCards(newCardsList);
-    return { added, updated };
+    return { added, updated, deckName: resultingDeckName };
   };
 
   const createNewDeck = (deckData: Partial<Deck>): Deck => {
