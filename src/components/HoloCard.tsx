@@ -2,6 +2,7 @@ import React, { useState, useRef } from 'react';
 import { Card } from '../types';
 import { Sparkles } from 'lucide-react';
 import { soundEffects } from '../services/audio';
+import { downloadAndUploadImageToStorage } from '../services/firebase';
 
 interface HoloCardProps {
   card: Card;
@@ -169,6 +170,15 @@ export const HoloCard: React.FC<HoloCardProps> = ({ card, className = '', isDeta
             alt={`${card.name_pt} (${card.name_en || ''})`}
             loading="lazy"
             onError={() => setImageErrorLevel(prev => prev + 1)}
+            onLoad={() => {
+              // Auto-cache to Google Cloud Storage if loaded from external fallback CDN
+              if (currentSrc && !currentSrc.includes('firebasestorage.googleapis.com')) {
+                const cleanSet = (card.set_code || 'imp').toLowerCase();
+                const cleanNum = (card.card_number || '1').replace(/\D/g, '') || '1';
+                const targetFilename = `${cleanSet}_${cleanNum}.png`;
+                downloadAndUploadImageToStorage(currentSrc, targetFilename).catch(() => {});
+              }
+            }}
             className="w-full h-full object-cover rounded-xl"
           />
         ) : (
