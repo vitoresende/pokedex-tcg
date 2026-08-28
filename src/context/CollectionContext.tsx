@@ -170,6 +170,18 @@ const normalizeCards = (rawCards: Card[]): Card[] => {
       };
     }
 
+    // Chaos Rising (CRI) official Portuguese HD art resolution
+    if (c.set_code === 'CRI') {
+      const numDigits = (c.card_number || '').replace(/\D/g, '');
+      const numInt = parseInt(numDigits, 10) || 1;
+      const pad3 = numInt.toString().padStart(3, '0');
+      return {
+        ...c,
+        card_category: category,
+        image_url: `https://limitlesstcg.nyc3.cdn.digitaloceanspaces.com/tpci/CRI/CRI_${pad3}_R_PT.png`
+      };
+    }
+
     return {
       ...c,
       card_category: category
