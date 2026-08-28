@@ -114,22 +114,77 @@ const BASIC_ENERGY_CONFIG: Record<string, { code: string; num: string; filename:
   'Y': { code: 'SM1', num: '169', filename: 'sm1_169.png' },
 };
 
+const TRAINER_KEYWORDS = [
+  'cynthia', 'cintia', 'lillie', 'lilian', 'hau', 'bug catcher', 'caca-inseto', 'caça-inseto',
+  'mysterious treasure', 'tesouro misterioso', 'switch', 'substituicao', 'substituição',
+  'tate & liza', 'tate e liza', 'fan club', 'fa clube', 'fã-clube', 'communication', 'comunicacao', 'comunicação',
+  'fisherman', 'pescador', 'recycle system', 'reciclagem de energia', 'u-turn board', 'prancha de fuga',
+  'rescue stretcher', 'maca de resgate', 'research', 'pesquisa', 'boss', 'ordens', 'ball', 'bola',
+  'candy', 'doce', 'rod', 'vara', 'retrieval', 'recuperacao', 'recuperação', 'escape rope', 'corda',
+  'judge', 'juiz', 'marnie', 'guzma', 'acerola', 'volkner', 'welder', 'soldadora', 'crystal', 'cristal',
+  'hearth', 'lareira', 'forest', 'floresta', 'plant', 'usina', 'stamp', 'carimbo', 'pokegear', 'pokégear',
+  'bike', 'bicicleta', 'radar', 'potion', 'pocao', 'poção', 'pokenav', 'pokénav', 'stretcher', 'elixir',
+  'treinador', 'trainer', 'supporter', 'apoiador', 'item', 'estadio', 'estádio', 'ferramenta', 'tool'
+];
+
+export const isKnownTrainer = (namePt: string, nameEn: string): boolean => {
+  const nPt = (namePt || '').toLowerCase();
+  const nEn = (nameEn || '').toLowerCase();
+  return TRAINER_KEYWORDS.some(k => nPt.includes(k) || nEn.includes(k));
+};
+
+export const isKnownEnergy = (namePt: string, nameEn: string, setCode: string, color: string, cardNum: string): boolean => {
+  const nPt = (namePt || '').toLowerCase();
+  const nEn = (nameEn || '').toLowerCase();
+  const sCode = (setCode || '').toUpperCase();
+  const cNum = (cardNum || '').toLowerCase();
+  return (
+    color === 'E' ||
+    sCode === 'SVE' ||
+    sCode === 'BAS' ||
+    cNum === 'energia' ||
+    nPt.includes('energia') ||
+    nEn.includes('energy')
+  );
+};
+
+export const normalizeDeck = (rawDeck: Deck): Deck => {
+  const cards = (rawDeck.cards || []).map(item => {
+    let section = item.section;
+    if (isKnownEnergy(item.name, item.name, item.set || '', '', '')) {
+      section = 'energies';
+    } else if (isKnownTrainer(item.name, item.name)) {
+      section = 'trainers';
+    }
+    return { ...item, section };
+  });
+
+  const pokeCount = cards.filter(c => c.section === 'pokemon').reduce((a, b) => a + b.count, 0);
+  const trainerCount = cards.filter(c => c.section === 'trainers').reduce((a, b) => a + b.count, 0);
+  const energyCount = cards.filter(c => c.section === 'energies').reduce((a, b) => a + b.count, 0);
+
+  return {
+    ...rawDeck,
+    cards,
+    stats: {
+      pokemon: pokeCount,
+      trainers: trainerCount,
+      energies: energyCount,
+      total: pokeCount + trainerCount + energyCount
+    }
+  };
+};
+
 const normalizeCards = (rawCards: Card[]): Card[] => {
   return rawCards.map(c => {
     // Determine standard category
     let category: 'Pokémon' | 'Trainer' | 'Energy' = 'Pokémon';
     const catLower = (c.card_category || '').toLowerCase();
-    if (
-      catLower === 'energy' || 
-      catLower === 'energia' || 
-      c.color_code === 'E' || 
-      c.color_slug === 'energy' || 
-      c.set_code === 'SVE' || 
-      c.set_code === 'BAS' || 
-      c.name_pt.toLowerCase().includes('energia')
-    ) {
+    
+    if (isKnownEnergy(c.name_pt, c.name_en, c.set_code, c.color_code, c.card_number)) {
       category = 'Energy';
     } else if (
+      isKnownTrainer(c.name_pt, c.name_en) ||
       catLower === 'trainer' || 
       catLower === 'treinador' || 
       c.color_slug === 'trainer' || 
@@ -189,9 +244,26 @@ const normalizeCards = (rawCards: Card[]): Card[] => {
       imageUrl = getStorageCardUrl(`${setCode}_${c.card_number}.png`);
     }
 
+    let colorSlug = c.color_slug;
+    let colorName = c.color_name;
+    let colorBg = c.color_bg;
+
+    if (category === 'Trainer') {
+      colorSlug = 'trainer';
+      colorName = 'Trainer';
+      colorBg = '#14B8A6';
+    } else if (category === 'Energy') {
+      colorSlug = 'energy';
+      colorName = 'Energy';
+      colorBg = '#F59E0B';
+    }
+
     return {
       ...c,
       card_category: category,
+      color_slug: colorSlug,
+      color_name: colorName,
+      color_bg: colorBg,
       image_url: imageUrl
     };
   });
@@ -210,7 +282,8 @@ export const CollectionProvider: React.FC<{ children: React.ReactNode }> = ({ ch
 
   const [decks, setDecks] = useState<Deck[]>(() => {
     const saved = localStorage.getItem('pokedex_tcg_decks');
-    return saved ? JSON.parse(saved) : (initialDecks as Deck[]);
+    const parsed = saved ? JSON.parse(saved) : (initialDecks as Deck[]);
+    return (parsed || []).map(normalizeDeck);
   });
 
   const [filters, setFilters] = useState<FilterState>(defaultFilters);
@@ -278,7 +351,7 @@ export const CollectionProvider: React.FC<{ children: React.ReactNode }> = ({ ch
           }
           if (data.favorites) setFavorites(data.favorites);
           if (data.notes) setNotes(data.notes);
-          if (data.decks) setDecks(data.decks);
+          if (data.decks && Array.isArray(data.decks)) setDecks(data.decks.map(normalizeDeck));
           setLastSyncedAt(data.lastUpdated ? new Date(data.lastUpdated) : new Date());
           setSyncStatus('synced');
         } else {
@@ -503,15 +576,26 @@ export const CollectionProvider: React.FC<{ children: React.ReactNode }> = ({ ch
         finalImageUrl = getStorageCardUrl(BASIC_ENERGY_CONFIG[color].filename);
       }
 
-      const category: 'Pokémon' | 'Trainer' | 'Energy' = 
-        (isBasicEnergy || colorInfo.name === 'Energy' || color === 'E' || cardPt.toLowerCase().includes('energia'))
-          ? 'Energy'
-          : (colorInfo.name === 'Trainer' || !color) 
-            ? 'Trainer' 
-            : 'Pokémon';
+      const isEnergy = isKnownEnergy(cardPt, cardEn, setCode, color, cardNum);
+      const isTrainer = !isEnergy && (isKnownTrainer(cardPt, cardEn) || colorInfo.name === 'Trainer' || !color);
+      const category: 'Pokémon' | 'Trainer' | 'Energy' = isEnergy ? 'Energy' : isTrainer ? 'Trainer' : 'Pokémon';
 
       const section: 'pokemon' | 'trainers' | 'energies' = 
         category === 'Trainer' ? 'trainers' : category === 'Energy' ? 'energies' : 'pokemon';
+
+      let colorSlug = colorInfo.slug;
+      let colorName = colorInfo.name;
+      let colorBg = colorInfo.bg;
+
+      if (category === 'Trainer') {
+        colorSlug = 'trainer';
+        colorName = 'Trainer';
+        colorBg = '#14B8A6';
+      } else if (category === 'Energy') {
+        colorSlug = 'energy';
+        colorName = 'Energy';
+        colorBg = '#F59E0B';
+      }
 
       // Record for deck assignment
       importedDeckItems.push({
@@ -536,6 +620,11 @@ export const CollectionProvider: React.FC<{ children: React.ReactNode }> = ({ ch
         newCardsList[existingIndex] = {
           ...existingCard,
           quantity: existingCard.quantity + qty,
+          card_category: category,
+          color_slug: colorSlug,
+          color_name: colorName,
+          color_bg: colorBg,
+          image_url: finalImageUrl,
           decks: newDecks
         };
         updated++;
@@ -556,9 +645,9 @@ export const CollectionProvider: React.FC<{ children: React.ReactNode }> = ({ ch
           rarity_code: rarity,
           rarity_name: rarity,
           color_code: color,
-          color_name: colorInfo.name,
-          color_slug: colorInfo.slug,
-          color_bg: colorInfo.bg,
+          color_name: colorName,
+          color_slug: colorSlug,
+          color_bg: colorBg,
           card_category: category,
           is_foil: extras.toLowerCase().includes('foil') || extras.toLowerCase().includes('holo'),
           extras: extras,

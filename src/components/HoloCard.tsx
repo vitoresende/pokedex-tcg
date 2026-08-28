@@ -112,9 +112,28 @@ export const HoloCard: React.FC<HoloCardProps> = ({ card, className = '', isDeta
       sources.push(card.image_url);
     }
 
-    // 5. Fallback CDN complementar
+    // 5. Fallback CDNs complementares (Pokemontcg.io e Limitless TCG)
     if (card.set_code) {
-      sources.push(`https://images.pokemontcg.io/${cleanSet}/${cleanNum}.png`);
+      const SET_CODE_POKEMONTCG_IO_MAP: Record<string, string> = {
+        'sum': 'sm1',
+        'gri': 'sm2',
+        'bus': 'sm3',
+        'cin': 'sm4',
+        'upr': 'sm5',
+        'fli': 'sm6',
+        'ces': 'sm7',
+        'lot': 'sm8',
+        'teu': 'sm9',
+        'unb': 'sm10',
+        'unm': 'sm11',
+        'cec': 'sm12',
+        'hif': 'sma',
+      };
+      const pokemontcgSet = SET_CODE_POKEMONTCG_IO_MAP[cleanSet] || cleanSet;
+      sources.push(`https://images.pokemontcg.io/${pokemontcgSet}/${cleanNum}_hires.png`);
+      sources.push(`https://images.pokemontcg.io/${pokemontcgSet}/${cleanNum}.png`);
+      sources.push(`https://limitlesstcg.nyc3.cdn.digitaloceanspaces.com/tpci/${card.set_code.toUpperCase()}/${card.set_code.toUpperCase()}_${cleanNum.padStart(3, '0')}_R_PT.png`);
+      sources.push(`https://limitlesstcg.nyc3.cdn.digitaloceanspaces.com/tpci/${card.set_code.toUpperCase()}/${card.set_code.toUpperCase()}_${cleanNum.padStart(3, '0')}_R_EN.png`);
     }
 
     if (imageErrorLevel < sources.length) {
