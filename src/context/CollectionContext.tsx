@@ -90,16 +90,21 @@ const COLOR_MAP: Record<string, { name: string; slug: string; bg: string }> = {
   '': { name: 'Trainer', slug: 'trainer', bg: '#14B8A6' }
 };
 
-const BASIC_ENERGY_CONFIG: Record<string, { code: string; num: string; url: string }> = {
-  'G': { code: 'SVE', num: '1', url: 'https://images.pokemontcg.io/sve/1.png' },
-  'R': { code: 'SVE', num: '2', url: 'https://images.pokemontcg.io/sve/2.png' },
-  'W': { code: 'SVE', num: '3', url: 'https://images.pokemontcg.io/sve/3.png' },
-  'L': { code: 'SVE', num: '4', url: 'https://images.pokemontcg.io/sve/4.png' },
-  'P': { code: 'SVE', num: '5', url: 'https://images.pokemontcg.io/sve/5.png' },
-  'F': { code: 'SVE', num: '6', url: 'https://images.pokemontcg.io/sve/6.png' },
-  'D': { code: 'SVE', num: '7', url: 'https://images.pokemontcg.io/sve/7.png' },
-  'M': { code: 'SVE', num: '8', url: 'https://images.pokemontcg.io/sve/8.png' },
-  'Y': { code: 'SM1', num: '169', url: 'https://images.pokemontcg.io/sm1/169.png' },
+const STORAGE_BUCKET = import.meta.env.VITE_FIREBASE_STORAGE_BUCKET || 'pokedex-tcg-782d5.firebasestorage.app';
+
+const getStorageCardUrl = (filename: string) => 
+  `https://firebasestorage.googleapis.com/v0/b/${STORAGE_BUCKET}/o/cards%2F${encodeURIComponent(filename)}?alt=media`;
+
+const BASIC_ENERGY_CONFIG: Record<string, { code: string; num: string; filename: string }> = {
+  'G': { code: 'SVE', num: '1', filename: 'sve_1.png' },
+  'R': { code: 'SVE', num: '2', filename: 'sve_2.png' },
+  'W': { code: 'SVE', num: '3', filename: 'sve_3.png' },
+  'L': { code: 'SVE', num: '4', filename: 'sve_4.png' },
+  'P': { code: 'SVE', num: '5', filename: 'sve_5.png' },
+  'F': { code: 'SVE', num: '6', filename: 'sve_6.png' },
+  'D': { code: 'SVE', num: '7', filename: 'sve_7.png' },
+  'M': { code: 'SVE', num: '8', filename: 'sve_8.png' },
+  'Y': { code: 'SM1', num: '169', filename: 'sm1_169.png' },
 };
 
 const normalizeCards = (rawCards: Card[]): Card[] => {
@@ -135,11 +140,11 @@ const normalizeCards = (rawCards: Card[]): Card[] => {
         card_category: 'Energy',
         color_slug: 'energy',
         color_code: 'E',
-        image_url: 'https://limitlesstcg.nyc3.cdn.digitaloceanspaces.com/tpci/CRI/CRI_084_R_PT.png'
+        image_url: getStorageCardUrl('cri_084.png')
       };
     }
 
-    if (c.name_en.toLowerCase().includes('weakness guard') || (c.set_code === 'UNM' && c.card_number === '213')) {
+    if (c.name_en.toLowerCase().includes('weakness guard') || (c.set_code === 'UNM' && (c.card_number === '213' || c.card_number === '0213'))) {
       return {
         ...c,
         set_code: 'UNM',
@@ -147,7 +152,7 @@ const normalizeCards = (rawCards: Card[]): Card[] => {
         card_category: 'Energy',
         color_slug: 'energy',
         color_code: 'C',
-        image_url: 'https://images.pokemontcg.io/sm11/213.png'
+        image_url: getStorageCardUrl('unm_213.png')
       };
     }
 
@@ -164,39 +169,23 @@ const normalizeCards = (rawCards: Card[]): Card[] => {
         ...c,
         set_code: meta.code,
         card_number: meta.num,
-        image_url: meta.url,
+        image_url: getStorageCardUrl(meta.filename),
         card_category: 'Energy',
         color_slug: 'energy'
       };
     }
 
-    // Chaos Rising (CRI) official Portuguese HD art resolution
-    if (c.set_code === 'CRI') {
-      const numDigits = (c.card_number || '').replace(/\D/g, '');
-      const numInt = parseInt(numDigits, 10) || 1;
-      const pad3 = numInt.toString().padStart(3, '0');
-      return {
-        ...c,
-        card_category: category,
-        image_url: `https://limitlesstcg.nyc3.cdn.digitaloceanspaces.com/tpci/CRI/CRI_${pad3}_R_PT.png`
-      };
-    }
-
-    // Phantasmal Flames (PFL) official Portuguese HD art resolution
-    if (c.set_code === 'PFL') {
-      const numDigits = (c.card_number || '').replace(/\D/g, '');
-      const numInt = parseInt(numDigits, 10) || 1;
-      const pad3 = numInt.toString().padStart(3, '0');
-      return {
-        ...c,
-        card_category: category,
-        image_url: `https://limitlesstcg.nyc3.cdn.digitaloceanspaces.com/tpci/PFL/PFL_${pad3}_R_PT.png`
-      };
+    // Ensure image_url uses Google Cloud Storage
+    const setCode = (c.set_code || '').toLowerCase();
+    let imageUrl = c.image_url;
+    if (!imageUrl || !imageUrl.includes('firebasestorage.googleapis.com')) {
+      imageUrl = getStorageCardUrl(`${setCode}_${c.card_number}.png`);
     }
 
     return {
       ...c,
-      card_category: category
+      card_category: category,
+      image_url: imageUrl
     };
   });
 };
