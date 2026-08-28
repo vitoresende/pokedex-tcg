@@ -182,6 +182,18 @@ const normalizeCards = (rawCards: Card[]): Card[] => {
       };
     }
 
+    // Phantasmal Flames (PFL) official Portuguese HD art resolution
+    if (c.set_code === 'PFL') {
+      const numDigits = (c.card_number || '').replace(/\D/g, '');
+      const numInt = parseInt(numDigits, 10) || 1;
+      const pad3 = numInt.toString().padStart(3, '0');
+      return {
+        ...c,
+        card_category: category,
+        image_url: `https://limitlesstcg.nyc3.cdn.digitaloceanspaces.com/tpci/PFL/PFL_${pad3}_R_PT.png`
+      };
+    }
+
     return {
       ...c,
       card_category: category
