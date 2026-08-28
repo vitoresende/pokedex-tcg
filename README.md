@@ -130,91 +130,116 @@ Standard gRPC uses low-level HTTP/2 framing and trailers that standard browser `
 
 ---
 
-## 📥 Como Importar sua Coleção de Cartas (CSV & Manual)
+## 📥 Como Importar Cartas e Decks (Formato LigaPokémon / CSV)
 
-O Pokédex TCG oferece suporte a importação de coleções inteiras com **busca automática de imagens oficiais em alta definição** e **persistência direta no Firebase Cloud Storage & Firestore**.
+O **Pokédex TCG Master** possui um motor de ingestão completo capaz de processar listas de coleção e decks inteiros com **reconhecimento semântico de Treinadores e Energias**, **criação dinâmica de decks**, **busca em cascata de artes oficiais em alta definição** e **auto-persistência no Google Cloud Storage & Firestore**.
 
 ```mermaid
-flowchart LR
-    CSV["Arquivo .CSV (LigaPokemon / Planilha)"] --> PIPELINE["Busca Automática de Artes Oficiais (PT / EN)"]
-    PIPELINE --> STORAGE["Upload no Firebase Cloud Storage"]
-    STORAGE --> FIRESTORE["Sincronização em Tempo Real no Firestore"]
-    FIRESTORE --> APP["Pokédex Web Pronta"]
+flowchart TD
+    A["Arquivo .CSV (LigaPokémon / Excel)"] --> B{"Destino no App"}
+    B -->|Opção 1| C["Apenas na Coleção Principal"]
+    B -->|Opção 2| D["Mesclar em Deck Existente"]
+    B -->|Opção 3| E["Criar Novo Deck Automaticamente"]
+    
+    A --> F["Reconhecimento Semântico Inteligente"]
+    F --> G["Separar Pokémon (24) / Treinadores (16) / Energias (20)"]
+    
+    A --> H["Resolução de Imagens em Cascata"]
+    H --> I["Google Cloud Storage"]
+    H -->|Se não existir no Storage| J["CDNs Oficiais HD (Pokemontcg.io / Limitless PT-EN)"]
+    J -->|Auto-Cache em Background| I
 ```
 
 ---
 
-### 💻 Método 1: Importação Automática via Terminal (Recomendado)
+### 🗂️ Arquivo de Exemplo Pronto para Teste
+O repositório já inclui um arquivo de exemplo com um deck oficial de **60 cartas no padrão LigaPokémon**:
+- 📄 **[examples/deck_exemplo_liga_pokemon.csv](examples/deck_exemplo_liga_pokemon.csv)** (Deck *Necrozma & Malamar / Laser Focus*)
 
-Com apenas um comando, o script processa sua planilha, localiza e baixa as imagens oficiais em alta resolução, faz o upload em massa para o seu **Google Cloud Storage** e atualiza o catálogo da aplicação:
+---
+
+### 🌐 Método 1: Importação Direta pela Interface Web (Recomendado)
+
+1. Abra a aplicação no navegador e clique em **`➕ Add Cards`** no canto superior direito.
+2. Acesse a aba **`Batch CSV Import`**.
+3. Escolha o arquivo `.csv` no seu computador (ou cole o texto da planilha na caixa de texto).
+4. Selecione o **Destino do Deck (Deck Assignment)**:
+   - **`Collection Only`**: Adiciona ou soma as cartas à sua coleção geral sem vincular a nenhum deck.
+   - **`Existing Deck`**: Selecione um deck existente no dropdown; todas as cartas importadas serão adicionadas a ele e as estatísticas do deck serão recalculadas.
+   - **`+ New Deck`**: Digite o nome do deck (ex: *"Malamar & Necrozma Turbo"*) e selecione o formato (*Standard / Expanded / Casual*). O app criará o deck instantaneamente com todas as cartas já organizadas nas seções corretas.
+5. Clique em **`Process CSV Import`**.
+
+---
+
+### 💻 Método 2: Importação em Lote via Terminal (CLI)
+
+Para desenvolvedores ou importação prévia de grandes lotes de imagens:
 
 ```bash
-# Importar o arquivo padrão da raiz (colecao_completa_consolidada_com_energias.csv):
-npm run import:csv
+# 1. Importar o CSV de exemplo do projeto:
+npm run import:csv examples/deck_exemplo_liga_pokemon.csv
 
-# Ou importar qualquer arquivo CSV personalizado:
+# 2. Ou importar qualquer arquivo CSV personalizado:
 npm run import:csv caminho/para/minhas_cartas.csv
 ```
 
 **O que o comando faz automaticamente:**
-1. Lê e estrutura todas as cartas, quantidades, raridades e acabamentos (Foil/Holo).
-2. Mapeia com precisão todas as cartas de **Energia Básica** (Planta, Fogo, Água, Raios, Psíquico, Luta, Escuridão, Metal, Fada) e **Energias Especiais** (Bubbly Water Energy, Weakness Guard Energy, etc.).
-3. Baixa as imagens em alta resolução em paralelo (multithread).
-4. Faz o upload de todas as imagens para o seu bucket no **Firebase Storage** (`gs://seu-projeto.firebasestorage.app/cards/`).
+1. Lê o CSV com suporte a caracteres em Português (`UTF-8` e `latin1/Windows-1252`).
+2. Identifica e categoriza Pokémon, Treinadores e Energias.
+3. Baixa em paralelo os scans oficiais em HD da TPCI / Limitless.
+4. Faz o upload em massa para o Google Cloud Storage (`gs://seu-projeto.firebasestorage.app/cards/`).
 5. Atualiza o catálogo estruturado em `src/data/cards.json`.
-
----
-
-### 🌐 Método 2: Importação Direta pela Interface Web (Sem Terminal)
-
-Você pode importar cartas diretamente pelo navegador:
-
-1. Abra a aplicação e clique no botão **➕ Add Cards** (no topo da Pokédex).
-2. Selecione a aba **Batch CSV Import**.
-3. Clique em **Choose File** e selecione seu arquivo `.csv` (ou cole o texto da planilha na caixa de texto).
-4. Clique em **Process CSV Import**.
-5. As cartas serão adicionadas à sua coleção e sincronizadas automaticamente em tempo real com o seu **Cloud Firestore**.
 
 ---
 
 ### ✍️ Método 3: Adição Manual de Cartas com Upload de Foto
 
-Para adicionar cartas avulsas que você acabou de tirar em um booster:
+Para cadastrar cartas avulsas tiradas em boosters físicos:
 
-1. Clique em **➕ Add Cards** ➡️ aba **Manual Form**.
-2. Preencha o nome da carta (PT ou EN), código da coleção (ex: `SVI`, `PAF`, `OBF`), número e quantidade.
-3. **Upload de Imagem**:
-   - **Opção A**: Selecione uma foto/arquivo diretamente da câmera do seu celular ou do computador. O app faz o upload para o seu Firebase Storage.
-   - **Opção B**: Cole uma URL de imagem externa. O app espelha a imagem para o seu Cloud Storage.
-4. Clique em **Save Card to Collection & Storage**.
+1. Clique em **`➕ Add Cards`** ➡️ aba **`Manual Form`**.
+2. Preencha o nome (PT ou EN), código da coleção (ex: `SVI`, `PAF`, `CRI`), número e quantidade.
+3. **Upload de Foto**:
+   - **Opção A**: Selecione uma foto/arquivo diretamente da câmera do celular ou do computador. O app enviará a imagem diretamente para o Firebase Storage.
+   - **Opção B**: Cole uma URL de imagem externa. O app espelhará a imagem para o seu Cloud Storage.
+4. Clique em **`Save Card to Collection & Storage`**.
 
 ---
 
-### 📊 Formato Padrão de Colunas do CSV
+### 📊 Formato Padrão de 14 Colunas da LigaPokémon
 
-O importador aceita o formato padrão de exportação da **LigaPokemon** e planilhas Pokémon TCG:
+O importador aceita o cabeçalho e layout padrão de 14 colunas da LigaPokémon:
 
-| Coluna | Exemplo | Descrição |
-| :--- | :--- | :--- |
-| `Edicao (PTBR)` | `Caos Ascendente` | Nome da coleção em Português |
-| `Edicao (EN)` | `Chaos Rising` | Nome da coleção em Inglês |
-| `Edicao (Sigla)` | `CRI` / `SVI` / `MEW` | Sigla oficial da coleção |
-| `Card (PT)` | `Charizard ex` | Nome da carta em Português |
-| `Card (EN)` | `Charizard ex` | Nome da carta em Inglês |
-| `Quantidade` | `1`, `2`, `4` | Quantidade de cópias que você possui |
-| `Qualidade` | `M`, `NM`, `SP` | Estado de conservação (Mint, Near Mint...) |
-| `Idioma` | `PT`, `EN`, `JP` | Idioma da carta física |
-| `Raridade` | `C`, `U`, `R`, `IR`, `S` | Código de raridade |
-| `Cor` | `R`, `W`, `G`, `L`, `P`, `E` | Tipo de energia (Fogo, Água, Planta...) |
-| `Extras` | `Foil`, `Holo`, `Reverse` | Acabamento holográfico |
-| `Card #` | `54`, `087`, `213` | Número da carta na coleção |
-| `Comentario` | `Pasta 1` | Anotações pessoais de organização |
-| `# Cards na Edicao` | `198` | Total de cartas na coleção |
+| # | Coluna | Exemplo | Descrição |
+| :-: | :--- | :--- | :--- |
+| 1 | `Edicao (PTBR)` | `Sintonia Mental` | Nome da coleção em Português |
+| 2 | `Edicao (EN)` | `Unified Minds` | Nome da coleção em Inglês |
+| 3 | `Edicao (Sigla)` | `UNM` / `FLI` / `CRI` | Sigla oficial de 3 letras da coleção |
+| 4 | `Card (PT)` | `Caça-Inseto` | Nome da carta em Português |
+| 5 | `Card (EN)` | `Bug Catcher` | Nome da carta em Inglês |
+| 6 | `Quantidade` | `2` | Quantidade de cópias |
+| 7 | `Qualidade` | `NM` / `M` / `SP` | Estado de conservação (*Near Mint, Mint...*) |
+| 8 | `Idioma` | `PT` / `EN` | Idioma da carta física |
+| 9 | `Raridade` | `C` / `U` / `R` / `IR` | Código de raridade |
+| 10 | `Cor` | `P`, `R`, `W`, `C`, `E` | Tipo de energia ou `C` (Treinadores / Incolor) |
+| 11 | `Extras` | `Foil`, `Holo`, `Reverse` | Acabamento holográfico |
+| 12 | `Card #` | `189` | Número da carta na coleção |
+| 13 | `Comentario` | `Deck Principal` | Anotações pessoais de organização |
+| 14 | `# Cards na Edicao` | `236` | Total de cartas na coleção |
 
 **Exemplo de linha CSV:**
 ```csv
-Caos Ascendente,Chaos Rising,CRI,Charizard ex,Charizard ex,1,M,PT,IR,R,Foil,087,Pasta Principal,198
+"Sintonia Mental","Unified Minds",UNM,"Caça-Inseto","Bug Catcher",2,"NM",PT,U,C,"",189,"",236
 ```
+
+---
+
+### 🧠 Reconhecimento Inteligente e Tratamento de Imagens
+
+1. **Classificação Automática de Treinadores e Energias**:
+   - Mesmo que a LigaPokémon exporte cartas de Treinador (*Apoiadores, Itens, Ferramentas*) com `Cor: C`, o analisador semântico identifica as cartas pelo nome (*Cynthia, Lillie, Bug Catcher, Switch, Mysterious Treasure, etc.*) e as aloca corretamente na coluna de **Trainers**.
+2. **Auto-Persistência de Imagens no Cloud Storage**:
+   - Ao importar novas cartas cujo scan ainda não esteja salvo no Cloud Storage, o app busca a imagem nos CDNs oficiais em tempo real.
+   - Assim que a imagem carrega no navegador, uma rotina em background faz o download e salva o arquivo `.png` no seu **Google Cloud Storage** (`gs://seu-projeto.firebasestorage.app/cards/`), tornando-a nativa e permanente para os próximos acessos.
 
 ---
 

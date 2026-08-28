@@ -44,6 +44,7 @@ estrategias_e_decks_pokemon_tcg.md
 5a6649d8-9bd6-4475-a336-e79b93fdadaa.jpeg
 especificacao_arquitetura_connect_rpc.pdf
 *.csv
+!examples/*.csv
 *.pdf
 
 # Pasta local de downloads de imagens
