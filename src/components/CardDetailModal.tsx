@@ -197,16 +197,17 @@ export const CardDetailModal: React.FC<CardDetailModalProps> = ({ card, onClose,
 
             {/* Add to Deck Selector */}
             {decks.length > 0 && (
-              <div className="bg-pokedex-darker p-3 rounded-2xl border border-slate-800 space-y-2">
-                <div className="flex items-center justify-between text-[10px] text-slate-400 uppercase">
+              <div className="bg-pokedex-darker p-3 rounded-2xl border border-slate-800 space-y-2 w-full overflow-hidden">
+                <div className="flex items-center justify-between text-[10px] text-slate-400 uppercase font-mono">
                   <span>Add to Deck:</span>
-                  {cardAddedToDeck && <span className="text-emerald-400 font-bold">Added!</span>}
+                  {cardAddedToDeck && <span className="text-emerald-400 font-bold flex items-center gap-1"><CheckCircle2 className="w-3 h-3" /> Added!</span>}
                 </div>
-                <div className="flex gap-2">
+                <div className="flex items-center gap-2 w-full min-w-0">
                   <select
                     value={selectedDeckForAdd}
                     onChange={(e) => setSelectedDeckForAdd(e.target.value)}
-                    className="flex-1 bg-black/60 border border-slate-700 rounded-xl px-2.5 py-1.5 text-xs text-slate-200 focus:outline-none focus:border-pokedex-blue"
+                    aria-label="Select deck to add card"
+                    className="flex-1 min-w-0 bg-black/60 border border-slate-700 rounded-xl px-3 py-2 text-xs text-slate-200 focus:outline-none focus:border-pokedex-blue truncate"
                   >
                     {decks.map(d => (
                       <option key={d.id} value={d.id}>{d.name}</option>
@@ -215,9 +216,9 @@ export const CardDetailModal: React.FC<CardDetailModalProps> = ({ card, onClose,
                   <button
                     type="button"
                     onClick={handleAddToDeck}
-                    className="bg-pokedex-blue hover:bg-blue-600 text-white font-bold px-3 py-1.5 rounded-xl text-xs flex items-center gap-1 shadow"
+                    className="bg-pokedex-blue hover:bg-blue-600 text-white font-bold px-3.5 py-2 rounded-xl text-xs flex items-center gap-1.5 shadow shrink-0 whitespace-nowrap active:scale-95 transition-all"
                   >
-                    <PlusCircle className="w-3.5 h-3.5" />
+                    <PlusCircle className="w-4 h-4" />
                     <span>Add</span>
                   </button>
                 </div>

@@ -225,12 +225,12 @@ export const CreateDeckModal: React.FC<CreateDeckModalProps> = ({ isOpen, onClos
             {searchQuery && (
               <div className="bg-black/70 rounded-2xl border border-slate-800 p-2 max-h-36 overflow-y-auto space-y-1">
                 {filteredCollection.map((card) => (
-                  <div key={card.id} className="flex items-center justify-between p-1.5 hover:bg-slate-800 rounded-lg text-xs">
-                    <span className="text-slate-200 truncate">{card.name_en || card.name_pt} <small className="text-slate-500">({card.set_code})</small></span>
+                  <div key={card.id} className="flex items-center justify-between p-1.5 hover:bg-slate-800 rounded-lg text-xs gap-2 min-w-0">
+                    <span className="text-slate-200 truncate flex-1 min-w-0">{card.name_en || card.name_pt} <small className="text-slate-500">({card.set_code})</small></span>
                     <button
                       type="button"
                       onClick={() => handleAddCard(card)}
-                      className="bg-pokedex-blue hover:bg-blue-600 text-white font-bold px-2 py-0.5 rounded-md text-[10px] flex items-center gap-1"
+                      className="bg-pokedex-blue hover:bg-blue-600 text-white font-bold px-2.5 py-1 rounded-lg text-[10px] flex items-center gap-1 shrink-0 whitespace-nowrap shadow active:scale-95 transition-all"
                     >
                       <Plus className="w-3 h-3" /> Add
                     </button>
