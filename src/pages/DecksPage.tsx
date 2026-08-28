@@ -3,11 +3,12 @@ import { useCollection } from '../context/CollectionContext';
 import { Deck, DeckCardItem } from '../types';
 import { 
   Layers, Copy, Check, AlertCircle, 
-  Swords, Trophy, Plus, Trash2, Sparkles 
+  Swords, Trophy, Plus, Trash2, Sparkles, Pencil 
 } from 'lucide-react';
 import { soundEffects } from '../services/audio';
 import { CardDetailModal } from '../components/CardDetailModal';
 import { CreateDeckModal } from '../components/CreateDeckModal';
+import { EditDeckModal } from '../components/EditDeckModal';
 
 export const DecksPage: React.FC = () => {
   const { decks, cards, selectedCard, setSelectedCard, deleteDeck, removeCardFromDeck } = useCollection();
@@ -15,6 +16,7 @@ export const DecksPage: React.FC = () => {
   const [copied, setCopied] = useState<boolean>(false);
   const [activeGuideTab, setActiveGuideTab] = useState<'opening' | 'midgame' | 'lategame'>('opening');
   const [createModalOpen, setCreateModalOpen] = useState<boolean>(false);
+  const [editModalOpen, setEditModalOpen] = useState<boolean>(false);
 
   const currentDeck = decks.find(d => d.id === activeDeckId) || decks[0] || {
     id: 'empty',
@@ -164,14 +166,22 @@ export const DecksPage: React.FC = () => {
             <p className="text-slate-300 text-xs mt-1 max-w-2xl">{currentDeck.summary}</p>
           </div>
 
-          {/* Action Buttons: Copy & Delete */}
-          <div className="flex items-center gap-2">
+          {/* Action Buttons: Copy, Edit & Delete */}
+          <div className="flex items-center gap-2 flex-wrap sm:flex-nowrap">
+            <button
+              onClick={() => { soundEffects.playClick(); setEditModalOpen(true); }}
+              className="bg-blue-600/90 hover:bg-blue-600 text-white font-bold px-3.5 py-2 rounded-xl border border-blue-400/40 text-xs flex items-center space-x-1.5 transition-all active:scale-95 shadow-md shrink-0 font-mono"
+            >
+              <Pencil className="w-3.5 h-3.5 text-yellow-300" />
+              <span>Edit Deck & Playbook</span>
+            </button>
+
             <button
               onClick={handleCopyDecklist}
-              className="bg-pokedex-darker hover:bg-slate-800 text-slate-100 font-bold px-4 py-2 rounded-xl border border-slate-700 text-xs flex items-center space-x-2 transition-all active:scale-95 shadow-md shrink-0"
+              className="bg-pokedex-darker hover:bg-slate-800 text-slate-100 font-bold px-3.5 py-2 rounded-xl border border-slate-700 text-xs flex items-center space-x-2 transition-all active:scale-95 shadow-md shrink-0 font-mono"
             >
               {copied ? <Check className="w-4 h-4 text-emerald-400" /> : <Copy className="w-4 h-4 text-yellow-300" />}
-              <span>{copied ? 'Decklist Copied!' : 'Export Decklist (PTCG Live)'}</span>
+              <span>{copied ? 'Decklist Copied!' : 'Export (PTCG Live)'}</span>
             </button>
 
             {decks.length > 1 && (
@@ -232,38 +242,57 @@ export const DecksPage: React.FC = () => {
 
       {/* Strategic Playbook Tabs */}
       <div className="bg-pokedex-card/90 rounded-3xl border border-slate-800 p-5 shadow-lg space-y-4">
-        <div className="flex items-center justify-between border-b border-slate-800 pb-3">
-          <div className="flex items-center space-x-2">
-            <Swords className="w-5 h-5 text-pokedex-lightred" />
-            <h3 className="font-bold text-sm text-white uppercase tracking-wider font-mono">
-              Strategic Turn Playbook
-            </h3>
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-slate-800 pb-3 gap-2">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-2">
+              <Swords className="w-5 h-5 text-pokedex-lightred" />
+              <h3 className="font-bold text-sm text-white uppercase tracking-wider font-mono">
+                Strategic Turn Playbook
+              </h3>
+            </div>
+            <button
+              onClick={() => { soundEffects.playClick(); setEditModalOpen(true); }}
+              className="sm:hidden text-[11px] text-yellow-300 hover:text-yellow-200 flex items-center gap-1 bg-black/40 px-2.5 py-1 rounded-lg border border-slate-700 font-mono"
+            >
+              <Pencil className="w-3 h-3" />
+              <span>Edit</span>
+            </button>
           </div>
 
-          <div className="flex bg-pokedex-darker p-1 rounded-xl border border-slate-800 text-xs font-mono">
+          <div className="flex items-center gap-2">
+            <div className="flex bg-pokedex-darker p-1 rounded-xl border border-slate-800 text-xs font-mono">
+              <button
+                onClick={() => { soundEffects.playClick(); setActiveGuideTab('opening'); }}
+                className={`px-3 py-1 rounded-lg transition-colors ${
+                  activeGuideTab === 'opening' ? 'bg-pokedex-red text-white font-bold' : 'text-slate-400 hover:text-slate-200'
+                }`}
+              >
+                1. Opening
+              </button>
+              <button
+                onClick={() => { soundEffects.playClick(); setActiveGuideTab('midgame'); }}
+                className={`px-3 py-1 rounded-lg transition-colors ${
+                  activeGuideTab === 'midgame' ? 'bg-pokedex-red text-white font-bold' : 'text-slate-400 hover:text-slate-200'
+                }`}
+              >
+                2. Midgame
+              </button>
+              <button
+                onClick={() => { soundEffects.playClick(); setActiveGuideTab('lategame'); }}
+                className={`px-3 py-1 rounded-lg transition-colors ${
+                  activeGuideTab === 'lategame' ? 'bg-pokedex-red text-white font-bold' : 'text-slate-400 hover:text-slate-200'
+                }`}
+              >
+                3. Endgame
+              </button>
+            </div>
+
             <button
-              onClick={() => { soundEffects.playClick(); setActiveGuideTab('opening'); }}
-              className={`px-3 py-1 rounded-lg transition-colors ${
-                activeGuideTab === 'opening' ? 'bg-pokedex-red text-white font-bold' : 'text-slate-400 hover:text-slate-200'
-              }`}
+              onClick={() => { soundEffects.playClick(); setEditModalOpen(true); }}
+              className="hidden sm:flex text-xs text-yellow-300 hover:text-yellow-200 items-center gap-1.5 bg-black/40 hover:bg-black/60 px-3 py-1.5 rounded-xl border border-slate-700 font-mono transition-colors"
             >
-              1. Opening
-            </button>
-            <button
-              onClick={() => { soundEffects.playClick(); setActiveGuideTab('midgame'); }}
-              className={`px-3 py-1 rounded-lg transition-colors ${
-                activeGuideTab === 'midgame' ? 'bg-pokedex-red text-white font-bold' : 'text-slate-400 hover:text-slate-200'
-              }`}
-            >
-              2. Midgame
-            </button>
-            <button
-              onClick={() => { soundEffects.playClick(); setActiveGuideTab('lategame'); }}
-              className={`px-3 py-1 rounded-lg transition-colors ${
-                activeGuideTab === 'lategame' ? 'bg-pokedex-red text-white font-bold' : 'text-slate-400 hover:text-slate-200'
-              }`}
-            >
-              3. Endgame
+              <Pencil className="w-3.5 h-3.5" />
+              <span>Customize Playbook</span>
             </button>
           </div>
         </div>
@@ -404,6 +433,13 @@ export const DecksPage: React.FC = () => {
       <CreateDeckModal
         isOpen={createModalOpen}
         onClose={() => setCreateModalOpen(false)}
+      />
+
+      {/* Edit Deck & Strategic Playbook Modal */}
+      <EditDeckModal
+        deck={currentDeck}
+        isOpen={editModalOpen}
+        onClose={() => setEditModalOpen(false)}
       />
     </div>
   );

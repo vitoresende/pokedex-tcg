@@ -62,6 +62,7 @@ interface CollectionContextType {
   deleteCard: (cardId: string) => void;
   importCardsFromCsv: (csvContent: string, deckOption?: DeckImportOption) => { added: number; updated: number; deckName?: string };
   createNewDeck: (deck: Partial<Deck>) => Deck;
+  updateDeck: (deckId: string, updatedData: Partial<Deck>) => void;
   deleteDeck: (deckId: string) => void;
   addCardToDeck: (deckId: string, card: Card, count?: number) => void;
   removeCardFromDeck: (deckId: string, cardName: string) => void;
@@ -768,6 +769,39 @@ export const CollectionProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     return newDeck;
   };
 
+  const updateDeck = (deckId: string, updatedData: Partial<Deck>) => {
+    soundEffects.playScan();
+    setDecks(prev => prev.map(d => {
+      if (d.id !== deckId) return d;
+      const updated: Deck = {
+        ...d,
+        ...updatedData,
+        strategy_guide: updatedData.strategy_guide ? {
+          opening: {
+            title: updatedData.strategy_guide.opening?.title ?? d.strategy_guide.opening.title,
+            steps: updatedData.strategy_guide.opening?.steps ?? d.strategy_guide.opening.steps
+          },
+          midgame: {
+            title: updatedData.strategy_guide.midgame?.title ?? d.strategy_guide.midgame.title,
+            steps: updatedData.strategy_guide.midgame?.steps ?? d.strategy_guide.midgame.steps
+          },
+          lategame: {
+            title: updatedData.strategy_guide.lategame?.title ?? d.strategy_guide.lategame.title,
+            steps: updatedData.strategy_guide.lategame?.steps ?? d.strategy_guide.lategame.steps
+          }
+        } : d.strategy_guide,
+        format_slug: updatedData.format 
+          ? (updatedData.format.toLowerCase() as 'standard' | 'expanded' | 'casual') 
+          : d.format_slug
+      };
+      const normalized = normalizeDeck(updated);
+      if (selectedDeck?.id === deckId) {
+        setSelectedDeck(normalized);
+      }
+      return normalized;
+    }));
+  };
+
   const deleteDeck = (deckId: string) => {
     soundEffects.playClick();
     setDecks(prev => prev.filter(d => d.id !== deckId));
@@ -1036,6 +1070,7 @@ export const CollectionProvider: React.FC<{ children: React.ReactNode }> = ({ ch
         deleteCard,
         importCardsFromCsv,
         createNewDeck,
+        updateDeck,
         deleteDeck,
         addCardToDeck,
         removeCardFromDeck
