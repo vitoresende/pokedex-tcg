@@ -1,13 +1,12 @@
 steps:
-  # 1. Recuperar o arquivo .env do Secret Manager e gerar o token de autenticação do GCP
+  # 1. Recuperar o arquivo .env a partir do Google Secret Manager (secret: dotenv-pokedex)
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
     entrypoint: 'bash'
     args:
       - '-c'
       - |
         gcloud secrets versions access latest --secret=dotenv-pokedex > .env
-        gcloud auth print-access-token > .gcp_token
-        echo "✔ Arquivo .env e credencial de autenticação gerados com sucesso."
+        echo "✔ Arquivo .env carregado com sucesso a partir do Secret Manager."
 
   # 2. Instalar dependências (Node.js 20 LTS)
   - name: 'node:20'
@@ -21,14 +20,10 @@ steps:
       - '-c'
       - |
         TARGET_PROJECT=$$(grep VITE_FIREBASE_PROJECT_ID .env | cut -d'=' -f2 | tr -d ' "\r\n')
-        GCP_TOKEN=$$(cat .gcp_token)
-        export CLOUDSDK_AUTH_ACCESS_TOKEN="$${GCP_TOKEN}"
-        export FIREBASE_TOKEN="$${GCP_TOKEN}"
-        
         echo "🚀 Iniciando deploy para o projeto Firebase: $${TARGET_PROJECT}"
         node scripts/sync_firebase_config.js
         npm run build
-        npx -y firebase-tools deploy --non-interactive --project "$${TARGET_PROJECT}" --token "$${GCP_TOKEN}"
+        npx -y firebase-tools deploy --non-interactive --project "$${TARGET_PROJECT}"
 
 options:
   logging: CLOUD_LOGGING_ONLY
