@@ -197,7 +197,7 @@ export const AddCardModal: React.FC<AddCardModalProps> = ({ isOpen, onClose }) =
                     type="text"
                     value={namePt}
                     onChange={(e) => setNamePt(e.target.value)}
-                    placeholder="Ex: Charizard ex"
+                    placeholder={t('addCard.namePtPlaceholder')}
                     className="w-full bg-pokedex-darker border border-slate-800 rounded-xl p-2.5 text-white focus:outline-none focus:border-pokedex-blue text-xs font-sans"
                   />
                 </div>
@@ -211,7 +211,7 @@ export const AddCardModal: React.FC<AddCardModalProps> = ({ isOpen, onClose }) =
                     required
                     value={setCode}
                     onChange={(e) => setSetCode(e.target.value)}
-                    placeholder="Ex: SVI, PAF, OBF"
+                    placeholder={t('addCard.setCodePlaceholder')}
                     className="w-full bg-pokedex-darker border border-slate-800 rounded-xl p-2.5 text-white focus:outline-none focus:border-pokedex-blue text-xs uppercase"
                   />
                 </div>
@@ -223,7 +223,7 @@ export const AddCardModal: React.FC<AddCardModalProps> = ({ isOpen, onClose }) =
                     required
                     value={cardNumber}
                     onChange={(e) => setCardNumber(e.target.value)}
-                    placeholder="Ex: 054 or 125"
+                    placeholder={t('addCard.cardNumberPlaceholder')}
                     className="w-full bg-pokedex-darker border border-slate-800 rounded-xl p-2.5 text-white focus:outline-none focus:border-pokedex-blue text-xs"
                   />
                 </div>
@@ -234,7 +234,7 @@ export const AddCardModal: React.FC<AddCardModalProps> = ({ isOpen, onClose }) =
                     type="text"
                     value={totalInSet}
                     onChange={(e) => setTotalInSet(e.target.value)}
-                    placeholder="Ex: 198"
+                    placeholder={t('addCard.totalInSetPlaceholder')}
                     className="w-full bg-pokedex-darker border border-slate-800 rounded-xl p-2.5 text-white focus:outline-none focus:border-pokedex-blue text-xs"
                   />
                 </div>
@@ -271,14 +271,14 @@ export const AddCardModal: React.FC<AddCardModalProps> = ({ isOpen, onClose }) =
                     onChange={(e) => setRarityCode(e.target.value)}
                     className="w-full bg-pokedex-darker border border-slate-800 rounded-xl p-2 text-white focus:outline-none focus:border-pokedex-blue text-xs"
                   >
-                    <option value="C">Common (C)</option>
-                    <option value="U">Uncommon (U)</option>
-                    <option value="R">Rare (R)</option>
-                    <option value="RH">Rare Holo (RH)</option>
-                    <option value="RU">Ultra Rare (RU/GX)</option>
-                    <option value="RD">Double Rare (RD/ex)</option>
-                    <option value="IR">Illustration Rare (IR)</option>
-                    <option value="S">Secret Rare (S)</option>
+                    <option value="C">{t('addCard.rarityCommon')}</option>
+                    <option value="U">{t('addCard.rarityUncommon')}</option>
+                    <option value="R">{t('addCard.rarityRare')}</option>
+                    <option value="RH">{t('addCard.rarityRareHolo')}</option>
+                    <option value="RU">{t('addCard.rarityUltraRare')}</option>
+                    <option value="RD">{t('addCard.rarityDoubleRare')}</option>
+                    <option value="IR">{t('addCard.rarityIllustrationRare')}</option>
+                    <option value="S">{t('addCard.raritySecretRare')}</option>
                   </select>
                 </div>
 
@@ -463,7 +463,7 @@ export const AddCardModal: React.FC<AddCardModalProps> = ({ isOpen, onClose }) =
                           type="text"
                           value={newDeckName}
                           onChange={(e) => setNewDeckName(e.target.value)}
-                          placeholder="Ex: Malamar Necrozma Turbo"
+                          placeholder={t('addCard.newDeckNamePlaceholder')}
                           className="w-full bg-black/60 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-pokedex-blue font-sans"
                         />
                       </div>
@@ -474,9 +474,9 @@ export const AddCardModal: React.FC<AddCardModalProps> = ({ isOpen, onClose }) =
                           onChange={(e) => setNewDeckFormat(e.target.value as any)}
                           className="w-full bg-black/60 border border-slate-700 rounded-xl px-2.5 py-2 text-xs text-white focus:outline-none focus:border-pokedex-blue font-sans"
                         >
-                          <option value="Standard">Standard</option>
-                          <option value="Expanded">Expanded</option>
-                          <option value="Casual">Casual</option>
+                          <option value="Standard">{t('createDeck.formatStandard')}</option>
+                          <option value="Expanded">{t('createDeck.formatExpanded')}</option>
+                          <option value="Casual">{t('createDeck.formatCasual')}</option>
                         </select>
                       </div>
                     </div>

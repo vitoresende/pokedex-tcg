@@ -22,7 +22,7 @@ const COLOR_PRESETS = [
 
 export const EditDeckModal: React.FC<EditDeckModalProps> = ({ deck, isOpen, onClose }) => {
   const { updateDeck } = useCollection();
-  const { t } = useLanguage();
+  const { t, localizePlaybookTitle, localizePlaybookStep, localizePrizeTradeTip, localizeDeckText } = useLanguage();
 
   const [activeTab, setActiveTab] = useState<'playbook' | 'general'>('playbook');
   const [name, setName] = useState('');
@@ -35,13 +35,13 @@ export const EditDeckModal: React.FC<EditDeckModalProps> = ({ deck, isOpen, onCl
   const [prizeTradeTip, setPrizeTradeTip] = useState('');
 
   // Strategy Guide state
-  const [openingTitle, setOpeningTitle] = useState('1. Opening Plan');
+  const [openingTitle, setOpeningTitle] = useState(() => t('editDeck.defaultOpeningTitle'));
   const [openingSteps, setOpeningSteps] = useState<string[]>([]);
 
-  const [midgameTitle, setMidgameTitle] = useState('2. Midgame Plan');
+  const [midgameTitle, setMidgameTitle] = useState(() => t('editDeck.defaultMidgameTitle'));
   const [midgameSteps, setMidgameSteps] = useState<string[]>([]);
 
-  const [lategameTitle, setLategameTitle] = useState('3. Endgame Plan');
+  const [lategameTitle, setLategameTitle] = useState(() => t('editDeck.defaultEndgameTitle'));
   const [lategameSteps, setLategameSteps] = useState<string[]>([]);
 
   // Sync state whenever active deck changes or modal opens
@@ -52,24 +52,24 @@ export const EditDeckModal: React.FC<EditDeckModalProps> = ({ deck, isOpen, onCl
       setArchetype(deck.archetype || '');
       setAccentColor(deck.accent_color || '#EF4444');
       setBadgeColor(deck.badge_color || 'from-red-600 to-red-950');
-      setSummary(deck.summary || '');
-      setWinCondition(deck.win_condition || '');
-      setPrizeTradeTip(deck.prize_trade_tip || '');
+      setSummary(localizeDeckText(deck.summary || ''));
+      setWinCondition(localizeDeckText(deck.win_condition || ''));
+      setPrizeTradeTip(localizePrizeTradeTip(deck.prize_trade_tip || ''));
 
       const guide = deck.strategy_guide || {
-        opening: { title: '1. Opening Plan', steps: [] },
-        midgame: { title: '2. Midgame Plan', steps: [] },
-        lategame: { title: '3. Endgame Plan', steps: [] }
+        opening: { title: t('editDeck.defaultOpeningTitle'), steps: [] },
+        midgame: { title: t('editDeck.defaultMidgameTitle'), steps: [] },
+        lategame: { title: t('editDeck.defaultEndgameTitle'), steps: [] }
       };
 
-      setOpeningTitle(guide.opening?.title || '1. Opening Plan');
-      setOpeningSteps(guide.opening?.steps && guide.opening.steps.length > 0 ? [...guide.opening.steps] : ['']);
+      setOpeningTitle(localizePlaybookTitle(guide.opening?.title || t('editDeck.defaultOpeningTitle')));
+      setOpeningSteps(guide.opening?.steps && guide.opening.steps.length > 0 ? guide.opening.steps.map(s => localizePlaybookStep(s)) : ['']);
 
-      setMidgameTitle(guide.midgame?.title || '2. Midgame Plan');
-      setMidgameSteps(guide.midgame?.steps && guide.midgame.steps.length > 0 ? [...guide.midgame.steps] : ['']);
+      setMidgameTitle(localizePlaybookTitle(guide.midgame?.title || t('editDeck.defaultMidgameTitle')));
+      setMidgameSteps(guide.midgame?.steps && guide.midgame.steps.length > 0 ? guide.midgame.steps.map(s => localizePlaybookStep(s)) : ['']);
 
-      setLategameTitle(guide.lategame?.title || '3. Endgame Plan');
-      setLategameSteps(guide.lategame?.steps && guide.lategame.steps.length > 0 ? [...guide.lategame.steps] : ['']);
+      setLategameTitle(localizePlaybookTitle(guide.lategame?.title || t('editDeck.defaultEndgameTitle')));
+      setLategameSteps(guide.lategame?.steps && guide.lategame.steps.length > 0 ? guide.lategame.steps.map(s => localizePlaybookStep(s)) : ['']);
     }
   }, [deck, isOpen]);
 
@@ -122,16 +122,16 @@ export const EditDeckModal: React.FC<EditDeckModalProps> = ({ deck, isOpen, onCl
 
     const updatedGuide: DeckStrategyGuide = {
       opening: {
-        title: openingTitle.trim() || '1. Opening Plan',
-        steps: cleanOpening.length > 0 ? cleanOpening : ['Setup your Basic Pokémon and bench engine.']
+        title: openingTitle.trim() || t('editDeck.defaultOpeningTitle'),
+        steps: cleanOpening.length > 0 ? cleanOpening : [t('editDeck.defaultOpeningTitle')]
       },
       midgame: {
-        title: midgameTitle.trim() || '2. Midgame Plan',
-        steps: cleanMidgame.length > 0 ? cleanMidgame : ['Power up attackers and trade prizes efficiently.']
+        title: midgameTitle.trim() || t('editDeck.defaultMidgameTitle'),
+        steps: cleanMidgame.length > 0 ? cleanMidgame : [t('editDeck.defaultMidgameTitle')]
       },
       lategame: {
-        title: lategameTitle.trim() || '3. Endgame Plan',
-        steps: cleanLategame.length > 0 ? cleanLategame : ['Close out remaining Prize Cards.']
+        title: lategameTitle.trim() || t('editDeck.defaultEndgameTitle'),
+        steps: cleanLategame.length > 0 ? cleanLategame : [t('editDeck.defaultEndgameTitle')]
       }
     };
 
@@ -385,7 +385,7 @@ export const EditDeckModal: React.FC<EditDeckModalProps> = ({ deck, isOpen, onCl
                     required
                     value={name}
                     onChange={(e) => setName(e.target.value)}
-                    placeholder="Ex: Necrozma (Laser Focus)"
+                    placeholder={t('editDeck.namePlaceholder')}
                     className="w-full bg-pokedex-darker border border-slate-700 rounded-xl p-2.5 text-white focus:outline-none focus:border-pokedex-blue font-sans text-xs"
                   />
                 </div>
@@ -396,7 +396,7 @@ export const EditDeckModal: React.FC<EditDeckModalProps> = ({ deck, isOpen, onCl
                     type="text"
                     value={archetype}
                     onChange={(e) => setArchetype(e.target.value)}
-                    placeholder="Ex: Psychic Toolbox / Malamar Turbo"
+                    placeholder={t('editDeck.archetypePlaceholder')}
                     className="w-full bg-pokedex-darker border border-slate-700 rounded-xl p-2.5 text-white focus:outline-none focus:border-pokedex-blue font-sans text-xs"
                   />
                 </div>
@@ -410,9 +410,9 @@ export const EditDeckModal: React.FC<EditDeckModalProps> = ({ deck, isOpen, onCl
                     onChange={(e) => setFormat(e.target.value as any)}
                     className="w-full bg-pokedex-darker border border-slate-700 rounded-xl p-2.5 text-white focus:outline-none focus:border-pokedex-blue font-sans text-xs"
                   >
-                    <option value="Standard">Standard</option>
-                    <option value="Expanded">Expanded</option>
-                    <option value="Casual">Casual</option>
+                    <option value="Standard">{t('editDeck.formatStandard')}</option>
+                    <option value="Expanded">{t('editDeck.formatExpanded')}</option>
+                    <option value="Casual">{t('editDeck.formatCasual')}</option>
                   </select>
                 </div>
 

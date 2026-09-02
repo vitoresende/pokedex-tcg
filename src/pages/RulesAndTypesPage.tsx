@@ -13,7 +13,7 @@ import { soundEffects } from '../services/audio';
 export const RulesAndTypesPage: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'types' | 'formats' | 'trainers' | 'conditions'>('types');
   const [selectedType, setSelectedType] = useState<CardTypeInfo>(typesData[0]);
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
 
   const handleSelectTab = (tab: 'types' | 'formats' | 'trainers' | 'conditions') => {
     soundEffects.playClick();
@@ -108,7 +108,7 @@ export const RulesAndTypesPage: React.FC = () => {
                     className="text-[11px] font-mono font-bold tracking-tight"
                     style={{ color: isSelected ? typeItem.color : '#E2E8F0' }}
                   >
-                    {typeItem.name}
+                    {t(`filters.types.${typeItem.id}`) !== `filters.types.${typeItem.id}` ? t(`filters.types.${typeItem.id}`) : typeItem.name}
                   </span>
                 </button>
               );
@@ -126,8 +126,12 @@ export const RulesAndTypesPage: React.FC = () => {
               <div className="flex items-center space-x-3.5">
                 <PokemonTypeIcon type={selectedType.id} size="xl" className="shadow-lg" />
                 <div>
-                  <h3 className="text-2xl font-black font-display text-white">{selectedType.name}</h3>
-                  <span className="text-xs font-mono text-slate-400">Official Pokémon TCG Energy & Elemental Type</span>
+                  <h3 className="text-2xl font-black font-display text-white">
+                    {t(`filters.types.${selectedType.id}`) !== `filters.types.${selectedType.id}` ? t(`filters.types.${selectedType.id}`) : selectedType.name}
+                  </h3>
+                  <span className="text-xs font-mono text-slate-400">
+                    {language === 'pt' ? 'Tipo Elemental e Energia Oficial do Pokémon TCG' : 'Official Pokémon TCG Energy & Elemental Type'}
+                  </span>
                 </div>
               </div>
 

@@ -154,9 +154,9 @@ export const CreateDeckModal: React.FC<CreateDeckModalProps> = ({ isOpen, onClos
                 onChange={(e) => setFormat(e.target.value as any)}
                 className="w-full bg-pokedex-darker border border-slate-800 rounded-xl p-2.5 text-white focus:outline-none focus:border-pokedex-blue text-xs"
               >
-                <option value="Standard">Standard</option>
-                <option value="Expanded">Expanded</option>
-                <option value="Casual">Casual</option>
+                <option value="Standard">{t('createDeck.formatStandard')}</option>
+                <option value="Expanded">{t('createDeck.formatExpanded')}</option>
+                <option value="Casual">{t('createDeck.formatCasual')}</option>
               </select>
             </div>
           </div>

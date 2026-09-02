@@ -157,7 +157,7 @@ export const CardDetailModal: React.FC<CardDetailModalProps> = ({ card, onClose,
                     borderColor: `${card.color_bg}66`
                   }}
                 >
-                  {card.color_name} • {card.card_category}
+                  {t(`filters.types.${card.color_name.toLowerCase()}`) !== `filters.types.${card.color_name.toLowerCase()}` ? t(`filters.types.${card.color_name.toLowerCase()}`) : card.color_name} • {card.card_category === 'Trainer' ? (language === 'pt' ? 'Treinador' : 'Trainer') : card.card_category === 'Energy' ? (language === 'pt' ? 'Energia' : 'Energy') : 'Pokémon'}
                 </span>
                 {card.is_foil && (
                   <span className="bg-yellow-500/20 text-yellow-300 border border-yellow-400/40 text-[10px] px-2 py-0.5 rounded-full flex items-center gap-1">
@@ -195,7 +195,9 @@ export const CardDetailModal: React.FC<CardDetailModalProps> = ({ card, onClose,
               </div>
               <div className="flex justify-between py-1">
                 <span className="text-slate-400">{t('cardDetail.language')}</span>
-                <span className="text-slate-200">{card.language}</span>
+                <span className="text-slate-200">
+                  {card.language === 'Português' || card.language === 'Portuguese' ? (language === 'pt' ? 'Português' : 'Portuguese') : (language === 'pt' ? 'Inglês' : 'English')}
+                </span>
               </div>
             </div>
 

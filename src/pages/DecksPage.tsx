@@ -13,7 +13,11 @@ import { EditDeckModal } from '../components/EditDeckModal';
 
 export const DecksPage: React.FC = () => {
   const { decks, cards, selectedCard, setSelectedCard, deleteDeck, removeCardFromDeck } = useCollection();
-  const { t, language } = useLanguage();
+  const { 
+    t, language, getCardName, 
+    localizePlaybookTitle, localizePlaybookStep, 
+    localizePrizeTradeTip, localizeDeckText, localizeFormat 
+  } = useLanguage();
   const [activeDeckId, setActiveDeckId] = useState<string>(decks[0]?.id || 'deck-1');
   const [copied, setCopied] = useState<boolean>(false);
   const [activeGuideTab, setActiveGuideTab] = useState<'opening' | 'midgame' | 'lategame'>('opening');
@@ -158,14 +162,14 @@ export const DecksPage: React.FC = () => {
                 {t('decks.cardsCount', { count: currentDeck.stats.total || 60 })}
               </span>
               <span className="bg-slate-800 text-yellow-300 text-[10px] font-bold px-2.5 py-0.5 rounded-full font-mono">
-                {currentDeck.format}
+                {localizeFormat(currentDeck.format)}
               </span>
               <span className="bg-slate-800 text-slate-300 text-[10px] px-2.5 py-0.5 rounded-full font-mono">
                 {currentDeck.archetype}
               </span>
             </div>
             <h2 className="text-xl sm:text-2xl font-black font-display text-white">{currentDeck.name}</h2>
-            <p className="text-slate-300 text-xs mt-1 max-w-2xl">{currentDeck.summary}</p>
+            <p className="text-slate-300 text-xs mt-1 max-w-2xl">{localizeDeckText(currentDeck.summary)}</p>
           </div>
 
           {/* Action Buttons: Copy, Edit & Delete */}
@@ -219,7 +223,7 @@ export const DecksPage: React.FC = () => {
           {/* Energy Status */}
           <div className="bg-pokedex-darker p-3 rounded-2xl border border-slate-800 space-y-1">
             <span className="text-slate-400 block text-[10px] uppercase">{t('decks.energyBreakdown')}</span>
-            <div className="text-slate-200 font-semibold text-xs">{currentDeck.energy_breakdown.owned}</div>
+            <div className="text-slate-200 font-semibold text-xs">{localizeDeckText(currentDeck.energy_breakdown.owned)}</div>
             {currentDeck.energy_breakdown.missing_count > 0 ? (
               <div className="flex items-center space-x-1.5 text-amber-300 font-bold text-[11px] pt-1">
                 <AlertCircle className="w-3.5 h-3.5" />
@@ -236,7 +240,7 @@ export const DecksPage: React.FC = () => {
               <Trophy className="w-3 h-3 text-yellow-400" /> {t('decks.winCondition')}
             </span>
             <p className="text-slate-300 text-[11px] font-sans line-clamp-2">
-              {currentDeck.win_condition}
+              {localizeDeckText(currentDeck.win_condition)}
             </p>
           </div>
         </div>
@@ -302,13 +306,13 @@ export const DecksPage: React.FC = () => {
         {/* Tab Content */}
         <div className="p-4 bg-pokedex-darker rounded-2xl border border-slate-800 space-y-2.5">
           <h4 className="font-bold text-yellow-300 text-xs font-mono uppercase">
-            {currentDeck.strategy_guide[activeGuideTab].title}
+            {localizePlaybookTitle(currentDeck.strategy_guide[activeGuideTab].title)}
           </h4>
           <ul className="space-y-2 text-xs text-slate-300 leading-relaxed font-sans">
             {currentDeck.strategy_guide[activeGuideTab].steps.map((step, sIdx) => (
               <li key={sIdx} className="flex items-start space-x-2">
                 <span className="w-1.5 h-1.5 rounded-full bg-pokedex-blue mt-1.5 shrink-0"></span>
-                <span>{step}</span>
+                <span>{localizePlaybookStep(step)}</span>
               </li>
             ))}
           </ul>
@@ -319,7 +323,7 @@ export const DecksPage: React.FC = () => {
           <Sparkles className="w-4 h-4 text-purple-300 shrink-0 mt-0.5" />
           <div>
             <span className="font-bold text-purple-300">{t('decks.prizeTradeTip')} </span>
-            <span className="text-purple-200">{currentDeck.prize_trade_tip}</span>
+            <span className="text-purple-200">{localizePrizeTradeTip(currentDeck.prize_trade_tip)}</span>
           </div>
         </div>
       </div>
@@ -338,27 +342,31 @@ export const DecksPage: React.FC = () => {
               <span className="font-bold text-xs text-blue-400 font-mono uppercase">{t('decks.pokemonSection', { count: currentDeck.stats.pokemon })}</span>
             </div>
             <div className="space-y-1.5">
-              {currentDeck.cards.filter(c => c.section === 'pokemon').map((c, i) => (
-                <div
-                  key={i}
-                  className="flex items-center justify-between p-2 rounded-xl bg-pokedex-darker hover:bg-slate-800/90 border border-slate-800 transition-colors text-xs"
-                >
-                  <div 
-                    onClick={() => handleCardClick(c)}
-                    className="flex items-center space-x-2 truncate cursor-pointer flex-1"
+              {currentDeck.cards.filter(c => c.section === 'pokemon').map((c, i) => {
+                const matchedCard = cards.find(card => card.name_en.toLowerCase() === c.name.toLowerCase() || card.name_pt.toLowerCase() === c.name.toLowerCase());
+                const displayName = matchedCard ? getCardName(matchedCard) : c.name;
+                return (
+                  <div
+                    key={i}
+                    className="flex items-center justify-between p-2 rounded-xl bg-pokedex-darker hover:bg-slate-800/90 border border-slate-800 transition-colors text-xs"
                   >
-                    <span className="font-mono font-bold text-yellow-300">{c.count}x</span>
-                    <span className="text-slate-100 font-semibold truncate hover:text-cyan-300">{c.name}</span>
+                    <div 
+                      onClick={() => handleCardClick(c)}
+                      className="flex items-center space-x-2 truncate cursor-pointer flex-1"
+                    >
+                      <span className="font-mono font-bold text-yellow-300">{c.count}x</span>
+                      <span className="text-slate-100 font-semibold truncate hover:text-cyan-300">{displayName}</span>
+                    </div>
+                    <button
+                      onClick={() => removeCardFromDeck(currentDeck.id, c.name)}
+                      title={t('decks.removeFromDeck')}
+                      className="text-slate-500 hover:text-red-400 p-1"
+                    >
+                      <Trash2 className="w-3 h-3" />
+                    </button>
                   </div>
-                  <button
-                    onClick={() => removeCardFromDeck(currentDeck.id, c.name)}
-                    title={t('decks.removeFromDeck')}
-                    className="text-slate-500 hover:text-red-400 p-1"
-                  >
-                    <Trash2 className="w-3 h-3" />
-                  </button>
-                </div>
-              ))}
+                );
+              })}
             </div>
           </div>
 
@@ -368,27 +376,31 @@ export const DecksPage: React.FC = () => {
               <span className="font-bold text-xs text-teal-400 font-mono uppercase">{t('decks.trainersSection', { count: currentDeck.stats.trainers })}</span>
             </div>
             <div className="space-y-1.5">
-              {currentDeck.cards.filter(c => c.section === 'trainers').map((c, i) => (
-                <div
-                  key={i}
-                  className="flex items-center justify-between p-2 rounded-xl bg-pokedex-darker hover:bg-slate-800/90 border border-slate-800 transition-colors text-xs"
-                >
-                  <div 
-                    onClick={() => handleCardClick(c)}
-                    className="flex items-center space-x-2 truncate cursor-pointer flex-1"
+              {currentDeck.cards.filter(c => c.section === 'trainers').map((c, i) => {
+                const matchedCard = cards.find(card => card.name_en.toLowerCase() === c.name.toLowerCase() || card.name_pt.toLowerCase() === c.name.toLowerCase());
+                const displayName = matchedCard ? getCardName(matchedCard) : c.name;
+                return (
+                  <div
+                    key={i}
+                    className="flex items-center justify-between p-2 rounded-xl bg-pokedex-darker hover:bg-slate-800/90 border border-slate-800 transition-colors text-xs"
                   >
-                    <span className="font-mono font-bold text-yellow-300">{c.count}x</span>
-                    <span className="text-slate-100 font-semibold truncate hover:text-cyan-300">{c.name}</span>
+                    <div 
+                      onClick={() => handleCardClick(c)}
+                      className="flex items-center space-x-2 truncate cursor-pointer flex-1"
+                    >
+                      <span className="font-mono font-bold text-yellow-300">{c.count}x</span>
+                      <span className="text-slate-100 font-semibold truncate hover:text-cyan-300">{displayName}</span>
+                    </div>
+                    <button
+                      onClick={() => removeCardFromDeck(currentDeck.id, c.name)}
+                      title={t('decks.removeFromDeck')}
+                      className="text-slate-500 hover:text-red-400 p-1"
+                    >
+                      <Trash2 className="w-3 h-3" />
+                    </button>
                   </div>
-                  <button
-                    onClick={() => removeCardFromDeck(currentDeck.id, c.name)}
-                    title={t('decks.removeFromDeck')}
-                    className="text-slate-500 hover:text-red-400 p-1"
-                  >
-                    <Trash2 className="w-3 h-3" />
-                  </button>
-                </div>
-              ))}
+                );
+              })}
             </div>
           </div>
 
@@ -398,27 +410,31 @@ export const DecksPage: React.FC = () => {
               <span className="font-bold text-xs text-amber-400 font-mono uppercase">{t('decks.energySection', { count: currentDeck.stats.energies })}</span>
             </div>
             <div className="space-y-1.5">
-              {currentDeck.cards.filter(c => c.section === 'energies').map((c, i) => (
-                <div
-                  key={i}
-                  className="flex items-center justify-between p-2 rounded-xl bg-pokedex-darker hover:bg-slate-800/90 border border-slate-800 transition-colors text-xs"
-                >
-                  <div 
-                    onClick={() => handleCardClick(c)}
-                    className="flex items-center space-x-2 truncate cursor-pointer flex-1"
+              {currentDeck.cards.filter(c => c.section === 'energies').map((c, i) => {
+                const matchedCard = cards.find(card => card.name_en.toLowerCase() === c.name.toLowerCase() || card.name_pt.toLowerCase() === c.name.toLowerCase());
+                const displayName = matchedCard ? getCardName(matchedCard) : c.name;
+                return (
+                  <div
+                    key={i}
+                    className="flex items-center justify-between p-2 rounded-xl bg-pokedex-darker hover:bg-slate-800/90 border border-slate-800 transition-colors text-xs"
                   >
-                    <span className="font-mono font-bold text-yellow-300">{c.count}x</span>
-                    <span className="text-slate-100 font-semibold truncate hover:text-cyan-300">{c.name}</span>
+                    <div 
+                      onClick={() => handleCardClick(c)}
+                      className="flex items-center space-x-2 truncate cursor-pointer flex-1"
+                    >
+                      <span className="font-mono font-bold text-yellow-300">{c.count}x</span>
+                      <span className="text-slate-100 font-semibold truncate hover:text-cyan-300">{displayName}</span>
+                    </div>
+                    <button
+                      onClick={() => removeCardFromDeck(currentDeck.id, c.name)}
+                      title={t('decks.removeFromDeck')}
+                      className="text-slate-500 hover:text-red-400 p-1"
+                    >
+                      <Trash2 className="w-3 h-3" />
+                    </button>
                   </div>
-                  <button
-                    onClick={() => removeCardFromDeck(currentDeck.id, c.name)}
-                    title={t('decks.removeFromDeck')}
-                    className="text-slate-500 hover:text-red-400 p-1"
-                  >
-                    <Trash2 className="w-3 h-3" />
-                  </button>
-                </div>
-              ))}
+                );
+              })}
             </div>
           </div>
         </div>
