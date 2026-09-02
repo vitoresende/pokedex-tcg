@@ -144,6 +144,7 @@ export const isKnownEnergy = (namePt: string, nameEn: string, setCode: string, c
     color === 'E' ||
     sCode === 'SVE' ||
     sCode === 'BAS' ||
+    sCode === 'SV-BE' ||
     cNum === 'energia' ||
     nPt.includes('energia') ||
     nEn.includes('energy')
@@ -223,7 +224,9 @@ const normalizeCards = (rawCards: Card[]): Card[] => {
     const isBasicEnergy = 
       c.set_code === 'BAS' || 
       c.set_code === 'SVE' ||
+      c.set_code === 'SV-BE' ||
       c.card_number === 'Energia' ||
+      (c.name_pt.toLowerCase().includes('energia') && Boolean(BASIC_ENERGY_CONFIG[c.color_code])) ||
       c.name_pt.toLowerCase().includes('básica') ||
       c.name_en.toLowerCase().includes('basic energy');
 
@@ -579,7 +582,9 @@ export const CollectionProvider: React.FC<{ children: React.ReactNode }> = ({ ch
       const isBasicEnergy = 
         setCode === 'BAS' || 
         setCode === 'SVE' || 
+        setCode === 'SV-BE' || 
         cardNum.toLowerCase() === 'energia' || 
+        (cardPt.toLowerCase().includes('energia') && Boolean(BASIC_ENERGY_CONFIG[color])) ||
         (cardPt.toLowerCase().includes('energia') && cardPt.toLowerCase().includes('básica')) ||
         (color === 'E' && Boolean(BASIC_ENERGY_CONFIG[color]));
       

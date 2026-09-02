@@ -143,12 +143,44 @@ def download_image(card):
     clean_num = card['card_number'].lstrip('0') or '1'
     num_3d = str(clean_num).zfill(3)
 
+    LIMITLESS_MAP = {
+        'SV1': 'SVI', 'SV01': 'SVI',
+        'SV2': 'PAL', 'SV02': 'PAL',
+        'SV3': 'OBF', 'SV03': 'OBF',
+        '151': 'MEW', 'SV3.5': 'MEW',
+        'SV4': 'PAR', 'SV04': 'PAR',
+        'SV4.5': 'PAF',
+        'SV5': 'TEF', 'SV05': 'TEF',
+        'SV6': 'TWM', 'SV06': 'TWM',
+        'SV6.5': 'SFA',
+        'SV7': 'SCR', 'SV07': 'SCR',
+        'SV8': 'SSP', 'SV08': 'SSP',
+        'SV8.5': 'PRE',
+        'SWSH1': 'SSH', 'SWSH01': 'SSH',
+        'SWSH2': 'RCL', 'SWSH02': 'RCL',
+        'SWSH3': 'DAA', 'SWSH03': 'DAA',
+        'SWSH4': 'VIV', 'SWSH04': 'VIV',
+        'SWSH4.5': 'SHF',
+        'SWSH5': 'BST', 'SWSH05': 'BST',
+        'SWSH6': 'CRE', 'SWSH06': 'CRE',
+        'SWSH7': 'EVS', 'SWSH07': 'EVS',
+        'SWSH8': 'FST', 'SWSH08': 'FST',
+        'SWSH9': 'BRS', 'SWSH09': 'BRS',
+        'SM1': 'SUM', 'SM2': 'GRI', 'SM3': 'BUS', 'SM4': 'CIN',
+        'SM5': 'UPR', 'SM6': 'FLI', 'SM7': 'CES', 'SM8': 'LOT',
+        'SM9': 'TEU', 'SM10': 'UNB', 'SM11': 'UNM', 'SM12': 'CEC',
+    }
+    raw_set = card['set_code'].upper()
+    limitless_set = LIMITLESS_MAP.get(raw_set, raw_set)
+
     urls = [
         card['image_url'],
         f"https://images.pokemontcg.io/{card['set_code'].lower()}/{clean_num}.png",
-        f"https://limitlesstcg.nyc3.digitaloceanspaces.com/tpci/{card['set_code']}/{card['set_code']}_{num_3d}_R_PT.png",
-        f"https://limitlesstcg.nyc3.digitaloceanspaces.com/tpci/{card['set_code']}/{card['set_code']}_{num_3d}_R_EN.png",
-        f"https://assets.pokemon.com/assets/cms2/img/cards/web/{card['set_code']}/{card['set_code']}_EN_{clean_num}.png"
+        f"https://limitlesstcg.nyc3.cdn.digitaloceanspaces.com/tpci/{limitless_set}/{limitless_set}_{num_3d}_R_PT.png",
+        f"https://limitlesstcg.nyc3.cdn.digitaloceanspaces.com/tpci/{limitless_set}/{limitless_set}_{num_3d}_R_EN.png",
+        f"https://limitlesstcg.nyc3.cdn.digitaloceanspaces.com/tpci/{limitless_set}/{limitless_set}_{clean_num}_R_PT.png",
+        f"https://limitlesstcg.nyc3.cdn.digitaloceanspaces.com/tpci/{limitless_set}/{limitless_set}_{clean_num}_R_EN.png",
+        f"https://assets.pokemon.com/assets/cms2/img/cards/web/{limitless_set}/{limitless_set}_EN_{clean_num}.png"
     ]
 
     for url in urls:

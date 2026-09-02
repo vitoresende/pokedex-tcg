@@ -55,6 +55,8 @@ export const HoloCard: React.FC<HoloCardProps> = ({ card, className = '', isDeta
   const getImageSource = () => {
     const storageBucket = import.meta.env.VITE_FIREBASE_STORAGE_BUCKET || 'pokedex-tcg-782d5.firebasestorage.app';
     const cleanNum = card.card_number ? card.card_number.replace(/\D/g, '') || '1' : '1';
+    const unpaddedNum = cleanNum.replace(/^0+/, '') || '1';
+    const paddedNum = cleanNum.padStart(3, '0');
     const cleanSet = (card.set_code || 'set').toLowerCase();
     
     // Mapeamento específico e inequívoco para cada tipo de Carta de Energia Básica
@@ -73,7 +75,9 @@ export const HoloCard: React.FC<HoloCardProps> = ({ card, className = '', isDeta
     const isBasicEnergy = 
       card.set_code === 'BAS' || 
       card.set_code === 'SVE' ||
+      card.set_code === 'SV-BE' ||
       card.card_number === 'Energia' ||
+      (card.name_pt.toLowerCase().includes('energia') && Boolean(BASIC_ENERGY_FILES[card.color_code])) ||
       card.name_pt.toLowerCase().includes('básica') ||
       card.name_en.toLowerCase().includes('basic energy');
 
@@ -87,18 +91,21 @@ export const HoloCard: React.FC<HoloCardProps> = ({ card, className = '', isDeta
 
     const sources: string[] = [];
 
-    // 1. Firebase Storage Bucket padrão do projeto (com nome de arquivo principal)
+    // 1. Firebase Storage Bucket padrão do projeto (com nome de arquivo principal e variações com/sem zero)
     if (storageBucket && !storageBucket.includes('demo') && !storageBucket.includes('Example')) {
       sources.push(`https://firebasestorage.googleapis.com/v0/b/${storageBucket}/o/cards%2F${encodeURIComponent(cardFileName)}?alt=media`);
       
-      // Fallback sem leading zero para o storage (ex: cri_84.png vs cri_084.png)
-      const altFileName = `${cleanSet}_${cleanNum}.png`;
+      const altFileName = `${cleanSet}_${unpaddedNum}.png`;
       if (altFileName !== cardFileName) {
         sources.push(`https://firebasestorage.googleapis.com/v0/b/${storageBucket}/o/cards%2F${encodeURIComponent(altFileName)}?alt=media`);
       }
+      const paddedFileName = `${cleanSet}_${paddedNum}.png`;
+      if (paddedFileName !== cardFileName && paddedFileName !== altFileName) {
+        sources.push(`https://firebasestorage.googleapis.com/v0/b/${storageBucket}/o/cards%2F${encodeURIComponent(paddedFileName)}?alt=media`);
+      }
     }
 
-    // 2. Direct Cloud Storage URL (se a carta já tiver URL do Firebase Storage salva)
+    // 2. Direct Cloud Storage URL
     if (card.image_url && card.image_url.includes('firebasestorage.googleapis.com')) {
       sources.push(card.image_url);
     }
@@ -109,36 +116,127 @@ export const HoloCard: React.FC<HoloCardProps> = ({ card, className = '', isDeta
     }
 
     // 4. Imagem customizada / URL direta
-    if (card.image_url && !sources.includes(card.image_url)) {
+    if (card.image_url) {
       sources.push(card.image_url);
     }
 
     // 5. Fallback CDNs complementares (Pokemontcg.io e Limitless TCG)
     if (card.set_code) {
       const SET_CODE_POKEMONTCG_IO_MAP: Record<string, string> = {
-        'sum': 'sm1',
-        'gri': 'sm2',
-        'bus': 'sm3',
-        'cin': 'sm4',
-        'upr': 'sm5',
-        'fli': 'sm6',
-        'ces': 'sm7',
-        'lot': 'sm8',
-        'teu': 'sm9',
-        'unb': 'sm10',
-        'unm': 'sm11',
-        'cec': 'sm12',
-        'hif': 'sma',
+        // Scarlet & Violet
+        'svi': 'sv1', 'sv1': 'sv1',
+        'pal': 'sv2', 'sv2': 'sv2',
+        'obf': 'sv3', 'sv3': 'sv3',
+        'mew': 'sv3pt5', '151': 'sv3pt5',
+        'par': 'sv4', 'sv4': 'sv4',
+        'paf': 'sv4pt5',
+        'tef': 'sv5', 'sv5': 'sv5',
+        'twm': 'sv6', 'sv6': 'sv6',
+        'sfa': 'sv6pt5',
+        'scr': 'sv7', 'sv7': 'sv7',
+        'ssp': 'sv8', 'sv8': 'sv8',
+        'pre': 'sv8pt5',
+        'dri': 'dri',
+        'jtg': 'jtg',
+        'svp': 'svp',
+        // Sword & Shield
+        'ssh': 'swsh1', 'swsh1': 'swsh1',
+        'rcl': 'swsh2', 'swsh2': 'swsh2',
+        'daa': 'swsh3', 'swsh3': 'swsh3',
+        'cpa': 'swsh35',
+        'viv': 'swsh4', 'swsh4': 'swsh4',
+        'shf': 'swsh45',
+        'bst': 'swsh5', 'swsh5': 'swsh5',
+        'cre': 'swsh6', 'swsh6': 'swsh6',
+        'evs': 'swsh7', 'swsh7': 'swsh7',
+        'cel': 'cel25',
+        'fst': 'swsh8', 'swsh8': 'swsh8',
+        'brs': 'swsh9', 'swsh9': 'swsh9',
+        'asr': 'swsh10', 'swsh10': 'swsh10',
+        'pgo': 'pgo',
+        'lor': 'swsh11', 'swsh11': 'swsh11',
+        'sit': 'swsh12', 'swsh12': 'swsh12',
+        'crz': 'swsh12pt5',
+        'swsh': 'swshp', 'swshp': 'swshp',
+        // Sun & Moon
+        'sum': 'sm1', 'sm1': 'sm1',
+        'gri': 'sm2', 'sm2': 'sm2',
+        'bus': 'sm3', 'sm3': 'sm3',
+        'cin': 'sm4', 'sm4': 'sm4',
+        'upr': 'sm5', 'sm5': 'sm5',
+        'fli': 'sm6', 'sm6': 'sm6',
+        'ces': 'sm7', 'sm7': 'sm7',
+        'drm': 'sm75',
+        'lot': 'sm8', 'sm8': 'sm8',
+        'teu': 'sm9', 'sm9': 'sm9',
+        'unb': 'sm10', 'sm10': 'sm10',
+        'unm': 'sm11', 'sm11': 'sm11',
+        'hif': 'sma', 'sma': 'sma',
+        'cec': 'sm12', 'sm12': 'sm12',
+        'smp': 'smp',
       };
       const pokemontcgSet = SET_CODE_POKEMONTCG_IO_MAP[cleanSet] || cleanSet;
-      sources.push(`https://images.pokemontcg.io/${pokemontcgSet}/${cleanNum}_hires.png`);
-      sources.push(`https://images.pokemontcg.io/${pokemontcgSet}/${cleanNum}.png`);
-      sources.push(`https://limitlesstcg.nyc3.cdn.digitaloceanspaces.com/tpci/${card.set_code.toUpperCase()}/${card.set_code.toUpperCase()}_${cleanNum.padStart(3, '0')}_R_PT.png`);
-      sources.push(`https://limitlesstcg.nyc3.cdn.digitaloceanspaces.com/tpci/${card.set_code.toUpperCase()}/${card.set_code.toUpperCase()}_${cleanNum.padStart(3, '0')}_R_EN.png`);
+      sources.push(`https://images.pokemontcg.io/${pokemontcgSet}/${unpaddedNum}_hires.png`);
+      sources.push(`https://images.pokemontcg.io/${pokemontcgSet}/${unpaddedNum}.png`);
+
+      const SET_CODE_LIMITLESS_MAP: Record<string, string> = {
+        // Scarlet & Violet aliases
+        'SV1': 'SVI', 'SV01': 'SVI',
+        'SV2': 'PAL', 'SV02': 'PAL',
+        'SV3': 'OBF', 'SV03': 'OBF',
+        '151': 'MEW', 'SV3.5': 'MEW',
+        'SV4': 'PAR', 'SV04': 'PAR',
+        'SV4.5': 'PAF',
+        'SV5': 'TEF', 'SV05': 'TEF',
+        'SV6': 'TWM', 'SV06': 'TWM',
+        'SV6.5': 'SFA',
+        'SV7': 'SCR', 'SV07': 'SCR',
+        'SV8': 'SSP', 'SV08': 'SSP',
+        'SV8.5': 'PRE',
+        // Sword & Shield aliases
+        'SWSH1': 'SSH', 'SWSH01': 'SSH',
+        'SWSH2': 'RCL', 'SWSH02': 'RCL',
+        'SWSH3': 'DAA', 'SWSH03': 'DAA',
+        'SWSH3.5': 'CPA',
+        'SWSH4': 'VIV', 'SWSH04': 'VIV',
+        'SWSH4.5': 'SHF',
+        'SWSH5': 'BST', 'SWSH05': 'BST',
+        'SWSH6': 'CRE', 'SWSH06': 'CRE',
+        'SWSH7': 'EVS', 'SWSH07': 'EVS',
+        'SWSH8': 'FST', 'SWSH08': 'FST',
+        'SWSH9': 'BRS', 'SWSH09': 'BRS',
+        'SWSH10': 'ASR',
+        'SWSH11': 'LOR',
+        'SWSH12': 'SIT',
+        'SWSH12.5': 'CRZ',
+        // Sun & Moon aliases
+        'SM1': 'SUM', 'SM01': 'SUM',
+        'SM2': 'GRI', 'SM02': 'GRI',
+        'SM3': 'BUS', 'SM03': 'BUS',
+        'SM4': 'CIN', 'SM04': 'CIN',
+        'SM5': 'UPR', 'SM05': 'UPR',
+        'SM6': 'FLI', 'SM06': 'FLI',
+        'SM7': 'CES', 'SM07': 'CES',
+        'SM7.5': 'DRM',
+        'SM8': 'LOT', 'SM08': 'LOT',
+        'SM9': 'TEU', 'SM09': 'TEU',
+        'SM10': 'UNB',
+        'SM11': 'UNM',
+        'SM11.5': 'HIF', 'SMA': 'HIF',
+        'SM12': 'CEC',
+      };
+      const rawSet = (card.set_code || '').toUpperCase();
+      const limitlessSet = SET_CODE_LIMITLESS_MAP[rawSet] || rawSet;
+      sources.push(`https://limitlesstcg.nyc3.cdn.digitaloceanspaces.com/tpci/${limitlessSet}/${limitlessSet}_${paddedNum}_R_PT.png`);
+      sources.push(`https://limitlesstcg.nyc3.cdn.digitaloceanspaces.com/tpci/${limitlessSet}/${limitlessSet}_${paddedNum}_R_EN.png`);
+      sources.push(`https://limitlesstcg.nyc3.cdn.digitaloceanspaces.com/tpci/${limitlessSet}/${limitlessSet}_${unpaddedNum}_R_PT.png`);
+      sources.push(`https://limitlesstcg.nyc3.cdn.digitaloceanspaces.com/tpci/${limitlessSet}/${limitlessSet}_${unpaddedNum}_R_EN.png`);
     }
 
-    if (imageErrorLevel < sources.length) {
-      return sources[imageErrorLevel];
+    const uniqueSources = Array.from(new Set(sources.filter(Boolean)));
+
+    if (imageErrorLevel < uniqueSources.length) {
+      return uniqueSources[imageErrorLevel];
     }
     return null;
   };
@@ -166,6 +264,7 @@ export const HoloCard: React.FC<HoloCardProps> = ({ card, className = '', isDeta
         {/* Actual Image or CSS Fallback */}
         {currentSrc ? (
           <img
+            key={currentSrc}
             src={currentSrc}
             alt={`${card.name_pt} (${card.name_en || ''})`}
             loading="lazy"
