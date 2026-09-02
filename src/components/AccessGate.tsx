@@ -1,11 +1,13 @@
 import React from 'react';
 import { useAuth } from '../context/AuthContext';
-import { 
-  ShieldAlert, Lock, LogIn, LogOut, RefreshCw, AlertTriangle, X 
+import { useLanguage } from '../context/LanguageContext';
+import {
+  ShieldAlert, Lock, LogIn, LogOut, RefreshCw, AlertTriangle, X
 } from 'lucide-react';
 
 export const AccessGate: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { user, loading, isAllowed, authError, clearAuthError, loginWithGoogle, logout } = useAuth();
+  const { t } = useLanguage();
 
   // 1. Loading State: Pokédex Boot Loader
   if (loading) {
@@ -17,9 +19,9 @@ export const AccessGate: React.FC<{ children: React.ReactNode }> = ({ children }
           </div>
         </div>
         <h2 className="font-display font-black text-xl uppercase tracking-widest">
-          Booting Pokédex OS...
+          {t('accessGate.booting')}
         </h2>
-        <p className="text-xs text-slate-400 mt-2">Verifying trainer credentials</p>
+        <p className="text-xs text-slate-400 mt-2">{t('accessGate.verifying')}</p>
       </div>
     );
   }
@@ -42,10 +44,10 @@ export const AccessGate: React.FC<{ children: React.ReactNode }> = ({ children }
               </div>
               <div>
                 <h2 className="font-display font-black text-base uppercase tracking-wider text-white">
-                  Access Denied
+                  {t('accessGate.accessDenied')}
                 </h2>
                 <span className="font-mono text-[10px] text-yellow-300/90 font-bold">
-                  Unauthorized Account
+                  {t('accessGate.unauthorizedAccount')}
                 </span>
               </div>
             </div>
@@ -61,10 +63,10 @@ export const AccessGate: React.FC<{ children: React.ReactNode }> = ({ children }
             <div className="bg-red-950/60 border border-red-700/60 rounded-2xl p-4 space-y-2.5 shadow-inner">
               <div className="flex items-center space-x-2 text-red-300 font-bold">
                 <Lock className="w-4 h-4 shrink-0" />
-                <span>Account Not Authorized</span>
+                <span>{t('accessGate.accountNotAuthorized')}</span>
               </div>
               <p className="text-slate-300 text-xs font-sans leading-relaxed">
-                You are signed in as <strong className="text-yellow-300 break-all">{user.email}</strong>, but this email address is not authorized to access this Pokédex.
+                {t('accessGate.signedInAs', { email: user.email || '' })}
               </p>
             </div>
 
@@ -75,7 +77,7 @@ export const AccessGate: React.FC<{ children: React.ReactNode }> = ({ children }
                 className="flex-1 bg-pokedex-blue hover:bg-blue-600 text-white font-bold py-3 rounded-xl text-xs uppercase tracking-wider transition-all active:scale-95 shadow-md flex items-center justify-center space-x-2"
               >
                 <LogIn className="w-4 h-4" />
-                <span>Sign In with Another Account</span>
+                <span>{t('accessGate.signInAnother')}</span>
               </button>
 
               <button
@@ -83,7 +85,7 @@ export const AccessGate: React.FC<{ children: React.ReactNode }> = ({ children }
                 className="bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold py-3 px-5 rounded-xl text-xs uppercase tracking-wider transition-colors flex items-center justify-center space-x-2 border border-slate-700"
               >
                 <LogOut className="w-4 h-4 text-red-400" />
-                <span>Sign Out</span>
+                <span>{t('nav.signOut')}</span>
               </button>
             </div>
           </div>
@@ -116,7 +118,7 @@ export const AccessGate: React.FC<{ children: React.ReactNode }> = ({ children }
           </div>
 
           <span className="font-mono text-xs font-bold text-yellow-300 tracking-wider uppercase">
-            Sign In
+            {t('nav.signIn')}
           </span>
         </div>
 
@@ -130,7 +132,7 @@ export const AccessGate: React.FC<{ children: React.ReactNode }> = ({ children }
               Pokédex TCG Master
             </h2>
             <p className="text-xs text-slate-300 font-sans leading-relaxed">
-              Sign in with your authorized Google account to access your Pokémon collection and decks.
+              {t('accessGate.welcomeDesc')}
             </p>
           </div>
 
@@ -140,7 +142,7 @@ export const AccessGate: React.FC<{ children: React.ReactNode }> = ({ children }
               <div className="flex items-start justify-between">
                 <div className="flex items-center space-x-2 text-red-300 font-bold">
                   <AlertTriangle className="w-4 h-4 text-amber-400 shrink-0" />
-                  <span>Authentication Error</span>
+                  <span>{t('accessGate.authError')}</span>
                 </div>
                 <button
                   onClick={clearAuthError}
@@ -161,7 +163,7 @@ export const AccessGate: React.FC<{ children: React.ReactNode }> = ({ children }
             className="w-full bg-pokedex-red hover:bg-pokedex-lightred text-white font-bold py-3.5 px-6 rounded-2xl shadow-xl transition-all active:scale-95 flex items-center justify-center space-x-3 text-xs font-mono uppercase tracking-wider border border-white/20"
           >
             <LogIn className="w-4 h-4 text-yellow-300" />
-            <span>Sign In with Google (Gmail)</span>
+            <span>{t('accessGate.signInGoogle')}</span>
           </button>
         </div>
       </div>

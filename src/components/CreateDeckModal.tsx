@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Layers, X, Plus, Trash2, Search, CheckCircle2 } from 'lucide-react';
 import { useCollection } from '../context/CollectionContext';
+import { useLanguage } from '../context/LanguageContext';
 import { Card, DeckCardItem } from '../types';
 import { soundEffects } from '../services/audio';
 
@@ -11,6 +12,7 @@ interface CreateDeckModalProps {
 
 export const CreateDeckModal: React.FC<CreateDeckModalProps> = ({ isOpen, onClose }) => {
   const { cards, createNewDeck } = useCollection();
+  const { t, getCardName } = useLanguage();
 
   const [deckName, setDeckName] = useState('');
   const [format, setFormat] = useState<'Standard' | 'Expanded' | 'Casual'>('Standard');
@@ -34,14 +36,15 @@ export const CreateDeckModal: React.FC<CreateDeckModalProps> = ({ isOpen, onClos
 
   const handleAddCard = (card: Card) => {
     soundEffects.playClick();
-    const existing = selectedCards.find(c => c.name.toLowerCase() === (card.name_en || card.name_pt).toLowerCase());
+    const cardDisplayName = getCardName(card);
+    const existing = selectedCards.find(c => c.name.toLowerCase() === cardDisplayName.toLowerCase() || c.name.toLowerCase() === (card.name_en || card.name_pt).toLowerCase());
     if (existing) {
       if (existing.count >= 4 && card.card_category !== 'Energy') {
         soundEffects.playAlert();
         return;
       }
       setSelectedCards(prev => prev.map(c => 
-        c.name.toLowerCase() === (card.name_en || card.name_pt).toLowerCase()
+        (c.name.toLowerCase() === cardDisplayName.toLowerCase() || c.name.toLowerCase() === (card.name_en || card.name_pt).toLowerCase())
           ? { ...c, count: c.count + 1 }
           : c
       ));
@@ -52,7 +55,7 @@ export const CreateDeckModal: React.FC<CreateDeckModalProps> = ({ isOpen, onClos
         ...prev,
         {
           section,
-          name: card.name_en || card.name_pt,
+          name: cardDisplayName,
           set: `${card.set_en || card.set_pt} - ${card.set_code} ${card.card_number}`,
           count: 1,
           owned: card.quantity,
@@ -116,13 +119,13 @@ export const CreateDeckModal: React.FC<CreateDeckModalProps> = ({ isOpen, onClos
           <div className="flex items-center space-x-2">
             <Layers className="w-5 h-5 text-yellow-300" />
             <span className="font-display font-bold text-sm text-white uppercase tracking-wider">
-              Create New Deck (Deck Builder)
+              {t('createDeck.title')}
             </span>
           </div>
 
           <button
             onClick={onClose}
-            aria-label="Close modal"
+            aria-label={t('common.close')}
             className="w-8 h-8 rounded-full bg-pokedex-darkred hover:bg-black/40 text-white flex items-center justify-center transition-colors"
           >
             <X className="w-4 h-4" />
@@ -133,19 +136,19 @@ export const CreateDeckModal: React.FC<CreateDeckModalProps> = ({ isOpen, onClos
           {/* Deck Basic Info */}
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
             <div className="sm:col-span-2">
-              <label className="text-slate-400 block text-[10px] uppercase mb-1">Deck Name *</label>
+              <label className="text-slate-400 block text-[10px] uppercase mb-1">{t('createDeck.deckName')}</label>
               <input
                 type="text"
                 required
                 value={deckName}
                 onChange={(e) => setDeckName(e.target.value)}
-                placeholder="Ex: Gardevoir Psychic Turbo"
+                placeholder={t('createDeck.namePlaceholder')}
                 className="w-full bg-pokedex-darker border border-slate-800 rounded-xl p-2.5 text-white focus:outline-none focus:border-pokedex-blue text-xs font-sans"
               />
             </div>
 
             <div>
-              <label className="text-slate-400 block text-[10px] uppercase mb-1">Format</label>
+              <label className="text-slate-400 block text-[10px] uppercase mb-1">{t('createDeck.format')}</label>
               <select
                 value={format}
                 onChange={(e) => setFormat(e.target.value as any)}
@@ -160,23 +163,23 @@ export const CreateDeckModal: React.FC<CreateDeckModalProps> = ({ isOpen, onClos
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
-              <label className="text-slate-400 block text-[10px] uppercase mb-1">Archetype</label>
+              <label className="text-slate-400 block text-[10px] uppercase mb-1">{t('createDeck.archetype')}</label>
               <input
                 type="text"
                 value={archetype}
                 onChange={(e) => setArchetype(e.target.value)}
-                placeholder="Ex: Aggro, Control, OHKO, Toolbox"
+                placeholder={t('createDeck.archetypePlaceholder')}
                 className="w-full bg-pokedex-darker border border-slate-800 rounded-xl p-2.5 text-white focus:outline-none focus:border-pokedex-blue text-xs"
               />
             </div>
 
             <div>
-              <label className="text-slate-400 block text-[10px] uppercase mb-1">Win Condition</label>
+              <label className="text-slate-400 block text-[10px] uppercase mb-1">{t('createDeck.winCondition')}</label>
               <input
                 type="text"
                 value={winCondition}
                 onChange={(e) => setWinCondition(e.target.value)}
-                placeholder="Ex: High Turn 2 burst damage with energy acceleration"
+                placeholder={t('createDeck.winConditionPlaceholder')}
                 className="w-full bg-pokedex-darker border border-slate-800 rounded-xl p-2.5 text-white focus:outline-none focus:border-pokedex-blue text-xs font-sans"
               />
             </div>
@@ -186,20 +189,22 @@ export const CreateDeckModal: React.FC<CreateDeckModalProps> = ({ isOpen, onClos
           <div className="bg-pokedex-darker p-3 rounded-2xl border border-slate-800 flex items-center justify-between">
             <div className="flex items-center space-x-3">
               <span className={`font-bold text-sm ${totalCards === 60 ? 'text-emerald-400' : 'text-yellow-300'}`}>
-                {totalCards} / 60 Cards
+                {t('createDeck.cardsCount', { current: totalCards })}
               </span>
-              <span className="text-[10px] text-blue-400">{pokemonCount} Pokémon</span>
-              <span className="text-[10px] text-teal-400">{trainersCount} Trainers</span>
-              <span className="text-[10px] text-amber-400">{energiesCount} Energies</span>
+              <span className="text-[10px] text-blue-400">{t('createDeck.pokemonCount', { count: pokemonCount })}</span>
+              <span className="text-[10px] text-teal-400">{t('createDeck.trainersCount', { count: trainersCount })}</span>
+              <span className="text-[10px] text-amber-400">{t('createDeck.energiesCount', { count: energiesCount })}</span>
             </div>
 
             {totalCards === 60 ? (
               <span className="text-emerald-400 font-bold text-[10px] flex items-center gap-1">
-                <CheckCircle2 className="w-3.5 h-3.5" /> Full Deck!
+                <CheckCircle2 className="w-3.5 h-3.5" /> {t('createDeck.fullDeck')}
               </span>
             ) : (
               <span className="text-slate-400 text-[10px]">
-                {60 - totalCards > 0 ? `${60 - totalCards} left` : `${totalCards - 60} excess`}
+                {60 - totalCards > 0 
+                  ? t('createDeck.cardsLeft', { count: 60 - totalCards }) 
+                  : t('createDeck.excessCards', { count: totalCards - 60 })}
               </span>
             )}
           </div>
@@ -207,7 +212,7 @@ export const CreateDeckModal: React.FC<CreateDeckModalProps> = ({ isOpen, onClos
           {/* Card Picker from Collection */}
           <div className="space-y-2">
             <div className="flex items-center justify-between">
-              <label className="text-slate-400 block text-[10px] uppercase">Add Cards from Collection:</label>
+              <label className="text-slate-400 block text-[10px] uppercase">{t('createDeck.addCardsCollection')}</label>
             </div>
             
             <div className="relative">
@@ -216,7 +221,7 @@ export const CreateDeckModal: React.FC<CreateDeckModalProps> = ({ isOpen, onClos
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Search collection by name or type..."
+                placeholder={t('createDeck.searchCardsPlaceholder')}
                 className="w-full bg-pokedex-darker border border-slate-800 rounded-xl pl-9 pr-3 py-2 text-xs text-white focus:outline-none focus:border-pokedex-blue"
               />
             </div>
@@ -226,13 +231,13 @@ export const CreateDeckModal: React.FC<CreateDeckModalProps> = ({ isOpen, onClos
               <div className="bg-black/70 rounded-2xl border border-slate-800 p-2 max-h-36 overflow-y-auto space-y-1">
                 {filteredCollection.map((card) => (
                   <div key={card.id} className="flex items-center justify-between p-1.5 hover:bg-slate-800 rounded-lg text-xs gap-2 min-w-0">
-                    <span className="text-slate-200 truncate flex-1 min-w-0">{card.name_en || card.name_pt} <small className="text-slate-500">({card.set_code})</small></span>
+                    <span className="text-slate-200 truncate flex-1 min-w-0">{getCardName(card)} <small className="text-slate-500">({card.set_code})</small></span>
                     <button
                       type="button"
                       onClick={() => handleAddCard(card)}
                       className="bg-pokedex-blue hover:bg-blue-600 text-white font-bold px-2.5 py-1 rounded-lg text-[10px] flex items-center gap-1 shrink-0 whitespace-nowrap shadow active:scale-95 transition-all"
                     >
-                      <Plus className="w-3 h-3" /> Add
+                      <Plus className="w-3 h-3" /> {t('createDeck.add')}
                     </button>
                   </div>
                 ))}
@@ -243,7 +248,7 @@ export const CreateDeckModal: React.FC<CreateDeckModalProps> = ({ isOpen, onClos
           {/* Selected Cards in Deck */}
           {selectedCards.length > 0 && (
             <div className="space-y-1.5">
-              <span className="text-slate-400 block text-[10px] uppercase font-bold">Cards in Deck ({selectedCards.length} types):</span>
+              <span className="text-slate-400 block text-[10px] uppercase font-bold">{t('createDeck.cardsInDeck', { count: selectedCards.length })}</span>
               <div className="bg-black/50 p-2.5 rounded-2xl border border-slate-800 max-h-40 overflow-y-auto space-y-1">
                 {selectedCards.map((c) => (
                   <div key={c.name} className="flex items-center justify-between p-1.5 bg-pokedex-darker rounded-xl border border-slate-800 text-xs">
@@ -270,7 +275,7 @@ export const CreateDeckModal: React.FC<CreateDeckModalProps> = ({ isOpen, onClos
             className="w-full bg-pokedex-red hover:bg-pokedex-lightred text-white font-bold py-3 rounded-2xl shadow-lg transition-all active:scale-95 text-xs uppercase tracking-wider flex items-center justify-center gap-2"
           >
             <Layers className="w-4 h-4" />
-            <span>Save Deck</span>
+            <span>{t('createDeck.saveDeck')}</span>
           </button>
         </form>
       </div>

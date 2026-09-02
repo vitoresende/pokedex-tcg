@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useCollection } from '../context/CollectionContext';
+import { useLanguage } from '../context/LanguageContext';
 import { FilterBar } from '../components/FilterBar';
 import { CardGrid } from '../components/CardGrid';
 import { CardDetailModal } from '../components/CardDetailModal';
@@ -14,6 +15,7 @@ interface PokedexPageProps {
 
 export const PokedexPage: React.FC<PokedexPageProps> = ({ onNavigateToDeck }) => {
   const { filteredCards, stats, selectedCard, setSelectedCard } = useCollection();
+  const { t } = useLanguage();
   const [addCardModalOpen, setAddCardModalOpen] = useState(false);
 
   const handleOpenAddModal = () => {
@@ -28,10 +30,10 @@ export const PokedexPage: React.FC<PokedexPageProps> = ({ onNavigateToDeck }) =>
         <div>
           <h2 className="text-xl font-black font-display text-white flex items-center gap-2">
             <Sparkles className="w-5 h-5 text-yellow-300" />
-            <span>Card Database & Pokédex</span>
+            <span>{t('pokedex.title')}</span>
           </h2>
           <p className="text-xs text-slate-400 font-mono">
-            {filteredCards.length} cards matched in the active collection
+            {t('pokedex.subtitle', { count: filteredCards.length })}
           </p>
         </div>
 
@@ -40,7 +42,7 @@ export const PokedexPage: React.FC<PokedexPageProps> = ({ onNavigateToDeck }) =>
           className="bg-pokedex-red hover:bg-pokedex-lightred text-white font-bold px-4 py-2 rounded-2xl shadow-lg transition-all active:scale-95 text-xs font-mono flex items-center justify-center space-x-2 border border-white/20"
         >
           <Plus className="w-4 h-4 text-yellow-300" />
-          <span>Add Cards / Import CSV</span>
+          <span>{t('pokedex.addCardsBtn')}</span>
         </button>
       </div>
 
@@ -52,8 +54,8 @@ export const PokedexPage: React.FC<PokedexPageProps> = ({ onNavigateToDeck }) =>
             <Database className="w-5 h-5" />
           </div>
           <div>
-            <span className="text-[10px] font-mono text-slate-400 uppercase tracking-wider block">Total Owned</span>
-            <span className="text-lg font-black font-display text-white">{stats.totalOwnedCards} <small className="text-xs font-normal text-slate-400">cards</small></span>
+            <span className="text-[10px] font-mono text-slate-400 uppercase tracking-wider block">{t('pokedex.totalOwned')}</span>
+            <span className="text-lg font-black font-display text-white">{stats.totalOwnedCards} <small className="text-xs font-normal text-slate-400">{t('common.cards')}</small></span>
           </div>
         </div>
 
@@ -63,8 +65,8 @@ export const PokedexPage: React.FC<PokedexPageProps> = ({ onNavigateToDeck }) =>
             <Award className="w-5 h-5" />
           </div>
           <div>
-            <span className="text-[10px] font-mono text-slate-400 uppercase tracking-wider block">Unique Registered</span>
-            <span className="text-lg font-black font-display text-white">{stats.uniqueCardsCount} <small className="text-xs font-normal text-slate-400">cards</small></span>
+            <span className="text-[10px] font-mono text-slate-400 uppercase tracking-wider block">{t('pokedex.uniqueRegistered')}</span>
+            <span className="text-lg font-black font-display text-white">{stats.uniqueCardsCount} <small className="text-xs font-normal text-slate-400">{t('common.cards')}</small></span>
           </div>
         </div>
 
@@ -74,15 +76,15 @@ export const PokedexPage: React.FC<PokedexPageProps> = ({ onNavigateToDeck }) =>
             <Sparkles className="w-5 h-5" />
           </div>
           <div>
-            <span className="text-[10px] font-mono text-slate-400 uppercase tracking-wider block">Foil / Holo</span>
-            <span className="text-lg font-black font-display text-yellow-300">{stats.foilCardsCount} <small className="text-xs font-normal text-yellow-500/80">shining</small></span>
+            <span className="text-[10px] font-mono text-slate-400 uppercase tracking-wider block">{t('pokedex.foilHolo')}</span>
+            <span className="text-lg font-black font-display text-yellow-300">{stats.foilCardsCount} <small className="text-xs font-normal text-yellow-500/80">{t('common.shining')}</small></span>
           </div>
         </div>
 
         {/* Completion Progress */}
         <div className="bg-pokedex-card/90 rounded-2xl p-3 border border-slate-800 flex flex-col justify-between shadow-md">
           <div className="flex items-center justify-between text-[10px] font-mono">
-            <span className="text-slate-400 uppercase tracking-wider">Completion</span>
+            <span className="text-slate-400 uppercase tracking-wider">{t('pokedex.completion')}</span>
             <span className="text-emerald-400 font-bold">{stats.completionPercentage}%</span>
           </div>
           <div className="w-full bg-slate-800 h-2 rounded-full overflow-hidden mt-1.5 border border-slate-700">
@@ -91,7 +93,7 @@ export const PokedexPage: React.FC<PokedexPageProps> = ({ onNavigateToDeck }) =>
               style={{ width: `${stats.completionPercentage}%` }}
             />
           </div>
-          <span className="text-[9px] text-slate-400 font-mono mt-1 text-right">{stats.totalSetsCount} Sets</span>
+          <span className="text-[9px] text-slate-400 font-mono mt-1 text-right">{stats.totalSetsCount} {t('common.sets')}</span>
         </div>
       </div>
 

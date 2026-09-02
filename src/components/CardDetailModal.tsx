@@ -6,7 +6,7 @@ import {
   Trash2, PlusCircle, CheckCircle2 
 } from 'lucide-react';
 import { useCollection } from '../context/CollectionContext';
-import { useAuth } from '../context/AuthContext';
+import { useLanguage } from '../context/LanguageContext';
 import { soundEffects } from '../services/audio';
 
 interface CardDetailModalProps {
@@ -20,7 +20,7 @@ export const CardDetailModal: React.FC<CardDetailModalProps> = ({ card, onClose,
     favorites, toggleFavorite, updateCardQuantity, notes, 
     updateCardNote, decks, addCardToDeck, deleteCard 
   } = useCollection();
-  const { isAllowed } = useAuth();
+  const { t, getCardName, getCardSetName, language } = useLanguage();
   
   const [localNote, setLocalNote] = useState<string>('');
   const [noteSaved, setNoteSaved] = useState<boolean>(false);
@@ -39,6 +39,8 @@ export const CardDetailModal: React.FC<CardDetailModalProps> = ({ card, onClose,
   if (!card) return null;
 
   const isFavorite = favorites.includes(card.id);
+  const cardName = getCardName(card);
+  const setName = getCardSetName(card);
 
   const handleSaveNote = () => {
     soundEffects.playClick();
@@ -61,7 +63,7 @@ export const CardDetailModal: React.FC<CardDetailModalProps> = ({ card, onClose,
   };
 
   const handleDelete = () => {
-    if (confirm(`Remove "${card.name_en || card.name_pt}" from collection?`)) {
+    if (confirm(t('cardDetail.confirmDelete', { name: cardName }))) {
       deleteCard(card.id);
       onClose();
     }
@@ -76,13 +78,13 @@ export const CardDetailModal: React.FC<CardDetailModalProps> = ({ card, onClose,
           <div className="flex items-center space-x-2">
             <div className="w-3 h-3 rounded-full bg-cyan-400 animate-pulse"></div>
             <span className="font-mono text-xs font-bold text-white tracking-widest uppercase truncate max-w-[300px]">
-              Pokédex Data // {card.set_code} #{card.card_number}
+              {t('cardDetail.titlePrefix')} {card.set_code} #{card.card_number}
             </span>
           </div>
 
           <button
             onClick={onClose}
-            aria-label="Close modal"
+            aria-label={t('common.close')}
             className="w-8 h-8 rounded-full bg-pokedex-darkred hover:bg-black/40 text-white flex items-center justify-center transition-colors"
           >
             <X className="w-4 h-4" />
@@ -106,11 +108,11 @@ export const CardDetailModal: React.FC<CardDetailModalProps> = ({ card, onClose,
                 }`}
               >
                 <Heart className={`w-4 h-4 ${isFavorite ? 'fill-current' : ''}`} />
-                <span>{isFavorite ? 'Favorite' : 'Add to Favs'}</span>
+                <span>{isFavorite ? t('cardDetail.favorite') : t('cardDetail.addToFavs')}</span>
               </button>
 
               <div className="flex items-center space-x-2">
-                <span className="text-xs text-slate-400 font-mono">Qty:</span>
+                <span className="text-xs text-slate-400 font-mono">{t('cardDetail.qty')}</span>
                 <button
                   onClick={() => updateCardQuantity(card.id, -1)}
                   disabled={card.quantity <= 0}
@@ -138,7 +140,7 @@ export const CardDetailModal: React.FC<CardDetailModalProps> = ({ card, onClose,
               className="mt-3 text-red-400/80 hover:text-red-400 text-[11px] font-mono flex items-center gap-1.5 transition-colors"
             >
               <Trash2 className="w-3.5 h-3.5" />
-              <span>Remove this card from collection</span>
+              <span>{t('cardDetail.removeCard')}</span>
             </button>
           </div>
 
@@ -149,7 +151,7 @@ export const CardDetailModal: React.FC<CardDetailModalProps> = ({ card, onClose,
               <div className="flex items-center justify-between mb-1">
                 <span 
                   className="text-[10px] font-bold px-2 py-0.5 rounded-full border uppercase"
-                  style={{
+                  style={{ 
                     backgroundColor: `${card.color_bg}22`,
                     color: card.color_bg,
                     borderColor: `${card.color_bg}66`
@@ -159,38 +161,40 @@ export const CardDetailModal: React.FC<CardDetailModalProps> = ({ card, onClose,
                 </span>
                 {card.is_foil && (
                   <span className="bg-yellow-500/20 text-yellow-300 border border-yellow-400/40 text-[10px] px-2 py-0.5 rounded-full flex items-center gap-1">
-                    <Sparkles className="w-3 h-3" /> Foil / Holo
+                    <Sparkles className="w-3 h-3" /> {t('cardDetail.foilHolo')}
                   </span>
                 )}
               </div>
-              <h2 className="text-xl font-bold font-sans text-white">{card.name_en || card.name_pt}</h2>
-              <p className="text-slate-400 text-xs">{card.name_pt !== card.name_en ? `PT: ${card.name_pt}` : ''}</p>
+              <h2 className="text-xl font-bold font-sans text-white">{cardName}</h2>
+              <p className="text-slate-400 text-xs">
+                {language === 'pt' && card.name_en !== card.name_pt ? `EN: ${card.name_en}` : (language === 'en' && card.name_pt !== card.name_en ? `PT: ${card.name_pt}` : '')}
+              </p>
             </div>
 
             {/* Spec Table */}
             <div className="bg-pokedex-darker rounded-2xl p-3 border border-slate-800 space-y-2">
               <div className="flex justify-between py-1 border-b border-slate-800">
-                <span className="text-slate-400">Expansion Set:</span>
-                <span className="text-slate-200 font-semibold">{card.set_en || card.set_pt}</span>
+                <span className="text-slate-400">{t('cardDetail.expansionSet')}</span>
+                <span className="text-slate-200 font-semibold">{setName}</span>
               </div>
               <div className="flex justify-between py-1 border-b border-slate-800">
-                <span className="text-slate-400">Set Code:</span>
+                <span className="text-slate-400">{t('cardDetail.setCode')}</span>
                 <span className="text-slate-200">{card.set_code}</span>
               </div>
               <div className="flex justify-between py-1 border-b border-slate-800">
-                <span className="text-slate-400">Card Number:</span>
+                <span className="text-slate-400">{t('cardDetail.cardNumber')}</span>
                 <span className="text-yellow-300 font-bold">{card.card_number} / {card.total_in_set || '—'}</span>
               </div>
               <div className="flex justify-between py-1 border-b border-slate-800">
-                <span className="text-slate-400">Rarity:</span>
+                <span className="text-slate-400">{t('cardDetail.rarity')}</span>
                 <span className="text-slate-200">{card.rarity_name} ({card.rarity_code})</span>
               </div>
               <div className="flex justify-between py-1 border-b border-slate-800">
-                <span className="text-slate-400">Condition:</span>
+                <span className="text-slate-400">{t('cardDetail.condition')}</span>
                 <span className="text-emerald-400 font-bold">{card.quality || 'NM (Near Mint)'}</span>
               </div>
               <div className="flex justify-between py-1">
-                <span className="text-slate-400">Language:</span>
+                <span className="text-slate-400">{t('cardDetail.language')}</span>
                 <span className="text-slate-200">{card.language}</span>
               </div>
             </div>
@@ -199,14 +203,14 @@ export const CardDetailModal: React.FC<CardDetailModalProps> = ({ card, onClose,
             {decks.length > 0 && (
               <div className="bg-pokedex-darker p-3 rounded-2xl border border-slate-800 space-y-2 w-full overflow-hidden">
                 <div className="flex items-center justify-between text-[10px] text-slate-400 uppercase font-mono">
-                  <span>Add to Deck:</span>
-                  {cardAddedToDeck && <span className="text-emerald-400 font-bold flex items-center gap-1"><CheckCircle2 className="w-3 h-3" /> Added!</span>}
+                  <span>{t('cardDetail.addToDeck')}</span>
+                  {cardAddedToDeck && <span className="text-emerald-400 font-bold flex items-center gap-1"><CheckCircle2 className="w-3 h-3" /> {t('cardDetail.added')}</span>}
                 </div>
                 <div className="flex items-center gap-2 w-full min-w-0">
                   <select
                     value={selectedDeckForAdd}
                     onChange={(e) => setSelectedDeckForAdd(e.target.value)}
-                    aria-label="Select deck to add card"
+                    aria-label={t('cardDetail.addToDeck')}
                     className="flex-1 min-w-0 bg-black/60 border border-slate-700 rounded-xl px-3 py-2 text-xs text-slate-200 focus:outline-none focus:border-pokedex-blue truncate"
                   >
                     {decks.map(d => (
@@ -219,7 +223,7 @@ export const CardDetailModal: React.FC<CardDetailModalProps> = ({ card, onClose,
                     className="bg-pokedex-blue hover:bg-blue-600 text-white font-bold px-3.5 py-2 rounded-xl text-xs flex items-center gap-1.5 shadow shrink-0 whitespace-nowrap active:scale-95 transition-all"
                   >
                     <PlusCircle className="w-4 h-4" />
-                    <span>Add</span>
+                    <span>{t('cardDetail.addBtn')}</span>
                   </button>
                 </div>
               </div>
@@ -230,7 +234,7 @@ export const CardDetailModal: React.FC<CardDetailModalProps> = ({ card, onClose,
               <div className="bg-purple-950/40 rounded-2xl p-3 border border-purple-800/50">
                 <div className="flex items-center space-x-1.5 text-purple-300 font-bold mb-2">
                   <Layers className="w-3.5 h-3.5" />
-                  <span>Featured in Decks:</span>
+                  <span>{t('cardDetail.featuredInDecks')}</span>
                 </div>
                 <div className="flex flex-wrap gap-1.5">
                   {card.decks.map((deckId) => {
@@ -252,14 +256,14 @@ export const CardDetailModal: React.FC<CardDetailModalProps> = ({ card, onClose,
             {/* Personal Notes / Strategy Comment */}
             <div className="space-y-1.5">
               <label htmlFor="card-note-input" className="text-slate-400 flex items-center justify-between">
-                <span>Personal Notes:</span>
-                {noteSaved && <span className="text-emerald-400 text-[10px]">Saved!</span>}
+                <span>{t('cardDetail.personalNotes')}</span>
+                {noteSaved && <span className="text-emerald-400 text-[10px]">{t('cardDetail.saved')}</span>}
               </label>
               <textarea
                 id="card-note-input"
                 value={localNote}
                 onChange={(e) => setLocalNote(e.target.value)}
-                placeholder="Ex: Turn 1 combo with Mewtwo & Mew-GX, save for late-game..."
+                placeholder={t('cardDetail.notesPlaceholder')}
                 rows={2}
                 className="w-full bg-pokedex-darker border border-slate-800 rounded-xl p-2.5 text-slate-200 focus:outline-none focus:border-pokedex-blue text-xs resize-none"
               />
@@ -268,7 +272,7 @@ export const CardDetailModal: React.FC<CardDetailModalProps> = ({ card, onClose,
                 className="w-full bg-slate-800 hover:bg-slate-700 text-white font-bold py-1.5 rounded-xl border border-slate-700 transition-colors flex items-center justify-center gap-1.5"
               >
                 <Save className="w-3.5 h-3.5 text-yellow-300" />
-                <span>Save Card Note</span>
+                <span>{t('cardDetail.saveCardNote')}</span>
               </button>
             </div>
           </div>

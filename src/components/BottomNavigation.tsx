@@ -1,6 +1,7 @@
 import React from 'react';
 import { Layers, Sparkles, BookOpen, User } from 'lucide-react';
 import { soundEffects } from '../services/audio';
+import { useLanguage } from '../context/LanguageContext';
 
 export type NavTab = 'pokedex' | 'decks' | 'rules' | 'auth';
 
@@ -10,11 +11,13 @@ interface BottomNavigationProps {
 }
 
 export const BottomNavigation: React.FC<BottomNavigationProps> = ({ activeTab, onTabChange }) => {
+  const { t } = useLanguage();
+
   const tabs = [
-    { id: 'pokedex' as NavTab, label: 'Pokédex', icon: Sparkles },
-    { id: 'decks' as NavTab, label: 'Decks', icon: Layers },
-    { id: 'rules' as NavTab, label: 'Rules & Types', icon: BookOpen },
-    { id: 'auth' as NavTab, label: 'Profile', icon: User },
+    { id: 'pokedex' as NavTab, label: t('nav.pokedex'), icon: Sparkles },
+    { id: 'decks' as NavTab, label: t('nav.decks'), icon: Layers },
+    { id: 'rules' as NavTab, label: t('nav.rules'), icon: BookOpen },
+    { id: 'auth' as NavTab, label: t('nav.profile'), icon: User },
   ];
 
   const handleSelect = (tab: NavTab) => {

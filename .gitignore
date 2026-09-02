@@ -51,3 +51,5 @@ especificacao_arquitetura_connect_rpc.pdf
 public/cards/
 public/cards/*
 downloads/
+__pycache__/
+*.pyc

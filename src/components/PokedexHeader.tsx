@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
-import { Volume2, VolumeX, ShieldCheck, ShieldAlert, Sparkles, User as UserIcon } from 'lucide-react';
+import { Volume2, VolumeX, ShieldCheck, ShieldAlert, Sparkles, User as UserIcon, Globe } from 'lucide-react';
 import { useCollection } from '../context/CollectionContext';
 import { useAuth } from '../context/AuthContext';
+import { useLanguage } from '../context/LanguageContext';
 import { soundEffects } from '../services/audio';
 
 interface PokedexHeaderProps {
@@ -11,10 +12,15 @@ interface PokedexHeaderProps {
 export const PokedexHeader: React.FC<PokedexHeaderProps> = ({ onNavigateToAuth }) => {
   const { isMuted, toggleMute } = useCollection();
   const { user, isAllowed } = useAuth();
+  const { language, setLanguage, t } = useLanguage();
   const [photoError, setPhotoError] = useState<boolean>(false);
 
   const handleSensorClick = () => {
     soundEffects.playScan();
+  };
+
+  const handleToggleLanguage = () => {
+    setLanguage(language === 'pt' ? 'en' : 'pt');
   };
 
   const userInitial = (user?.displayName?.[0] || user?.email?.[0] || 'U').toUpperCase();
@@ -28,7 +34,7 @@ export const PokedexHeader: React.FC<PokedexHeaderProps> = ({ onNavigateToAuth }
           {/* Main Blue Lens / Sensor */}
           <button
             onClick={handleSensorClick}
-            aria-label="Pokédex Optical Sensor"
+            aria-label={t('nav.opticalSensor')}
             className="relative w-12 h-12 rounded-full bg-white p-1 shadow-md hover:scale-105 active:scale-95 transition-transform flex items-center justify-center focus:outline-none"
           >
             <div className="w-full h-full rounded-full bg-gradient-to-br from-cyan-300 via-pokedex-blue to-blue-700 shadow-inner flex items-center justify-center relative overflow-hidden border-2 border-white">
@@ -54,17 +60,28 @@ export const PokedexHeader: React.FC<PokedexHeaderProps> = ({ onNavigateToAuth }
               Pokédex TCG Master
             </h1>
             <span className="bg-pokedex-darkred/60 text-yellow-300 font-mono text-xs px-2 py-0.5 rounded font-bold border border-yellow-400/30">
-              v1.0
+              {t('nav.version')}
             </span>
           </div>
         </div>
 
-        {/* Action Controls: Audio & User Profile */}
+        {/* Action Controls: Language, Audio & User Profile */}
         <div className="flex items-center space-x-2">
+          {/* Quick Language Toggle Pill */}
+          <button
+            onClick={handleToggleLanguage}
+            title={language === 'pt' ? 'Mudar para English' : 'Mudar para Português (BR)'}
+            aria-label="Toggle language"
+            className="h-9 px-2.5 rounded-lg bg-pokedex-darkred/80 hover:bg-pokedex-darkred text-white flex items-center space-x-1.5 border border-white/20 transition-all active:scale-95 text-xs font-mono font-bold"
+          >
+            <Globe className="w-3.5 h-3.5 text-yellow-300" />
+            <span>{language === 'pt' ? 'PT' : 'EN'}</span>
+          </button>
+
           {/* Mute/Sound Button */}
           <button
             onClick={toggleMute}
-            aria-label={isMuted ? "Enable sounds" : "Mute sounds"}
+            aria-label={isMuted ? t('nav.enableSounds') : t('nav.muteSounds')}
             className="w-9 h-9 rounded-lg bg-pokedex-darkred/80 hover:bg-pokedex-darkred text-white flex items-center justify-center border border-white/20 transition-colors"
           >
             {isMuted ? <VolumeX className="w-4 h-4 text-slate-300" /> : <Volume2 className="w-4 h-4 text-yellow-300 animate-pulse" />}
@@ -110,7 +127,7 @@ export const PokedexHeader: React.FC<PokedexHeaderProps> = ({ onNavigateToAuth }
             ) : (
               <span className="text-yellow-300 font-semibold flex items-center gap-1.5">
                 <UserIcon className="w-4 h-4" />
-                <span>Sign In</span>
+                <span>{t('nav.signIn')}</span>
               </span>
             )}
           </button>

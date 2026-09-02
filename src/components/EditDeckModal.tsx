@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Layers, X, Save, Plus, Trash2, Swords, Trophy, Sparkles, Palette } from 'lucide-react';
 import { useCollection } from '../context/CollectionContext';
+import { useLanguage } from '../context/LanguageContext';
 import { Deck, DeckStrategyGuide } from '../types';
 import { soundEffects } from '../services/audio';
 
@@ -21,6 +22,7 @@ const COLOR_PRESETS = [
 
 export const EditDeckModal: React.FC<EditDeckModalProps> = ({ deck, isOpen, onClose }) => {
   const { updateDeck } = useCollection();
+  const { t } = useLanguage();
 
   const [activeTab, setActiveTab] = useState<'playbook' | 'general'>('playbook');
   const [name, setName] = useState('');
@@ -157,13 +159,13 @@ export const EditDeckModal: React.FC<EditDeckModalProps> = ({ deck, isOpen, onCl
           <div className="flex items-center space-x-2">
             <Layers className="w-5 h-5 text-yellow-300" />
             <span className="font-display font-bold text-sm text-white uppercase tracking-wider">
-              Edit Deck & Strategic Playbook: {deck.name}
+              {t('editDeck.title')}: {deck.name}
             </span>
           </div>
 
           <button
             onClick={onClose}
-            aria-label="Close modal"
+            aria-label={t('common.close')}
             className="w-8 h-8 rounded-full bg-pokedex-darkred hover:bg-black/40 text-white flex items-center justify-center transition-colors"
           >
             <X className="w-4 h-4" />
@@ -180,7 +182,7 @@ export const EditDeckModal: React.FC<EditDeckModalProps> = ({ deck, isOpen, onCl
             }`}
           >
             <Swords className="w-4 h-4" />
-            <span>Strategic Turn Playbook</span>
+            <span>{t('editDeck.tabPlaybook')}</span>
           </button>
           <button
             type="button"
@@ -190,7 +192,7 @@ export const EditDeckModal: React.FC<EditDeckModalProps> = ({ deck, isOpen, onCl
             }`}
           >
             <Palette className="w-4 h-4" />
-            <span>Deck Details & Theme</span>
+            <span>{t('editDeck.tabDetails')}</span>
           </button>
         </div>
 
@@ -203,13 +205,13 @@ export const EditDeckModal: React.FC<EditDeckModalProps> = ({ deck, isOpen, onCl
                 <div className="bg-pokedex-darker p-3.5 rounded-2xl border border-slate-800 space-y-1.5">
                   <label className="text-yellow-400 flex items-center gap-1.5 font-bold uppercase text-[10px]">
                     <Trophy className="w-3.5 h-3.5" />
-                    <span>Win Condition & Primary Goal</span>
+                    <span>{t('editDeck.winConditionLabel')}</span>
                   </label>
                   <textarea
                     rows={2}
                     value={winCondition}
                     onChange={(e) => setWinCondition(e.target.value)}
-                    placeholder="Ex: Take 6 Prize Cards by cycling Energy with Malamar to power up Necrozma's Special Laser attack."
+                    placeholder={t('editDeck.winConditionPlaceholder')}
                     className="w-full bg-black/60 border border-slate-700 rounded-xl p-2.5 text-xs text-white focus:outline-none focus:border-pokedex-blue font-sans"
                   />
                 </div>
@@ -217,13 +219,13 @@ export const EditDeckModal: React.FC<EditDeckModalProps> = ({ deck, isOpen, onCl
                 <div className="bg-pokedex-darker p-3.5 rounded-2xl border border-slate-800 space-y-1.5">
                   <label className="text-purple-300 flex items-center gap-1.5 font-bold uppercase text-[10px]">
                     <Sparkles className="w-3.5 h-3.5" />
-                    <span>Prize Trade Tip</span>
+                    <span>{t('editDeck.prizeTradeLabel')}</span>
                   </label>
                   <textarea
                     rows={2}
                     value={prizeTradeTip}
                     onChange={(e) => setPrizeTradeTip(e.target.value)}
-                    placeholder="Ex: Aim to trade 1-Prize attackers efficiently against opponent's 2-Prize Pokémon-GX/V."
+                    placeholder={t('editDeck.prizeTradePlaceholder')}
                     className="w-full bg-black/60 border border-slate-700 rounded-xl p-2.5 text-xs text-white focus:outline-none focus:border-pokedex-blue font-sans"
                   />
                 </div>
@@ -234,7 +236,7 @@ export const EditDeckModal: React.FC<EditDeckModalProps> = ({ deck, isOpen, onCl
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
                     <span className="w-2.5 h-2.5 rounded-full bg-blue-500"></span>
-                    <span className="font-bold text-sm text-blue-400 uppercase">1. Opening / Early Game Plan</span>
+                    <span className="font-bold text-sm text-blue-400 uppercase">{t('editDeck.openingPlan')}</span>
                   </div>
                   <button
                     type="button"
@@ -242,7 +244,7 @@ export const EditDeckModal: React.FC<EditDeckModalProps> = ({ deck, isOpen, onCl
                     className="text-xs text-yellow-300 hover:text-yellow-200 flex items-center gap-1 bg-black/40 px-2.5 py-1 rounded-lg border border-slate-700"
                   >
                     <Plus className="w-3 h-3" />
-                    <span>Add Step</span>
+                    <span>{t('editDeck.addStep')}</span>
                   </button>
                 </div>
 
@@ -250,7 +252,7 @@ export const EditDeckModal: React.FC<EditDeckModalProps> = ({ deck, isOpen, onCl
                   type="text"
                   value={openingTitle}
                   onChange={(e) => setOpeningTitle(e.target.value)}
-                  placeholder="Section Title (e.g. 1. Opening Plan)"
+                  placeholder={t('editDeck.sectionTitlePlaceholder')}
                   className="w-full bg-black/60 border border-slate-700 rounded-xl p-2 text-xs text-yellow-300 focus:outline-none focus:border-pokedex-blue font-sans"
                 />
 
@@ -262,7 +264,7 @@ export const EditDeckModal: React.FC<EditDeckModalProps> = ({ deck, isOpen, onCl
                         type="text"
                         value={step}
                         onChange={(e) => handleStepChange('opening', idx, e.target.value)}
-                        placeholder={`Step ${idx + 1} (e.g. Bench Inkay and use Mysterious Treasure)`}
+                        placeholder={t('editDeck.stepPlaceholder', { num: idx + 1 })}
                         className="flex-1 bg-black/60 border border-slate-700 rounded-xl p-2 text-xs text-white focus:outline-none focus:border-pokedex-blue font-sans"
                       />
                       <button
@@ -282,7 +284,7 @@ export const EditDeckModal: React.FC<EditDeckModalProps> = ({ deck, isOpen, onCl
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
                     <span className="w-2.5 h-2.5 rounded-full bg-teal-500"></span>
-                    <span className="font-bold text-sm text-teal-400 uppercase">2. Midgame Strategy</span>
+                    <span className="font-bold text-sm text-teal-400 uppercase">{t('editDeck.midgamePlan')}</span>
                   </div>
                   <button
                     type="button"
@@ -290,7 +292,7 @@ export const EditDeckModal: React.FC<EditDeckModalProps> = ({ deck, isOpen, onCl
                     className="text-xs text-yellow-300 hover:text-yellow-200 flex items-center gap-1 bg-black/40 px-2.5 py-1 rounded-lg border border-slate-700"
                   >
                     <Plus className="w-3 h-3" />
-                    <span>Add Step</span>
+                    <span>{t('editDeck.addStep')}</span>
                   </button>
                 </div>
 
@@ -298,7 +300,7 @@ export const EditDeckModal: React.FC<EditDeckModalProps> = ({ deck, isOpen, onCl
                   type="text"
                   value={midgameTitle}
                   onChange={(e) => setMidgameTitle(e.target.value)}
-                  placeholder="Section Title (e.g. 2. Midgame Plan)"
+                  placeholder={t('editDeck.sectionTitlePlaceholder')}
                   className="w-full bg-black/60 border border-slate-700 rounded-xl p-2 text-xs text-yellow-300 focus:outline-none focus:border-pokedex-blue font-sans"
                 />
 
@@ -310,7 +312,7 @@ export const EditDeckModal: React.FC<EditDeckModalProps> = ({ deck, isOpen, onCl
                         type="text"
                         value={step}
                         onChange={(e) => handleStepChange('midgame', idx, e.target.value)}
-                        placeholder={`Step ${idx + 1} (e.g. Evolve into Malamar and attach Psychic Recharge)`}
+                        placeholder={t('editDeck.stepPlaceholder', { num: idx + 1 })}
                         className="flex-1 bg-black/60 border border-slate-700 rounded-xl p-2 text-xs text-white focus:outline-none focus:border-pokedex-blue font-sans"
                       />
                       <button
@@ -330,7 +332,7 @@ export const EditDeckModal: React.FC<EditDeckModalProps> = ({ deck, isOpen, onCl
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
                     <span className="w-2.5 h-2.5 rounded-full bg-purple-500"></span>
-                    <span className="font-bold text-sm text-purple-400 uppercase">3. Endgame / Closing Plan</span>
+                    <span className="font-bold text-sm text-purple-400 uppercase">{t('editDeck.endgamePlan')}</span>
                   </div>
                   <button
                     type="button"
@@ -338,7 +340,7 @@ export const EditDeckModal: React.FC<EditDeckModalProps> = ({ deck, isOpen, onCl
                     className="text-xs text-yellow-300 hover:text-yellow-200 flex items-center gap-1 bg-black/40 px-2.5 py-1 rounded-lg border border-slate-700"
                   >
                     <Plus className="w-3 h-3" />
-                    <span>Add Step</span>
+                    <span>{t('editDeck.addStep')}</span>
                   </button>
                 </div>
 
@@ -346,7 +348,7 @@ export const EditDeckModal: React.FC<EditDeckModalProps> = ({ deck, isOpen, onCl
                   type="text"
                   value={lategameTitle}
                   onChange={(e) => setLategameTitle(e.target.value)}
-                  placeholder="Section Title (e.g. 3. Endgame Plan)"
+                  placeholder={t('editDeck.sectionTitlePlaceholder')}
                   className="w-full bg-black/60 border border-slate-700 rounded-xl p-2 text-xs text-yellow-300 focus:outline-none focus:border-pokedex-blue font-sans"
                 />
 
@@ -358,7 +360,7 @@ export const EditDeckModal: React.FC<EditDeckModalProps> = ({ deck, isOpen, onCl
                         type="text"
                         value={step}
                         onChange={(e) => handleStepChange('lategame', idx, e.target.value)}
-                        placeholder={`Step ${idx + 1} (e.g. Close out remaining Prize Cards with Necrozma)`}
+                        placeholder={t('editDeck.stepPlaceholder', { num: idx + 1 })}
                         className="flex-1 bg-black/60 border border-slate-700 rounded-xl p-2 text-xs text-white focus:outline-none focus:border-pokedex-blue font-sans"
                       />
                       <button
@@ -377,7 +379,7 @@ export const EditDeckModal: React.FC<EditDeckModalProps> = ({ deck, isOpen, onCl
             <div className="space-y-4 animate-in fade-in">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
-                  <label className="text-slate-400 block text-[10px] uppercase mb-1">Deck Name *</label>
+                  <label className="text-slate-400 block text-[10px] uppercase mb-1">{t('editDeck.deckName')}</label>
                   <input
                     type="text"
                     required
@@ -389,7 +391,7 @@ export const EditDeckModal: React.FC<EditDeckModalProps> = ({ deck, isOpen, onCl
                 </div>
 
                 <div>
-                  <label className="text-slate-400 block text-[10px] uppercase mb-1">Archetype</label>
+                  <label className="text-slate-400 block text-[10px] uppercase mb-1">{t('editDeck.archetype')}</label>
                   <input
                     type="text"
                     value={archetype}
@@ -402,7 +404,7 @@ export const EditDeckModal: React.FC<EditDeckModalProps> = ({ deck, isOpen, onCl
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
-                  <label className="text-slate-400 block text-[10px] uppercase mb-1">Format</label>
+                  <label className="text-slate-400 block text-[10px] uppercase mb-1">{t('editDeck.format')}</label>
                   <select
                     value={format}
                     onChange={(e) => setFormat(e.target.value as any)}
@@ -415,7 +417,7 @@ export const EditDeckModal: React.FC<EditDeckModalProps> = ({ deck, isOpen, onCl
                 </div>
 
                 <div>
-                  <label className="text-slate-400 block text-[10px] uppercase mb-1">Accent Color & Glow</label>
+                  <label className="text-slate-400 block text-[10px] uppercase mb-1">{t('editDeck.accentColor')}</label>
                   <div className="flex items-center gap-2 pt-1">
                     {COLOR_PRESETS.map((preset) => (
                       <button
@@ -437,12 +439,12 @@ export const EditDeckModal: React.FC<EditDeckModalProps> = ({ deck, isOpen, onCl
               </div>
 
               <div>
-                <label className="text-slate-400 block text-[10px] uppercase mb-1">Deck Summary</label>
+                <label className="text-slate-400 block text-[10px] uppercase mb-1">{t('editDeck.summary')}</label>
                 <textarea
                   rows={3}
                   value={summary}
                   onChange={(e) => setSummary(e.target.value)}
-                  placeholder="Strategic summary of this deck's gameplan..."
+                  placeholder={t('editDeck.summaryPlaceholder')}
                   className="w-full bg-pokedex-darker border border-slate-700 rounded-xl p-2.5 text-white focus:outline-none focus:border-pokedex-blue font-sans text-xs"
                 />
               </div>
@@ -456,14 +458,14 @@ export const EditDeckModal: React.FC<EditDeckModalProps> = ({ deck, isOpen, onCl
               onClick={onClose}
               className="px-5 py-2.5 rounded-xl text-slate-300 hover:text-white hover:bg-slate-800 transition-colors font-mono text-xs"
             >
-              Cancel
+              {t('common.cancel')}
             </button>
             <button
               type="submit"
               className="bg-pokedex-red hover:bg-pokedex-lightred text-white font-bold px-6 py-2.5 rounded-xl shadow-lg transition-all active:scale-95 text-xs font-mono uppercase tracking-wider flex items-center gap-2 border border-white/20"
             >
               <Save className="w-4 h-4 text-yellow-300" />
-              <span>Save Changes</span>
+              <span>{t('editDeck.saveChanges')}</span>
             </button>
           </div>
         </form>

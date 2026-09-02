@@ -2,27 +2,29 @@ import React from 'react';
 import { Search, X, Sparkles, Layers, CheckCircle2, CircleDashed } from 'lucide-react';
 import { PokemonTypeIcon } from './PokemonTypeIcon';
 import { useCollection } from '../context/CollectionContext';
+import { useLanguage } from '../context/LanguageContext';
 import { soundEffects } from '../services/audio';
 
 const TYPE_PILLS = [
-  { id: 'ALL', label: 'All Types', color: '#64748B' },
-  { id: 'grass', label: 'Grass', color: '#78C850' },
-  { id: 'fire', label: 'Fire', color: '#F08030' },
-  { id: 'water', label: 'Water', color: '#6890F0' },
-  { id: 'lightning', label: 'Lightning', color: '#F8D030' },
-  { id: 'psychic', label: 'Psychic', color: '#F85888' },
-  { id: 'fighting', label: 'Fighting', color: '#C03028' },
-  { id: 'darkness', label: 'Darkness', color: '#705848' },
-  { id: 'metal', label: 'Metal', color: '#B8B8D0' },
-  { id: 'fairy', label: 'Fairy', color: '#EE99AC' },
-  { id: 'dragon', label: 'Dragon', color: '#7038F8' },
-  { id: 'colorless', label: 'Colorless', color: '#A8A878' },
-  { id: 'trainer', label: 'Trainer', color: '#14B8A6' },
-  { id: 'energy', label: 'Energy', color: '#F59E0B' },
+  { id: 'ALL', color: '#64748B' },
+  { id: 'grass', color: '#78C850' },
+  { id: 'fire', color: '#F08030' },
+  { id: 'water', color: '#6890F0' },
+  { id: 'lightning', color: '#F8D030' },
+  { id: 'psychic', color: '#F85888' },
+  { id: 'fighting', color: '#C03028' },
+  { id: 'darkness', color: '#705848' },
+  { id: 'metal', color: '#B8B8D0' },
+  { id: 'fairy', color: '#EE99AC' },
+  { id: 'dragon', color: '#7038F8' },
+  { id: 'colorless', color: '#A8A878' },
+  { id: 'trainer', color: '#14B8A6' },
+  { id: 'energy', color: '#F59E0B' },
 ];
 
 export const FilterBar: React.FC = () => {
   const { filters, setFilters, resetFilters, cards } = useCollection();
+  const { t, language } = useLanguage();
 
   // Extract unique sets and rarities
   const uniqueSets = Array.from(new Set(cards.map(c => c.set_code).filter(Boolean))).sort();
@@ -88,13 +90,13 @@ export const FilterBar: React.FC = () => {
             type="text"
             value={filters.searchQuery}
             onChange={handleSearchChange}
-            placeholder="Search by name (Charizard, Darkrai), card # (#88), set code..."
+            placeholder={t('filters.searchPlaceholder')}
             className="w-full bg-pokedex-darker border border-slate-800 rounded-xl pl-10 pr-10 py-2 text-sm text-slate-100 placeholder:text-slate-500 focus:outline-none focus:border-pokedex-blue transition-colors font-sans"
           />
           {filters.searchQuery && (
             <button
               onClick={handleClearSearch}
-              aria-label="Clear search"
+              aria-label={t('filters.clearSearch')}
               className="absolute right-3 top-1/2 -translate-y-1/2 p-1 text-slate-400 hover:text-white transition-colors"
             >
               <X className="w-4 h-4" />
@@ -107,13 +109,13 @@ export const FilterBar: React.FC = () => {
           <select
             value={filters.selectedCategory}
             onChange={handleCategoryChange}
-            aria-label="Filter by Category"
+            aria-label={t('filters.allCategories')}
             className="bg-pokedex-darker border border-slate-800 rounded-xl px-3 py-2 text-xs font-mono text-slate-200 focus:outline-none focus:border-pokedex-blue"
           >
-            <option value="ALL">All Categories</option>
-            <option value="Pokémon">Pokémon Only</option>
-            <option value="Trainer">Trainers Only</option>
-            <option value="Energy">Energies Only</option>
+            <option value="ALL">{t('filters.allCategories')}</option>
+            <option value="Pokémon">{t('filters.pokemonOnly')}</option>
+            <option value="Trainer">{t('filters.trainersOnly')}</option>
+            <option value="Energy">{t('filters.energiesOnly')}</option>
           </select>
 
           <select
@@ -122,15 +124,16 @@ export const FilterBar: React.FC = () => {
               soundEffects.playClick();
               setFilters(prev => ({ ...prev, selectedSet: e.target.value }));
             }}
-            aria-label="Filter by Set"
+            aria-label={t('filters.allSets')}
             className="bg-pokedex-darker border border-slate-800 rounded-xl px-3 py-2 text-xs font-mono text-slate-200 focus:outline-none focus:border-pokedex-blue"
           >
-            <option value="ALL">All Sets</option>
+            <option value="ALL">{t('filters.allSets')}</option>
             {uniqueSets.map(setCode => {
               const sample = cards.find(c => c.set_code === setCode);
+              const setName = language === 'pt' ? (sample?.set_pt || sample?.set_en || setCode) : (sample?.set_en || sample?.set_pt || setCode);
               return (
                 <option key={setCode} value={setCode}>
-                  {setCode} - {sample?.set_en || sample?.set_pt || setCode}
+                  {setCode} - {setName}
                 </option>
               );
             })}
@@ -142,23 +145,23 @@ export const FilterBar: React.FC = () => {
               soundEffects.playClick();
               setFilters(prev => ({ ...prev, sortBy: e.target.value as any }));
             }}
-            aria-label="Sort by"
+            aria-label={t('filters.sortBy')}
             className="bg-pokedex-darker border border-slate-800 rounded-xl px-3 py-2 text-xs font-mono text-slate-200 focus:outline-none focus:border-pokedex-blue"
           >
-            <option value="number">Card #</option>
-            <option value="name">Name (A-Z)</option>
-            <option value="quantity">Quantity</option>
-            <option value="rarity">Rarity</option>
+            <option value="number">{t('filters.sortCardNum')}</option>
+            <option value="name">{t('filters.sortName')}</option>
+            <option value="quantity">{t('filters.sortQuantity')}</option>
+            <option value="rarity">{t('filters.sortRarity')}</option>
           </select>
 
           {hasActiveFilters && (
             <button
               onClick={resetFilters}
-              title="Reset Filters"
+              title={t('filters.resetFilters')}
               className="px-3 py-2 rounded-xl bg-pokedex-red/20 border border-pokedex-red/50 text-pokedex-lightred text-xs font-bold hover:bg-pokedex-red hover:text-white transition-colors flex items-center gap-1"
             >
               <X className="w-3.5 h-3.5" />
-              <span className="hidden md:inline">Reset</span>
+              <span className="hidden md:inline">{t('filters.resetFilters')}</span>
             </button>
           )}
         </div>
@@ -168,6 +171,7 @@ export const FilterBar: React.FC = () => {
       <div className="flex items-center space-x-1.5 overflow-x-auto pb-1 no-scrollbar text-xs font-mono">
         {TYPE_PILLS.map((pill) => {
           const isSelected = filters.selectedColor === pill.id;
+          const label = t(`filters.types.${pill.id}`);
           return (
             <button
               key={pill.id}
@@ -190,7 +194,7 @@ export const FilterBar: React.FC = () => {
                   style={{ backgroundColor: pill.color }}
                 ></span>
               )}
-              <span>{pill.label}</span>
+              <span>{label}</span>
             </button>
           );
         })}
@@ -207,7 +211,7 @@ export const FilterBar: React.FC = () => {
           }`}
         >
           <Sparkles className="w-3.5 h-3.5" />
-          <span>Foil / Holo Only</span>
+          <span>{t('filters.foilOnly')}</span>
         </button>
 
         <button
@@ -219,7 +223,7 @@ export const FilterBar: React.FC = () => {
           }`}
         >
           <Layers className="w-3.5 h-3.5" />
-          <span>Mapped in Decks</span>
+          <span>{t('filters.mappedInDecks')}</span>
         </button>
 
         <button
@@ -231,7 +235,7 @@ export const FilterBar: React.FC = () => {
           }`}
         >
           <CheckCircle2 className="w-3.5 h-3.5" />
-          <span>Owned (Qty &gt; 0)</span>
+          <span>{t('filters.ownedOnly')}</span>
         </button>
 
         <button
@@ -243,7 +247,7 @@ export const FilterBar: React.FC = () => {
           }`}
         >
           <CircleDashed className="w-3.5 h-3.5" />
-          <span>Missing (Qty = 0)</span>
+          <span>{t('filters.missingOnly')}</span>
         </button>
       </div>
     </div>

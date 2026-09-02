@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Plus, X, Upload, Sparkles, Check, Image as ImageIcon, Loader2, Layers } from 'lucide-react';
 import { useCollection } from '../context/CollectionContext';
+import { useLanguage } from '../context/LanguageContext';
 import { soundEffects } from '../services/audio';
 import { uploadCardImageToStorage, downloadAndUploadImageToStorage } from '../services/firebase';
 
@@ -11,6 +12,7 @@ interface AddCardModalProps {
 
 export const AddCardModal: React.FC<AddCardModalProps> = ({ isOpen, onClose }) => {
   const { addNewCard, importCardsFromCsv, decks } = useCollection();
+  const { t } = useLanguage();
   const [tab, setTab] = useState<'manual' | 'csv'>('manual');
 
   // Manual Form State
@@ -64,16 +66,11 @@ export const AddCardModal: React.FC<AddCardModalProps> = ({ isOpen, onClose }) =
     let finalImageUrl = imageUrl.trim();
 
     try {
-      // 1. If user selected a local image file, upload directly to Firebase Storage
       if (imageFile) {
         finalImageUrl = await uploadCardImageToStorage(imageFile, targetFilename);
-      }
-      // 2. If user provided an external image URL, download and persist it to Firebase Storage
-      else if (finalImageUrl && !finalImageUrl.includes('firebasestorage.googleapis.com')) {
+      } else if (finalImageUrl && !finalImageUrl.includes('firebasestorage.googleapis.com')) {
         finalImageUrl = await downloadAndUploadImageToStorage(finalImageUrl, targetFilename);
-      }
-      // 3. Fallback default
-      else if (!finalImageUrl) {
+      } else if (!finalImageUrl) {
         finalImageUrl = `https://images.pokemontcg.io/${cleanSet}/${cleanNum}.png`;
       }
     } catch (err) {
@@ -144,13 +141,13 @@ export const AddCardModal: React.FC<AddCardModalProps> = ({ isOpen, onClose }) =
           <div className="flex items-center space-x-2">
             <Plus className="w-5 h-5 text-yellow-300" />
             <span className="font-display font-bold text-sm text-white uppercase tracking-wider">
-              Add Cards to Collection
+              {t('addCard.title')}
             </span>
           </div>
 
           <button
             onClick={onClose}
-            aria-label="Close modal"
+            aria-label={t('common.close')}
             className="w-8 h-8 rounded-full bg-pokedex-darkred hover:bg-black/40 text-white flex items-center justify-center transition-colors"
           >
             <X className="w-4 h-4" />
@@ -165,7 +162,7 @@ export const AddCardModal: React.FC<AddCardModalProps> = ({ isOpen, onClose }) =
               tab === 'manual' ? 'bg-slate-800 text-yellow-300 border-b-2 border-yellow-400' : 'text-slate-400 hover:text-white'
             }`}
           >
-            Manual Form
+            {t('addCard.tabManual')}
           </button>
           <button
             onClick={() => { soundEffects.playClick(); setTab('csv'); }}
@@ -173,7 +170,7 @@ export const AddCardModal: React.FC<AddCardModalProps> = ({ isOpen, onClose }) =
               tab === 'csv' ? 'bg-slate-800 text-yellow-300 border-b-2 border-yellow-400' : 'text-slate-400 hover:text-white'
             }`}
           >
-            Batch CSV Import
+            {t('addCard.tabCsv')}
           </button>
         </div>
 
@@ -183,7 +180,7 @@ export const AddCardModal: React.FC<AddCardModalProps> = ({ isOpen, onClose }) =
             <form onSubmit={handleManualSubmit} className="space-y-4">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
-                  <label className="text-slate-400 block text-[10px] uppercase mb-1">Card Name (English) *</label>
+                  <label className="text-slate-400 block text-[10px] uppercase mb-1">{t('addCard.nameEn')}</label>
                   <input
                     type="text"
                     required
@@ -195,7 +192,7 @@ export const AddCardModal: React.FC<AddCardModalProps> = ({ isOpen, onClose }) =
                 </div>
 
                 <div>
-                  <label className="text-slate-400 block text-[10px] uppercase mb-1">Card Name (Portuguese / Alias)</label>
+                  <label className="text-slate-400 block text-[10px] uppercase mb-1">{t('addCard.namePt')}</label>
                   <input
                     type="text"
                     value={namePt}
@@ -208,7 +205,7 @@ export const AddCardModal: React.FC<AddCardModalProps> = ({ isOpen, onClose }) =
 
               <div className="grid grid-cols-3 gap-3">
                 <div>
-                  <label className="text-slate-400 block text-[10px] uppercase mb-1">Set Code *</label>
+                  <label className="text-slate-400 block text-[10px] uppercase mb-1">{t('addCard.setCode')}</label>
                   <input
                     type="text"
                     required
@@ -220,7 +217,7 @@ export const AddCardModal: React.FC<AddCardModalProps> = ({ isOpen, onClose }) =
                 </div>
 
                 <div>
-                  <label className="text-slate-400 block text-[10px] uppercase mb-1">Card # *</label>
+                  <label className="text-slate-400 block text-[10px] uppercase mb-1">{t('addCard.cardNumber')}</label>
                   <input
                     type="text"
                     required
@@ -232,7 +229,7 @@ export const AddCardModal: React.FC<AddCardModalProps> = ({ isOpen, onClose }) =
                 </div>
 
                 <div>
-                  <label className="text-slate-400 block text-[10px] uppercase mb-1">Total in Set</label>
+                  <label className="text-slate-400 block text-[10px] uppercase mb-1">{t('addCard.totalInSet')}</label>
                   <input
                     type="text"
                     value={totalInSet}
@@ -245,30 +242,30 @@ export const AddCardModal: React.FC<AddCardModalProps> = ({ isOpen, onClose }) =
 
               <div className="grid grid-cols-3 gap-3">
                 <div>
-                  <label className="text-slate-400 block text-[10px] uppercase mb-1">Type / Category</label>
+                  <label className="text-slate-400 block text-[10px] uppercase mb-1">{t('addCard.typeCategory')}</label>
                   <select
                     value={colorCode}
                     onChange={(e) => setColorCode(e.target.value)}
                     className="w-full bg-pokedex-darker border border-slate-800 rounded-xl p-2 text-white focus:outline-none focus:border-pokedex-blue text-xs"
                   >
-                    <option value="R">Fire</option>
-                    <option value="W">Water</option>
-                    <option value="G">Grass</option>
-                    <option value="L">Lightning</option>
-                    <option value="P">Psychic</option>
-                    <option value="F">Fighting</option>
-                    <option value="D">Darkness</option>
-                    <option value="M">Metal</option>
-                    <option value="Y">Fairy</option>
-                    <option value="O">Dragon</option>
-                    <option value="C">Colorless</option>
-                    <option value="">Trainer</option>
-                    <option value="E">Energy</option>
+                    <option value="R">{t('filters.types.fire')}</option>
+                    <option value="W">{t('filters.types.water')}</option>
+                    <option value="G">{t('filters.types.grass')}</option>
+                    <option value="L">{t('filters.types.lightning')}</option>
+                    <option value="P">{t('filters.types.psychic')}</option>
+                    <option value="F">{t('filters.types.fighting')}</option>
+                    <option value="D">{t('filters.types.darkness')}</option>
+                    <option value="M">{t('filters.types.metal')}</option>
+                    <option value="Y">{t('filters.types.fairy')}</option>
+                    <option value="O">{t('filters.types.dragon')}</option>
+                    <option value="C">{t('filters.types.colorless')}</option>
+                    <option value="">{t('filters.types.trainer')}</option>
+                    <option value="E">{t('filters.types.energy')}</option>
                   </select>
                 </div>
 
                 <div>
-                  <label className="text-slate-400 block text-[10px] uppercase mb-1">Rarity</label>
+                  <label className="text-slate-400 block text-[10px] uppercase mb-1">{t('addCard.rarity')}</label>
                   <select
                     value={rarityCode}
                     onChange={(e) => setRarityCode(e.target.value)}
@@ -286,7 +283,7 @@ export const AddCardModal: React.FC<AddCardModalProps> = ({ isOpen, onClose }) =
                 </div>
 
                 <div>
-                  <label className="text-slate-400 block text-[10px] uppercase mb-1">Quantity</label>
+                  <label className="text-slate-400 block text-[10px] uppercase mb-1">{t('addCard.quantity')}</label>
                   <input
                     type="number"
                     min="0"
@@ -303,14 +300,14 @@ export const AddCardModal: React.FC<AddCardModalProps> = ({ isOpen, onClose }) =
                 <div className="flex items-center justify-between">
                   <label className="text-cyan-300 font-bold block text-[10px] uppercase flex items-center gap-1.5">
                     <ImageIcon className="w-3.5 h-3.5" />
-                    <span>Card Image & Cloud Storage Upload</span>
+                    <span>{t('addCard.imageSectionTitle')}</span>
                   </label>
                   <span className="text-[10px] text-slate-500 font-mono">Firebase Storage</span>
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 items-center">
                   <div>
-                    <label className="text-slate-400 block text-[10px] uppercase mb-1">Option A: Upload Image File</label>
+                    <label className="text-slate-400 block text-[10px] uppercase mb-1">{t('addCard.imageOptionA')}</label>
                     <input
                       type="file"
                       accept="image/*"
@@ -320,7 +317,7 @@ export const AddCardModal: React.FC<AddCardModalProps> = ({ isOpen, onClose }) =
                   </div>
 
                   <div>
-                    <label className="text-slate-400 block text-[10px] uppercase mb-1">Option B: External Image URL</label>
+                    <label className="text-slate-400 block text-[10px] uppercase mb-1">{t('addCard.imageOptionB')}</label>
                     <input
                       type="url"
                       value={imageUrl}
@@ -334,7 +331,7 @@ export const AddCardModal: React.FC<AddCardModalProps> = ({ isOpen, onClose }) =
                 {imagePreview && (
                   <div className="flex items-center space-x-3 pt-1">
                     <img src={imagePreview} alt="Preview" className="w-12 h-16 rounded-lg object-cover border border-slate-700 shadow-md" />
-                    <span className="text-[11px] text-emerald-400">✓ Image ready to upload to Cloud Storage on save</span>
+                    <span className="text-[11px] text-emerald-400">✓ {t('addCard.imageReadyNotice')}</span>
                   </div>
                 )}
               </div>
@@ -350,7 +347,7 @@ export const AddCardModal: React.FC<AddCardModalProps> = ({ isOpen, onClose }) =
                 />
                 <label htmlFor="foil-check" className="text-slate-200 text-xs flex items-center gap-1 cursor-pointer">
                   <Sparkles className="w-3.5 h-3.5 text-yellow-300" />
-                  <span>Holographic (Foil / Holo) Card</span>
+                  <span>{t('addCard.isFoil')}</span>
                 </label>
               </div>
 
@@ -362,17 +359,17 @@ export const AddCardModal: React.FC<AddCardModalProps> = ({ isOpen, onClose }) =
                 {isUploadingImage ? (
                   <>
                     <Loader2 className="w-4 h-4 animate-spin text-yellow-300" />
-                    <span>Uploading Image to Storage & Saving...</span>
+                    <span>{t('addCard.uploadingAndSaving')}</span>
                   </>
                 ) : (
-                  <span>Save Card to Collection & Storage</span>
+                  <span>{t('addCard.saveCardBtn')}</span>
                 )}
               </button>
             </form>
           ) : (
             <div className="space-y-4">
               <p className="text-slate-300 text-xs font-sans">
-                Paste spreadsheet or CSV text (Pokemon TCG / LigaPokemon format), or upload a <code>.csv</code> file from your computer:
+                {t('addCard.csvHelp')}
               </p>
 
               <div>
@@ -397,9 +394,9 @@ export const AddCardModal: React.FC<AddCardModalProps> = ({ isOpen, onClose }) =
                 <div className="flex items-center justify-between">
                   <span className="text-[10px] text-slate-300 uppercase font-bold flex items-center gap-1.5 font-mono">
                     <Layers className="w-3.5 h-3.5 text-yellow-400" />
-                    <span>Deck Assignment:</span>
+                    <span>{t('addCard.deckAssignment')}</span>
                   </span>
-                  <span className="text-[9px] text-slate-500 font-mono">Optional</span>
+                  <span className="text-[9px] text-slate-500 font-mono">{t('common.optional')}</span>
                 </div>
 
                 {/* Segment Options */}
@@ -413,7 +410,7 @@ export const AddCardModal: React.FC<AddCardModalProps> = ({ isOpen, onClose }) =
                         : 'text-slate-400 hover:text-slate-200'
                     }`}
                   >
-                    Collection Only
+                    {t('addCard.deckModeNone')}
                   </button>
                   <button
                     type="button"
@@ -425,7 +422,7 @@ export const AddCardModal: React.FC<AddCardModalProps> = ({ isOpen, onClose }) =
                         : 'text-slate-400 hover:text-slate-200'
                     }`}
                   >
-                    Existing Deck
+                    {t('addCard.deckModeExisting')}
                   </button>
                   <button
                     type="button"
@@ -436,14 +433,14 @@ export const AddCardModal: React.FC<AddCardModalProps> = ({ isOpen, onClose }) =
                         : 'text-slate-400 hover:text-slate-200'
                     }`}
                   >
-                    + New Deck
+                    {t('addCard.deckModeNew')}
                   </button>
                 </div>
 
                 {/* Sub-form: Existing Deck Dropdown */}
                 {deckMode === 'existing' && (
                   <div className="space-y-1.5 animate-in fade-in">
-                    <label className="text-slate-400 block text-[10px] uppercase font-mono">Select Existing Deck:</label>
+                    <label className="text-slate-400 block text-[10px] uppercase font-mono">{t('addCard.selectExistingDeck')}</label>
                     <select
                       value={targetDeckId}
                       onChange={(e) => setTargetDeckId(e.target.value)}
@@ -461,7 +458,7 @@ export const AddCardModal: React.FC<AddCardModalProps> = ({ isOpen, onClose }) =
                   <div className="space-y-2.5 animate-in fade-in">
                     <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
                       <div className="sm:col-span-2">
-                        <label className="text-slate-400 block text-[10px] uppercase mb-1 font-mono">New Deck Name *</label>
+                        <label className="text-slate-400 block text-[10px] uppercase mb-1 font-mono">{t('addCard.newDeckName')}</label>
                         <input
                           type="text"
                           value={newDeckName}
@@ -471,7 +468,7 @@ export const AddCardModal: React.FC<AddCardModalProps> = ({ isOpen, onClose }) =
                         />
                       </div>
                       <div>
-                        <label className="text-slate-400 block text-[10px] uppercase mb-1 font-mono">Format</label>
+                        <label className="text-slate-400 block text-[10px] uppercase mb-1 font-mono">{t('addCard.format')}</label>
                         <select
                           value={newDeckFormat}
                           onChange={(e) => setNewDeckFormat(e.target.value as any)}
@@ -491,7 +488,7 @@ export const AddCardModal: React.FC<AddCardModalProps> = ({ isOpen, onClose }) =
                 <div className="bg-emerald-950 border border-emerald-500/40 p-3 rounded-xl text-emerald-300 text-xs flex items-center gap-2 animate-in fade-in">
                   <Check className="w-4 h-4 text-emerald-400 shrink-0" />
                   <span>
-                    Import finished: {importResult.added} added, {importResult.updated} updated
+                    {t('addCard.importSuccess', { added: importResult.added, updated: importResult.updated })}
                     {importResult.deckName ? ` (assigned to deck "${importResult.deckName}")` : ''}!
                   </span>
                 </div>
@@ -505,10 +502,10 @@ export const AddCardModal: React.FC<AddCardModalProps> = ({ isOpen, onClose }) =
                 <Upload className="w-4 h-4" />
                 <span>
                   {deckMode === 'new' && newDeckName.trim()
-                    ? `Import & Create Deck "${newDeckName.trim()}"`
+                    ? t('addCard.importAndCreateDeck', { name: newDeckName.trim() })
                     : deckMode === 'existing'
-                    ? 'Import & Add to Existing Deck'
-                    : 'Process CSV Import'}
+                    ? t('addCard.importAndAddToDeck')
+                    : t('addCard.processCsv')}
                 </span>
               </button>
             </div>

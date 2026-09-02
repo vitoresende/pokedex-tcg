@@ -3,6 +3,7 @@ import { Card } from '../types';
 import { HoloCard } from './HoloCard';
 import { Heart, Plus, Minus, Layers } from 'lucide-react';
 import { useCollection } from '../context/CollectionContext';
+import { useLanguage } from '../context/LanguageContext';
 import { soundEffects } from '../services/audio';
 
 interface CardItemProps {
@@ -12,7 +13,11 @@ interface CardItemProps {
 
 export const CardItem: React.FC<CardItemProps> = ({ card, onSelect }) => {
   const { favorites, toggleFavorite, updateCardQuantity } = useCollection();
+  const { t, getCardName, getCardSetName } = useLanguage();
   const isFavorite = favorites.includes(card.id);
+
+  const cardName = getCardName(card);
+  const setName = getCardSetName(card);
 
   const handleCardClick = () => {
     soundEffects.playClick();
@@ -45,7 +50,7 @@ export const CardItem: React.FC<CardItemProps> = ({ card, onSelect }) => {
         {/* Favorite Button */}
         <button
           onClick={handleFavoriteClick}
-          aria-label={isFavorite ? "Remove from favorites" : "Add to favorites"}
+          aria-label={isFavorite ? t('cardItem.removeFavorite') : t('cardItem.addFavorite')}
           className={`absolute top-2 left-2 z-30 p-1.5 rounded-full backdrop-blur-md transition-transform active:scale-90 ${
             isFavorite 
               ? 'bg-red-500/90 text-white shadow-md' 
@@ -69,7 +74,7 @@ export const CardItem: React.FC<CardItemProps> = ({ card, onSelect }) => {
           <div className="absolute bottom-2 left-2 z-30 flex items-center space-x-1">
             <span className="bg-purple-900/90 border border-purple-400/40 text-purple-200 text-[10px] font-bold px-1.5 py-0.5 rounded-md flex items-center gap-1 shadow">
               <Layers className="w-2.5 h-2.5" />
-              <span>D{card.decks.map(d => d.replace('deck-', '')).join(',')}</span>
+              <span>{t('cardItem.deckPrefix')}{card.decks.map(d => d.replace('deck-', '')).join(',')}</span>
             </span>
           </div>
         )}
@@ -78,8 +83,8 @@ export const CardItem: React.FC<CardItemProps> = ({ card, onSelect }) => {
       {/* Card Information */}
       <div className="space-y-1">
         <div className="flex items-start justify-between gap-1">
-          <h3 className="font-bold text-xs text-white truncate group-hover:text-pokedex-cyan transition-colors" title={card.name_en || card.name_pt}>
-            {card.name_en || card.name_pt}
+          <h3 className="font-bold text-xs text-white truncate group-hover:text-pokedex-cyan transition-colors" title={cardName}>
+            {cardName}
           </h3>
           <span 
             className="text-[10px] font-mono font-bold px-1.5 py-0.2 rounded border uppercase tracking-wider shrink-0"
@@ -94,7 +99,7 @@ export const CardItem: React.FC<CardItemProps> = ({ card, onSelect }) => {
         </div>
 
         <div className="flex items-center justify-between text-[10px] text-slate-400 font-mono">
-          <span className="truncate max-w-[90px]">{card.set_en || card.set_pt}</span>
+          <span className="truncate max-w-[90px]">{setName}</span>
           <span className="bg-slate-800 px-1 rounded text-slate-300">#{card.card_number}</span>
         </div>
 

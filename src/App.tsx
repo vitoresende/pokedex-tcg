@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { LanguageProvider } from './context/LanguageContext';
 import { AuthProvider } from './context/AuthContext';
 import { CollectionProvider } from './context/CollectionContext';
 import { AccessGate } from './components/AccessGate';
@@ -37,13 +38,15 @@ const MainLayout: React.FC = () => {
 
 export function App() {
   return (
-    <AuthProvider>
-      <AccessGate>
-        <CollectionProvider>
-          <MainLayout />
-        </CollectionProvider>
-      </AccessGate>
-    </AuthProvider>
+    <LanguageProvider>
+      <AuthProvider>
+        <AccessGate>
+          <CollectionProvider>
+            <MainLayout />
+          </CollectionProvider>
+        </AccessGate>
+      </AuthProvider>
+    </LanguageProvider>
   );
 }
 

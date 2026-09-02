@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useCollection } from '../context/CollectionContext';
+import { useLanguage } from '../context/LanguageContext';
 import { Deck, DeckCardItem } from '../types';
 import { 
   Layers, Copy, Check, AlertCircle, 
@@ -12,6 +13,7 @@ import { EditDeckModal } from '../components/EditDeckModal';
 
 export const DecksPage: React.FC = () => {
   const { decks, cards, selectedCard, setSelectedCard, deleteDeck, removeCardFromDeck } = useCollection();
+  const { t, language } = useLanguage();
   const [activeDeckId, setActiveDeckId] = useState<string>(decks[0]?.id || 'deck-1');
   const [copied, setCopied] = useState<boolean>(false);
   const [activeGuideTab, setActiveGuideTab] = useState<'opening' | 'midgame' | 'lategame'>('opening');
@@ -46,7 +48,7 @@ export const DecksPage: React.FC = () => {
   };
 
   const handleDeleteCurrentDeck = () => {
-    if (confirm(`Are you sure you want to delete "${currentDeck.name}"?`)) {
+    if (confirm(t('decks.confirmDelete', { name: currentDeck.name }))) {
       soundEffects.playClick();
       deleteDeck(currentDeck.id);
       const remaining = decks.filter(d => d.id !== currentDeck.id);
@@ -97,10 +99,10 @@ export const DecksPage: React.FC = () => {
         <div>
           <h2 className="text-xl font-black font-display text-white flex items-center gap-2">
             <Layers className="w-5 h-5 text-yellow-300" />
-            <span>Deck Management ({decks.length})</span>
+            <span>{t('decks.title', { count: decks.length })}</span>
           </h2>
           <p className="text-xs text-slate-400 font-mono">
-            Explore turn playbooks, craft custom archetypes, or export lists to PTCG Live
+            {t('decks.subtitle')}
           </p>
         </div>
 
@@ -109,7 +111,7 @@ export const DecksPage: React.FC = () => {
           className="bg-pokedex-red hover:bg-pokedex-lightred text-white font-bold px-4 py-2 rounded-2xl shadow-lg transition-all active:scale-95 text-xs font-mono flex items-center justify-center space-x-2 border border-white/20"
         >
           <Plus className="w-4 h-4 text-yellow-300" />
-          <span>Create New Deck</span>
+          <span>{t('decks.createDeck')}</span>
         </button>
       </div>
 
@@ -141,9 +143,9 @@ export const DecksPage: React.FC = () => {
         })}
       </div>
 
-      {/* Deck Hero Card */}
-      <div className="bg-pokedex-card/95 backdrop-blur-md rounded-3xl border border-slate-800 p-5 sm:p-6 shadow-xl relative overflow-hidden">
-        {/* Background Accent Glow */}
+      {/* Main Active Deck Banner / Strategy Hero Card */}
+      <div className={`relative overflow-hidden rounded-3xl bg-gradient-to-br ${currentDeck.badge_color} border-2 border-slate-700/80 p-6 shadow-2xl transition-all`}>
+        {/* Glow Accent Sphere */}
         <div 
           className="absolute -top-24 -right-24 w-72 h-72 rounded-full blur-3xl opacity-20 pointer-events-none"
           style={{ backgroundColor: currentDeck.accent_color }}
@@ -153,7 +155,7 @@ export const DecksPage: React.FC = () => {
           <div>
             <div className="flex items-center space-x-2 mb-1.5">
               <span className="bg-pokedex-red text-white text-[10px] font-bold px-2.5 py-0.5 rounded-full font-mono uppercase tracking-wider">
-                {currentDeck.stats.total || 60}-Card Deck
+                {t('decks.cardsCount', { count: currentDeck.stats.total || 60 })}
               </span>
               <span className="bg-slate-800 text-yellow-300 text-[10px] font-bold px-2.5 py-0.5 rounded-full font-mono">
                 {currentDeck.format}
@@ -173,7 +175,7 @@ export const DecksPage: React.FC = () => {
               className="bg-blue-600/90 hover:bg-blue-600 text-white font-bold px-3.5 py-2 rounded-xl border border-blue-400/40 text-xs flex items-center space-x-1.5 transition-all active:scale-95 shadow-md shrink-0 font-mono"
             >
               <Pencil className="w-3.5 h-3.5 text-yellow-300" />
-              <span>Edit Deck & Playbook</span>
+              <span>{t('decks.editDeckBtn')}</span>
             </button>
 
             <button
@@ -181,13 +183,13 @@ export const DecksPage: React.FC = () => {
               className="bg-pokedex-darker hover:bg-slate-800 text-slate-100 font-bold px-3.5 py-2 rounded-xl border border-slate-700 text-xs flex items-center space-x-2 transition-all active:scale-95 shadow-md shrink-0 font-mono"
             >
               {copied ? <Check className="w-4 h-4 text-emerald-400" /> : <Copy className="w-4 h-4 text-yellow-300" />}
-              <span>{copied ? 'Decklist Copied!' : 'Export (PTCG Live)'}</span>
+              <span>{copied ? t('decks.decklistCopied') : t('decks.exportLive')}</span>
             </button>
 
             {decks.length > 1 && (
               <button
                 onClick={handleDeleteCurrentDeck}
-                title="Delete Deck"
+                title={t('decks.deleteDeck')}
                 className="p-2 rounded-xl bg-red-950/60 hover:bg-red-900 border border-red-800/60 text-red-300 transition-colors"
               >
                 <Trash2 className="w-4 h-4" />
@@ -200,11 +202,11 @@ export const DecksPage: React.FC = () => {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-3 pt-4 border-t border-slate-800/80 text-xs font-mono">
           {/* Card Ratio */}
           <div className="bg-pokedex-darker p-3 rounded-2xl border border-slate-800 space-y-1.5">
-            <span className="text-slate-400 block text-[10px] uppercase">Composition ({currentDeck.stats.total} Cards)</span>
+            <span className="text-slate-400 block text-[10px] uppercase">{t('decks.composition', { count: currentDeck.stats.total })}</span>
             <div className="flex items-center justify-between font-bold">
-              <span className="text-blue-400">{currentDeck.stats.pokemon} Pokémon</span>
-              <span className="text-teal-400">{currentDeck.stats.trainers} Trainers</span>
-              <span className="text-amber-400">{currentDeck.stats.energies} Energy</span>
+              <span className="text-blue-400">{t('decks.pokemonCount', { count: currentDeck.stats.pokemon })}</span>
+              <span className="text-teal-400">{t('decks.trainersCount', { count: currentDeck.stats.trainers })}</span>
+              <span className="text-amber-400">{t('decks.energiesCount', { count: currentDeck.stats.energies })}</span>
             </div>
             {/* Visual Bar */}
             <div className="w-full h-2 rounded-full overflow-hidden flex">
@@ -216,22 +218,22 @@ export const DecksPage: React.FC = () => {
 
           {/* Energy Status */}
           <div className="bg-pokedex-darker p-3 rounded-2xl border border-slate-800 space-y-1">
-            <span className="text-slate-400 block text-[10px] uppercase">Energy Breakdown</span>
+            <span className="text-slate-400 block text-[10px] uppercase">{t('decks.energyBreakdown')}</span>
             <div className="text-slate-200 font-semibold text-xs">{currentDeck.energy_breakdown.owned}</div>
             {currentDeck.energy_breakdown.missing_count > 0 ? (
               <div className="flex items-center space-x-1.5 text-amber-300 font-bold text-[11px] pt-1">
                 <AlertCircle className="w-3.5 h-3.5" />
-                <span>Required: {currentDeck.energy_breakdown.needed}</span>
+                <span>{t('decks.energyRequired', { needed: currentDeck.energy_breakdown.needed })}</span>
               </div>
             ) : (
-              <div className="text-emerald-400 font-bold text-[11px] pt-1">Energy complete!</div>
+              <div className="text-emerald-400 font-bold text-[11px] pt-1">{t('decks.energyComplete')}</div>
             )}
           </div>
 
           {/* Win Condition */}
           <div className="bg-pokedex-darker p-3 rounded-2xl border border-slate-800 space-y-1">
             <span className="text-slate-400 block text-[10px] uppercase flex items-center gap-1">
-              <Trophy className="w-3 h-3 text-yellow-400" /> Win Condition
+              <Trophy className="w-3 h-3 text-yellow-400" /> {t('decks.winCondition')}
             </span>
             <p className="text-slate-300 text-[11px] font-sans line-clamp-2">
               {currentDeck.win_condition}
@@ -247,7 +249,7 @@ export const DecksPage: React.FC = () => {
             <div className="flex items-center space-x-2">
               <Swords className="w-5 h-5 text-pokedex-lightred" />
               <h3 className="font-bold text-sm text-white uppercase tracking-wider font-mono">
-                Strategic Turn Playbook
+                {t('decks.playbook')}
               </h3>
             </div>
             <button
@@ -255,7 +257,7 @@ export const DecksPage: React.FC = () => {
               className="sm:hidden text-[11px] text-yellow-300 hover:text-yellow-200 flex items-center gap-1 bg-black/40 px-2.5 py-1 rounded-lg border border-slate-700 font-mono"
             >
               <Pencil className="w-3 h-3" />
-              <span>Edit</span>
+              <span>{t('common.edit')}</span>
             </button>
           </div>
 
@@ -267,7 +269,7 @@ export const DecksPage: React.FC = () => {
                   activeGuideTab === 'opening' ? 'bg-pokedex-red text-white font-bold' : 'text-slate-400 hover:text-slate-200'
                 }`}
               >
-                1. Opening
+                {t('decks.opening')}
               </button>
               <button
                 onClick={() => { soundEffects.playClick(); setActiveGuideTab('midgame'); }}
@@ -275,7 +277,7 @@ export const DecksPage: React.FC = () => {
                   activeGuideTab === 'midgame' ? 'bg-pokedex-red text-white font-bold' : 'text-slate-400 hover:text-slate-200'
                 }`}
               >
-                2. Midgame
+                {t('decks.midgame')}
               </button>
               <button
                 onClick={() => { soundEffects.playClick(); setActiveGuideTab('lategame'); }}
@@ -283,7 +285,7 @@ export const DecksPage: React.FC = () => {
                   activeGuideTab === 'lategame' ? 'bg-pokedex-red text-white font-bold' : 'text-slate-400 hover:text-slate-200'
                 }`}
               >
-                3. Endgame
+                {t('decks.endgame')}
               </button>
             </div>
 
@@ -292,7 +294,7 @@ export const DecksPage: React.FC = () => {
               className="hidden sm:flex text-xs text-yellow-300 hover:text-yellow-200 items-center gap-1.5 bg-black/40 hover:bg-black/60 px-3 py-1.5 rounded-xl border border-slate-700 font-mono transition-colors"
             >
               <Pencil className="w-3.5 h-3.5" />
-              <span>Customize Playbook</span>
+              <span>{t('decks.customizePlaybook')}</span>
             </button>
           </div>
         </div>
@@ -316,7 +318,7 @@ export const DecksPage: React.FC = () => {
         <div className="p-3 bg-purple-950/30 rounded-2xl border border-purple-800/40 text-xs font-mono flex items-start space-x-2.5">
           <Sparkles className="w-4 h-4 text-purple-300 shrink-0 mt-0.5" />
           <div>
-            <span className="font-bold text-purple-300">Prize Trade Tip: </span>
+            <span className="font-bold text-purple-300">{t('decks.prizeTradeTip')} </span>
             <span className="text-purple-200">{currentDeck.prize_trade_tip}</span>
           </div>
         </div>
@@ -326,14 +328,14 @@ export const DecksPage: React.FC = () => {
       <div className="space-y-4">
         <h3 className="font-bold text-base text-white flex items-center space-x-2">
           <Layers className="w-5 h-5 text-yellow-300" />
-          <span>Deck Card List ({currentDeck.cards.reduce((acc, c) => acc + c.count, 0)} Cards)</span>
+          <span>{t('decks.completeList')} ({currentDeck.cards.reduce((acc, c) => acc + c.count, 0)} {t('common.cards')})</span>
         </h3>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           {/* Pokémon Column */}
           <div className="bg-pokedex-card/90 rounded-2xl border border-slate-800 p-4 space-y-3">
             <div className="flex items-center justify-between border-b border-slate-800 pb-2">
-              <span className="font-bold text-xs text-blue-400 font-mono uppercase">Pokémon ({currentDeck.stats.pokemon})</span>
+              <span className="font-bold text-xs text-blue-400 font-mono uppercase">{t('decks.pokemonSection', { count: currentDeck.stats.pokemon })}</span>
             </div>
             <div className="space-y-1.5">
               {currentDeck.cards.filter(c => c.section === 'pokemon').map((c, i) => (
@@ -350,7 +352,7 @@ export const DecksPage: React.FC = () => {
                   </div>
                   <button
                     onClick={() => removeCardFromDeck(currentDeck.id, c.name)}
-                    title="Remove from deck"
+                    title={t('decks.removeFromDeck')}
                     className="text-slate-500 hover:text-red-400 p-1"
                   >
                     <Trash2 className="w-3 h-3" />
@@ -363,7 +365,7 @@ export const DecksPage: React.FC = () => {
           {/* Trainers Column */}
           <div className="bg-pokedex-card/90 rounded-2xl border border-slate-800 p-4 space-y-3">
             <div className="flex items-center justify-between border-b border-slate-800 pb-2">
-              <span className="font-bold text-xs text-teal-400 font-mono uppercase">Trainers ({currentDeck.stats.trainers})</span>
+              <span className="font-bold text-xs text-teal-400 font-mono uppercase">{t('decks.trainersSection', { count: currentDeck.stats.trainers })}</span>
             </div>
             <div className="space-y-1.5">
               {currentDeck.cards.filter(c => c.section === 'trainers').map((c, i) => (
@@ -380,7 +382,7 @@ export const DecksPage: React.FC = () => {
                   </div>
                   <button
                     onClick={() => removeCardFromDeck(currentDeck.id, c.name)}
-                    title="Remove from deck"
+                    title={t('decks.removeFromDeck')}
                     className="text-slate-500 hover:text-red-400 p-1"
                   >
                     <Trash2 className="w-3 h-3" />
@@ -393,7 +395,7 @@ export const DecksPage: React.FC = () => {
           {/* Energies Column */}
           <div className="bg-pokedex-card/90 rounded-2xl border border-slate-800 p-4 space-y-3">
             <div className="flex items-center justify-between border-b border-slate-800 pb-2">
-              <span className="font-bold text-xs text-amber-400 font-mono uppercase">Energies ({currentDeck.stats.energies})</span>
+              <span className="font-bold text-xs text-amber-400 font-mono uppercase">{t('decks.energySection', { count: currentDeck.stats.energies })}</span>
             </div>
             <div className="space-y-1.5">
               {currentDeck.cards.filter(c => c.section === 'energies').map((c, i) => (
@@ -410,7 +412,7 @@ export const DecksPage: React.FC = () => {
                   </div>
                   <button
                     onClick={() => removeCardFromDeck(currentDeck.id, c.name)}
-                    title="Remove from deck"
+                    title={t('decks.removeFromDeck')}
                     className="text-slate-500 hover:text-red-400 p-1"
                   >
                     <Trash2 className="w-3 h-3" />

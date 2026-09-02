@@ -1,16 +1,18 @@
 import React, { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useCollection } from '../context/CollectionContext';
+import { useLanguage } from '../context/LanguageContext';
 import { 
   User, ShieldCheck, ShieldAlert, LogIn, LogOut, Cloud, 
-  CheckCircle2, AlertTriangle, Sparkles, UploadCloud, RefreshCw 
+  CheckCircle2, AlertTriangle, Sparkles, UploadCloud, RefreshCw,
+  Globe, Check
 } from 'lucide-react';
-import { soundEffects } from '../services/audio';
 
 export const AuthProfilePage: React.FC = () => {
-  const { user, isAllowed, allowedEmails, authError, clearAuthError, loginWithGoogle, logout } = useAuth();
-  const { syncToCloud, syncing, syncStatus, lastSyncedAt, stats, cards, decks, favorites } = useCollection();
-  const [syncSuccess, setSyncSuccess] = useState<boolean>(false);
+  const { user, isAllowed, allowedEmails, authError, loginWithGoogle, logout } = useAuth();
+  const { syncToCloud, syncing, syncStatus, lastSyncedAt, stats, decks, favorites } = useCollection();
+  const { language, setLanguage, t } = useLanguage();
+  const [, setSyncSuccess] = useState<boolean>(false);
   const [photoError, setPhotoError] = useState<boolean>(false);
 
   const handleSync = async () => {
@@ -25,7 +27,7 @@ export const AuthProfilePage: React.FC = () => {
 
   const formattedLastSynced = lastSyncedAt 
     ? lastSyncedAt.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })
-    : 'Pending...';
+    : t('common.loading');
 
   return (
     <div className="space-y-6 max-w-4xl mx-auto pb-20 select-none">
@@ -56,16 +58,16 @@ export const AuthProfilePage: React.FC = () => {
             <div>
               <div className="flex items-center space-x-2">
                 <h2 className="font-display font-black text-xl text-white tracking-wide uppercase">
-                  {user?.displayName || (user ? 'Trainer' : 'Guest Visitor')}
+                  {user?.displayName || (user ? t('nav.trainer') : t('nav.guestVisitor'))}
                 </h2>
                 {isAllowed && (
                   <span className="bg-emerald-500/20 text-emerald-300 font-mono text-[10px] px-2 py-0.5 rounded-full font-bold border border-emerald-500/30 flex items-center gap-1">
-                    <ShieldCheck className="w-3 h-3" /> Whitelisted
+                    <ShieldCheck className="w-3 h-3" /> {t('nav.whitelisted')}
                   </span>
                 )}
               </div>
               <p className="text-xs text-slate-400 font-mono mt-0.5">
-                {user?.email || 'Sign in to access your personal collection & custom decks'}
+                {user?.email || (language === 'pt' ? 'Conecte-se para acessar sua coleção e decks personalizados' : 'Sign in to access your personal collection & custom decks')}
               </p>
               {user?.uid && (
                 <p className="text-[10px] text-slate-500 font-mono mt-0.5 truncate max-w-xs sm:max-w-md">
@@ -79,18 +81,18 @@ export const AuthProfilePage: React.FC = () => {
             {user ? (
               <button
                 onClick={logout}
-                className="w-full sm:w-auto bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold px-4 py-2 rounded-xl text-xs flex items-center justify-center space-x-2 border border-slate-700 transition-colors"
+                className="w-full sm:w-auto bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold px-4 py-2 rounded-xl text-xs flex items-center justify-center space-x-2 border border-slate-700 transition-colors font-mono"
               >
                 <LogOut className="w-4 h-4 text-red-400" />
-                <span>Sign Out</span>
+                <span>{t('nav.signOut')}</span>
               </button>
             ) : (
               <button
                 onClick={loginWithGoogle}
-                className="w-full sm:w-auto bg-pokedex-red hover:bg-pokedex-lightred text-white font-bold px-5 py-2.5 rounded-xl text-xs flex items-center justify-center space-x-2 shadow-lg transition-all active:scale-95 border border-white/20"
+                className="w-full sm:w-auto bg-pokedex-red hover:bg-pokedex-lightred text-white font-bold px-5 py-2.5 rounded-xl text-xs flex items-center justify-center space-x-2 shadow-lg transition-all active:scale-95 border border-white/20 font-mono"
               >
                 <LogIn className="w-4 h-4 text-yellow-300" />
-                <span>Sign In with Google (Gmail)</span>
+                <span>{t('accessGate.signInGoogle')}</span>
               </button>
             )}
           </div>
@@ -101,13 +103,78 @@ export const AuthProfilePage: React.FC = () => {
           <div className="mt-4 bg-red-950/80 border-2 border-red-500/80 rounded-2xl p-4 text-left font-mono text-xs space-y-2 relative shadow-lg animate-in fade-in">
             <div className="flex items-center space-x-2 text-red-300 font-bold">
               <AlertTriangle className="w-4 h-4 text-amber-400 shrink-0" />
-              <span>Authentication Error</span>
+              <span>{t('accessGate.authError')}</span>
             </div>
             <p className="text-slate-200 text-xs font-sans leading-relaxed">
               {authError}
             </p>
           </div>
         )}
+      </div>
+
+      {/* User Preferences Card (Language / Idioma) */}
+      <div className="bg-pokedex-card/90 rounded-3xl border border-slate-800 p-6 space-y-4 shadow-md">
+        <div className="flex items-center space-x-3">
+          <div className="p-2 rounded-xl bg-purple-500/20 text-purple-400 border border-purple-500/30">
+            <Globe className="w-6 h-6" />
+          </div>
+          <div>
+            <h3 className="font-bold text-sm text-white font-mono uppercase">
+              {t('preferences.title')}
+            </h3>
+            <p className="text-xs text-slate-400 font-sans">
+              {t('preferences.subtitle')}
+            </p>
+          </div>
+        </div>
+
+        <div className="bg-pokedex-darker p-4 rounded-2xl border border-slate-800 space-y-3">
+          <label className="text-slate-300 text-xs font-mono font-bold block uppercase tracking-wider">
+            {t('preferences.languageLabel')}
+          </label>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <button
+              type="button"
+              onClick={() => setLanguage('pt')}
+              className={`p-3.5 rounded-xl border flex items-center justify-between transition-all ${
+                language === 'pt'
+                  ? 'bg-pokedex-red/20 border-pokedex-red text-white shadow-md'
+                  : 'bg-black/40 border-slate-800 text-slate-400 hover:text-white hover:border-slate-700'
+              }`}
+            >
+              <div className="flex items-center space-x-3">
+                <span className="text-xl">🇧🇷</span>
+                <div className="text-left font-mono">
+                  <span className="font-bold text-xs block text-white">{t('preferences.languagePt')}</span>
+                  <span className="text-[10px] text-slate-400">Padrão em Português</span>
+                </div>
+              </div>
+              {language === 'pt' && <Check className="w-4 h-4 text-emerald-400" />}
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setLanguage('en')}
+              className={`p-3.5 rounded-xl border flex items-center justify-between transition-all ${
+                language === 'en'
+                  ? 'bg-pokedex-red/20 border-pokedex-red text-white shadow-md'
+                  : 'bg-black/40 border-slate-800 text-slate-400 hover:text-white hover:border-slate-700'
+              }`}
+            >
+              <div className="flex items-center space-x-3">
+                <span className="text-xl">🇺🇸</span>
+                <div className="text-left font-mono">
+                  <span className="font-bold text-xs block text-white">{t('preferences.languageEn')}</span>
+                  <span className="text-[10px] text-slate-400">Default International</span>
+                </div>
+              </div>
+              {language === 'en' && <Check className="w-4 h-4 text-emerald-400" />}
+            </button>
+          </div>
+          <p className="text-[11px] text-slate-500 font-sans leading-relaxed">
+            {t('preferences.languageSavedNotice')}
+          </p>
+        </div>
       </div>
 
       {/* Real-Time Continuous Cloud Firestore Sync Card */}
@@ -119,10 +186,10 @@ export const AuthProfilePage: React.FC = () => {
             </div>
             <div>
               <h3 className="font-bold text-sm text-white font-mono uppercase">
-                Real-Time Cloud Firestore Sync
+                {t('profile.cloudSync')}
               </h3>
               <p className="text-xs text-slate-400 font-sans">
-                Continuous auto-save for cards, quantities, custom decks & notes
+                {t('profile.cloudSyncDesc')}
               </p>
             </div>
           </div>
@@ -130,19 +197,19 @@ export const AuthProfilePage: React.FC = () => {
           <div className="flex items-center space-x-2">
             {syncStatus === 'syncing' ? (
               <span className="bg-cyan-500/20 text-cyan-300 text-xs font-mono font-bold px-3 py-1 rounded-full border border-cyan-500/30 flex items-center gap-1.5 animate-pulse">
-                <RefreshCw className="w-3.5 h-3.5 animate-spin" /> Saving...
+                <RefreshCw className="w-3.5 h-3.5 animate-spin" /> {t('profile.syncing')}
               </span>
             ) : syncStatus === 'synced' ? (
               <span className="bg-emerald-500/20 text-emerald-300 text-xs font-mono font-bold px-3 py-1 rounded-full border border-emerald-500/30 flex items-center gap-1.5">
-                <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" /> Synced
+                <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" /> {t('common.synced')}
               </span>
             ) : syncStatus === 'error' ? (
               <span className="bg-red-500/20 text-red-300 text-xs font-mono font-bold px-3 py-1 rounded-full border border-red-500/30 flex items-center gap-1.5">
-                <AlertTriangle className="w-3.5 h-3.5 text-red-400" /> Sync Error
+                <AlertTriangle className="w-3.5 h-3.5 text-red-400" /> {t('common.syncError')}
               </span>
             ) : (
               <span className="bg-slate-800 text-slate-400 text-xs font-mono font-bold px-3 py-1 rounded-full border border-slate-700">
-                Ready
+                {t('common.ready')}
               </span>
             )}
           </div>
@@ -151,19 +218,19 @@ export const AuthProfilePage: React.FC = () => {
         {/* Live Metrics Grid */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 font-mono text-xs">
           <div className="bg-pokedex-darker p-3.5 rounded-2xl border border-slate-800 text-center">
-            <span className="text-slate-400 text-[10px] uppercase block">Total Owned</span>
+            <span className="text-slate-400 text-[10px] uppercase block">{t('profile.totalOwned')}</span>
             <span className="text-yellow-300 font-bold text-lg">{stats.totalOwnedCards}</span>
           </div>
           <div className="bg-pokedex-darker p-3.5 rounded-2xl border border-slate-800 text-center">
-            <span className="text-slate-400 text-[10px] uppercase block">Custom Decks</span>
+            <span className="text-slate-400 text-[10px] uppercase block">{t('profile.customDecks')}</span>
             <span className="text-cyan-300 font-bold text-lg">{decks.length}</span>
           </div>
           <div className="bg-pokedex-darker p-3.5 rounded-2xl border border-slate-800 text-center">
-            <span className="text-slate-400 text-[10px] uppercase block">Favorites</span>
+            <span className="text-slate-400 text-[10px] uppercase block">{t('profile.favorites')}</span>
             <span className="text-rose-400 font-bold text-lg">{favorites.length}</span>
           </div>
           <div className="bg-pokedex-darker p-3.5 rounded-2xl border border-slate-800 text-center">
-            <span className="text-slate-400 text-[10px] uppercase block">Last Cloud Sync</span>
+            <span className="text-slate-400 text-[10px] uppercase block">{t('profile.lastCloudSync')}</span>
             <span className="text-emerald-400 font-bold text-xs mt-1 block">{formattedLastSynced}</span>
           </div>
         </div>
@@ -171,7 +238,7 @@ export const AuthProfilePage: React.FC = () => {
         {/* Auto-Sync Explanation & Force Sync Button */}
         <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-2">
           <p className="text-slate-400 text-xs font-sans">
-            Every change you make (adjusting card quantities, building decks, adding favorites) is <strong>automatically persisted in real-time</strong> to your private Cloud Firestore collection (<code className="text-yellow-300">users/{user?.uid || '{userId}'}</code>).
+            {t('profile.syncExplanation')}
           </p>
 
           <button
@@ -180,14 +247,14 @@ export const AuthProfilePage: React.FC = () => {
             className="w-full sm:w-auto shrink-0 bg-slate-800 hover:bg-slate-700 disabled:opacity-40 text-slate-200 font-bold py-2.5 px-4 rounded-xl shadow-md transition-all active:scale-95 flex items-center justify-center space-x-2 text-xs font-mono uppercase border border-slate-700"
           >
             <RefreshCw className={`w-3.5 h-3.5 ${syncing ? 'animate-spin' : ''}`} />
-            <span>{syncing ? 'Syncing...' : 'Force Sync Now'}</span>
+            <span>{syncing ? t('profile.syncing') : t('profile.forceSync')}</span>
           </button>
         </div>
 
         {!isAllowed && user && (
           <div className="text-amber-400 text-[11px] font-mono flex items-center gap-1.5 bg-amber-950/40 p-3 rounded-xl border border-amber-800/40">
             <AlertTriangle className="w-3.5 h-3.5 shrink-0" />
-            <span>Your email is not in VITE_ALLOWED_EMAILS. Add it to .env to enable real-time Cloud Firestore synchronization.</span>
+            <span>{t('profile.whitelistWarning')}</span>
           </div>
         )}
       </div>
@@ -196,10 +263,10 @@ export const AuthProfilePage: React.FC = () => {
       <div className="bg-pokedex-card/90 rounded-3xl border border-slate-800 p-5 space-y-3 font-mono text-xs shadow-md">
         <div className="flex items-center space-x-2 text-white font-bold">
           <ShieldCheck className="w-4 h-4 text-emerald-400" />
-          <span>Authorized Whitelisted Emails (VITE_ALLOWED_EMAILS)</span>
+          <span>{t('profile.whitelistedEmails')}</span>
         </div>
         <p className="text-slate-400 font-sans text-[11px]">
-          Only authenticated users whose email address appears in this list are authorized to sync and persist changes to the cloud database.
+          {t('profile.whitelistDesc')}
         </p>
         <div className="bg-pokedex-darker p-3 rounded-2xl border border-slate-800 space-y-1">
           {allowedEmails.length > 0 ? (
@@ -210,19 +277,19 @@ export const AuthProfilePage: React.FC = () => {
               </div>
             ))
           ) : (
-            <div className="text-slate-400 italic">No emails configured (open development mode).</div>
+            <div className="text-slate-400 italic">{t('profile.noEmailsConfigured')}</div>
           )}
         </div>
       </div>
 
-      {/* Firebase Storage Guide & CLI Commands */}
+      {/* Firebase Storage Guide */}
       <div className="bg-pokedex-darker rounded-3xl border border-slate-800 p-5 space-y-3 font-mono text-xs">
         <div className="flex items-center space-x-2 text-cyan-300 font-bold">
           <UploadCloud className="w-4 h-4" />
-          <span>Firebase Storage Image Pipeline</span>
+          <span>{t('profile.storagePipeline')}</span>
         </div>
         <p className="text-slate-400 font-sans text-[11px]">
-          Cards automatically resolve high-resolution images from official CDNs or your private <strong>Firebase Storage</strong> bucket configured in <code className="bg-slate-800 text-yellow-300 px-1 py-0.5 rounded">.env</code>.
+          {t('profile.storagePipelineDesc')}
         </p>
       </div>
     </div>

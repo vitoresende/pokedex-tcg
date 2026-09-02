@@ -7,11 +7,13 @@ import {
   Shield, AlertTriangle
 } from 'lucide-react';
 import { PokemonTypeIcon } from '../components/PokemonTypeIcon';
+import { useLanguage } from '../context/LanguageContext';
 import { soundEffects } from '../services/audio';
 
 export const RulesAndTypesPage: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'types' | 'formats' | 'trainers' | 'conditions'>('types');
   const [selectedType, setSelectedType] = useState<CardTypeInfo>(typesData[0]);
+  const { t } = useLanguage();
 
   const handleSelectTab = (tab: 'types' | 'formats' | 'trainers' | 'conditions') => {
     soundEffects.playClick();
@@ -29,10 +31,10 @@ export const RulesAndTypesPage: React.FC = () => {
       <div>
         <h2 className="text-xl font-black font-display text-white flex items-center gap-2">
           <BookOpen className="w-5 h-5 text-yellow-300" />
-          <span>Rules, Types & Battle Formats</span>
+          <span>{t('rules.title')}</span>
         </h2>
         <p className="text-xs text-slate-400 font-mono">
-          Complete guide to Pokémon TCG elemental types, competitive formats, trainer cards, and status conditions
+          {t('rules.subtitle')}
         </p>
       </div>
 
@@ -46,7 +48,7 @@ export const RulesAndTypesPage: React.FC = () => {
               : 'text-slate-400 hover:text-slate-200'
           }`}
         >
-          11 Elemental Types
+          {t('rules.tabTypes')}
         </button>
         <button
           onClick={() => handleSelectTab('formats')}
@@ -56,7 +58,7 @@ export const RulesAndTypesPage: React.FC = () => {
               : 'text-slate-400 hover:text-slate-200'
           }`}
         >
-          Formats & Rules
+          {t('rules.tabFormats')}
         </button>
         <button
           onClick={() => handleSelectTab('trainers')}
@@ -66,7 +68,7 @@ export const RulesAndTypesPage: React.FC = () => {
               : 'text-slate-400 hover:text-slate-200'
           }`}
         >
-          Trainer Cards
+          {t('rules.tabTrainers')}
         </button>
         <button
           onClick={() => handleSelectTab('conditions')}
@@ -76,7 +78,7 @@ export const RulesAndTypesPage: React.FC = () => {
               : 'text-slate-400 hover:text-slate-200'
           }`}
         >
-          Special Conditions
+          {t('rules.tabConditions')}
         </button>
       </div>
 
@@ -124,21 +126,21 @@ export const RulesAndTypesPage: React.FC = () => {
               <div className="flex items-center space-x-3.5">
                 <PokemonTypeIcon type={selectedType.id} size="xl" className="shadow-lg" />
                 <div>
-                  <h3 className="text-2xl font-black font-display text-white">{selectedType.name} Type</h3>
+                  <h3 className="text-2xl font-black font-display text-white">{selectedType.name}</h3>
                   <span className="text-xs font-mono text-slate-400">Official Pokémon TCG Energy & Elemental Type</span>
                 </div>
               </div>
 
               <div className="flex items-center space-x-3 text-xs font-mono">
                 <div className="bg-pokedex-darker px-3 py-2 rounded-2xl border border-slate-800 flex items-center space-x-2">
-                  <span className="text-slate-400">Weakness:</span>
+                  <span className="text-slate-400">{t('rules.weakness')}:</span>
                   <div className="flex items-center space-x-1">
                     <PokemonTypeIcon type={selectedType.weakness.split(' ')[0]} size="xs" />
                     <span className="text-red-400 font-bold">{selectedType.weakness}</span>
                   </div>
                 </div>
                 <div className="bg-pokedex-darker px-3 py-2 rounded-2xl border border-slate-800 flex items-center space-x-2">
-                  <span className="text-slate-400">Resistance:</span>
+                  <span className="text-slate-400">{t('rules.resistance')}:</span>
                   <div className="flex items-center space-x-1">
                     {selectedType.resistance !== 'None' && selectedType.resistance !== '-' ? (
                       <PokemonTypeIcon type={selectedType.resistance.split(' ')[0]} size="xs" />
@@ -156,7 +158,7 @@ export const RulesAndTypesPage: React.FC = () => {
             {/* Strengths and Characteristics */}
             <div className="mt-5 space-y-2">
               <span className="text-xs font-mono font-bold text-yellow-300 uppercase tracking-wider block">
-                Archetype Strengths & Signature Mechanics:
+                {t('rules.archetypeStrengths')}:
               </span>
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
                 {selectedType.strengths.map((str, idx) => (
@@ -170,7 +172,7 @@ export const RulesAndTypesPage: React.FC = () => {
 
             {/* Notable Cards */}
             <div className="mt-4 pt-4 border-t border-slate-800 text-xs font-mono text-slate-400 flex items-center justify-between">
-              <span>Representative Iconic Cards:</span>
+              <span>{t('rules.iconicCards')}:</span>
               <span className="text-yellow-300 font-bold">{selectedType.sample_card}</span>
             </div>
           </div>
@@ -184,7 +186,7 @@ export const RulesAndTypesPage: React.FC = () => {
           <div className="bg-pokedex-card/90 rounded-3xl border border-slate-800 p-5 shadow-lg space-y-4">
             <h3 className="text-sm font-bold text-white font-mono uppercase tracking-wider flex items-center space-x-2">
               <Layers className="w-4 h-4 text-yellow-300" />
-              <span>Core Rules for Building Decks</span>
+              <span>{t('rules.coreRules')}</span>
             </h3>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               {rulesData.deck_building_rules.map((rule, idx) => (
@@ -199,7 +201,7 @@ export const RulesAndTypesPage: React.FC = () => {
           {/* Formats Comparison Table */}
           <div className="space-y-4">
             <h3 className="text-sm font-bold text-white font-mono uppercase tracking-wider">
-              Competitive & Casual Formats
+              {t('rules.competitiveFormats')}
             </h3>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               {rulesData.formats.map((fmt: FormatRule) => (
@@ -217,11 +219,11 @@ export const RulesAndTypesPage: React.FC = () => {
 
                   <div className="bg-pokedex-darker p-3 rounded-2xl border border-slate-800 space-y-2 text-xs font-mono">
                     <div className="flex justify-between">
-                      <span className="text-slate-400">Deck Size:</span>
+                      <span className="text-slate-400">{t('rules.deckSize')}:</span>
                       <span className="text-yellow-300 font-bold">{fmt.deck_size}</span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-slate-400">Prize Cards:</span>
+                      <span className="text-slate-400">{t('rules.prizeCards')}:</span>
                       <span className="text-emerald-400 font-bold">{fmt.prizes}</span>
                     </div>
                   </div>
@@ -246,7 +248,7 @@ export const RulesAndTypesPage: React.FC = () => {
                   {trainer.rule}
                 </p>
                 <div className="text-xs font-mono text-slate-400">
-                  <span className="text-teal-300 font-bold">Examples: </span>
+                  <span className="text-teal-300 font-bold">{t('rules.examples')}: </span>
                   <span>{trainer.examples}</span>
                 </div>
               </div>
@@ -264,16 +266,16 @@ export const RulesAndTypesPage: React.FC = () => {
                 <div className="flex items-center justify-between">
                   <h4 className="text-base font-bold font-display text-yellow-300">{cond.name}</h4>
                   <span className="text-[10px] font-mono bg-red-950/80 text-red-300 px-2 py-0.5 rounded-full border border-red-800/60">
-                    Status Effect
+                    {t('rules.statusEffect')}
                   </span>
                 </div>
                 <div className="bg-pokedex-darker p-3 rounded-2xl border border-slate-800 space-y-2 text-xs">
                   <div>
-                    <span className="text-slate-400 block text-[10px] uppercase font-mono">Effect:</span>
+                    <span className="text-slate-400 block text-[10px] uppercase font-mono">{t('rules.effect')}:</span>
                     <p className="text-slate-200 font-sans">{cond.effect}</p>
                   </div>
                   <div className="pt-2 border-t border-slate-800">
-                    <span className="text-slate-400 block text-[10px] uppercase font-mono">How to Cure:</span>
+                    <span className="text-slate-400 block text-[10px] uppercase font-mono">{t('rules.howToCure')}:</span>
                     <p className="text-emerald-300 font-sans">{cond.cure}</p>
                   </div>
                 </div>
