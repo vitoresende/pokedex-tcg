@@ -8,16 +8,17 @@ import {
 import { useCollection } from '../context/CollectionContext';
 import { useLanguage } from '../context/LanguageContext';
 import { soundEffects } from '../services/audio';
+import { findSimilarCards } from '../utils/cardSimilarity';
 
 interface CardDetailModalProps {
   card: Card | null;
   onClose: () => void;
-  onNavigateToDeck: (deckId: string) => void;
+  onNavigateToDeck?: (deckId: string) => void;
 }
 
 export const CardDetailModal: React.FC<CardDetailModalProps> = ({ card, onClose, onNavigateToDeck }) => {
   const { 
-    favorites, toggleFavorite, updateCardQuantity, notes, 
+    cards, favorites, toggleFavorite, updateCardQuantity, notes, 
     updateCardNote, decks, addCardToDeck, deleteCard 
   } = useCollection();
   const { t, getCardName, getCardSetName, language } = useLanguage();
@@ -38,6 +39,8 @@ export const CardDetailModal: React.FC<CardDetailModalProps> = ({ card, onClose,
 
   if (!card) return null;
 
+  const similarMatches = findSimilarCards(card, cards, 4);
+
   const isFavorite = favorites.includes(card.id);
   const cardName = getCardName(card);
   const setName = getCardSetName(card);
@@ -52,7 +55,9 @@ export const CardDetailModal: React.FC<CardDetailModalProps> = ({ card, onClose,
   const handleDeckClick = (deckId: string) => {
     soundEffects.playClick();
     onClose();
-    onNavigateToDeck(deckId);
+    if (onNavigateToDeck) {
+      onNavigateToDeck(deckId);
+    }
   };
 
   const handleAddToDeck = () => {
@@ -251,6 +256,43 @@ export const CardDetailModal: React.FC<CardDetailModalProps> = ({ card, onClose,
                       </button>
                     );
                   })}
+                </div>
+              </div>
+            )}
+
+            {/* Similar / Substitute Cards in Collection */}
+            {similarMatches.length > 0 && (
+              <div className="bg-slate-900/90 rounded-2xl p-3 border border-slate-800 space-y-2">
+                <div className="flex items-center space-x-1.5 text-yellow-300 font-bold text-[11px] uppercase tracking-wider">
+                  <Sparkles className="w-3.5 h-3.5 text-yellow-400" />
+                  <span>
+                    {language === 'pt'
+                      ? `Cartas Similares / Substitutas na Coleção (${similarMatches.length})`
+                      : `Similar / Substitute Cards in Collection (${similarMatches.length})`}
+                  </span>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                  {similarMatches.map(m => (
+                    <div 
+                      key={m.card.id} 
+                      className="p-2 rounded-xl bg-slate-950/80 border border-slate-800 flex items-center space-x-2"
+                    >
+                      <div className="w-7 h-10 shrink-0 rounded overflow-hidden border border-slate-700">
+                        <HoloCard card={m.card} />
+                      </div>
+                      <div className="min-w-0">
+                        <h5 className="font-bold text-[11px] text-white truncate">
+                          {getCardName(m.card)}
+                        </h5>
+                        <span className="text-[9px] text-slate-400 font-mono block">
+                          {m.card.set_code} #{m.card.card_number} • {m.card.quantity}x
+                        </span>
+                        <span className="text-[9px] text-cyan-300 font-mono truncate block">
+                          {language === 'pt' ? m.reasonPt : m.reasonEn}
+                        </span>
+                      </div>
+                    </div>
+                  ))}
                 </div>
               </div>
             )}

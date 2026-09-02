@@ -4,12 +4,13 @@ import { useLanguage } from '../context/LanguageContext';
 import { Deck, DeckCardItem } from '../types';
 import { 
   Layers, Copy, Check, AlertCircle, 
-  Swords, Trophy, Plus, Trash2, Sparkles, Pencil 
+  Swords, Trophy, Plus, Trash2, Sparkles, Pencil, CheckCircle2 
 } from 'lucide-react';
 import { soundEffects } from '../services/audio';
 import { CardDetailModal } from '../components/CardDetailModal';
 import { CreateDeckModal } from '../components/CreateDeckModal';
 import { EditDeckModal } from '../components/EditDeckModal';
+import { AddCardModal } from '../components/AddCardModal';
 
 export const DecksPage: React.FC = () => {
   const { decks, cards, selectedCard, setSelectedCard, deleteDeck, removeCardFromDeck } = useCollection();
@@ -23,6 +24,7 @@ export const DecksPage: React.FC = () => {
   const [activeGuideTab, setActiveGuideTab] = useState<'opening' | 'midgame' | 'lategame'>('opening');
   const [createModalOpen, setCreateModalOpen] = useState<boolean>(false);
   const [editModalOpen, setEditModalOpen] = useState<boolean>(false);
+  const [validateModalOpen, setValidateModalOpen] = useState<boolean>(false);
 
   const currentDeck = decks.find(d => d.id === activeDeckId) || decks[0] || {
     id: 'empty',
@@ -110,13 +112,23 @@ export const DecksPage: React.FC = () => {
           </p>
         </div>
 
-        <button
-          onClick={() => { soundEffects.playClick(); setCreateModalOpen(true); }}
-          className="bg-pokedex-red hover:bg-pokedex-lightred text-white font-bold px-4 py-2 rounded-2xl shadow-lg transition-all active:scale-95 text-xs font-mono flex items-center justify-center space-x-2 border border-white/20"
-        >
-          <Plus className="w-4 h-4 text-yellow-300" />
-          <span>{t('decks.createDeck')}</span>
-        </button>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => { soundEffects.playClick(); setValidateModalOpen(true); }}
+            className="bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold px-3.5 py-2 rounded-2xl shadow-lg transition-all active:scale-95 text-xs font-mono flex items-center justify-center space-x-2 border border-slate-700"
+          >
+            <CheckCircle2 className="w-4 h-4 text-yellow-400" />
+            <span>{t('decks.validateDeck')}</span>
+          </button>
+
+          <button
+            onClick={() => { soundEffects.playClick(); setCreateModalOpen(true); }}
+            className="bg-pokedex-red hover:bg-pokedex-lightred text-white font-bold px-4 py-2 rounded-2xl shadow-lg transition-all active:scale-95 text-xs font-mono flex items-center justify-center space-x-2 border border-white/20"
+          >
+            <Plus className="w-4 h-4 text-yellow-300" />
+            <span>{t('decks.createDeck')}</span>
+          </button>
+        </div>
       </div>
 
       {/* Horizontal Deck Selector Bar */}
@@ -459,6 +471,15 @@ export const DecksPage: React.FC = () => {
         isOpen={editModalOpen}
         onClose={() => setEditModalOpen(false)}
       />
+
+      {/* Deck Validator Modal */}
+      {validateModalOpen && (
+        <AddCardModal
+          isOpen={validateModalOpen}
+          onClose={() => setValidateModalOpen(false)}
+          initialTab="validate"
+        />
+      )}
     </div>
   );
 };

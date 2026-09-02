@@ -419,6 +419,7 @@ pokedex-tcg/
 │   │   ├── CardGrid.tsx            # Card grid with pagination
 │   │   ├── CardItem.tsx            # Individual card item with quantity +/-
 │   │   ├── CreateDeckModal.tsx     # Custom deck builder modal
+│   │   ├── DeckValidatorTab.tsx    # Deck CSV vs Collection comparator & validator
 │   │   ├── FilterBar.tsx           # Type pills with official energy icons & filters
 │   │   ├── HoloCard.tsx            # 3D parallax holographic card component
 │   │   ├── PokedexHeader.tsx       # Header with lens, LEDs, audio switch & profile

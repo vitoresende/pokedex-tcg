@@ -1,19 +1,27 @@
-import React, { useState } from 'react';
-import { Plus, X, Upload, Sparkles, Check, Image as ImageIcon, Loader2, Layers } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Plus, X, Upload, Sparkles, Check, Image as ImageIcon, Loader2, Layers, CheckCircle2 } from 'lucide-react';
 import { useCollection } from '../context/CollectionContext';
 import { useLanguage } from '../context/LanguageContext';
 import { soundEffects } from '../services/audio';
 import { uploadCardImageToStorage, downloadAndUploadImageToStorage } from '../services/firebase';
+import { DeckValidatorTab } from './DeckValidatorTab';
 
 interface AddCardModalProps {
   isOpen: boolean;
   onClose: () => void;
+  initialTab?: 'manual' | 'csv' | 'validate';
 }
 
-export const AddCardModal: React.FC<AddCardModalProps> = ({ isOpen, onClose }) => {
+export const AddCardModal: React.FC<AddCardModalProps> = ({ isOpen, onClose, initialTab }) => {
   const { addNewCard, importCardsFromCsv, decks } = useCollection();
   const { t } = useLanguage();
-  const [tab, setTab] = useState<'manual' | 'csv'>('manual');
+  const [tab, setTab] = useState<'manual' | 'csv' | 'validate'>(initialTab || 'manual');
+
+  useEffect(() => {
+    if (initialTab && isOpen) {
+      setTab(initialTab);
+    }
+  }, [initialTab, isOpen]);
 
   // Manual Form State
   const [nameEn, setNameEn] = useState('');
@@ -171,6 +179,15 @@ export const AddCardModal: React.FC<AddCardModalProps> = ({ isOpen, onClose }) =
             }`}
           >
             {t('addCard.tabCsv')}
+          </button>
+          <button
+            onClick={() => { soundEffects.playClick(); setTab('validate'); }}
+            className={`flex-1 py-3 font-bold transition-colors flex items-center justify-center space-x-1.5 ${
+              tab === 'validate' ? 'bg-slate-800 text-yellow-300 border-b-2 border-yellow-400' : 'text-slate-400 hover:text-white'
+            }`}
+          >
+            <CheckCircle2 className="w-3.5 h-3.5 text-yellow-400" />
+            <span>{t('addCard.tabValidate')}</span>
           </button>
         </div>
 
@@ -366,7 +383,7 @@ export const AddCardModal: React.FC<AddCardModalProps> = ({ isOpen, onClose }) =
                 )}
               </button>
             </form>
-          ) : (
+          ) : tab === 'csv' ? (
             <div className="space-y-4">
               <p className="text-slate-300 text-xs font-sans">
                 {t('addCard.csvHelp')}
@@ -509,6 +526,8 @@ export const AddCardModal: React.FC<AddCardModalProps> = ({ isOpen, onClose }) =
                 </span>
               </button>
             </div>
+          ) : (
+            <DeckValidatorTab />
           )}
         </div>
       </div>
