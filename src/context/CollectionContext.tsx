@@ -56,6 +56,7 @@ interface CollectionContextType {
   updateCardQuantity: (cardId: string, delta: number) => void;
   toggleFavorite: (cardId: string) => void;
   updateCardNote: (cardId: string, note: string) => void;
+  setMuted: (muted: boolean) => void;
   toggleMute: () => void;
   syncToCloud: () => Promise<boolean>;
   addNewCard: (card: Partial<Card>) => Card;
@@ -301,7 +302,19 @@ export const CollectionProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     return saved ? JSON.parse(saved) : {};
   });
 
-  const [isMuted, setIsMuted] = useState<boolean>(false);
+  const [isMuted, setIsMuted] = useState<boolean>(() => {
+    try {
+      if (typeof window !== 'undefined') {
+        const stored = localStorage.getItem('pokedex_muted');
+        if (stored !== null) {
+          return stored === 'true';
+        }
+      }
+    } catch {
+      // ignore
+    }
+    return soundEffects.getIsMuted();
+  });
   const [syncing, setSyncing] = useState<boolean>(false);
   const [syncStatus, setSyncStatus] = useState<CloudSyncStatus>('idle');
   const [lastSyncedAt, setLastSyncedAt] = useState<Date | null>(null);
@@ -421,11 +434,14 @@ export const CollectionProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     return () => clearTimeout(timer);
   }, [cards, favorites, notes, decks, isInitializedFromCloud, user?.uid, isAllowed]);
 
+  const setMuted = (muted: boolean) => {
+    setIsMuted(muted);
+    soundEffects.setMuted(muted);
+    if (!muted) soundEffects.playClick();
+  };
+
   const toggleMute = () => {
-    const next = !isMuted;
-    setIsMuted(next);
-    soundEffects.setMuted(next);
-    if (!next) soundEffects.playClick();
+    setMuted(!isMuted);
   };
 
   const updateCardQuantity = (cardId: string, delta: number) => {
@@ -1064,6 +1080,7 @@ export const CollectionProvider: React.FC<{ children: React.ReactNode }> = ({ ch
         updateCardQuantity,
         toggleFavorite,
         updateCardNote,
+        setMuted,
         toggleMute,
         syncToCloud,
         addNewCard,

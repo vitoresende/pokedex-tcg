@@ -3,9 +3,24 @@
  * Instant low-latency audio without requiring external MP3 downloads.
  */
 
+const STORAGE_KEY = 'pokedex_muted';
+
 class PokedexSoundEffects {
   private ctx: AudioContext | null = null;
   private isMuted: boolean = false;
+
+  constructor() {
+    try {
+      if (typeof window !== 'undefined') {
+        const stored = localStorage.getItem(STORAGE_KEY);
+        if (stored !== null) {
+          this.isMuted = stored === 'true';
+        }
+      }
+    } catch {
+      // ignore
+    }
+  }
 
   private getContext(): AudioContext | null {
     if (this.isMuted) return null;
@@ -23,6 +38,13 @@ class PokedexSoundEffects {
 
   public setMuted(muted: boolean) {
     this.isMuted = muted;
+    try {
+      if (typeof window !== 'undefined') {
+        localStorage.setItem(STORAGE_KEY, String(muted));
+      }
+    } catch {
+      // ignore
+    }
   }
 
   public getIsMuted(): boolean {

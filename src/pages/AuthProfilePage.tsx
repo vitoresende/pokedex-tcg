@@ -5,12 +5,12 @@ import { useLanguage } from '../context/LanguageContext';
 import { 
   User, ShieldCheck, ShieldAlert, LogIn, LogOut, Cloud, 
   CheckCircle2, AlertTriangle, Sparkles, UploadCloud, RefreshCw,
-  Globe, Check
+  Globe, Check, Volume2, VolumeX
 } from 'lucide-react';
 
 export const AuthProfilePage: React.FC = () => {
   const { user, isAllowed, allowedEmails, authError, loginWithGoogle, logout } = useAuth();
-  const { syncToCloud, syncing, syncStatus, lastSyncedAt, stats, decks, favorites } = useCollection();
+  const { syncToCloud, syncing, syncStatus, lastSyncedAt, stats, decks, favorites, isMuted, setMuted } = useCollection();
   const { language, setLanguage, t } = useLanguage();
   const [, setSyncSuccess] = useState<boolean>(false);
   const [photoError, setPhotoError] = useState<boolean>(false);
@@ -173,6 +173,69 @@ export const AuthProfilePage: React.FC = () => {
           </div>
           <p className="text-[11px] text-slate-500 font-sans leading-relaxed">
             {t('preferences.languageSavedNotice')}
+          </p>
+        </div>
+
+        {/* Sound Effects Preference */}
+        <div className="bg-pokedex-darker p-4 rounded-2xl border border-slate-800 space-y-3">
+          <div className="flex items-center justify-between">
+            <label className="text-slate-300 text-xs font-mono font-bold block uppercase tracking-wider">
+              {t('preferences.soundLabel')}
+            </label>
+            <span className={`text-[10px] font-mono px-2 py-0.5 rounded-full border ${
+              !isMuted 
+                ? 'bg-emerald-950/80 text-emerald-300 border-emerald-700/60' 
+                : 'bg-black/60 text-slate-400 border-slate-700'
+            }`}>
+              {!isMuted ? t('preferences.soundEnabled') : t('preferences.soundMuted')}
+            </span>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <button
+              type="button"
+              onClick={() => setMuted(false)}
+              className={`p-3.5 rounded-xl border flex items-center justify-between transition-all ${
+                !isMuted
+                  ? 'bg-pokedex-red/20 border-pokedex-red text-white shadow-md'
+                  : 'bg-black/40 border-slate-800 text-slate-400 hover:text-white hover:border-slate-700'
+              }`}
+            >
+              <div className="flex items-center space-x-3">
+                <div className={`p-2 rounded-lg ${!isMuted ? 'bg-pokedex-red text-white' : 'bg-slate-800 text-slate-400'}`}>
+                  <Volume2 className="w-4 h-4" />
+                </div>
+                <div className="text-left font-mono">
+                  <span className="font-bold text-xs block text-white">{t('preferences.soundEnabled')}</span>
+                  <span className="text-[10px] text-slate-400">{t('preferences.soundEnabledDesc')}</span>
+                </div>
+              </div>
+              {!isMuted && <Check className="w-4 h-4 text-emerald-400 shrink-0 ml-2" />}
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setMuted(true)}
+              className={`p-3.5 rounded-xl border flex items-center justify-between transition-all ${
+                isMuted
+                  ? 'bg-pokedex-red/20 border-pokedex-red text-white shadow-md'
+                  : 'bg-black/40 border-slate-800 text-slate-400 hover:text-white hover:border-slate-700'
+              }`}
+            >
+              <div className="flex items-center space-x-3">
+                <div className={`p-2 rounded-lg ${isMuted ? 'bg-pokedex-red text-white' : 'bg-slate-800 text-slate-400'}`}>
+                  <VolumeX className="w-4 h-4" />
+                </div>
+                <div className="text-left font-mono">
+                  <span className="font-bold text-xs block text-white">{t('preferences.soundMuted')}</span>
+                  <span className="text-[10px] text-slate-400">{t('preferences.soundMutedDesc')}</span>
+                </div>
+              </div>
+              {isMuted && <Check className="w-4 h-4 text-emerald-400 shrink-0 ml-2" />}
+            </button>
+          </div>
+          <p className="text-[11px] text-slate-500 font-sans leading-relaxed">
+            {t('preferences.soundSavedNotice')}
           </p>
         </div>
       </div>

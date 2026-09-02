@@ -39,11 +39,17 @@ export const en = {
   },
   "preferences": {
     "title": "User Preferences",
-    "subtitle": "Personalize your interface language and app experience",
+    "subtitle": "Personalize your interface language, sound effects and app experience",
     "languageLabel": "Language / Idioma",
     "languagePt": "Português (BR)",
     "languageEn": "English",
-    "languageSavedNotice": "Your language preference is saved in your browser and automatically restored when you return."
+    "languageSavedNotice": "Your language preference is saved in your browser and automatically restored when you return.",
+    "soundLabel": "Sound Effects",
+    "soundEnabled": "Sound Enabled",
+    "soundEnabledDesc": "8-bit Pokédex audio chirps on clicks and actions",
+    "soundMuted": "Muted / Silent",
+    "soundMutedDesc": "All sound effects and audio chirps silenced",
+    "soundSavedNotice": "Your sound preference is saved in your browser and automatically restored when you return."
   },
   "pokedex": {
     "title": "Card Database & Pokédex",

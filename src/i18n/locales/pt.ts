@@ -41,11 +41,17 @@ export const pt: TranslationKeys = {
   },
   "preferences": {
     "title": "Preferências do Usuário",
-    "subtitle": "Personalize o idioma da interface e sua experiência no aplicativo",
+    "subtitle": "Personalize o idioma da interface, efeitos sonoros e sua experiência no aplicativo",
     "languageLabel": "Idioma / Language",
     "languagePt": "Português (BR)",
     "languageEn": "English",
-    "languageSavedNotice": "Sua preferência de idioma fica gravada no seu navegador e é restaurada automaticamente ao retornar."
+    "languageSavedNotice": "Sua preferência de idioma fica gravada no seu navegador e é restaurada automaticamente ao retornar.",
+    "soundLabel": "Efeitos Sonoros",
+    "soundEnabled": "Sons Ativados",
+    "soundEnabledDesc": "Efeitos sonoros estilo Pokédex em cliques e ações",
+    "soundMuted": "Silencioso / Mutado",
+    "soundMutedDesc": "Todos os efeitos sonoros desligados",
+    "soundSavedNotice": "Sua preferência de áudio fica gravada no seu navegador e é restaurada automaticamente ao retornar."
   },
   "pokedex": {
     "title": "Banco de Cartas & Pokédex",
