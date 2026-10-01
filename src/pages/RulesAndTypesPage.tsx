@@ -1,21 +1,25 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import typesData from '../data/types_info.json';
 import rulesData from '../data/rules.json';
 import { CardTypeInfo, FormatRule, TrainerTypeRule, SpecialConditionRule } from '../types';
 import { 
   BookOpen, Sparkles, Layers, CheckCircle2, ChevronRight,
-  Shield, AlertTriangle
+  Shield, AlertTriangle, Search, X, RefreshCw, Tag, ChevronDown, Calendar
 } from 'lucide-react';
 import { PokemonTypeIcon } from '../components/PokemonTypeIcon';
 import { useLanguage } from '../context/LanguageContext';
+import { useCollection } from '../context/CollectionContext';
 import { soundEffects } from '../services/audio';
 
 export const RulesAndTypesPage: React.FC = () => {
-  const [activeTab, setActiveTab] = useState<'types' | 'formats' | 'trainers' | 'conditions'>('types');
+  const [activeTab, setActiveTab] = useState<'types' | 'formats' | 'trainers' | 'conditions' | 'sets'>('types');
   const [selectedType, setSelectedType] = useState<CardTypeInfo>(typesData[0]);
+  const [setSearchQuery, setSetSearchQuery] = useState('');
+  const [selectedMarkFilter, setSelectedMarkFilter] = useState('ALL');
   const { t, language } = useLanguage();
+  const { allSetsList, isSyncingSets, syncSetsMetadata } = useCollection();
 
-  const handleSelectTab = (tab: 'types' | 'formats' | 'trainers' | 'conditions') => {
+  const handleSelectTab = (tab: 'types' | 'formats' | 'trainers' | 'conditions' | 'sets') => {
     soundEffects.playClick();
     setActiveTab(tab);
   };
@@ -24,6 +28,34 @@ export const RulesAndTypesPage: React.FC = () => {
     soundEffects.playClick();
     setSelectedType(typeInfo);
   };
+
+  const filteredSets = useMemo(() => {
+    return allSetsList.filter(s => {
+      // Mark filter
+      if (selectedMarkFilter !== 'ALL') {
+        if (selectedMarkFilter === 'NONE') {
+          if (s.mark) return false;
+        } else if (s.mark !== selectedMarkFilter) {
+          return false;
+        }
+      }
+
+      // Search query
+      if (setSearchQuery.trim()) {
+        const q = setSearchQuery.toLowerCase().trim();
+        const matchNamePt = (s.namePt || '').toLowerCase().includes(q);
+        const matchNameEn = (s.nameEn || '').toLowerCase().includes(q);
+        const matchCode = (s.code || '').toLowerCase().includes(q);
+        const matchYear = String(s.year || '').includes(q);
+        const matchMark = (s.mark || '').toLowerCase() === q;
+        if (!matchNamePt && !matchNameEn && !matchCode && !matchYear && !matchMark) {
+          return false;
+        }
+      }
+
+      return true;
+    });
+  }, [allSetsList, selectedMarkFilter, setSearchQuery]);
 
   return (
     <div className="space-y-6 pb-24 animate-in fade-in duration-300">
@@ -79,6 +111,16 @@ export const RulesAndTypesPage: React.FC = () => {
           }`}
         >
           {t('rules.tabConditions')}
+        </button>
+        <button
+          onClick={() => handleSelectTab('sets')}
+          className={`flex-1 py-2 px-3 rounded-xl whitespace-nowrap transition-all font-bold ${
+            activeTab === 'sets'
+              ? 'bg-pokedex-red text-white shadow-md'
+              : 'text-slate-400 hover:text-slate-200'
+          }`}
+        >
+          {t('rules.tabSets')}
         </button>
       </div>
 
@@ -286,6 +328,232 @@ export const RulesAndTypesPage: React.FC = () => {
               </div>
             ))}
           </div>
+        </div>
+      )}
+
+      {/* TAB 5: TCG Expansions & Regulation Marks */}
+      {activeTab === 'sets' && (
+        <div className="space-y-6">
+          {/* Header Card */}
+          <div className="bg-pokedex-card/90 rounded-3xl border border-slate-800 p-5 md:p-6 space-y-4 shadow-lg">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              <div>
+                <h3 className="text-lg font-bold font-display text-white flex items-center gap-2">
+                  <Layers className="w-5 h-5 text-yellow-300" />
+                  <span>{t('rules.setsTitle')}</span>
+                  <span className="text-xs font-mono font-bold bg-yellow-950/60 text-yellow-300 border border-yellow-800/60 px-2 py-0.5 rounded-full">
+                    {filteredSets.length} / {allSetsList.length}
+                  </span>
+                </h3>
+                <p className="text-xs text-slate-400 font-sans mt-1">
+                  {t('rules.setsSubtitle')}
+                </p>
+              </div>
+
+              {/* Sync Button */}
+              <button
+                onClick={() => syncSetsMetadata()}
+                disabled={isSyncingSets}
+                className="inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-pokedex-red/90 hover:bg-pokedex-red text-white font-bold text-xs font-mono rounded-xl border border-red-500/40 shadow-md hover:shadow-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap self-start sm:self-auto"
+                title={t('rules.syncSetsListBtn')}
+              >
+                <RefreshCw className={`w-4 h-4 ${isSyncingSets ? 'animate-spin' : ''}`} />
+                <span>{isSyncingSets ? t('profile.syncingSets') : t('rules.syncSetsListBtn')}</span>
+              </button>
+            </div>
+
+            {/* Filter Bar: Search + Regulation Mark Selector */}
+            <div className="pt-3 border-t border-slate-800/80 flex flex-col sm:flex-row gap-3">
+              {/* Search Input */}
+              <div className="relative flex-1">
+                <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
+                <input
+                  type="text"
+                  value={setSearchQuery}
+                  onChange={(e) => setSetSearchQuery(e.target.value)}
+                  placeholder={t('rules.searchSetsPlaceholder')}
+                  className="w-full bg-pokedex-darker/90 text-white text-xs pl-9 pr-8 py-2.5 rounded-xl border border-slate-800 focus:outline-none focus:border-yellow-400/60 transition-colors font-sans"
+                />
+                {setSearchQuery && (
+                  <button
+                    onClick={() => setSetSearchQuery('')}
+                    className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white"
+                  >
+                    <X className="w-3.5 h-3.5" />
+                  </button>
+                )}
+              </div>
+
+              {/* Regulation Mark Filter Dropdown */}
+              <div className="relative min-w-[200px]">
+                <Tag className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+                <select
+                  value={selectedMarkFilter}
+                  onChange={(e) => setSelectedMarkFilter(e.target.value)}
+                  className="w-full bg-pokedex-darker/90 text-white text-xs pl-9 pr-8 py-2.5 rounded-xl border border-slate-800 focus:outline-none focus:border-yellow-400/60 appearance-none font-mono cursor-pointer"
+                >
+                  <option value="ALL">{t('rules.allEras')}</option>
+                  <option value="J">Marca [J] (2025/2026 - Standard)</option>
+                  <option value="I">Marca [I] (2025 - Standard)</option>
+                  <option value="H">Marca [H] (2024 - Standard)</option>
+                  <option value="G">Marca [G] (2023 - Standard)</option>
+                  <option value="F">Marca [F] (2022 - Expandido)</option>
+                  <option value="E">Marca [E] (2021 - Expandido)</option>
+                  <option value="D">Marca [D] (2020 - Expandido)</option>
+                  <option value="NONE">{t('rules.classicFilter')}</option>
+                </select>
+                <ChevronDown className="w-4 h-4 text-slate-400 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+              </div>
+            </div>
+          </div>
+
+          {/* Sets Grid */}
+          {filteredSets.length > 0 ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+              {filteredSets.map((setItem) => {
+                const isStandard = ['G', 'H', 'I', 'J'].includes(setItem.mark || '');
+                const isExpanded = ['D', 'E', 'F'].includes(setItem.mark || '');
+                const logoSrc = setItem.logoUrl
+                  ? (setItem.logoUrl.endsWith('.webp') || setItem.logoUrl.endsWith('.png') ? setItem.logoUrl : `${setItem.logoUrl}.webp`)
+                  : undefined;
+                const symbolSrc = setItem.symbolUrl
+                  ? (setItem.symbolUrl.endsWith('.webp') || setItem.symbolUrl.endsWith('.png') ? setItem.symbolUrl : `${setItem.symbolUrl}.webp`)
+                  : undefined;
+
+                return (
+                  <div
+                    key={`${setItem.code}-${setItem.id}`}
+                    className="bg-pokedex-card/90 rounded-2xl border border-slate-800 hover:border-slate-700/80 p-4 transition-all duration-200 shadow-md flex flex-col justify-between space-y-3 group"
+                  >
+                    {/* Top Row: Year, Regulation Mark Badge, Code & Legality */}
+                    <div>
+                      <div className="flex items-center justify-between gap-1.5 mb-2.5">
+                        {/* Year + Mark */}
+                        <div className="flex items-center gap-1.5">
+                          {setItem.year > 0 && (
+                            <span className="inline-flex items-center gap-1 text-[11px] font-mono font-bold text-slate-300 bg-slate-800/90 border border-slate-700/70 px-2 py-0.5 rounded-md">
+                              <Calendar className="w-3 h-3 text-slate-400" />
+                              {setItem.year}
+                            </span>
+                          )}
+
+                          {setItem.mark ? (
+                            <span
+                              className={`text-[11px] font-mono font-extrabold px-2 py-0.5 rounded-md border ${
+                                isStandard
+                                  ? 'bg-emerald-950/80 text-emerald-400 border-emerald-700/60 shadow-sm'
+                                  : 'bg-amber-950/80 text-amber-400 border-amber-700/60'
+                              }`}
+                              title={t('rules.regulationMark')}
+                            >
+                              [{setItem.mark}]
+                            </span>
+                          ) : (
+                            <span className="text-[10px] font-mono text-slate-400 bg-slate-800/60 border border-slate-700/40 px-1.5 py-0.5 rounded">
+                              Classic
+                            </span>
+                          )}
+                        </div>
+
+                        {/* Format Legality Pill */}
+                        <span
+                          className={`text-[10px] font-mono px-2 py-0.5 rounded-full border ${
+                            isStandard
+                              ? 'bg-emerald-950/70 text-emerald-300 border-emerald-800/70'
+                              : isExpanded
+                              ? 'bg-blue-950/70 text-blue-300 border-blue-800/70'
+                              : 'bg-slate-800/70 text-slate-400 border-slate-700/70'
+                          }`}
+                        >
+                          {isStandard
+                            ? t('rules.formatStandard')
+                            : isExpanded
+                            ? t('rules.formatExpanded')
+                            : t('rules.formatVintage')}
+                        </span>
+                      </div>
+
+                      {/* Official Code & Name Heading */}
+                      <div className="flex items-start justify-between gap-2 mt-1">
+                        <div className="min-w-0 flex-1">
+                          <div className="flex items-center gap-1.5 flex-wrap">
+                            <span className="text-xs font-mono font-black text-yellow-400 bg-yellow-950/50 border border-yellow-800/50 px-2 py-0.5 rounded">
+                              {setItem.code}
+                            </span>
+                            <h4 className="text-sm font-bold font-display text-white truncate" title={setItem.namePt || setItem.nameEn}>
+                              {setItem.namePt || setItem.nameEn}
+                            </h4>
+                          </div>
+
+                          {setItem.nameEn && setItem.nameEn !== setItem.namePt && (
+                            <p className="text-[11px] text-slate-400 italic truncate mt-0.5" title={setItem.nameEn}>
+                              {setItem.nameEn}
+                            </p>
+                          )}
+                        </div>
+
+                        {/* Set Symbol if available */}
+                        {symbolSrc && (
+                          <img
+                            src={symbolSrc}
+                            alt=""
+                            className="w-5 h-5 object-contain shrink-0 opacity-80 group-hover:opacity-100 transition-opacity"
+                            onError={(e) => {
+                              (e.target as HTMLElement).style.display = 'none';
+                            }}
+                          />
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Middle: Logo preview if available */}
+                    {logoSrc && (
+                      <div className="h-10 flex items-center justify-center bg-pokedex-darker/60 rounded-xl p-1 border border-slate-800/50">
+                        <img
+                          src={logoSrc}
+                          alt={setItem.namePt}
+                          className="max-h-8 max-w-full object-contain filter drop-shadow opacity-85 group-hover:opacity-100 transition-opacity"
+                          onError={(e) => {
+                            (e.target as HTMLElement).parentElement?.classList.add('hidden');
+                          }}
+                        />
+                      </div>
+                    )}
+
+                    {/* Bottom Row: Full Formatted String & Card Count */}
+                    <div className="pt-2 border-t border-slate-800/70 flex items-center justify-between text-[11px] font-mono text-slate-400">
+                      <span className="truncate text-slate-300 font-semibold text-[10px]" title={`${setItem.year ? `${setItem.year} - ` : ''}${setItem.mark ? `[${setItem.mark}] - ` : ''}${setItem.code} - ${setItem.namePt}`}>
+                        {setItem.year ? `${setItem.year} · ` : ''}{setItem.mark ? `[${setItem.mark}] · ` : ''}{setItem.code}
+                      </span>
+                      {setItem.totalCards ? (
+                        <span className="text-[10px] text-slate-400 shrink-0">
+                          {t('rules.totalCardsInSet', { count: setItem.totalCards })}
+                        </span>
+                      ) : null}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          ) : (
+            <div className="bg-pokedex-card/90 rounded-3xl border border-slate-800 p-12 text-center space-y-3">
+              <Layers className="w-12 h-12 text-slate-600 mx-auto" />
+              <p className="text-slate-300 font-display font-medium text-sm">
+                {t('rules.noSetsFound')}
+              </p>
+              {(setSearchQuery || selectedMarkFilter !== 'ALL') && (
+                <button
+                  onClick={() => {
+                    setSetSearchQuery('');
+                    setSelectedMarkFilter('ALL');
+                  }}
+                  className="text-xs font-mono text-yellow-400 hover:text-yellow-300 underline"
+                >
+                  Limpar filtros
+                </button>
+              )}
+            </div>
+          )}
         </div>
       )}
     </div>

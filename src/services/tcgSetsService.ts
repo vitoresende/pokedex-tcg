@@ -3,7 +3,10 @@ import {
   registerDynamicSets, 
   getSetReleaseYear, 
   getSetRegulationMark, 
-  normalizeSetCode 
+  normalizeSetCode,
+  SET_RELEASE_YEARS,
+  SET_REGULATION_MARKS,
+  SET_OFFICIAL_NAMES_PT
 } from '../utils/setMetadata';
 
 export interface SyncedSetItem {
@@ -195,11 +198,14 @@ function buildPayloadFromSets(sets: SyncedSetItem[]): SetsMetadataPayload {
   };
 }
 
+let inMemorySetsList: SyncedSetItem[] = [];
+
 /**
  * Applies a payload to local memory and registers dynamic sets
  */
 function applyPayloadToMemory(payload: SetsMetadataPayload) {
   const dynamicEntries: Record<string, { year?: number; mark?: string; namePt?: string }> = {};
+  const uniqueItemsMap = new Map<string, SyncedSetItem>();
 
   for (const [code, item] of Object.entries(payload.sets)) {
     dynamicEntries[code] = {
@@ -207,9 +213,58 @@ function applyPayloadToMemory(payload: SetsMetadataPayload) {
       mark: item.mark || payload.regulationMarks[code] || undefined,
       namePt: item.namePt || payload.officialNamesPt[code]
     };
+
+    if (item && item.code) {
+      const canonicalKey = item.code.toUpperCase();
+      if (!uniqueItemsMap.has(canonicalKey) || (item.symbolUrl && !uniqueItemsMap.get(canonicalKey)?.symbolUrl)) {
+        uniqueItemsMap.set(canonicalKey, item);
+      }
+    }
   }
 
+  inMemorySetsList = Array.from(uniqueItemsMap.values()).sort((a, b) => {
+    if (b.year !== a.year) return b.year - a.year;
+    return a.code.localeCompare(b.code);
+  });
+
   registerDynamicSets(dynamicEntries, payload.lastSyncedAt);
+}
+
+/**
+ * Returns the complete list of known/synced Pokémon TCG expansions.
+ * If not yet synced, builds a baseline list from built-in metadata.
+ */
+export function getCachedSetsList(): SyncedSetItem[] {
+  if (inMemorySetsList.length > 0) {
+    return inMemorySetsList;
+  }
+
+  // Baseline fallback list from built-in constants
+  const fallbackList: SyncedSetItem[] = [];
+  const processedCodes = new Set<string>();
+
+  for (const [code, year] of Object.entries(SET_RELEASE_YEARS)) {
+    const raw = code.trim().toUpperCase();
+    if (processedCodes.has(raw)) continue;
+    if (raw.includes('-')) continue;
+    if (raw.length === 3 && raw.endsWith('1') && raw !== '151') continue;
+
+    const namePt = SET_OFFICIAL_NAMES_PT[raw] || raw;
+    const mark = SET_REGULATION_MARKS[raw] || null;
+
+    fallbackList.push({
+      id: raw.toLowerCase(),
+      code: raw,
+      namePt,
+      year,
+      mark
+    });
+    processedCodes.add(raw);
+  }
+
+  fallbackList.sort((a, b) => (b.year - a.year) || a.code.localeCompare(b.code));
+  inMemorySetsList = fallbackList;
+  return fallbackList;
 }
 
 /**

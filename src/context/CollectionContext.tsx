@@ -5,7 +5,7 @@ import { Card, Deck, DeckCardItem } from '../types';
 import { soundEffects } from '../services/audio';
 import { useAuth } from './AuthContext';
 import { syncUserCollectionToFirestore, loadUserCollectionFromFirestore } from '../services/firebase';
-import { loadAndApplySetsMetadata, syncSetsToCloudAndLocal } from '../services/tcgSetsService';
+import { loadAndApplySetsMetadata, syncSetsToCloudAndLocal, getCachedSetsList, SyncedSetItem } from '../services/tcgSetsService';
 import { fixMojibake } from '../utils/textSanitizer';
 
 interface FilterState {
@@ -66,6 +66,7 @@ interface CollectionContextType {
   lastSetsSyncedAt: Date | null;
   totalSyncedSetsCount: number;
   setsVersion: number;
+  allSetsList: SyncedSetItem[];
   syncSetsMetadata: () => Promise<{ success: boolean; total: number; error?: string }>;
   addNewCard: (card: Partial<Card>) => Card;
   updateCard: (cardId: string, updatedData: Partial<Card>) => void;
@@ -452,6 +453,10 @@ export const CollectionProvider: React.FC<{ children: React.ReactNode }> = ({ ch
       console.warn('Could not load sets metadata:', err);
     });
   }, []);
+
+  const allSetsList = useMemo(() => {
+    return getCachedSetsList();
+  }, [setsVersion]);
 
   const syncSetsMetadata = async (): Promise<{ success: boolean; total: number; error?: string }> => {
     setIsSyncingSets(true);
@@ -1264,6 +1269,7 @@ export const CollectionProvider: React.FC<{ children: React.ReactNode }> = ({ ch
         lastSetsSyncedAt,
         totalSyncedSetsCount,
         setsVersion,
+        allSetsList,
         syncSetsMetadata,
         addNewCard,
         updateCard,
