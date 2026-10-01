@@ -85,40 +85,61 @@ export interface CardTypeInfo {
   color: string;
   gradient: string;
   description: string;
+  description_pt?: string;
   sample_card: string;
   strengths: string[];
+  strengths_pt?: string[];
   weakness: string;
+  weakness_pt?: string;
   resistance: string;
+  resistance_pt?: string;
 }
 
 export interface FormatRule {
   id: string;
   name: string;
+  name_pt?: string;
   tag: string;
+  tag_pt?: string;
   status_badge: string;
+  status_badge_pt?: string;
   description: string;
+  description_pt?: string;
   deck_size: string;
+  deck_size_pt?: string;
   copy_limit: string;
+  copy_limit_pt?: string;
   prizes: string;
+  prizes_pt?: string;
   advantages: string[];
+  advantages_pt?: string[];
   disadvantages: string[];
+  disadvantages_pt?: string[];
 }
 
 export interface DeckBuildingRule {
   title: string;
+  title_pt?: string;
   content: string;
+  content_pt?: string;
 }
 
 export interface TrainerTypeRule {
   type: string;
+  type_pt?: string;
   rule: string;
+  rule_pt?: string;
   examples: string;
+  examples_pt?: string;
 }
 
 export interface SpecialConditionRule {
   name: string;
+  name_pt?: string;
   effect: string;
+  effect_pt?: string;
   cure: string;
+  cure_pt?: string;
 }
 
 export interface AuthUser {

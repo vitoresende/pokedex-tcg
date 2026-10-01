@@ -380,7 +380,21 @@ export const en = {
     "examples": "Examples",
     "statusEffect": "Status Condition",
     "effect": "Effect",
-    "howToCure": "How to Cure"
+    "howToCure": "How to Cure",
+    "archetypeStrengths": "Archetype Strengths & Signature Mechanics",
+    "iconicCards": "Representative Iconic Cards",
+    "coreRules": "Core Rules for Building Decks",
+    "competitiveFormats": "Competitive & Casual Formats",
+    "prizeCards": "Prize Cards",
+    "clearFilters": "Clear filters",
+    "classicBadge": "Classic",
+    "markOptionJ": "Mark [J] (2025/2026 - Standard)",
+    "markOptionI": "Mark [I] (2025 - Standard)",
+    "markOptionH": "Mark [H] (2024 - Standard)",
+    "markOptionG": "Mark [G] (2023 - Standard)",
+    "markOptionF": "Mark [F] (2022 - Expanded)",
+    "markOptionE": "Mark [E] (2021 - Expanded)",
+    "markOptionD": "Mark [D] (2020 - Expanded)"
   },
   "pagination": {
     "pageInfo": "Page {current} of {total}",

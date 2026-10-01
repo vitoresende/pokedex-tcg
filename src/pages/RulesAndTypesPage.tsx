@@ -182,7 +182,9 @@ export const RulesAndTypesPage: React.FC = () => {
                   <span className="text-slate-400">{t('rules.weakness')}:</span>
                   <div className="flex items-center space-x-1">
                     <PokemonTypeIcon type={selectedType.weakness.split(' ')[0]} size="xs" />
-                    <span className="text-red-400 font-bold">{selectedType.weakness}</span>
+                    <span className="text-red-400 font-bold">
+                      {language === 'pt' && selectedType.weakness_pt ? selectedType.weakness_pt : selectedType.weakness}
+                    </span>
                   </div>
                 </div>
                 <div className="bg-pokedex-darker px-3 py-2 rounded-2xl border border-slate-800 flex items-center space-x-2">
@@ -191,14 +193,16 @@ export const RulesAndTypesPage: React.FC = () => {
                     {selectedType.resistance !== 'None' && selectedType.resistance !== '-' ? (
                       <PokemonTypeIcon type={selectedType.resistance.split(' ')[0]} size="xs" />
                     ) : null}
-                    <span className="text-emerald-400 font-bold">{selectedType.resistance}</span>
+                    <span className="text-emerald-400 font-bold">
+                      {language === 'pt' && selectedType.resistance_pt ? selectedType.resistance_pt : selectedType.resistance}
+                    </span>
                   </div>
                 </div>
               </div>
             </div>
 
             <p className="text-sm text-slate-200 leading-relaxed bg-pokedex-darker p-4 rounded-2xl border border-slate-800">
-              {selectedType.description}
+              {language === 'pt' && selectedType.description_pt ? selectedType.description_pt : selectedType.description}
             </p>
 
             {/* Strengths and Characteristics */}
@@ -207,7 +211,7 @@ export const RulesAndTypesPage: React.FC = () => {
                 {t('rules.archetypeStrengths')}:
               </span>
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
-                {selectedType.strengths.map((str, idx) => (
+                {(language === 'pt' && selectedType.strengths_pt ? selectedType.strengths_pt : selectedType.strengths).map((str, idx) => (
                   <div key={idx} className="bg-pokedex-darker p-3 rounded-xl border border-slate-800 text-xs text-slate-300 flex items-start space-x-2">
                     <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
                     <span>{str}</span>
@@ -237,8 +241,12 @@ export const RulesAndTypesPage: React.FC = () => {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               {rulesData.deck_building_rules.map((rule, idx) => (
                 <div key={idx} className="bg-pokedex-darker p-3.5 rounded-2xl border border-slate-800 space-y-1 text-xs">
-                  <span className="font-bold text-yellow-300 font-mono block">{rule.title}</span>
-                  <p className="text-slate-300 leading-relaxed font-sans">{rule.content}</p>
+                  <span className="font-bold text-yellow-300 font-mono block">
+                    {language === 'pt' && rule.title_pt ? rule.title_pt : rule.title}
+                  </span>
+                  <p className="text-slate-300 leading-relaxed font-sans">
+                    {language === 'pt' && rule.content_pt ? rule.content_pt : rule.content}
+                  </p>
                 </div>
               ))}
             </div>
@@ -255,22 +263,32 @@ export const RulesAndTypesPage: React.FC = () => {
                   <div className="space-y-2">
                     <div className="flex items-center justify-between">
                       <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-full bg-pokedex-red/20 text-pokedex-lightred border border-pokedex-red/40 uppercase">
-                        {fmt.tag}
+                        {language === 'pt' && fmt.tag_pt ? fmt.tag_pt : fmt.tag}
                       </span>
-                      <span className="text-[10px] font-mono text-slate-400">{fmt.status_badge}</span>
+                      <span className="text-[10px] font-mono text-slate-400">
+                        {language === 'pt' && fmt.status_badge_pt ? fmt.status_badge_pt : fmt.status_badge}
+                      </span>
                     </div>
-                    <h4 className="text-lg font-bold font-display text-white">{fmt.name}</h4>
-                    <p className="text-xs text-slate-300 font-sans leading-relaxed">{fmt.description}</p>
+                    <h4 className="text-lg font-bold font-display text-white">
+                      {language === 'pt' && fmt.name_pt ? fmt.name_pt : fmt.name}
+                    </h4>
+                    <p className="text-xs text-slate-300 font-sans leading-relaxed">
+                      {language === 'pt' && fmt.description_pt ? fmt.description_pt : fmt.description}
+                    </p>
                   </div>
 
                   <div className="bg-pokedex-darker p-3 rounded-2xl border border-slate-800 space-y-2 text-xs font-mono">
                     <div className="flex justify-between">
                       <span className="text-slate-400">{t('rules.deckSize')}:</span>
-                      <span className="text-yellow-300 font-bold">{fmt.deck_size}</span>
+                      <span className="text-yellow-300 font-bold">
+                        {language === 'pt' && fmt.deck_size_pt ? fmt.deck_size_pt : fmt.deck_size}
+                      </span>
                     </div>
                     <div className="flex justify-between">
                       <span className="text-slate-400">{t('rules.prizeCards')}:</span>
-                      <span className="text-emerald-400 font-bold">{fmt.prizes}</span>
+                      <span className="text-emerald-400 font-bold">
+                        {language === 'pt' && fmt.prizes_pt ? fmt.prizes_pt : fmt.prizes}
+                      </span>
                     </div>
                   </div>
                 </div>
@@ -288,14 +306,16 @@ export const RulesAndTypesPage: React.FC = () => {
               <div key={idx} className="bg-pokedex-card/90 rounded-3xl border border-slate-800 p-5 space-y-3 shadow-md">
                 <div className="flex items-center space-x-2">
                   <span className="w-3 h-3 rounded-full bg-teal-400"></span>
-                  <h4 className="text-base font-bold font-display text-white">{trainer.type}</h4>
+                  <h4 className="text-base font-bold font-display text-white">
+                    {language === 'pt' && trainer.type_pt ? trainer.type_pt : trainer.type}
+                  </h4>
                 </div>
                 <p className="text-xs text-slate-200 leading-relaxed font-sans bg-pokedex-darker p-3 rounded-2xl border border-slate-800">
-                  {trainer.rule}
+                  {language === 'pt' && trainer.rule_pt ? trainer.rule_pt : trainer.rule}
                 </p>
                 <div className="text-xs font-mono text-slate-400">
                   <span className="text-teal-300 font-bold">{t('rules.examples')}: </span>
-                  <span>{trainer.examples}</span>
+                  <span>{language === 'pt' && trainer.examples_pt ? trainer.examples_pt : trainer.examples}</span>
                 </div>
               </div>
             ))}
@@ -310,7 +330,9 @@ export const RulesAndTypesPage: React.FC = () => {
             {rulesData.special_conditions.map((cond: SpecialConditionRule, idx) => (
               <div key={idx} className="bg-pokedex-card/90 rounded-3xl border border-slate-800 p-5 space-y-3 shadow-md">
                 <div className="flex items-center justify-between">
-                  <h4 className="text-base font-bold font-display text-yellow-300">{cond.name}</h4>
+                  <h4 className="text-base font-bold font-display text-yellow-300">
+                    {language === 'pt' && cond.name_pt ? cond.name_pt : cond.name}
+                  </h4>
                   <span className="text-[10px] font-mono bg-red-950/80 text-red-300 px-2 py-0.5 rounded-full border border-red-800/60">
                     {t('rules.statusEffect')}
                   </span>
@@ -318,11 +340,15 @@ export const RulesAndTypesPage: React.FC = () => {
                 <div className="bg-pokedex-darker p-3 rounded-2xl border border-slate-800 space-y-2 text-xs">
                   <div>
                     <span className="text-slate-400 block text-[10px] uppercase font-mono">{t('rules.effect')}:</span>
-                    <p className="text-slate-200 font-sans">{cond.effect}</p>
+                    <p className="text-slate-200 font-sans">
+                      {language === 'pt' && cond.effect_pt ? cond.effect_pt : cond.effect}
+                    </p>
                   </div>
                   <div className="pt-2 border-t border-slate-800">
                     <span className="text-slate-400 block text-[10px] uppercase font-mono">{t('rules.howToCure')}:</span>
-                    <p className="text-emerald-300 font-sans">{cond.cure}</p>
+                    <p className="text-emerald-300 font-sans">
+                      {language === 'pt' && cond.cure_pt ? cond.cure_pt : cond.cure}
+                    </p>
                   </div>
                 </div>
               </div>
@@ -393,13 +419,13 @@ export const RulesAndTypesPage: React.FC = () => {
                   className="w-full bg-pokedex-darker/90 text-white text-xs pl-9 pr-8 py-2.5 rounded-xl border border-slate-800 focus:outline-none focus:border-yellow-400/60 appearance-none font-mono cursor-pointer"
                 >
                   <option value="ALL">{t('rules.allEras')}</option>
-                  <option value="J">Marca [J] (2025/2026 - Standard)</option>
-                  <option value="I">Marca [I] (2025 - Standard)</option>
-                  <option value="H">Marca [H] (2024 - Standard)</option>
-                  <option value="G">Marca [G] (2023 - Standard)</option>
-                  <option value="F">Marca [F] (2022 - Expandido)</option>
-                  <option value="E">Marca [E] (2021 - Expandido)</option>
-                  <option value="D">Marca [D] (2020 - Expandido)</option>
+                  <option value="J">{t('rules.markOptionJ')}</option>
+                  <option value="I">{t('rules.markOptionI')}</option>
+                  <option value="H">{t('rules.markOptionH')}</option>
+                  <option value="G">{t('rules.markOptionG')}</option>
+                  <option value="F">{t('rules.markOptionF')}</option>
+                  <option value="E">{t('rules.markOptionE')}</option>
+                  <option value="D">{t('rules.markOptionD')}</option>
                   <option value="NONE">{t('rules.classicFilter')}</option>
                 </select>
                 <ChevronDown className="w-4 h-4 text-slate-400 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" />
@@ -450,7 +476,7 @@ export const RulesAndTypesPage: React.FC = () => {
                             </span>
                           ) : (
                             <span className="text-[10px] font-mono text-slate-400 bg-slate-800/60 border border-slate-700/40 px-1.5 py-0.5 rounded">
-                              Classic
+                              {t('rules.classicBadge')}
                             </span>
                           )}
                         </div>
@@ -549,7 +575,7 @@ export const RulesAndTypesPage: React.FC = () => {
                   }}
                   className="text-xs font-mono text-yellow-400 hover:text-yellow-300 underline"
                 >
-                  Limpar filtros
+                  {t('rules.clearFilters')}
                 </button>
               )}
             </div>
