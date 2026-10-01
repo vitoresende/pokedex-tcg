@@ -5,15 +5,27 @@ import { useLanguage } from '../context/LanguageContext';
 import { 
   User, ShieldCheck, ShieldAlert, LogIn, LogOut, Cloud, 
   CheckCircle2, AlertTriangle, Sparkles, UploadCloud, RefreshCw,
-  Globe, Check, Volume2, VolumeX
+  Globe, Check, Volume2, VolumeX, Layers
 } from 'lucide-react';
 
 export const AuthProfilePage: React.FC = () => {
   const { user, isAllowed, allowedEmails, authError, loginWithGoogle, logout } = useAuth();
-  const { syncToCloud, syncing, syncStatus, lastSyncedAt, stats, decks, favorites, isMuted, setMuted } = useCollection();
+  const { 
+    syncToCloud, syncing, syncStatus, lastSyncedAt, stats, decks, favorites, isMuted, setMuted,
+    isSyncingSets, setsSyncStatus, lastSetsSyncedAt, totalSyncedSetsCount, syncSetsMetadata
+  } = useCollection();
   const { language, setLanguage, t } = useLanguage();
   const [, setSyncSuccess] = useState<boolean>(false);
+  const [setsSyncSuccessMessage, setSetsSyncSuccessMessage] = useState<string>('');
   const [photoError, setPhotoError] = useState<boolean>(false);
+
+  const handleSyncSets = async () => {
+    const res = await syncSetsMetadata();
+    if (res.success) {
+      setSetsSyncSuccessMessage(t('profile.setsSyncSuccess', { total: res.total }));
+      setTimeout(() => setSetsSyncSuccessMessage(''), 5000);
+    }
+  };
 
   const handleSync = async () => {
     const success = await syncToCloud();
@@ -28,6 +40,11 @@ export const AuthProfilePage: React.FC = () => {
   const formattedLastSynced = lastSyncedAt 
     ? lastSyncedAt.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })
     : t('common.loading');
+
+  const formattedLastSetsSynced = lastSetsSyncedAt 
+    ? lastSetsSyncedAt.toLocaleDateString([], { day: '2-digit', month: '2-digit', year: 'numeric' }) + ' ' +
+      lastSetsSyncedAt.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+    : (totalSyncedSetsCount > 0 ? t('common.ready') : 'Padrão Local');
 
   return (
     <div className="space-y-6 max-w-4xl mx-auto pb-20 select-none">
@@ -318,6 +335,80 @@ export const AuthProfilePage: React.FC = () => {
           <div className="text-amber-400 text-[11px] font-mono flex items-center gap-1.5 bg-amber-950/40 p-3 rounded-xl border border-amber-800/40">
             <AlertTriangle className="w-3.5 h-3.5 shrink-0" />
             <span>{t('profile.whitelistWarning')}</span>
+          </div>
+        )}
+      </div>
+
+      {/* TCG Sets Metadata Sync Card (Cloud Firestore settings/sets_metadata & TCGdex API) */}
+      <div className="bg-pokedex-card/90 rounded-3xl border border-slate-800 p-6 space-y-4 shadow-md">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center space-x-3">
+            <div className="p-2 rounded-xl bg-yellow-500/20 text-yellow-300 border border-yellow-500/30">
+              <Layers className="w-6 h-6" />
+            </div>
+            <div>
+              <h3 className="font-bold text-sm text-white font-mono uppercase">
+                {t('profile.setsSyncTitle')}
+              </h3>
+              <p className="text-xs text-slate-400 font-sans">
+                {t('profile.setsSyncDesc')}
+              </p>
+            </div>
+          </div>
+
+          <div className="flex items-center space-x-2">
+            {setsSyncStatus === 'syncing' ? (
+              <span className="bg-cyan-500/20 text-cyan-300 text-xs font-mono font-bold px-3 py-1 rounded-full border border-cyan-500/30 flex items-center gap-1.5 animate-pulse">
+                <RefreshCw className="w-3.5 h-3.5 animate-spin" /> {t('profile.syncingSets')}
+              </span>
+            ) : setsSyncStatus === 'synced' ? (
+              <span className="bg-emerald-500/20 text-emerald-300 text-xs font-mono font-bold px-3 py-1 rounded-full border border-emerald-500/30 flex items-center gap-1.5">
+                <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" /> {t('common.synced')}
+              </span>
+            ) : setsSyncStatus === 'error' ? (
+              <span className="bg-red-500/20 text-red-300 text-xs font-mono font-bold px-3 py-1 rounded-full border border-red-500/30 flex items-center gap-1.5">
+                <AlertTriangle className="w-3.5 h-3.5 text-red-400" /> {t('common.syncError')}
+              </span>
+            ) : (
+              <span className="bg-slate-800 text-slate-400 text-xs font-mono font-bold px-3 py-1 rounded-full border border-slate-700">
+                {t('common.ready')}
+              </span>
+            )}
+          </div>
+        </div>
+
+        {/* Live Metrics Grid */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 font-mono text-xs">
+          <div className="bg-pokedex-darker p-3.5 rounded-2xl border border-slate-800 text-center">
+            <span className="text-slate-400 text-[10px] uppercase block">{t('profile.setsCataloged')}</span>
+            <span className="text-yellow-300 font-bold text-lg">{totalSyncedSetsCount || stats.totalSetsCount || 125} <small className="text-xs font-normal text-slate-400">{t('common.sets')}</small></span>
+          </div>
+          <div className="bg-pokedex-darker p-3.5 rounded-2xl border border-slate-800 text-center">
+            <span className="text-slate-400 text-[10px] uppercase block">{t('profile.lastSetsSync')}</span>
+            <span className="text-emerald-400 font-bold text-xs mt-1 block">{formattedLastSetsSynced}</span>
+          </div>
+        </div>
+
+        {/* Explanation & Sync Button */}
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-2">
+          <p className="text-slate-400 text-xs font-sans">
+            {t('profile.setsSyncExplanation')}
+          </p>
+
+          <button
+            onClick={handleSyncSets}
+            disabled={isSyncingSets}
+            className="w-full sm:w-auto shrink-0 bg-yellow-500/20 hover:bg-yellow-500/30 text-yellow-300 font-bold py-2.5 px-4 rounded-xl shadow-md transition-all active:scale-95 flex items-center justify-center space-x-2 text-xs font-mono uppercase border border-yellow-400/40"
+          >
+            <RefreshCw className={`w-3.5 h-3.5 ${isSyncingSets ? 'animate-spin' : ''}`} />
+            <span>{isSyncingSets ? t('profile.syncingSets') : t('profile.syncSetsBtn')}</span>
+          </button>
+        </div>
+
+        {setsSyncSuccessMessage && (
+          <div className="text-emerald-400 text-[11px] font-mono flex items-center gap-1.5 bg-emerald-950/40 p-3 rounded-xl border border-emerald-800/40 animate-in fade-in">
+            <CheckCircle2 className="w-3.5 h-3.5 shrink-0" />
+            <span>{setsSyncSuccessMessage}</span>
           </div>
         )}
       </div>

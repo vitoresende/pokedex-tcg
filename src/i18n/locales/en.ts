@@ -324,7 +324,15 @@ export const en = {
     "whitelistDesc": "Only authenticated users whose email address appears in this list are authorized to sync and persist changes to the cloud database.",
     "noEmailsConfigured": "No emails configured (open development mode).",
     "storagePipeline": "Firebase Storage Image Pipeline",
-    "storagePipelineDesc": "Cards automatically resolve high-resolution images from official CDNs or your private Firebase Storage bucket configured in .env."
+    "storagePipelineDesc": "Cards automatically resolve high-resolution images from official CDNs or your private Firebase Storage bucket configured in .env.",
+    "setsSyncTitle": "TCG Sets Metadata Sync",
+    "setsSyncDesc": "Updates official expansion metadata (years, codes and regulation marks) from TCGdex API & Cloud Firestore",
+    "setsCataloged": "Cataloged Sets",
+    "lastSetsSync": "Last Sets Sync",
+    "syncSetsBtn": "Sync TCG Sets Now",
+    "syncingSets": "Fetching Sets from API...",
+    "setsSyncSuccess": "{total} sets synced successfully!",
+    "setsSyncExplanation": "Fetches all Pokémon TCG expansions from the official open API, calculates release years and competitive regulation mark rotation letters (D, E, F, G, H, I, J...), and saves configuration to Firebase."
   },
   "accessGate": {
     "booting": "Booting Pokédex OS...",

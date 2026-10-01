@@ -1,5 +1,5 @@
-import React from 'react';
-import { Search, X, Sparkles, Layers, CheckCircle2, CircleDashed, ChevronDown } from 'lucide-react';
+import React, { useMemo } from 'react';
+import { Search, X, Sparkles, Layers, CheckCircle2, CircleDashed, ChevronDown, RefreshCw } from 'lucide-react';
 import { PokemonTypeIcon } from './PokemonTypeIcon';
 import { useCollection } from '../context/CollectionContext';
 import { useLanguage } from '../context/LanguageContext';
@@ -24,11 +24,13 @@ const TYPE_PILLS = [
 ];
 
 export const FilterBar: React.FC = () => {
-  const { filters, setFilters, resetFilters, cards } = useCollection();
+  const { filters, setFilters, resetFilters, cards, setsVersion, isSyncingSets, syncSetsMetadata } = useCollection();
   const { t, language } = useLanguage();
 
   // Extract unique sets and rarities, sorted chronologically (newest first)
-  const uniqueSets = sortSetsChronologically(Array.from(new Set(cards.map(c => c.set_code).filter(Boolean))));
+  const uniqueSets = useMemo(() => {
+    return sortSetsChronologically(Array.from(new Set(cards.map(c => c.set_code).filter(Boolean))));
+  }, [cards, setsVersion]);
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFilters(prev => ({ ...prev, searchQuery: e.target.value }));
@@ -122,7 +124,7 @@ export const FilterBar: React.FC = () => {
             <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" />
           </div>
 
-          <div className="relative w-full lg:w-auto sm:col-span-2 lg:flex-1 lg:min-w-[220px]">
+          <div className="relative w-full lg:w-auto sm:col-span-2 lg:flex-1 lg:min-w-[220px] flex items-center">
             <select
               value={filters.selectedSet}
               onChange={(e) => {
@@ -130,7 +132,7 @@ export const FilterBar: React.FC = () => {
                 setFilters(prev => ({ ...prev, selectedSet: e.target.value }));
               }}
               aria-label={t('filters.allSets')}
-              className="w-full appearance-none bg-pokedex-darker border border-slate-800 rounded-xl pl-3 pr-9 py-2 text-xs font-sans text-slate-200 focus:outline-none focus:border-pokedex-blue cursor-pointer truncate"
+              className="w-full appearance-none bg-pokedex-darker border border-slate-800 rounded-xl pl-3 pr-14 py-2 text-xs font-sans text-slate-200 focus:outline-none focus:border-pokedex-blue cursor-pointer truncate"
             >
               <option value="ALL">{t('filters.allSets')}</option>
               {uniqueSets.map(setCode => {
@@ -143,7 +145,21 @@ export const FilterBar: React.FC = () => {
                 );
               })}
             </select>
-            <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" />
+            <div className="absolute right-2.5 top-1/2 -translate-y-1/2 flex items-center space-x-1">
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  syncSetsMetadata();
+                }}
+                disabled={isSyncingSets}
+                title={language === 'pt' ? 'Sincronizar metadados das coleções (anos e letras) com Firebase / API' : 'Sync sets metadata (years and marks) with Firebase / API'}
+                className="p-1 rounded text-slate-400 hover:text-yellow-400 disabled:opacity-40 transition-colors"
+              >
+                <RefreshCw className={`w-3.5 h-3.5 ${isSyncingSets ? 'animate-spin text-yellow-400' : ''}`} />
+              </button>
+              <ChevronDown className="w-4 h-4 text-slate-400 pointer-events-none" />
+            </div>
           </div>
 
           <div className="relative w-full lg:w-auto">

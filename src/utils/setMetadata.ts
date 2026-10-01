@@ -713,3 +713,49 @@ export function sortSetsChronologically(setCodes: string[]): string[] {
   });
 }
 
+let lastDynamicSyncDate: string | null = null;
+
+/**
+ * Registers dynamically fetched or synced sets into the application metadata dictionaries.
+ */
+export function registerDynamicSets(
+  sets: Record<string, { year?: number; mark?: string; namePt?: string }>,
+  syncedAt?: string
+): number {
+  if (syncedAt) {
+    lastDynamicSyncDate = syncedAt;
+  }
+  let count = 0;
+  for (const [code, meta] of Object.entries(sets)) {
+    if (!code) continue;
+    const raw = code.trim().toUpperCase();
+    const norm = normalizeSetCode(raw);
+
+    if (meta.year) {
+      SET_RELEASE_YEARS[raw] = meta.year;
+      SET_RELEASE_YEARS[norm] = meta.year;
+    }
+    if (meta.mark) {
+      SET_REGULATION_MARKS[raw] = meta.mark.toUpperCase();
+      SET_REGULATION_MARKS[norm] = meta.mark.toUpperCase();
+    }
+    if (meta.namePt) {
+      SET_OFFICIAL_NAMES_PT[raw] = meta.namePt;
+      SET_OFFICIAL_NAMES_PT[norm] = meta.namePt;
+    }
+    count++;
+  }
+  return count;
+}
+
+/**
+ * Returns info about dynamically synced sets
+ */
+export function getDynamicSetsSyncInfo(): { lastSyncedAt: string | null; totalSets: number } {
+  return {
+    lastSyncedAt: lastDynamicSyncDate,
+    totalSets: Object.keys(SET_RELEASE_YEARS).length
+  };
+}
+
+

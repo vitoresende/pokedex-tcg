@@ -11,13 +11,15 @@ import { getFirestore, doc, setDoc, getDoc, collection, Firestore } from 'fireba
 import { getStorage, ref, uploadBytes, getDownloadURL, FirebaseStorage } from 'firebase/storage';
 
 // Configuration read from environment variables (.env)
+const env = (typeof import.meta !== 'undefined' && import.meta.env) ? import.meta.env : ({} as Record<string, string>);
+
 const firebaseConfig = {
-  apiKey: import.meta.env.VITE_FIREBASE_API_KEY || 'AIzaSyDemoKeyForPokedexDev123',
-  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN || 'pokedex-tcg-master.firebaseapp.com',
-  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID || 'pokedex-tcg-master',
-  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET || 'pokedex-tcg-master.appspot.com',
-  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID || '1234567890',
-  appId: import.meta.env.VITE_FIREBASE_APP_ID || '1:1234567890:web:abcdef123456'
+  apiKey: env.VITE_FIREBASE_API_KEY || 'AIzaSyDemoKeyForPokedexDev123',
+  authDomain: env.VITE_FIREBASE_AUTH_DOMAIN || 'pokedex-tcg-master.firebaseapp.com',
+  projectId: env.VITE_FIREBASE_PROJECT_ID || 'pokedex-tcg-master',
+  storageBucket: env.VITE_FIREBASE_STORAGE_BUCKET || 'pokedex-tcg-master.appspot.com',
+  messagingSenderId: env.VITE_FIREBASE_MESSAGING_SENDER_ID || '1234567890',
+  appId: env.VITE_FIREBASE_APP_ID || '1:1234567890:web:abcdef123456'
 };
 
 // Safe initialization
@@ -50,7 +52,7 @@ googleProvider.setCustomParameters({
  * Returns allowed email addresses defined in .env
  */
 export function getAllowedEmails(): string[] {
-  const envEmails = import.meta.env.VITE_ALLOWED_EMAILS || '';
+  const envEmails = env.VITE_ALLOWED_EMAILS || '';
   return envEmails
     .split(',')
     .map((e: string) => e.trim().toLowerCase())
@@ -167,6 +169,42 @@ export async function downloadAndUploadImageToStorage(externalUrl: string, filen
   } catch (err) {
     console.warn(`Could not upload external image to storage, keeping original URL:`, err);
     return externalUrl;
+  }
+}
+
+/**
+ * Syncs global sets metadata to Cloud Firestore under settings/sets_metadata
+ */
+export async function syncSetsMetadataToFirestore(data: any): Promise<boolean> {
+  if (!db) return false;
+  try {
+    const settingsRef = doc(db, 'settings', 'sets_metadata');
+    await setDoc(settingsRef, {
+      ...data,
+      lastUpdated: new Date().toISOString()
+    }, { merge: true });
+    return true;
+  } catch (error) {
+    console.error('Error syncing sets metadata to Firestore:', error);
+    return false;
+  }
+}
+
+/**
+ * Loads global sets metadata from Cloud Firestore under settings/sets_metadata
+ */
+export async function loadSetsMetadataFromFirestore(): Promise<any | null> {
+  if (!db) return null;
+  try {
+    const settingsRef = doc(db, 'settings', 'sets_metadata');
+    const snap = await getDoc(settingsRef);
+    if (snap.exists()) {
+      return snap.data();
+    }
+    return null;
+  } catch (error) {
+    console.warn('Could not load sets metadata from Firestore (offline or uninitialized):', error);
+    return null;
   }
 }
 

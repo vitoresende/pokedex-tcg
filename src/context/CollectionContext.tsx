@@ -5,6 +5,7 @@ import { Card, Deck, DeckCardItem } from '../types';
 import { soundEffects } from '../services/audio';
 import { useAuth } from './AuthContext';
 import { syncUserCollectionToFirestore, loadUserCollectionFromFirestore } from '../services/firebase';
+import { loadAndApplySetsMetadata, syncSetsToCloudAndLocal } from '../services/tcgSetsService';
 import { fixMojibake } from '../utils/textSanitizer';
 
 interface FilterState {
@@ -60,6 +61,12 @@ interface CollectionContextType {
   setMuted: (muted: boolean) => void;
   toggleMute: () => void;
   syncToCloud: () => Promise<boolean>;
+  isSyncingSets: boolean;
+  setsSyncStatus: CloudSyncStatus;
+  lastSetsSyncedAt: Date | null;
+  totalSyncedSetsCount: number;
+  setsVersion: number;
+  syncSetsMetadata: () => Promise<{ success: boolean; total: number; error?: string }>;
   addNewCard: (card: Partial<Card>) => Card;
   updateCard: (cardId: string, updatedData: Partial<Card>) => void;
   deleteCard: (cardId: string) => void;
@@ -423,6 +430,57 @@ export const CollectionProvider: React.FC<{ children: React.ReactNode }> = ({ ch
   const [syncStatus, setSyncStatus] = useState<CloudSyncStatus>('idle');
   const [lastSyncedAt, setLastSyncedAt] = useState<Date | null>(null);
   const [isInitializedFromCloud, setIsInitializedFromCloud] = useState<boolean>(false);
+
+  // Dynamic TCG Sets metadata sync state
+  const [isSyncingSets, setIsSyncingSets] = useState<boolean>(false);
+  const [setsSyncStatus, setSetsSyncStatus] = useState<CloudSyncStatus>('idle');
+  const [lastSetsSyncedAt, setLastSetsSyncedAt] = useState<Date | null>(null);
+  const [totalSyncedSetsCount, setTotalSyncedSetsCount] = useState<number>(0);
+  const [setsVersion, setSetsVersion] = useState<number>(0);
+
+  // Initialize sets metadata from localStorage / Cloud Firestore
+  useEffect(() => {
+    loadAndApplySetsMetadata().then(res => {
+      if (res.lastSyncedAt) {
+        setLastSetsSyncedAt(new Date(res.lastSyncedAt));
+      }
+      if (res.total) {
+        setTotalSyncedSetsCount(res.total);
+      }
+      setSetsVersion(v => v + 1);
+    }).catch(err => {
+      console.warn('Could not load sets metadata:', err);
+    });
+  }, []);
+
+  const syncSetsMetadata = async (): Promise<{ success: boolean; total: number; error?: string }> => {
+    setIsSyncingSets(true);
+    setSetsSyncStatus('syncing');
+    soundEffects.playScan();
+    try {
+      const res = await syncSetsToCloudAndLocal();
+      if (res.success) {
+        setLastSetsSyncedAt(new Date(res.lastSyncedAt));
+        setTotalSyncedSetsCount(res.total);
+        setSetsSyncStatus('synced');
+        setSetsVersion(v => v + 1);
+        soundEffects.playSuccess();
+        setTimeout(() => setSetsSyncStatus('idle'), 4000);
+        return { success: true, total: res.total };
+      } else {
+        setSetsSyncStatus('error');
+        setTimeout(() => setSetsSyncStatus('idle'), 4000);
+        return { success: false, total: 0, error: 'Falha ao sincronizar coleções' };
+      }
+    } catch (err: any) {
+      console.error('Error syncing sets metadata:', err);
+      setSetsSyncStatus('error');
+      setTimeout(() => setSetsSyncStatus('idle'), 4000);
+      return { success: false, total: 0, error: err?.message || 'Erro ao consultar API de coleções' };
+    } finally {
+      setIsSyncingSets(false);
+    }
+  };
 
   // Local storage persistence
   useEffect(() => {
@@ -1201,6 +1259,12 @@ export const CollectionProvider: React.FC<{ children: React.ReactNode }> = ({ ch
         setMuted,
         toggleMute,
         syncToCloud,
+        isSyncingSets,
+        setsSyncStatus,
+        lastSetsSyncedAt,
+        totalSyncedSetsCount,
+        setsVersion,
+        syncSetsMetadata,
         addNewCard,
         updateCard,
         deleteCard,

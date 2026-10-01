@@ -326,7 +326,15 @@ export const pt: TranslationKeys = {
     "whitelistDesc": "Apenas usuários autenticados cujos e-mails estejam nesta lista possuem autorização para sincronizar e gravar alterações no banco em nuvem.",
     "noEmailsConfigured": "Nenhum e-mail configurado (modo aberto de desenvolvimento).",
     "storagePipeline": "Pipeline de Imagens do Firebase Storage",
-    "storagePipelineDesc": "As cartas resolvem automaticamente imagens em alta resolução dos CDNs oficiais ou do seu bucket privado do Firebase Storage configurado no .env."
+    "storagePipelineDesc": "As cartas resolvem automaticamente imagens em alta resolução dos CDNs oficiais ou do seu bucket privado do Firebase Storage configurado no .env.",
+    "setsSyncTitle": "Sincronização de Coleções (TCG Sets Sync)",
+    "setsSyncDesc": "Atualiza metadados oficiais de coleções (anos, códigos e marcas de regulamentação) via API TCGdex e Cloud Firestore",
+    "setsCataloged": "Coleções Catalogadas",
+    "lastSetsSync": "Última Sincronização de Sets",
+    "syncSetsBtn": "Sincronizar Coleções Agora",
+    "syncingSets": "Buscando Coleções na API...",
+    "setsSyncSuccess": "{total} coleções sincronizadas com sucesso!",
+    "setsSyncExplanation": "Consulta a API oficial com todas as coleções do Pokémon TCG, calcula automaticamente os anos e as letras de rotação competitiva (D, E, F, G, H, I, J...) e grava as configurações no Firebase."
   },
   "accessGate": {
     "booting": "Iniciando Pokédex OS...",
