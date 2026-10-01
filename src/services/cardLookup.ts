@@ -184,6 +184,24 @@ export function parseCardQuery(input: string): ParsedQuery {
   return { name: trimmed };
 }
 
+const COMMON_TYPOS: Record<string, string> = {
+  'slopoke': 'slowpoke',
+  'pikashu': 'pikachu',
+  'charzard': 'charizard',
+  'blastoyse': 'blastoise',
+  'blastois': 'blastoise',
+  'venasaur': 'venusaur',
+  'mewtwoo': 'mewtwo',
+  'rayquasa': 'rayquaza',
+  'eeve': 'eevee',
+  'snorlax': 'snorlax',
+  'dragonaite': 'dragonite',
+  'necrozma': 'necrozma',
+  'mimikiu': 'mimikyu',
+  'lucario': 'lucario',
+  'gardevoir': 'gardevoir'
+};
+
 /**
  * Queries TCGdex API (Portuguese first, English fallback) to retrieve and format card candidates.
  */
@@ -191,11 +209,14 @@ export async function lookupCardOnline(query: string): Promise<CardLookupResult[
   const parsed = parseCardQuery(query);
   if (!parsed.name) return [];
 
+  const rawNameLower = parsed.name.toLowerCase().trim();
+  const searchName = COMMON_TYPOS[rawNameLower] || parsed.name;
+
   try {
     // 1. Query Portuguese endpoint
     let ptList: any[] = [];
     try {
-      const ptRes = await fetch(`https://api.tcgdex.net/v2/pt/cards?name=${encodeURIComponent(parsed.name)}`);
+      const ptRes = await fetch(`https://api.tcgdex.net/v2/pt/cards?name=${encodeURIComponent(searchName)}`);
       if (ptRes.ok) {
         ptList = await ptRes.json();
       }
@@ -204,17 +225,15 @@ export async function lookupCardOnline(query: string): Promise<CardLookupResult[
     }
 
     // 2. Query English endpoint if no PT results
-    let isEnglishPrimary = false;
     let candidatesList = Array.isArray(ptList) ? ptList : [];
 
     if (candidatesList.length === 0) {
       try {
-        const enRes = await fetch(`https://api.tcgdex.net/v2/en/cards?name=${encodeURIComponent(parsed.name)}`);
+        const enRes = await fetch(`https://api.tcgdex.net/v2/en/cards?name=${encodeURIComponent(searchName)}`);
         if (enRes.ok) {
           const enList = await enRes.json();
           if (Array.isArray(enList) && enList.length > 0) {
             candidatesList = enList;
-            isEnglishPrimary = true;
           }
         }
       } catch (e) {
@@ -232,8 +251,30 @@ export async function lookupCardOnline(query: string): Promise<CardLookupResult[
         const cClean = (c.localId || '').replace(/^0+/, '') || '1';
         return cClean === targetClean;
       });
-      if (exactNumMatches.length > 0) {
-        filtered = exactNumMatches;
+
+      const exactWithImage = exactNumMatches.filter(c => Boolean(c.image));
+
+      if (exactWithImage.length > 0) {
+        filtered = exactWithImage;
+      } else if (exactNumMatches.length > 0) {
+        // Exact match exists but has NO image on TCGdex (e.g. promo card mep-086).
+        // Find near matches (e.g. #085) or other printings that DO have valid images
+        const nearMatches = candidatesList.filter(c => {
+          const cNum = parseInt((c.localId || '').replace(/\D/g, ''), 10);
+          const targetNum = parseInt(targetClean, 10);
+          return Math.abs(cNum - targetNum) <= 2 && Boolean(c.image);
+        });
+        filtered = [...exactNumMatches, ...nearMatches, ...candidatesList.filter(c => Boolean(c.image))];
+      } else {
+        // No exact match for this number: check close numbers (+- 2)
+        const nearMatches = candidatesList.filter(c => {
+          const cNum = parseInt((c.localId || '').replace(/\D/g, ''), 10);
+          const targetNum = parseInt(targetClean, 10);
+          return Math.abs(cNum - targetNum) <= 2;
+        });
+        if (nearMatches.length > 0) {
+          filtered = [...nearMatches, ...candidatesList];
+        }
       }
     }
 
@@ -296,7 +337,23 @@ export async function lookupCardOnline(query: string): Promise<CardLookupResult[
             ? String(detail.set.cardCount.official) 
             : (parsed.total || '100');
 
-          const imageUrl = detail.image ? `${detail.image}/high.png` : '';
+          let imageUrl = detail.image ? `${detail.image}/high.png` : '';
+
+          // Tier 2: TCGPlayer product scan (for cards/promos where TCGdex has no scan)
+          if (!imageUrl && detail.variants_detailed) {
+            for (const v of detail.variants_detailed) {
+              if (v?.thirdParty?.tcgplayer) {
+                imageUrl = `https://product-images.tcgplayer.com/fit-in/437x437/${v.thirdParty.tcgplayer}.jpg`;
+                break;
+              }
+            }
+          }
+
+          // Tier 3: pokemontcg.io standard scan
+          if (!imageUrl && detail.set?.id && detail.localId) {
+            const cleanNum = String(detail.localId).replace(/^0+/, '') || '1';
+            imageUrl = `https://images.pokemontcg.io/${detail.set.id.toLowerCase()}/${cleanNum}.png`;
+          }
 
           return {
             id: detail.id,

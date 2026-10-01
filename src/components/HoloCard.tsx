@@ -231,6 +231,52 @@ export const HoloCard: React.FC<HoloCardProps> = ({ card, className = '', isDeta
       sources.push(`https://limitlesstcg.nyc3.cdn.digitaloceanspaces.com/tpci/${limitlessSet}/${limitlessSet}_${paddedNum}_R_EN.png`);
       sources.push(`https://limitlesstcg.nyc3.cdn.digitaloceanspaces.com/tpci/${limitlessSet}/${limitlessSet}_${unpaddedNum}_R_PT.png`);
       sources.push(`https://limitlesstcg.nyc3.cdn.digitaloceanspaces.com/tpci/${limitlessSet}/${limitlessSet}_${unpaddedNum}_R_EN.png`);
+
+      // 6. TCGdex High-Res Official Scans CDN (Portuguese & English)
+      const SET_CODE_TCGDEX_MAP: Record<string, string> = {
+        'PAL': 'sv/sv02', 'SV02': 'sv/sv02', 'SV2': 'sv/sv02',
+        'SVI': 'sv/sv01', 'SV01': 'sv/sv01', 'SV1': 'sv/sv01',
+        'OBF': 'sv/sv03', 'SV03': 'sv/sv03', 'SV3': 'sv/sv03',
+        'MEW': 'sv/sv03.5', '151': 'sv/sv03.5',
+        'PAR': 'sv/sv04', 'SV04': 'sv/sv04', 'SV4': 'sv/sv04',
+        'PAF': 'sv/sv04.5', 'SV04.5': 'sv/sv04.5',
+        'TEF': 'sv/sv05', 'SV05': 'sv/sv05', 'SV5': 'sv/sv05',
+        'TWM': 'sv/sv06', 'SV06': 'sv/sv06', 'SV6': 'sv/sv06',
+        'SFA': 'sv/sv06.5', 'SV06.5': 'sv/sv06.5',
+        'SCR': 'sv/sv07', 'SV07': 'sv/sv07', 'SV7': 'sv/sv07',
+        'SSP': 'sv/sv08', 'SV08': 'sv/sv08', 'SV8': 'sv/sv08',
+        'PRE': 'sv/sv08.5', 'SV08.5': 'sv/sv08.5',
+        'DRI': 'sv/sv10',
+        'PGO': 'swsh/swsh10.5',
+        'SSH': 'swsh/swsh1',
+        'RCL': 'swsh/swsh2',
+        'DAA': 'swsh/swsh3',
+        'VIV': 'swsh/swsh4',
+        'SHF': 'swsh/swsh4.5',
+        'BST': 'swsh/swsh5',
+        'CRE': 'swsh/swsh6',
+        'EVS': 'swsh/swsh7',
+        'FST': 'swsh/swsh8',
+        'BRS': 'swsh/swsh9',
+        'ASR': 'swsh/swsh10',
+        'LOR': 'swsh/swsh11',
+        'SIT': 'swsh/swsh12',
+        'CRZ': 'swsh/swsh12.5',
+        'HIF': 'sm/sm11.5',
+        'GRI': 'sm/sm2',
+        'UNM': 'sm/sm11',
+        'TEU': 'sm/sm9',
+        'CES': 'sm/sm7',
+        'UPR': 'sm/sm5'
+      };
+
+      const tcgdexPath = SET_CODE_TCGDEX_MAP[rawSet] || SET_CODE_TCGDEX_MAP[cleanSet.toUpperCase()];
+      if (tcgdexPath) {
+        sources.push(`https://assets.tcgdex.net/pt/${tcgdexPath}/${paddedNum}/high.png`);
+        sources.push(`https://assets.tcgdex.net/pt/${tcgdexPath}/${unpaddedNum}/high.png`);
+        sources.push(`https://assets.tcgdex.net/en/${tcgdexPath}/${paddedNum}/high.png`);
+        sources.push(`https://assets.tcgdex.net/en/${tcgdexPath}/${unpaddedNum}/high.png`);
+      }
     }
 
     const uniqueSources = Array.from(new Set(sources.filter(Boolean)));

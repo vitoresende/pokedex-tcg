@@ -3,12 +3,14 @@ import { Card } from '../types';
 import { HoloCard } from './HoloCard';
 import { 
   X, Heart, Plus, Minus, Layers, Sparkles, Save, 
-  Trash2, PlusCircle, CheckCircle2 
+  Trash2, PlusCircle, CheckCircle2, Image as ImageIcon, 
+  RefreshCw, Search, Loader2 
 } from 'lucide-react';
 import { useCollection } from '../context/CollectionContext';
 import { useLanguage } from '../context/LanguageContext';
 import { soundEffects } from '../services/audio';
 import { findSimilarCards } from '../utils/cardSimilarity';
+import { lookupCardOnline, CardLookupResult } from '../services/cardLookup';
 
 interface CardDetailModalProps {
   card: Card | null;
@@ -19,7 +21,7 @@ interface CardDetailModalProps {
 export const CardDetailModal: React.FC<CardDetailModalProps> = ({ card, onClose, onNavigateToDeck }) => {
   const { 
     cards, favorites, toggleFavorite, updateCardQuantity, notes, 
-    updateCardNote, decks, addCardToDeck, deleteCard 
+    updateCardNote, decks, addCardToDeck, updateCard, deleteCard 
   } = useCollection();
   const { t, getCardName, getCardSetName, language } = useLanguage();
   
@@ -28,14 +30,57 @@ export const CardDetailModal: React.FC<CardDetailModalProps> = ({ card, onClose,
   const [selectedDeckForAdd, setSelectedDeckForAdd] = useState<string>(decks[0]?.id || '');
   const [cardAddedToDeck, setCardAddedToDeck] = useState<boolean>(false);
 
+  const [isFixingImage, setIsFixingImage] = useState(false);
+  const [isSearchingScans, setIsSearchingScans] = useState(false);
+  const [scanResults, setScanResults] = useState<CardLookupResult[]>([]);
+  const [imageFixSuccess, setImageFixSuccess] = useState(false);
+
   useEffect(() => {
     if (card) {
       setLocalNote(notes[card.id] || card.comment || '');
       setNoteSaved(false);
       setCardAddedToDeck(false);
+      setIsFixingImage(false);
+      setScanResults([]);
       soundEffects.playScan();
     }
   }, [card, notes]);
+
+  const handleSearchOnlineScans = async () => {
+    if (!card) return;
+    soundEffects.playClick();
+    setIsSearchingScans(true);
+    try {
+      const query = `${card.name_pt || card.name_en} ${card.card_number}`;
+      let results = await lookupCardOnline(query);
+      if (results.length === 0) {
+        results = await lookupCardOnline(card.name_pt || card.name_en);
+      }
+      setScanResults(results);
+    } catch (e) {
+      console.warn('Error fetching online scans:', e);
+    } finally {
+      setIsSearchingScans(false);
+    }
+  };
+
+  const handleApplyScan = (scan: CardLookupResult) => {
+    if (!card) return;
+    soundEffects.playScan();
+    updateCard(card.id, {
+      image_url: scan.imageUrl,
+      set_code: scan.setCode,
+      set_pt: scan.setName,
+      set_en: scan.setName,
+      card_number: scan.cardNumber,
+      name_pt: scan.namePt,
+      name_en: scan.nameEn
+    });
+    setImageFixSuccess(true);
+    setIsFixingImage(false);
+    setScanResults([]);
+    setTimeout(() => setImageFixSuccess(false), 3000);
+  };
 
   if (!card) return null;
 
@@ -137,6 +182,82 @@ export const CardDetailModal: React.FC<CardDetailModalProps> = ({ card, onClose,
                   <Plus className="w-3.5 h-3.5" />
                 </button>
               </div>
+            </div>
+
+            {/* Image / Scan Correction Trigger */}
+            <div className="w-full mt-3">
+              <button
+                type="button"
+                onClick={() => {
+                  soundEffects.playClick();
+                  setIsFixingImage(!isFixingImage);
+                  if (!isFixingImage && scanResults.length === 0) {
+                    handleSearchOnlineScans();
+                  }
+                }}
+                className="w-full py-1.5 px-3 rounded-xl bg-slate-800/80 hover:bg-slate-700 text-yellow-300 hover:text-yellow-200 text-[11px] font-mono flex items-center justify-center gap-1.5 transition-colors border border-slate-700"
+              >
+                <ImageIcon className="w-3.5 h-3.5 text-yellow-400" />
+                <span>{language === 'pt' ? 'Buscar / Atualizar Imagem Oficial' : 'Search / Update Official Scan'}</span>
+              </button>
+
+              {imageFixSuccess && (
+                <p className="text-emerald-400 text-[10px] font-mono text-center mt-1 flex items-center justify-center gap-1 font-bold">
+                  <CheckCircle2 className="w-3 h-3" />
+                  <span>{language === 'pt' ? 'Imagem atualizada com sucesso!' : 'Image updated successfully!'}</span>
+                </p>
+              )}
+
+              {/* Scans Drawer */}
+              {isFixingImage && (
+                <div className="mt-2 p-2.5 rounded-xl bg-slate-950 border border-slate-800 space-y-2">
+                  <div className="flex items-center justify-between">
+                    <span className="text-[10px] text-slate-400 font-mono uppercase">
+                      {language === 'pt' ? 'Scans Oficiais Encontrados:' : 'Found Official Scans:'}
+                    </span>
+                    <button
+                      type="button"
+                      onClick={handleSearchOnlineScans}
+                      disabled={isSearchingScans}
+                      className="text-yellow-400 hover:text-yellow-300 text-[10px] font-mono flex items-center gap-1"
+                    >
+                      <RefreshCw className={`w-3 h-3 ${isSearchingScans ? 'animate-spin' : ''}`} />
+                      <span>{language === 'pt' ? 'Rebuscar' : 'Refresh'}</span>
+                    </button>
+                  </div>
+
+                  {isSearchingScans ? (
+                    <div className="py-4 text-center text-slate-400 text-xs font-mono flex items-center justify-center gap-2">
+                      <Loader2 className="w-4 h-4 animate-spin text-yellow-400" />
+                      <span>{language === 'pt' ? 'Consultando base de scans...' : 'Looking up scans...'}</span>
+                    </div>
+                  ) : scanResults.length > 0 ? (
+                    <div className="grid grid-cols-2 gap-2 max-h-48 overflow-y-auto pr-1 no-scrollbar">
+                      {scanResults.map(scan => (
+                        <button
+                          key={scan.id}
+                          type="button"
+                          onClick={() => handleApplyScan(scan)}
+                          className="flex flex-col items-center p-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 border border-slate-800 hover:border-yellow-400 text-left transition-all group"
+                        >
+                          {scan.imageUrl ? (
+                            <img src={scan.imageUrl} alt="" className="w-14 h-20 object-cover rounded shadow group-hover:scale-105 transition-transform" />
+                          ) : (
+                            <div className="w-14 h-20 bg-slate-800 rounded flex items-center justify-center text-[9px] text-slate-500">Sem scan</div>
+                          )}
+                          <span className="font-bold text-[10px] text-white mt-1 text-center truncate w-full">{scan.setName}</span>
+                          <span className="text-[9px] text-slate-400 font-mono text-center">#{scan.cardNumber}</span>
+                          <span className="text-[9px] text-yellow-400 font-bold mt-0.5 group-hover:underline">Aplicar</span>
+                        </button>
+                      ))}
+                    </div>
+                  ) : (
+                    <p className="text-[10px] text-slate-400 font-mono text-center py-2">
+                      {language === 'pt' ? 'Nenhum scan correspondente encontrado automaticamente.' : 'No matching scans found automatically.'}
+                    </p>
+                  )}
+                </div>
+              )}
             </div>
 
             {/* Delete Card Button */}

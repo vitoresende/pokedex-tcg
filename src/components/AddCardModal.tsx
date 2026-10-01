@@ -95,10 +95,8 @@ export const AddCardModal: React.FC<AddCardModalProps> = ({ isOpen, onClose, ini
     setTotalInSet(candidate.totalInSet);
     setColorCode(candidate.colorCode);
     setRarityCode(candidate.rarityCode);
-    if (candidate.imageUrl) {
-      setImageUrl(candidate.imageUrl);
-      setImagePreview(candidate.imageUrl);
-    }
+    setImageUrl(candidate.imageUrl || '');
+    setImagePreview(candidate.imageUrl || null);
     setSearchCandidates([]);
     setSearchSuccess(t('addCard.quickSearchSuccess', {
       name: candidate.namePt || candidate.nameEn,

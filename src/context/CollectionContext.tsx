@@ -60,6 +60,7 @@ interface CollectionContextType {
   toggleMute: () => void;
   syncToCloud: () => Promise<boolean>;
   addNewCard: (card: Partial<Card>) => Card;
+  updateCard: (cardId: string, updatedData: Partial<Card>) => void;
   deleteCard: (cardId: string) => void;
   importCardsFromCsv: (csvContent: string, deckOption?: DeckImportOption) => { added: number; updated: number; deckName?: string };
   createNewDeck: (deck: Partial<Deck>) => Deck;
@@ -510,6 +511,19 @@ export const CollectionProvider: React.FC<{ children: React.ReactNode }> = ({ ch
 
     setCards(prev => [newCard, ...prev]);
     return newCard;
+  };
+
+  const updateCard = (cardId: string, updatedData: Partial<Card>) => {
+    soundEffects.playClick();
+    setCards(prev => prev.map(c => {
+      if (c.id === cardId) {
+        return { ...c, ...updatedData };
+      }
+      return c;
+    }));
+    if (selectedCard?.id === cardId) {
+      setSelectedCard(prev => prev ? { ...prev, ...updatedData } : null);
+    }
   };
 
   const deleteCard = (cardId: string) => {
@@ -1089,6 +1103,7 @@ export const CollectionProvider: React.FC<{ children: React.ReactNode }> = ({ ch
         toggleMute,
         syncToCloud,
         addNewCard,
+        updateCard,
         deleteCard,
         importCardsFromCsv,
         createNewDeck,
