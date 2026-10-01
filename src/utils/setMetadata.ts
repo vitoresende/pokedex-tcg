@@ -7,13 +7,27 @@
 import { fixMojibake } from './textSanitizer';
 
 export const SET_RELEASE_YEARS: Record<string, number> = {
-  // === 2025 (Mega / Gen 9 Era) ===
+  // === 2026 (Megaevolução Era) ===
+  'ME02.5': 2026, 'ME2.5': 2026, // Heróis Excelsos / Ascended Heroes
+  'ME03': 2026, 'ME3': 2026, // Equilíbrio Perfeito / Perfect Order
+  'ME04': 2026, 'ME4': 2026, // Caos Ascendente / Chaos Rising
+  'ME05': 2026, 'ME5': 2026, // Escuridão Absoluta / Pitch Black
+  'ME06': 2026, 'ME6': 2026, // Reinado Delta / Delta Reign
+  'ME07': 2026, 'ME7': 2026,
+  'ME08': 2026, 'ME8': 2026,
+  'ME09': 2026, 'ME9': 2026,
+  'ME10': 2026,
+
+  // === 2025 (Megaevolução & Scarlet & Violet finale) ===
+  'ME01': 2025, 'ME1': 2025, // Megaevolução Base Set
+  'ME02': 2025, 'ME2': 2025, // Fogo Fantasmagórico / Phantasmal Flames
   'BLK': 2025, // Black Bolt
   'WHT': 2025, // White Flare
   'DRI': 2025, // Destined Rivals / Rivais Predestinados
   'PRE': 2025, // Prismatic Evolutions / Evoluções Prismáticas
   'PBL': 2025, // Evoluções Prismáticas alias
   'JTG': 2025, // Journey Together
+  'SV09': 2025, 'SV9': 2025,
   'SV10': 2025,
 
   // === 2024 (Scarlet & Violet) ===
@@ -242,44 +256,61 @@ export const SET_RELEASE_YEARS: Record<string, number> = {
 };
 
 export const SET_OFFICIAL_NAMES_PT: Record<string, string> = {
+  // Megaevolução (2025-2026)
+  'ME01': 'Megaevolução',
+  'ME1': 'Megaevolução',
+  'ME02': 'Fogo Fantasmagórico',
+  'ME2': 'Fogo Fantasmagórico',
+  'ME02.5': 'Heróis Excelsos',
+  'ME2.5': 'Heróis Excelsos',
+  'ME03': 'Equilíbrio Perfeito',
+  'ME3': 'Equilíbrio Perfeito',
+  'ME04': 'Caos Ascendente',
+  'ME4': 'Caos Ascendente',
+  'ME05': 'Escuridão Absoluta',
+  'ME5': 'Escuridão Absoluta',
+  'ME06': 'Reinado Delta',
+  'ME6': 'Reinado Delta',
+
   // Scarlet & Violet
   'PRE': 'Evoluções Prismáticas',
   'PBL': 'Evoluções Prismáticas',
-  'SSP': 'Fagulhas Impetuosas',
-  'SCR': 'Coroa Estelar',
-  'SFA': 'Fábulas Nebulosas',
-  'TWM': 'Máscaras do Crepúsculo',
-  'TEF': 'Forças Temporais',
-  'PAF': 'Destinos de Paldea',
-  'PAR': 'Fenda Paradoxal',
-  '151': '151',
-  'MEW': '151',
-  'OBF': 'Obsidiana em Chamas',
-  'PAL': 'Evoluções em Paldea',
-  'SVI': 'Escarlate e Violeta',
-  'SV1': 'Escarlate e Violeta',
+  'DRI': 'Rivais Predestinados',
+  'JTG': 'Jornada Juntos',
+  'BLK': 'Raio Preto',
+  'WHT': 'Chama Branca',
+  'SSP': 'Fagulhas Impetuosas', 'SV08': 'Fagulhas Impetuosas', 'SV8': 'Fagulhas Impetuosas',
+  'SCR': 'Coroa Estelar', 'SV07': 'Coroa Estelar', 'SV7': 'Coroa Estelar',
+  'SFA': 'Fábulas Nebulosas', 'SV06.5': 'Fábulas Nebulosas', 'SV6.5': 'Fábulas Nebulosas',
+  'TWM': 'Máscaras do Crepúsculo', 'SV06': 'Máscaras do Crepúsculo', 'SV6': 'Máscaras do Crepúsculo',
+  'TEF': 'Forças Temporais', 'SV05': 'Forças Temporais', 'SV5': 'Forças Temporais',
+  'PAF': 'Destinos de Paldea', 'SV04.5': 'Destinos de Paldea', 'SV4.5': 'Destinos de Paldea',
+  'PAR': 'Fenda Paradoxal', 'SV04': 'Fenda Paradoxal', 'SV4': 'Fenda Paradoxal',
+  '151': '151', 'MEW': '151', 'SV03.5': '151', 'SV3.5': '151',
+  'OBF': 'Obsidiana em Chamas', 'SV03': 'Obsidiana em Chamas', 'SV3': 'Obsidiana em Chamas',
+  'PAL': 'Evoluções em Paldea', 'SV02': 'Evoluções em Paldea', 'SV2': 'Evoluções em Paldea',
+  'SVI': 'Escarlate e Violeta', 'SV01': 'Escarlate e Violeta', 'SV1': 'Escarlate e Violeta',
   'SVP': 'Escarlate e Violeta Promos',
   'SVE': 'Cartas Promocionais / Básicas',
 
   // Sword & Shield
-  'CRZ': 'Zênite Régio',
-  'SIT': 'Tempestade Prateada',
-  'LOR': 'Origem Perdida',
-  'PGO': 'Pokémon GO',
-  'ASR': 'Resplendor Astral',
-  'BRS': 'Astros Cintilantes',
-  'FST': 'Golpe Fusão',
-  'CEL': 'Celebrações',
-  'EVS': 'Céus Evolutivos',
-  'CRE': 'Reinado Implacável',
-  'BST': 'Estilos de Batalha',
-  'SHF': 'Destinos Brilhantes',
-  'VIV': 'Voltagem Vívida',
-  'CPA': 'Caminho do Campeão',
-  'DAA': 'Escuridão Incandescente',
-  'RCL': 'Rixa Rebelde',
-  'SSH': 'Espada e Escudo',
-  'SWSH': 'Espada e Escudo',
+  'CRZ': 'Zênite Régio', 'SWSH12.5': 'Zênite Régio',
+  'SIT': 'Tempestade Prateada', 'SWSH12': 'Tempestade Prateada',
+  'LOR': 'Origem Perdida', 'SWSH11': 'Origem Perdida',
+  'PGO': 'Pokémon GO', 'SWSH10.5': 'Pokémon GO',
+  'ASR': 'Resplendor Astral', 'SWSH10': 'Resplendor Astral',
+  'BRS': 'Astros Cintilantes', 'SWSH9': 'Astros Cintilantes',
+  'FST': 'Golpe Fusão', 'SWSH8': 'Golpe Fusão',
+  'CEL': 'Celebrações', 'CEL25': 'Celebrações', 'SWSH7.5': 'Celebrações',
+  'EVS': 'Céus Evolutivos', 'SWSH7': 'Céus Evolutivos',
+  'CRE': 'Reinado Implacável', 'SWSH6': 'Reinado Implacável',
+  'BST': 'Estilos de Batalha', 'SWSH5': 'Estilos de Batalha',
+  'SHF': 'Destinos Brilhantes', 'SWSH4.5': 'Destinos Brilhantes',
+  'VIV': 'Voltagem Vívida', 'SWSH4': 'Voltagem Vívida',
+  'CPA': 'Caminho do Campeão', 'SWSH3.5': 'Caminho do Campeão',
+  'DAA': 'Escuridão Incandescente', 'SWSH3': 'Escuridão Incandescente',
+  'RCL': 'Rixa Rebelde', 'SWSH2': 'Rixa Rebelde',
+  'SSH': 'Espada e Escudo', 'SWSH': 'Espada e Escudo', 'SWSH1': 'Espada e Escudo',
   'SWSHP': 'Espada e Escudo Promos',
 
   // Sun & Moon
@@ -333,13 +364,27 @@ export const SET_OFFICIAL_NAMES_PT: Record<string, string> = {
  * Pre-SWSH expansions used set symbols/drawings ("desenhos") instead of regulation mark letters.
  */
 export const SET_REGULATION_MARKS: Record<string, string> = {
+  // === 2026 ('J' - Megaevolução Era) ===
+  'ME02.5': 'J', 'ME2.5': 'J', // Heróis Excelsos / Ascended Heroes
+  'ME03': 'J', 'ME3': 'J', // Equilíbrio Perfeito / Perfect Order
+  'ME04': 'J', 'ME4': 'J', // Caos Ascendente / Chaos Rising
+  'ME05': 'J', 'ME5': 'J', // Escuridão Absoluta / Pitch Black
+  'ME06': 'J', 'ME6': 'J', // Reinado Delta / Delta Reign
+  'ME07': 'J', 'ME7': 'J',
+  'ME08': 'J', 'ME8': 'J',
+  'ME09': 'J', 'ME9': 'J',
+  'ME10': 'J',
+
   // === 2025 ('I') ===
+  'ME01': 'I', 'ME1': 'I',
+  'ME02': 'I', 'ME2': 'I',
   'BLK': 'I',
   'WHT': 'I',
   'DRI': 'I',
   'PRE': 'I',
   'PBL': 'I',
   'JTG': 'I',
+  'SV09': 'I', 'SV9': 'I',
   'SV10': 'I',
 
   // === 2024 ('H') ===
@@ -411,37 +456,228 @@ export const SET_REGULATION_MARKS: Record<string, string> = {
 };
 
 /**
- * Returns the regulation mark letter (e.g. 'D', 'E', 'F', 'G', 'H', 'I')
- * for modern sets, or null if the set uses a set symbol/drawing (pre-SWSH).
+ * Normalizes set code for dictionary and pattern matching:
+ * - uppercase, trims whitespace
+ * - strips hyphens, underscores, or spaces (e.g. "ME-05" -> "ME05", "SV 08" -> "SV08")
  */
-export function getSetRegulationMark(setCode: string): string | null {
-  if (!setCode) return null;
-  const clean = setCode.trim().toUpperCase();
-  return SET_REGULATION_MARKS[clean] || null;
+export function normalizeSetCode(code: string): string {
+  return (code || '').trim().toUpperCase().replace(/[-\s_]/g, '');
+}
+
+interface KnownSetPattern {
+  regex: RegExp;
+  year: number;
+  mark?: string;
+  officialNamePt: string;
+}
+
+const KNOWN_SET_NAME_PATTERNS: KnownSetPattern[] = [
+  // Megaevolução (2025-2026)
+  { regex: /escurid[aã]o\s+absoluta|pitch\s+black/i, year: 2026, mark: 'J', officialNamePt: 'Escuridão Absoluta' },
+  { regex: /reinado\s+delta|delta\s+reign/i, year: 2026, mark: 'J', officialNamePt: 'Reinado Delta' },
+  { regex: /her[oó]is\s+excelsos|ascended\s+heroes/i, year: 2026, mark: 'J', officialNamePt: 'Heróis Excelsos' },
+  { regex: /equil[ií]brio\s+perfeito|perfect\s+order/i, year: 2026, mark: 'J', officialNamePt: 'Equilíbrio Perfeito' },
+  { regex: /caos\s+ascendente|chaos\s+rising/i, year: 2026, mark: 'J', officialNamePt: 'Caos Ascendente' },
+  { regex: /fogo\s+fantasmag[oó]rico|phantasmal\s+flames/i, year: 2025, mark: 'I', officialNamePt: 'Fogo Fantasmagórico' },
+  { regex: /megaevolu[cç][aã]o|mega\s+evolution/i, year: 2025, mark: 'I', officialNamePt: 'Megaevolução' },
+
+  // Scarlet & Violet (2023-2025)
+  { regex: /evolu[cç][oõ]es\s+prism[aá]ticas|prismatic\s+evolutions/i, year: 2025, mark: 'I', officialNamePt: 'Evoluções Prismáticas' },
+  { regex: /rivais\s+predestinados|destined\s+rivals/i, year: 2025, mark: 'I', officialNamePt: 'Rivais Predestinados' },
+  { regex: /jornada\s+juntos|journey\s+together/i, year: 2025, mark: 'I', officialNamePt: 'Jornada Juntos' },
+  { regex: /raio\s+preto|black\s+bolt/i, year: 2025, mark: 'I', officialNamePt: 'Raio Preto' },
+  { regex: /chama\s+branca|white\s+flare/i, year: 2025, mark: 'I', officialNamePt: 'Chama Branca' },
+  { regex: /fagulhas\s+impetuosas|surging\s+sparks/i, year: 2024, mark: 'H', officialNamePt: 'Fagulhas Impetuosas' },
+  { regex: /coroa\s+estelar|stellar\s+crown/i, year: 2024, mark: 'H', officialNamePt: 'Coroa Estelar' },
+  { regex: /f[aá]bulas\s+nebulosas|shrouded\s+fable/i, year: 2024, mark: 'H', officialNamePt: 'Fábulas Nebulosas' },
+  { regex: /m[aá]scaras\s+do\s+crep[uú]sculo|twilight\s+masquerade/i, year: 2024, mark: 'H', officialNamePt: 'Máscaras do Crepúsculo' },
+  { regex: /for[cç]as\s+temporais|temporal\s+forces/i, year: 2024, mark: 'H', officialNamePt: 'Forças Temporais' },
+  { regex: /destinos\s+de\s+paldea|paldean\s+fates/i, year: 2024, mark: 'H', officialNamePt: 'Destinos de Paldea' },
+  { regex: /fenda\s+paradoxal|paradox\s+rift/i, year: 2023, mark: 'G', officialNamePt: 'Fenda Paradoxal' },
+  { regex: /obsidiana\s+em\s+chamas|obsidian\s+flames/i, year: 2023, mark: 'G', officialNamePt: 'Obsidiana em Chamas' },
+  { regex: /evolu[cç][oõ]es\s+em\s+paldea|paldea\s+evolved/i, year: 2023, mark: 'G', officialNamePt: 'Evoluções em Paldea' },
+  { regex: /escarlate\s+e\s+violeta|scarlet\s+&\s+violet/i, year: 2023, mark: 'G', officialNamePt: 'Escarlate e Violeta' },
+  { regex: /pok[eé]mon\s+151|\b151\b/i, year: 2023, mark: 'G', officialNamePt: '151' },
+
+  // Sword & Shield (2020-2023)
+  { regex: /z[eê]nite\s+r[eé]gio|crown\s+zenith/i, year: 2023, mark: 'F', officialNamePt: 'Zênite Régio' },
+  { regex: /tempestade\s+prateada|silver\s+tempest/i, year: 2022, mark: 'F', officialNamePt: 'Tempestade Prateada' },
+  { regex: /origem\s+perdida|lost\s+origin/i, year: 2022, mark: 'F', officialNamePt: 'Origem Perdida' },
+  { regex: /pok[eé]mon\s+go/i, year: 2022, mark: 'F', officialNamePt: 'Pokémon GO' },
+  { regex: /resplendor\s+astral|astral\s+radiance/i, year: 2022, mark: 'F', officialNamePt: 'Resplendor Astral' },
+  { regex: /astros\s+cintilantes|brilliant\s+stars/i, year: 2022, mark: 'F', officialNamePt: 'Astros Cintilantes' },
+  { regex: /golpe\s+fus[aã]o|fusion\s+strike/i, year: 2021, mark: 'E', officialNamePt: 'Golpe Fusão' },
+  { regex: /celebra[cç][oõ]es|celebrations/i, year: 2021, mark: 'E', officialNamePt: 'Celebrações' },
+  { regex: /c[eé]us\s+evolutivos|evolving\s+skies/i, year: 2021, mark: 'E', officialNamePt: 'Céus Evolutivos' },
+  { regex: /reinado\s+implac[aá]vel|chilling\s+reign/i, year: 2021, mark: 'E', officialNamePt: 'Reinado Implacável' },
+  { regex: /estilos\s+de\s+batalha|battle\s+styles/i, year: 2021, mark: 'E', officialNamePt: 'Estilos de Batalha' },
+  { regex: /destinos\s+brilhantes|shining\s+fates/i, year: 2021, mark: 'D', officialNamePt: 'Destinos Brilhantes' },
+  { regex: /voltagem\s+v[ií]vida|vivid\s+voltage/i, year: 2020, mark: 'D', officialNamePt: 'Voltagem Vívida' },
+  { regex: /caminho\s+do\s+campe[aã]o|champion'?s\s+path/i, year: 2020, mark: 'D', officialNamePt: 'Caminho do Campeão' },
+  { regex: /escurid[aã]o\s+incandescente|darkness\s+ablaze/i, year: 2020, mark: 'D', officialNamePt: 'Escuridão Incandescente' },
+  { regex: /rixa\s+rebelde|rebel\s+clash/i, year: 2020, mark: 'D', officialNamePt: 'Rixa Rebelde' },
+  { regex: /espada\s+e\s+escudo|sword\s+&\s+shield/i, year: 2020, mark: 'D', officialNamePt: 'Espada e Escudo' },
+];
+
+/**
+ * Heuristically infers release year and regulation mark from set code patterns.
+ * Supports ME (Megaevolução), SV (Scarlet & Violet), SWSH (Sword & Shield), etc.
+ */
+function inferMetadataFromCodePattern(normCode: string): { year?: number; mark?: string } | null {
+  if (!normCode) return null;
+
+  // Megaevolução era (ME01..ME99)
+  const meMatch = normCode.match(/^ME0?([1-9]\d*(\.\d+)?)$/i);
+  if (meMatch) {
+    const num = parseFloat(meMatch[1]);
+    if (num <= 2) {
+      return { year: 2025, mark: 'I' };
+    } else if (num <= 10) {
+      return { year: 2026, mark: 'J' };
+    } else {
+      return { year: 2027, mark: 'K' };
+    }
+  }
+
+  // Scarlet & Violet era (SV01..SV12)
+  const svMatch = normCode.match(/^SV0?([1-9]\d*(\.\d+)?)$/i);
+  if (svMatch) {
+    const num = parseFloat(svMatch[1]);
+    if (num < 4.5) return { year: 2023, mark: 'G' };
+    if (num <= 8.5) return { year: 2024, mark: 'H' };
+    if (num <= 12) return { year: 2025, mark: 'I' };
+    return { year: 2026, mark: 'J' };
+  }
+
+  // Sword & Shield era (SWSH01..SWSH12.5)
+  const swshMatch = normCode.match(/^SWSH0?([1-9]\d*(\.\d+)?)$/i);
+  if (swshMatch) {
+    const num = parseFloat(swshMatch[1]);
+    if (num <= 4.5) return { year: 2020, mark: 'D' };
+    if (num <= 8) return { year: 2021, mark: 'E' };
+    return { year: 2022, mark: 'F' };
+  }
+
+  // Sun & Moon era (SM01..SM12)
+  const smMatch = normCode.match(/^SM0?([1-9]\d*(\.\d+)?)$/i);
+  if (smMatch) {
+    const num = parseFloat(smMatch[1]);
+    if (num <= 4) return { year: 2017 };
+    if (num <= 8) return { year: 2018 };
+    return { year: 2019 };
+  }
+
+  // XY era (XY01..XY12)
+  const xyMatch = normCode.match(/^XY0?([1-9]\d*(\.\d+)?)$/i);
+  if (xyMatch) {
+    const num = parseFloat(xyMatch[1]);
+    if (num <= 4) return { year: 2014 };
+    if (num <= 8) return { year: 2015 };
+    return { year: 2016 };
+  }
+
+  // Black & White era (BW01..BW11)
+  const bwMatch = normCode.match(/^BW0?([1-9]\d*(\.\d+)?)$/i);
+  if (bwMatch) {
+    const num = parseFloat(bwMatch[1]);
+    if (num <= 3) return { year: 2011 };
+    if (num <= 7) return { year: 2012 };
+    return { year: 2013 };
+  }
+
+  return null;
+}
+
+/**
+ * Returns the regulation mark letter (e.g. 'D', 'E', 'F', 'G', 'H', 'I', 'J')
+ * for modern sets, or null if the set uses a set symbol/drawing (pre-SWSH).
+ * Accepts optional setName for fallback identification.
+ */
+export function getSetRegulationMark(setCode: string, setName?: string): string | null {
+  const raw = (setCode || '').trim().toUpperCase();
+  const norm = normalizeSetCode(raw);
+
+  // 1. Direct dictionary match
+  if (raw && SET_REGULATION_MARKS[raw]) return SET_REGULATION_MARKS[raw];
+  if (norm && SET_REGULATION_MARKS[norm]) return SET_REGULATION_MARKS[norm];
+
+  // 2. Pattern inference from set code
+  const codeInferred = inferMetadataFromCodePattern(norm || raw);
+  if (codeInferred?.mark) return codeInferred.mark;
+
+  // 3. Heuristic matching by set name
+  if (setName) {
+    const cleanName = fixMojibake(setName).toLowerCase();
+    for (const pattern of KNOWN_SET_NAME_PATTERNS) {
+      if (pattern.regex.test(cleanName)) {
+        return pattern.mark || null;
+      }
+    }
+  }
+
+  return null;
 }
 
 /**
  * Returns the release year for a given set code, or null if unknown.
+ * Accepts optional setName for fallback identification.
  */
-export function getSetReleaseYear(setCode: string): number | null {
-  if (!setCode) return null;
-  const clean = setCode.trim().toUpperCase();
-  return SET_RELEASE_YEARS[clean] || null;
+export function getSetReleaseYear(setCode: string, setName?: string): number | null {
+  const raw = (setCode || '').trim().toUpperCase();
+  const norm = normalizeSetCode(raw);
+
+  // 1. Direct dictionary match
+  if (raw && SET_RELEASE_YEARS[raw]) return SET_RELEASE_YEARS[raw];
+  if (norm && SET_RELEASE_YEARS[norm]) return SET_RELEASE_YEARS[norm];
+
+  // 2. Pattern inference from set code
+  const codeInferred = inferMetadataFromCodePattern(norm || raw);
+  if (codeInferred?.year) return codeInferred.year;
+
+  // 3. Heuristic matching by set name
+  if (setName) {
+    const cleanName = fixMojibake(setName).toLowerCase();
+    for (const pattern of KNOWN_SET_NAME_PATTERNS) {
+      if (pattern.regex.test(cleanName)) {
+        return pattern.year;
+      }
+    }
+  }
+
+  return null;
 }
 
 /**
  * Formats a collection expansion with its release year and regulation mark letter in front:
+ * Example with letter: "2026 - J - ME05 - Escuridão Absoluta"
  * Example with letter: "2022 - F - BRS - Astros Cintilantes"
  * Example without letter (drawing / pre-SWSH): "2017 - CRI - Caos Ascendente"
- * If year is unknown: "BRS - Astros Cintilantes"
+ * If year is unknown: "ME05 - Escuridão Absoluta"
  */
 export function formatSetWithYear(setCode: string, setName?: string, customMark?: string): string {
-  const cleanCode = (setCode || '').trim().toUpperCase();
-  const year = getSetReleaseYear(cleanCode);
-  const mark = (customMark || getSetRegulationMark(cleanCode) || '').trim().toUpperCase();
+  const rawCode = (setCode || '').trim().toUpperCase();
+  const normCode = normalizeSetCode(rawCode);
+  
+  const year = getSetReleaseYear(rawCode, setName);
+  const mark = (customMark || getSetRegulationMark(rawCode, setName) || '').trim().toUpperCase();
   
   // Prefer official Portuguese name with guaranteed proper accents (ç, ã, é, etc.)
-  const rawName = SET_OFFICIAL_NAMES_PT[cleanCode] || setName || cleanCode;
+  let rawName = SET_OFFICIAL_NAMES_PT[rawCode] || SET_OFFICIAL_NAMES_PT[normCode];
+
+  if (!rawName && setName) {
+    const cleanNameLower = fixMojibake(setName).toLowerCase();
+    for (const pattern of KNOWN_SET_NAME_PATTERNS) {
+      if (pattern.regex.test(cleanNameLower)) {
+        rawName = pattern.officialNamePt;
+        break;
+      }
+    }
+  }
+
+  if (!rawName) {
+    rawName = setName || rawCode;
+  }
+
   const cleanName = fixMojibake(rawName).trim();
 
   const parts: string[] = [];
@@ -451,10 +687,10 @@ export function formatSetWithYear(setCode: string, setName?: string, customMark?
   if (mark) {
     parts.push(mark);
   }
-  if (cleanCode) {
-    parts.push(cleanCode);
+  if (rawCode) {
+    parts.push(rawCode);
   }
-  if (cleanName && cleanName !== cleanCode) {
+  if (cleanName && cleanName !== rawCode) {
     parts.push(cleanName);
   }
 

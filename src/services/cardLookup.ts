@@ -25,6 +25,20 @@ export interface ParsedQuery {
 }
 
 const SET_ID_TO_CODE: Record<string, string> = {
+  // Megaevolução (2025-2026)
+  'me01': 'ME01', 'me1': 'ME01',
+  'me02': 'ME02', 'me2': 'ME02',
+  'me02.5': 'ME02.5', 'me2.5': 'ME02.5',
+  'me03': 'ME03', 'me3': 'ME03',
+  'me04': 'ME04', 'me4': 'ME04',
+  'me05': 'ME05', 'me5': 'ME05',
+  'me06': 'ME06', 'me6': 'ME06',
+  'me07': 'ME07', 'me7': 'ME07',
+  'me08': 'ME08', 'me8': 'ME08',
+  'me09': 'ME09', 'me9': 'ME09',
+  'me10': 'ME10',
+
+  // Scarlet & Violet & SWSH
   'swsh10.5': 'PGO',
   'sv01': 'SVI',
   'sv1': 'SVI',

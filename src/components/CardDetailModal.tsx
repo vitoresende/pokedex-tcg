@@ -308,9 +308,9 @@ export const CardDetailModal: React.FC<CardDetailModalProps> = ({ card, onClose,
                 <span className="text-slate-400">{t('cardDetail.setCode')}</span>
                 <div className="flex items-center gap-1.5">
                   <span className="text-slate-200">{card.set_code}</span>
-                  {getSetRegulationMark(card.set_code) && (
+                  {getSetRegulationMark(card.set_code, setName) && (
                     <span className="bg-slate-800 text-yellow-300 font-bold px-1.5 py-0.2 rounded border border-yellow-400/40 font-mono text-[10px]" title="Marca de Regulamentação">
-                      [{getSetRegulationMark(card.set_code)}]
+                      [{getSetRegulationMark(card.set_code, setName)}]
                     </span>
                   )}
                 </div>
