@@ -5,7 +5,7 @@ import { Card, Deck, DeckCardItem, CardRarityInfo } from '../types';
 import { soundEffects } from '../services/audio';
 import { useAuth } from './AuthContext';
 import { syncUserCollectionToFirestore, loadUserCollectionFromFirestore } from '../services/firebase';
-import { loadAndApplySetsMetadata, syncSetsToCloudAndLocal, getCachedSetsList, SyncedSetItem } from '../services/tcgSetsService';
+import { loadAndApplySetsMetadata, syncSetsToCloudAndLocal, getCachedSetsList, ensureSetInCatalog, SyncedSetItem } from '../services/tcgSetsService';
 import { loadAndApplyRaritiesMetadata, syncRaritiesToCloudAndLocal, getCachedRaritiesList } from '../services/raritiesService';
 import { fixMojibake } from '../utils/textSanitizer';
 
@@ -711,6 +711,14 @@ export const CollectionProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     };
 
     setCards(prev => [newCard, ...prev]);
+
+    if (newCard.set_code) {
+      const addedToCatalog = ensureSetInCatalog(newCard.set_code, newCard.set_pt || newCard.set_en);
+      if (addedToCatalog) {
+        setSetsVersion(v => v + 1);
+      }
+    }
+
     return newCard;
   };
 
@@ -894,7 +902,13 @@ export const CollectionProvider: React.FC<{ children: React.ReactNode }> = ({ ch
         });
         added++;
       }
+
+      if (finalSetCode) {
+        ensureSetInCatalog(finalSetCode, setPt || setEn);
+      }
     }
+
+    setSetsVersion(v => v + 1);
 
     // Process Deck creation or update
     let resultingDeckName: string | undefined = undefined;

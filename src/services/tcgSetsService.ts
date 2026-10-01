@@ -268,6 +268,43 @@ export function getCachedSetsList(): SyncedSetItem[] {
 }
 
 /**
+ * Ensures that a collection exists in the in-memory catalog and dynamic dictionary.
+ * If not already present, it creates a new entry with calculated year & regulation mark.
+ */
+export function ensureSetInCatalog(setCode: string, setName?: string): boolean {
+  if (!setCode) return false;
+  const rawCode = setCode.trim().toUpperCase();
+  const list = getCachedSetsList();
+
+  const exists = list.some(s => s.code.toUpperCase() === rawCode || s.id.toUpperCase() === rawCode);
+  if (exists) return false;
+
+  const currentYear = new Date().getFullYear();
+  const year = getSetReleaseYear(rawCode, setName) || currentYear;
+  const mark = year >= 2020 ? calculateRegulationMark(year) : getSetRegulationMark(rawCode, setName);
+  const namePt = SET_OFFICIAL_NAMES_PT[rawCode] || setName || rawCode;
+
+  const newItem: SyncedSetItem = {
+    id: rawCode.toLowerCase(),
+    code: rawCode,
+    namePt,
+    year,
+    mark
+  };
+
+  list.push(newItem);
+  list.sort((a, b) => (b.year - a.year) || a.code.localeCompare(b.code));
+  inMemorySetsList = list;
+
+  // Register in dynamic set metadata dictionaries
+  registerDynamicSets({
+    [rawCode]: { year, mark: mark || undefined, namePt }
+  });
+
+  return true;
+}
+
+/**
  * Full Sync: Fetches latest sets from TCGdex API, saves to Cloud Firestore (settings/sets_metadata),
  * caches in localStorage, and updates in-memory set metadata.
  */
