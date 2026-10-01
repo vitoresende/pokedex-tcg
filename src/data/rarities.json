@@ -29,7 +29,7 @@
     "reference_en": null,
     "description": "Inclui Pokémon de primeiro e segundo estágio, cartas essenciais de Treinador e Itens táticos.",
     "description_en": "Includes Stage 1/2 Pokémon, essential Trainer cards, and tactical Items.",
-    "color": "#0ea5e9"
+    "color": "#334155"
   },
   {
     "id": "rare",

@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24">
+  <defs>
+    <linearGradient id="pinkFoil" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#fdf2f8" />
+      <stop offset="25%" stop-color="#f472b6" />
+      <stop offset="60%" stop-color="#db2777" />
+      <stop offset="100%" stop-color="#831843" />
+    </linearGradient>
+  </defs>
+  <polygon points="12,2.8 14.6,8.4 20.7,9.2 16.2,13.4 17.4,19.5 12,16.5 6.6,19.5 7.8,13.4 3.3,9.2 9.4,8.4" fill="url(#pinkFoil)" stroke="#701a75" stroke-width="0.8" />
+</svg>

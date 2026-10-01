@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24">
+  <defs>
+    <linearGradient id="megaGoldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ffffff" />
+      <stop offset="20%" stop-color="#fef08a" />
+      <stop offset="50%" stop-color="#f59e0b" />
+      <stop offset="80%" stop-color="#b45309" />
+      <stop offset="100%" stop-color="#78350f" />
+    </linearGradient>
+  </defs>
+  <polygon points="12,1.5 14.5,7.2 21,7.2 16,11.5 18.5,18 12,14 5.5,18 8,11.5 3,7.2 9.5,7.2" fill="url(#megaGoldGrad)" stroke="#78350f" stroke-width="0.8" />
+  <polygon points="12,3.5 13.6,8 18,8 14.5,10.8 16,15.5 12,12.8 8,15.5 9.5,10.8 6,8 10.4,8" fill="#fef08a" opacity="0.65" />
+  <circle cx="12" cy="11.2" r="2.2" fill="#ffffff" stroke="#eab308" stroke-width="0.5" />
+</svg>

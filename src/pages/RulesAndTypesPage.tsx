@@ -690,8 +690,10 @@ export const RulesAndTypesPage: React.FC = () => {
                       {/* Top Row: Symbol & Code & Rate Badge */}
                       <div className="flex items-start justify-between gap-3 mb-3">
                         <div className="flex items-center gap-3">
-                          {/* Visual Rarity Symbol Icon */}
-                          <div className="w-14 h-12 rounded-xl bg-pokedex-darker/90 border border-slate-700/70 flex items-center justify-center p-2 shadow-inner group-hover:border-slate-600 transition-colors shrink-0">
+                          {/* Visual Rarity Symbol Icon - Authentic Card Border Stamp */}
+                          <div className="w-16 h-12 rounded-xl bg-gradient-to-b from-slate-100 via-slate-200 to-slate-300 border border-slate-300/90 shadow-sm flex items-center justify-center px-2 py-1 shrink-0 group-hover:border-slate-400 group-hover:shadow transition-all relative overflow-hidden">
+                            {/* Card texture micro-sheen */}
+                            <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/40 to-transparent pointer-events-none" />
                             <RaritySymbolIcon symbolType={r.symbol_type} size="md" />
                           </div>
 

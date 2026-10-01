@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24">
+  <defs>
+    <linearGradient id="goldFoil" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#fffbeb" />
+      <stop offset="20%" stop-color="#fde047" />
+      <stop offset="50%" stop-color="#eab308" />
+      <stop offset="78%" stop-color="#ca8a04" />
+      <stop offset="100%" stop-color="#854d0e" />
+    </linearGradient>
+  </defs>
+  <polygon points="12,2.8 14.6,8.4 20.7,9.2 16.2,13.4 17.4,19.5 12,16.5 6.6,19.5 7.8,13.4 3.3,9.2 9.4,8.4" fill="url(#goldFoil)" stroke="#78350f" stroke-width="0.8" />
+</svg>
