@@ -1,10 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import { Plus, X, Upload, Sparkles, Check, Image as ImageIcon, Loader2, Layers, CheckCircle2 } from 'lucide-react';
+import { 
+  Plus, X, Upload, Sparkles, Check, Image as ImageIcon, 
+  Loader2, Layers, CheckCircle2, Search, Zap, AlertCircle 
+} from 'lucide-react';
 import { useCollection } from '../context/CollectionContext';
 import { useLanguage } from '../context/LanguageContext';
 import { soundEffects } from '../services/audio';
 import { uploadCardImageToStorage, downloadAndUploadImageToStorage } from '../services/firebase';
 import { DeckValidatorTab } from './DeckValidatorTab';
+import { lookupCardOnline, CardLookupResult } from '../services/cardLookup';
 
 interface AddCardModalProps {
   isOpen: boolean;
@@ -48,6 +52,61 @@ export const AddCardModal: React.FC<AddCardModalProps> = ({ isOpen, onClose, ini
   const [newDeckName, setNewDeckName] = useState<string>('');
   const [newDeckFormat, setNewDeckFormat] = useState<'Standard' | 'Expanded' | 'Casual'>('Standard');
   const [importResult, setImportResult] = useState<{ added: number; updated: number; deckName?: string } | null>(null);
+
+  // Smart Autofill Search State
+  const [quickQuery, setQuickQuery] = useState('');
+  const [isSearchingCard, setIsSearchingCard] = useState(false);
+  const [searchCandidates, setSearchCandidates] = useState<CardLookupResult[]>([]);
+  const [searchError, setSearchError] = useState('');
+  const [searchSuccess, setSearchSuccess] = useState('');
+
+  const handleQuickSearch = async () => {
+    if (!quickQuery.trim()) return;
+    soundEffects.playClick();
+    setIsSearchingCard(true);
+    setSearchError('');
+    setSearchSuccess('');
+    setSearchCandidates([]);
+
+    try {
+      const results = await lookupCardOnline(quickQuery);
+      if (results.length === 0) {
+        setSearchError(t('addCard.quickSearchNotFound', { query: quickQuery }));
+      } else if (results.length === 1) {
+        applyCardCandidate(results[0]);
+      } else {
+        setSearchCandidates(results);
+      }
+    } catch (err) {
+      console.error('Error in quick card search:', err);
+      setSearchError('Erro ao buscar dados da carta. Tente novamente.');
+    } finally {
+      setIsSearchingCard(false);
+    }
+  };
+
+  const applyCardCandidate = (candidate: CardLookupResult) => {
+    soundEffects.playScan();
+    setNamePt(candidate.namePt);
+    setNameEn(candidate.nameEn);
+    setSetCode(candidate.setCode);
+    setSetEn(candidate.setName);
+    setCardNumber(candidate.cardNumber);
+    setTotalInSet(candidate.totalInSet);
+    setColorCode(candidate.colorCode);
+    setRarityCode(candidate.rarityCode);
+    if (candidate.imageUrl) {
+      setImageUrl(candidate.imageUrl);
+      setImagePreview(candidate.imageUrl);
+    }
+    setSearchCandidates([]);
+    setSearchSuccess(t('addCard.quickSearchSuccess', {
+      name: candidate.namePt || candidate.nameEn,
+      set: candidate.setCode,
+      num: candidate.cardNumber
+    }));
+    setTimeout(() => setSearchSuccess(''), 4500);
+  };
 
   if (!isOpen) return null;
 
@@ -195,6 +254,98 @@ export const AddCardModal: React.FC<AddCardModalProps> = ({ isOpen, onClose, ini
         <div className="p-5 sm:p-6 max-h-[75vh] overflow-y-auto font-mono text-xs">
           {tab === 'manual' ? (
             <form onSubmit={handleManualSubmit} className="space-y-4">
+              {/* Smart Autofill Box */}
+              <div className="bg-gradient-to-r from-slate-900 to-slate-950 p-3.5 rounded-2xl border-2 border-yellow-400/50 shadow-xl space-y-2">
+                <div className="flex items-center justify-between">
+                  <label className="text-yellow-300 font-bold text-[11px] uppercase tracking-wider flex items-center gap-1.5 font-mono">
+                    <Zap className="w-3.5 h-3.5 text-yellow-400" />
+                    <span>{t('addCard.quickSearchLabel')}</span>
+                  </label>
+                  <span className="text-[9px] text-slate-400 font-mono">TCGdex & Pokédex API</span>
+                </div>
+
+                <div className="flex items-center gap-2">
+                  <div className="relative flex-1">
+                    <Search className="w-4 h-4 text-slate-400 absolute left-3 top-3" />
+                    <input
+                      type="text"
+                      value={quickQuery}
+                      onChange={(e) => setQuickQuery(e.target.value)}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter') {
+                          e.preventDefault();
+                          handleQuickSearch();
+                        }
+                      }}
+                      placeholder={t('addCard.quickSearchPlaceholder')}
+                      className="w-full bg-black/60 border border-slate-700 rounded-xl pl-9 pr-3 py-2 text-white focus:outline-none focus:border-yellow-400 text-xs font-sans placeholder-slate-500"
+                    />
+                  </div>
+
+                  <button
+                    type="button"
+                    onClick={handleQuickSearch}
+                    disabled={!quickQuery.trim() || isSearchingCard}
+                    className="bg-yellow-400 hover:bg-yellow-300 text-slate-950 font-black px-4 py-2 rounded-xl text-xs flex items-center gap-1.5 transition-all active:scale-95 disabled:opacity-50 shrink-0 shadow border border-yellow-300/40 font-mono"
+                  >
+                    {isSearchingCard ? (
+                      <>
+                        <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                        <span>{t('addCard.quickSearchSearching')}</span>
+                      </>
+                    ) : (
+                      <>
+                        <Zap className="w-3.5 h-3.5" />
+                        <span>{t('addCard.quickSearchBtn')}</span>
+                      </>
+                    )}
+                  </button>
+                </div>
+
+                {/* Feedback Alerts */}
+                {searchError && (
+                  <p className="text-rose-400 text-[11px] font-mono flex items-center gap-1.5 mt-1 bg-rose-950/40 p-2 rounded-lg border border-rose-900/60">
+                    <AlertCircle className="w-3.5 h-3.5 shrink-0" />
+                    <span>{searchError}</span>
+                  </p>
+                )}
+
+                {searchSuccess && (
+                  <p className="text-emerald-400 text-[11px] font-mono flex items-center gap-1.5 mt-1 bg-emerald-950/40 p-2 rounded-lg border border-emerald-900/60 font-bold">
+                    <CheckCircle2 className="w-3.5 h-3.5 shrink-0" />
+                    <span>{searchSuccess}</span>
+                  </p>
+                )}
+
+                {/* Multiple Candidates Selector */}
+                {searchCandidates.length > 0 && (
+                  <div className="mt-2.5 pt-2 border-t border-slate-800 space-y-1.5">
+                    <span className="text-[10px] text-yellow-300 font-mono block">
+                      {t('addCard.quickSearchSelectPrompt', { count: searchCandidates.length })}
+                    </span>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-1.5 max-h-44 overflow-y-auto pr-1 no-scrollbar">
+                      {searchCandidates.map((c) => (
+                        <button
+                          key={c.id}
+                          type="button"
+                          onClick={() => applyCardCandidate(c)}
+                          className="flex items-center gap-2.5 p-2 rounded-xl bg-slate-800/90 hover:bg-slate-700 text-left border border-slate-700 hover:border-yellow-400/60 transition-all active:scale-95"
+                        >
+                          {c.imageUrl && (
+                            <img src={c.imageUrl} alt="" className="w-7 h-10 object-cover rounded shrink-0 border border-slate-600" />
+                          )}
+                          <div className="min-w-0 flex-1">
+                            <span className="font-bold text-white text-[11px] truncate block">{c.namePt || c.nameEn}</span>
+                            <span className="text-[9px] text-slate-300 font-mono block">{c.setName} ({c.setCode} #{c.cardNumber})</span>
+                            <span className="text-[8px] text-yellow-400/80 font-mono block">{c.rarityName} • {c.category}</span>
+                          </div>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
                   <label className="text-slate-400 block text-[10px] uppercase mb-1">{t('addCard.nameEn')}</label>

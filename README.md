@@ -431,7 +431,7 @@ pokedex-tcg/
 │   │   ├── DecksPage.tsx           # Deck management & strategy playbooks
 │   │   ├── PokedexPage.tsx         # Main Pokédex collection view
 │   │   └── RulesAndTypesPage.tsx   # 11 elemental types with official energy icons & rules
-│   ├── services/                   # Web Audio, Firebase & Connect-RPC clients
+│   ├── services/                   # Web Audio, Firebase, TCGdex Card Lookup & Connect-RPC clients
 │   ├── types/                      # TypeScript definitions & interfaces
 │   ├── App.tsx                     # App layout & routing
 │   └── main.tsx                    # React DOM entry point
