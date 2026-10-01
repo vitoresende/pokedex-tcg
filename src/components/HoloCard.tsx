@@ -2,7 +2,6 @@ import React, { useState, useRef } from 'react';
 import { Card } from '../types';
 import { Sparkles } from 'lucide-react';
 import { soundEffects } from '../services/audio';
-import { downloadAndUploadImageToStorage } from '../services/firebase';
 import { resolveEnergyColor, isBasicEnergyCard } from '../context/CollectionContext';
 
 interface HoloCardProps {
@@ -337,17 +336,6 @@ export const HoloCard: React.FC<HoloCardProps> = ({ card, className = '', isDeta
             alt={`${card.name_pt} (${card.name_en || ''})`}
             loading="lazy"
             onError={() => setImageErrorLevel(prev => prev + 1)}
-            onLoad={() => {
-              // Auto-cache to Google Cloud Storage if loaded from external fallback CDN
-              if (currentSrc && !currentSrc.includes('firebasestorage.googleapis.com')) {
-                const effectiveColor = resolveEnergyColor(card.name_pt, card.name_en, card.color_code, card.card_number);
-                const isBasic = isBasicEnergyCard(card.name_pt, card.name_en, card.set_code, card.card_number, card.color_code);
-                const targetFilename = (isBasic && BASIC_ENERGY_FILES[effectiveColor])
-                  ? BASIC_ENERGY_FILES[effectiveColor].file
-                  : `${(card.set_code || 'imp').toLowerCase()}_${(card.card_number || '1').replace(/\D/g, '') || '1'}.png`;
-                downloadAndUploadImageToStorage(currentSrc, targetFilename).catch(() => {});
-              }
-            }}
             className="w-full h-full object-cover rounded-xl"
           />
         ) : (

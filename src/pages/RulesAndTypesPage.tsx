@@ -3,7 +3,7 @@ import typesData from '../data/types_info.json';
 import rulesData from '../data/rules.json';
 import { CardTypeInfo, FormatRule, TrainerTypeRule, SpecialConditionRule } from '../types';
 import { 
-  BookOpen, Sparkles, Layers, CheckCircle2, ChevronRight,
+  BookOpen, Sparkles, Layers, CheckCircle2, ChevronRight, ChevronLeft,
   Shield, AlertTriangle, Search, X, RefreshCw, Tag, ChevronDown, Calendar, Star
 } from 'lucide-react';
 import { PokemonTypeIcon } from '../components/PokemonTypeIcon';
@@ -88,75 +88,199 @@ export const RulesAndTypesPage: React.FC = () => {
         </p>
       </div>
 
-      {/* Navigation Pill Switcher */}
-      <div className="flex bg-pokedex-card/90 p-1.5 rounded-2xl border border-slate-800 space-x-1 text-xs font-mono overflow-x-auto no-scrollbar">
+      {/* Mobile Tab Quick Switcher (2 rows x 3 columns - No horizontal scrolling required) */}
+      <div className="grid grid-cols-3 sm:hidden bg-pokedex-card/90 p-1.5 rounded-2xl border border-slate-800 gap-1 text-[11px] font-mono">
         <button
           onClick={() => handleSelectTab('types')}
-          className={`flex-1 py-2 px-3 rounded-xl whitespace-nowrap transition-all font-bold ${
+          className={`py-2 px-1 rounded-xl flex flex-col items-center justify-center gap-1 transition-all font-bold ${
+            activeTab === 'types'
+              ? 'bg-pokedex-red text-white shadow-md'
+              : 'text-slate-400 hover:text-slate-200 bg-pokedex-darker/60'
+          }`}
+        >
+          <Sparkles className="w-4 h-4 text-yellow-300" />
+          <span className="truncate">{language === 'pt' ? 'Tipos' : 'Types'}</span>
+        </button>
+        <button
+          onClick={() => handleSelectTab('formats')}
+          className={`py-2 px-1 rounded-xl flex flex-col items-center justify-center gap-1 transition-all font-bold ${
+            activeTab === 'formats'
+              ? 'bg-pokedex-red text-white shadow-md'
+              : 'text-slate-400 hover:text-slate-200 bg-pokedex-darker/60'
+          }`}
+        >
+          <BookOpen className="w-4 h-4 text-emerald-400" />
+          <span className="truncate">{language === 'pt' ? 'Formatos' : 'Formats'}</span>
+        </button>
+        <button
+          onClick={() => handleSelectTab('trainers')}
+          className={`py-2 px-1 rounded-xl flex flex-col items-center justify-center gap-1 transition-all font-bold ${
+            activeTab === 'trainers'
+              ? 'bg-pokedex-red text-white shadow-md'
+              : 'text-slate-400 hover:text-slate-200 bg-pokedex-darker/60'
+          }`}
+        >
+          <Shield className="w-4 h-4 text-cyan-400" />
+          <span className="truncate">{language === 'pt' ? 'Treinadores' : 'Trainers'}</span>
+        </button>
+        <button
+          onClick={() => handleSelectTab('conditions')}
+          className={`py-2 px-1 rounded-xl flex flex-col items-center justify-center gap-1 transition-all font-bold ${
+            activeTab === 'conditions'
+              ? 'bg-pokedex-red text-white shadow-md'
+              : 'text-slate-400 hover:text-slate-200 bg-pokedex-darker/60'
+          }`}
+        >
+          <AlertTriangle className="w-4 h-4 text-amber-400" />
+          <span className="truncate">{language === 'pt' ? 'Condições' : 'Conditions'}</span>
+        </button>
+        <button
+          onClick={() => handleSelectTab('sets')}
+          className={`py-2 px-1 rounded-xl flex flex-col items-center justify-center gap-1 transition-all font-bold ${
+            activeTab === 'sets'
+              ? 'bg-pokedex-red text-white shadow-md'
+              : 'text-slate-400 hover:text-slate-200 bg-pokedex-darker/60'
+          }`}
+        >
+          <Layers className="w-4 h-4 text-purple-400" />
+          <span className="truncate">{language === 'pt' ? 'Coleções' : 'Sets'}</span>
+        </button>
+        <button
+          onClick={() => handleSelectTab('rarities')}
+          className={`py-2 px-1 rounded-xl flex flex-col items-center justify-center gap-1 transition-all font-bold ${
+            activeTab === 'rarities'
+              ? 'bg-pokedex-red text-white shadow-md'
+              : 'text-slate-400 hover:text-slate-200 bg-pokedex-darker/60'
+          }`}
+        >
+          <Star className="w-4 h-4 text-yellow-300" />
+          <span className="truncate">{language === 'pt' ? 'Raridades' : 'Rarities'}</span>
+        </button>
+      </div>
+
+      {/* Desktop / Tablet Navigation Pill Switcher */}
+      <div className="hidden sm:flex bg-pokedex-card/90 p-1.5 rounded-2xl border border-slate-800 space-x-1 text-xs font-mono">
+        <button
+          onClick={() => handleSelectTab('types')}
+          className={`flex-1 py-2.5 px-3 rounded-xl whitespace-nowrap transition-all font-bold flex items-center justify-center gap-1.5 ${
             activeTab === 'types'
               ? 'bg-pokedex-red text-white shadow-md'
               : 'text-slate-400 hover:text-slate-200'
           }`}
         >
-          {t('rules.tabTypes')}
+          <Sparkles className="w-4 h-4 text-yellow-300" />
+          <span>{t('rules.tabTypes')}</span>
         </button>
         <button
           onClick={() => handleSelectTab('formats')}
-          className={`flex-1 py-2 px-3 rounded-xl whitespace-nowrap transition-all font-bold ${
+          className={`flex-1 py-2.5 px-3 rounded-xl whitespace-nowrap transition-all font-bold flex items-center justify-center gap-1.5 ${
             activeTab === 'formats'
               ? 'bg-pokedex-red text-white shadow-md'
               : 'text-slate-400 hover:text-slate-200'
           }`}
         >
-          {t('rules.tabFormats')}
+          <BookOpen className="w-4 h-4 text-emerald-400" />
+          <span>{t('rules.tabFormats')}</span>
         </button>
         <button
           onClick={() => handleSelectTab('trainers')}
-          className={`flex-1 py-2 px-3 rounded-xl whitespace-nowrap transition-all font-bold ${
+          className={`flex-1 py-2.5 px-3 rounded-xl whitespace-nowrap transition-all font-bold flex items-center justify-center gap-1.5 ${
             activeTab === 'trainers'
               ? 'bg-pokedex-red text-white shadow-md'
               : 'text-slate-400 hover:text-slate-200'
           }`}
         >
-          {t('rules.tabTrainers')}
+          <Shield className="w-4 h-4 text-cyan-400" />
+          <span>{t('rules.tabTrainers')}</span>
         </button>
         <button
           onClick={() => handleSelectTab('conditions')}
-          className={`flex-1 py-2 px-3 rounded-xl whitespace-nowrap transition-all font-bold ${
+          className={`flex-1 py-2.5 px-3 rounded-xl whitespace-nowrap transition-all font-bold flex items-center justify-center gap-1.5 ${
             activeTab === 'conditions'
               ? 'bg-pokedex-red text-white shadow-md'
               : 'text-slate-400 hover:text-slate-200'
           }`}
         >
-          {t('rules.tabConditions')}
+          <AlertTriangle className="w-4 h-4 text-amber-400" />
+          <span>{t('rules.tabConditions')}</span>
         </button>
         <button
           onClick={() => handleSelectTab('sets')}
-          className={`flex-1 py-2 px-3 rounded-xl whitespace-nowrap transition-all font-bold ${
+          className={`flex-1 py-2.5 px-3 rounded-xl whitespace-nowrap transition-all font-bold flex items-center justify-center gap-1.5 ${
             activeTab === 'sets'
               ? 'bg-pokedex-red text-white shadow-md'
               : 'text-slate-400 hover:text-slate-200'
           }`}
         >
-          {t('rules.tabSets')}
+          <Layers className="w-4 h-4 text-purple-400" />
+          <span>{t('rules.tabSets')}</span>
         </button>
         <button
           onClick={() => handleSelectTab('rarities')}
-          className={`flex-1 py-2 px-3 rounded-xl whitespace-nowrap transition-all font-bold ${
+          className={`flex-1 py-2.5 px-3 rounded-xl whitespace-nowrap transition-all font-bold flex items-center justify-center gap-1.5 ${
             activeTab === 'rarities'
               ? 'bg-pokedex-red text-white shadow-md'
               : 'text-slate-400 hover:text-slate-200'
           }`}
         >
-          {t('rules.tabRarities')}
+          <Star className="w-4 h-4 text-yellow-300" />
+          <span>{t('rules.tabRarities')}</span>
         </button>
       </div>
 
       {/* TAB 1: 11 Elemental Types Matrix */}
       {activeTab === 'types' && (
-        <div className="space-y-6">
-          {/* Horizontal Type Badges Selector */}
-          <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-11 gap-2">
+        <div className="space-y-4 sm:space-y-6">
+          {/* Mobile Quick Type Stepper & Dropdown */}
+          <div className="sm:hidden bg-pokedex-card/90 p-2 rounded-2xl border border-slate-800 flex items-center justify-between gap-2 shadow-sm">
+            <button
+              onClick={() => {
+                const curIdx = typesData.findIndex(t => t.id === selectedType.id);
+                const prevIdx = (curIdx - 1 + typesData.length) % typesData.length;
+                handleSelectType(typesData[prevIdx]);
+              }}
+              className="w-10 h-10 rounded-xl bg-pokedex-darker flex items-center justify-center text-slate-300 hover:text-white border border-slate-700/80 active:scale-95 shrink-0"
+              aria-label="Tipo anterior"
+            >
+              <ChevronLeft className="w-5 h-5" />
+            </button>
+
+            <div className="relative flex-1 min-w-0">
+              <select
+                value={selectedType.id}
+                onChange={(e) => {
+                  const found = typesData.find(t => t.id === e.target.value);
+                  if (found) handleSelectType(found);
+                }}
+                className="w-full appearance-none bg-pokedex-darker text-white text-xs font-bold font-mono py-2.5 pl-9 pr-8 rounded-xl border border-slate-700 focus:outline-none cursor-pointer truncate"
+              >
+                {typesData.map(typeItem => (
+                  <option key={typeItem.id} value={typeItem.id}>
+                    {t(`filters.types.${typeItem.id}`) !== `filters.types.${typeItem.id}` ? t(`filters.types.${typeItem.id}`) : typeItem.name}
+                  </option>
+                ))}
+              </select>
+              <div className="absolute left-2.5 top-1/2 -translate-y-1/2 pointer-events-none">
+                <PokemonTypeIcon type={selectedType.id} size="xs" />
+              </div>
+              <ChevronDown className="absolute right-2.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" />
+            </div>
+
+            <button
+              onClick={() => {
+                const curIdx = typesData.findIndex(t => t.id === selectedType.id);
+                const nextIdx = (curIdx + 1) % typesData.length;
+                handleSelectType(typesData[nextIdx]);
+              }}
+              className="w-10 h-10 rounded-xl bg-pokedex-darker flex items-center justify-center text-slate-300 hover:text-white border border-slate-700/80 active:scale-95 shrink-0"
+              aria-label="Próximo tipo"
+            >
+              <ChevronRight className="w-5 h-5" />
+            </button>
+          </div>
+
+          {/* Type Badges Selector */}
+          <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-11 gap-1.5 sm:gap-2">
             {typesData.map((typeItem) => {
               const isSelected = selectedType.id === typeItem.id;
               return (
@@ -392,13 +516,19 @@ export const RulesAndTypesPage: React.FC = () => {
           <div className="bg-pokedex-card/90 rounded-3xl border border-slate-800 p-5 md:p-6 space-y-4 shadow-lg">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
               <div>
-                <h3 className="text-lg font-bold font-display text-white flex items-center gap-2">
-                  <Layers className="w-5 h-5 text-yellow-300" />
-                  <span>{t('rules.setsTitle')}</span>
-                  <span className="text-xs font-mono font-bold bg-yellow-950/60 text-yellow-300 border border-yellow-800/60 px-2 py-0.5 rounded-full">
-                    {filteredSets.length} / {allSetsList.length}
+                <div className="flex items-center gap-2.5 flex-wrap">
+                  <div className="flex items-center gap-2">
+                    <Layers className="w-5 h-5 text-yellow-300 shrink-0" />
+                    <h3 className="text-base sm:text-lg font-bold font-display text-white">
+                      {t('rules.setsTitle')}
+                    </h3>
+                  </div>
+                  <span className="whitespace-nowrap shrink-0 text-xs font-mono font-bold bg-yellow-950/60 text-yellow-300 border border-yellow-800/60 px-2.5 py-0.5 rounded-full">
+                    {filteredSets.length === allSetsList.length
+                      ? `${allSetsList.length}`
+                      : `${filteredSets.length}/${allSetsList.length}`}
                   </span>
-                </h3>
+                </div>
                 <p className="text-xs text-slate-400 font-sans mt-1">
                   {t('rules.setsSubtitle')}
                 </p>
@@ -618,13 +748,19 @@ export const RulesAndTypesPage: React.FC = () => {
           <div className="bg-pokedex-card/90 rounded-3xl border border-slate-800 p-5 md:p-6 space-y-4 shadow-lg">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
               <div>
-                <h3 className="text-lg font-bold font-display text-white flex items-center gap-2">
-                  <Star className="w-5 h-5 text-yellow-300" />
-                  <span>{t('rules.raritiesTitle')}</span>
-                  <span className="text-xs font-mono font-bold bg-yellow-950/60 text-yellow-300 border border-yellow-800/60 px-2 py-0.5 rounded-full">
-                    {filteredRarities.length} / {allRaritiesList.length}
+                <div className="flex items-center gap-2.5 flex-wrap">
+                  <div className="flex items-center gap-2">
+                    <Star className="w-5 h-5 text-yellow-300 shrink-0" />
+                    <h3 className="text-base sm:text-lg font-bold font-display text-white">
+                      {t('rules.raritiesTitle')}
+                    </h3>
+                  </div>
+                  <span className="whitespace-nowrap shrink-0 text-xs font-mono font-bold bg-yellow-950/60 text-yellow-300 border border-yellow-800/60 px-2.5 py-0.5 rounded-full">
+                    {filteredRarities.length === allRaritiesList.length
+                      ? `${allRaritiesList.length}`
+                      : `${filteredRarities.length}/${allRaritiesList.length}`}
                   </span>
-                </h3>
+                </div>
                 <p className="text-xs text-slate-400 font-sans mt-1">
                   {t('rules.raritiesSubtitle')}
                 </p>

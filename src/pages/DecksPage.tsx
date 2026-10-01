@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { 
   useCollection, 
   resolveEnergyColor, 
@@ -9,7 +9,8 @@ import { useLanguage } from '../context/LanguageContext';
 import { Deck, DeckCardItem } from '../types';
 import { 
   Layers, Copy, Check, AlertCircle, 
-  Swords, Trophy, Plus, Trash2, Sparkles, Pencil, CheckCircle2 
+  Swords, Trophy, Plus, Trash2, Sparkles, Pencil, CheckCircle2,
+  ChevronDown, ChevronLeft, ChevronRight, Search, X
 } from 'lucide-react';
 import { soundEffects } from '../services/audio';
 import { CardDetailModal } from '../components/CardDetailModal';
@@ -30,6 +31,8 @@ export const DecksPage: React.FC = () => {
   const [createModalOpen, setCreateModalOpen] = useState<boolean>(false);
   const [editModalOpen, setEditModalOpen] = useState<boolean>(false);
   const [validateModalOpen, setValidateModalOpen] = useState<boolean>(false);
+  const [isDeckPickerOpen, setIsDeckPickerOpen] = useState<boolean>(false);
+  const [deckSearchQuery, setDeckSearchQuery] = useState<string>('');
 
   const currentDeck = decks.find(d => d.id === activeDeckId) || decks[0] || {
     id: 'empty',
@@ -57,6 +60,33 @@ export const DecksPage: React.FC = () => {
     setActiveDeckId(deckId);
     setActiveGuideTab('opening');
   };
+
+  const currentDeckIndex = useMemo(() => {
+    const idx = decks.findIndex(d => d.id === currentDeck.id);
+    return idx >= 0 ? idx : 0;
+  }, [decks, currentDeck.id]);
+
+  const handlePrevDeck = () => {
+    if (decks.length <= 1) return;
+    const prevIdx = (currentDeckIndex - 1 + decks.length) % decks.length;
+    handleSelectDeck(decks[prevIdx].id);
+  };
+
+  const handleNextDeck = () => {
+    if (decks.length <= 1) return;
+    const nextIdx = (currentDeckIndex + 1) % decks.length;
+    handleSelectDeck(decks[nextIdx].id);
+  };
+
+  const filteredDecks = useMemo(() => {
+    if (!deckSearchQuery.trim()) return decks;
+    const q = deckSearchQuery.toLowerCase().trim();
+    return decks.filter(d => 
+      (d.name || '').toLowerCase().includes(q) ||
+      (d.format || '').toLowerCase().includes(q) ||
+      (d.archetype || '').toLowerCase().includes(q)
+    );
+  }, [decks, deckSearchQuery]);
 
   const handleDeleteCurrentDeck = () => {
     if (confirm(t('decks.confirmDelete', { name: currentDeck.name }))) {
@@ -191,8 +221,56 @@ export const DecksPage: React.FC = () => {
         </div>
       </div>
 
-      {/* Horizontal Deck Selector Bar */}
-      <div className="flex items-center space-x-2 overflow-x-auto pb-2 no-scrollbar">
+      {/* Mobile Deck Switcher Controls (Thumb-friendly, no horizontal dragging) */}
+      <div className="sm:hidden bg-pokedex-card/90 rounded-2xl border border-slate-800 p-2 shadow-md">
+        <div className="flex items-center gap-2">
+          {/* Previous Deck */}
+          <button
+            onClick={handlePrevDeck}
+            disabled={decks.length <= 1}
+            aria-label={language === 'pt' ? 'Deck anterior' : 'Previous deck'}
+            className="w-10 h-11 rounded-xl bg-pokedex-darker flex items-center justify-center text-slate-300 hover:text-white border border-slate-700/80 active:scale-95 disabled:opacity-30 disabled:pointer-events-none shrink-0"
+          >
+            <ChevronLeft className="w-5 h-5" />
+          </button>
+
+          {/* Active Deck Selector Trigger */}
+          <button
+            onClick={() => { soundEffects.playClick(); setIsDeckPickerOpen(true); }}
+            className="flex-1 min-w-0 h-11 px-3 rounded-xl bg-gradient-to-r from-slate-900 to-slate-950 border border-slate-700/80 hover:border-yellow-400/60 flex items-center justify-between gap-2 shadow-inner transition-all active:scale-[0.99]"
+          >
+            <div className="flex items-center gap-2.5 min-w-0">
+              <span className="w-5 h-5 rounded-full bg-pokedex-red text-white flex items-center justify-center text-[10px] font-mono font-bold shrink-0">
+                {currentDeckIndex + 1}
+              </span>
+              <div className="text-left min-w-0">
+                <div className="text-xs font-bold text-white truncate font-display">
+                  {currentDeck.name}
+                </div>
+                <div className="text-[10px] font-mono text-slate-400 flex items-center gap-1.5 truncate">
+                  <span className="text-yellow-400 font-semibold">{currentDeck.format}</span>
+                  <span>•</span>
+                  <span className="text-emerald-400 font-semibold">{currentDeck.stats.total || 0} {language === 'pt' ? 'cartas' : 'cards'}</span>
+                </div>
+              </div>
+            </div>
+            <ChevronDown className="w-4 h-4 text-slate-400 shrink-0" />
+          </button>
+
+          {/* Next Deck */}
+          <button
+            onClick={handleNextDeck}
+            disabled={decks.length <= 1}
+            aria-label={language === 'pt' ? 'Próximo deck' : 'Next deck'}
+            className="w-10 h-11 rounded-xl bg-pokedex-darker flex items-center justify-center text-slate-300 hover:text-white border border-slate-700/80 active:scale-95 disabled:opacity-30 disabled:pointer-events-none shrink-0"
+          >
+            <ChevronRight className="w-5 h-5" />
+          </button>
+        </div>
+      </div>
+
+      {/* Desktop Deck Selector Bar with All-Decks Picker Trigger */}
+      <div className="hidden sm:flex items-center space-x-2 overflow-x-auto pb-2 no-scrollbar">
         {decks.map((deck, idx) => {
           const isSelected = deck.id === activeDeckId;
           return (
@@ -217,6 +295,17 @@ export const DecksPage: React.FC = () => {
             </button>
           );
         })}
+
+        {/* View All Decks Modal Button */}
+        <button
+          onClick={() => { soundEffects.playClick(); setIsDeckPickerOpen(true); }}
+          className="px-3.5 py-2.5 rounded-2xl bg-pokedex-darker/90 text-slate-400 hover:text-yellow-300 border border-slate-800 hover:border-slate-700 flex items-center gap-1.5 text-xs font-mono whitespace-nowrap transition-all shrink-0"
+          title={language === 'pt' ? 'Ver todos os decks' : 'View all decks'}
+        >
+          <Layers className="w-3.5 h-3.5 text-yellow-400" />
+          <span>{language === 'pt' ? `Todos (${decks.length})` : `All (${decks.length})`}</span>
+          <ChevronDown className="w-3 h-3 ml-0.5" />
+        </button>
       </div>
 
       {/* Main Active Deck Banner / Strategy Hero Card */}
@@ -540,6 +629,130 @@ export const DecksPage: React.FC = () => {
           onClose={() => setValidateModalOpen(false)}
           initialTab="validate"
         />
+      )}
+
+      {/* Deck Picker Modal (Mobile Bottom-Sheet & Quick Switcher) */}
+      {isDeckPickerOpen && (
+        <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/80 backdrop-blur-sm animate-in fade-in">
+          <div className="w-full sm:max-w-lg bg-pokedex-card border border-slate-800 rounded-t-3xl sm:rounded-3xl p-5 shadow-2xl flex flex-col max-h-[85vh] animate-in slide-in-from-bottom duration-200">
+            {/* Modal Header */}
+            <div className="flex items-center justify-between pb-3 border-b border-slate-800">
+              <div className="flex items-center gap-2">
+                <Layers className="w-5 h-5 text-yellow-400" />
+                <h3 className="text-base font-bold font-display text-white">
+                  {language === 'pt' ? 'Selecionar Deck' : 'Select Deck'}
+                </h3>
+                <span className="text-xs font-mono font-bold bg-slate-800 text-slate-300 px-2 py-0.5 rounded-full border border-slate-700">
+                  {decks.length}
+                </span>
+              </div>
+              <button
+                onClick={() => setIsDeckPickerOpen(false)}
+                className="w-8 h-8 rounded-full bg-slate-800/80 flex items-center justify-center text-slate-400 hover:text-white"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            {/* Quick Search if more than 2 decks */}
+            {decks.length > 2 && (
+              <div className="pt-3 pb-1">
+                <div className="relative">
+                  <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
+                  <input
+                    type="text"
+                    value={deckSearchQuery}
+                    onChange={(e) => setDeckSearchQuery(e.target.value)}
+                    placeholder={language === 'pt' ? 'Filtrar deck por nome, formato...' : 'Filter decks by name, format...'}
+                    className="w-full bg-pokedex-darker text-white text-xs pl-9 pr-8 py-2.5 rounded-xl border border-slate-800 focus:outline-none focus:border-yellow-400/60 font-sans"
+                  />
+                  {deckSearchQuery && (
+                    <button
+                      onClick={() => setDeckSearchQuery('')}
+                      className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white"
+                    >
+                      <X className="w-3.5 h-3.5" />
+                    </button>
+                  )}
+                </div>
+              </div>
+            )}
+
+            {/* Vertical List of Decks */}
+            <div className="overflow-y-auto py-3 space-y-2 flex-1 no-scrollbar">
+              {filteredDecks.map((deck) => {
+                const isSelected = deck.id === activeDeckId;
+                const originalIndex = decks.findIndex(d => d.id === deck.id);
+                return (
+                  <button
+                    key={deck.id}
+                    onClick={() => {
+                      handleSelectDeck(deck.id);
+                      setIsDeckPickerOpen(false);
+                    }}
+                    className={`w-full p-3.5 rounded-2xl border text-left transition-all flex items-center justify-between gap-3 ${
+                      isSelected
+                        ? 'bg-gradient-to-r from-pokedex-red/20 via-pokedex-darker to-pokedex-darker border-yellow-400/80 shadow-md ring-1 ring-yellow-400/30'
+                        : 'bg-pokedex-darker/80 hover:bg-pokedex-darker border-slate-800/80 hover:border-slate-700'
+                    }`}
+                  >
+                    <div className="flex items-center gap-3 min-w-0">
+                      <span className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-mono font-bold shrink-0 ${
+                        isSelected ? 'bg-pokedex-red text-white' : 'bg-slate-800 text-slate-400 border border-slate-700'
+                      }`}>
+                        {originalIndex + 1}
+                      </span>
+                      <div className="min-w-0">
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <h4 className="text-sm font-bold font-display text-white truncate">
+                            {deck.name}
+                          </h4>
+                          <span className={`text-[10px] font-mono px-1.5 py-0.5 rounded ${
+                            deck.format_slug === 'expanded' ? 'bg-purple-900/60 text-purple-200' : 'bg-emerald-900/60 text-emerald-200'
+                          }`}>
+                            {deck.format}
+                          </span>
+                        </div>
+                        <p className="text-[11px] text-slate-400 font-sans truncate mt-0.5">
+                          {deck.archetype || deck.summary || (language === 'pt' ? 'Deck tático' : 'Tactical deck')}
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center gap-2 shrink-0">
+                      <span className="text-[11px] font-mono font-bold text-slate-300 bg-slate-800/80 px-2 py-1 rounded-lg border border-slate-700">
+                        {deck.stats.total || 0}/60
+                      </span>
+                      {isSelected && (
+                        <CheckCircle2 className="w-5 h-5 text-emerald-400 shrink-0" />
+                      )}
+                    </div>
+                  </button>
+                );
+              })}
+
+              {filteredDecks.length === 0 && (
+                <div className="py-8 text-center text-slate-400 text-xs font-mono">
+                  {language === 'pt' ? 'Nenhum deck encontrado com esse filtro.' : 'No decks match this filter.'}
+                </div>
+              )}
+            </div>
+
+            {/* Modal Footer */}
+            <div className="pt-3 border-t border-slate-800 flex items-center justify-between gap-2">
+              <button
+                onClick={() => {
+                  setIsDeckPickerOpen(false);
+                  setCreateModalOpen(true);
+                }}
+                className="w-full py-2.5 px-4 rounded-xl bg-slate-800 hover:bg-slate-700 text-yellow-300 font-bold text-xs font-mono flex items-center justify-center gap-2 transition-all border border-slate-700"
+              >
+                <Plus className="w-4 h-4" />
+                <span>{t('decks.createDeck')}</span>
+              </button>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );
