@@ -264,7 +264,11 @@ export const en = {
     "importSuccess": "Import finished: {added} added, {updated} updated",
     "importAndCreateDeck": "Import & Create Deck \"{name}\"",
     "importAndAddToDeck": "Import & Add to Existing Deck",
-    "processCsv": "Process CSV Import"
+    "processCsv": "Process CSV Import",
+    "cardAddedSuccessTitle": "Card Added Successfully!",
+    "cardAddedSuccessDesc": "The card has been registered to your catalog and synced to Pokédex.",
+    "addAnotherCard": "+ Add Another Card",
+    "finishBtn": "Done & Close"
   },
   "validator": {
     "title": "Deck Validator (CSV vs Collection)",

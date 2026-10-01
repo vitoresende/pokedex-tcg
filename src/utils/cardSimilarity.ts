@@ -184,7 +184,7 @@ export function findSimilarCards(
       }
     }
     // Level 4: Energy Match
-    else if (targetCategory === 'Energy' && card.card_category === 'Energy') {
+    else if (targetCategory === 'Energy' && (card.card_category === 'Energy' || (card.card_category as string) === 'Energia')) {
       if (targetColor && card.color_code === targetColor) {
         score = 70;
         reasonPt = `Energia do Mesmo Tipo (${card.color_name || 'Elemental'})`;

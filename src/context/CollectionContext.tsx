@@ -105,16 +105,107 @@ const STORAGE_BUCKET = import.meta.env.VITE_FIREBASE_STORAGE_BUCKET || 'pokedex-
 const getStorageCardUrl = (filename: string) => 
   `https://firebasestorage.googleapis.com/v0/b/${STORAGE_BUCKET}/o/cards%2F${encodeURIComponent(filename)}?alt=media`;
 
-const BASIC_ENERGY_CONFIG: Record<string, { code: string; num: string; filename: string }> = {
-  'G': { code: 'SVE', num: '1', filename: 'sve_1.png' },
-  'R': { code: 'SVE', num: '2', filename: 'sve_2.png' },
-  'W': { code: 'SVE', num: '3', filename: 'sve_3.png' },
-  'L': { code: 'SVE', num: '4', filename: 'sve_4.png' },
-  'P': { code: 'SVE', num: '5', filename: 'sve_5.png' },
-  'F': { code: 'SVE', num: '6', filename: 'sve_6.png' },
-  'D': { code: 'SVE', num: '7', filename: 'sve_7.png' },
-  'M': { code: 'SVE', num: '8', filename: 'sve_8.png' },
-  'Y': { code: 'SM1', num: '169', filename: 'sm1_169.png' },
+export const BASIC_ENERGY_CONFIG: Record<string, { code: string; num: string; filename: string; cdn: string }> = {
+  'G': { code: 'SVE', num: '1', filename: 'sve_1.png', cdn: 'https://limitlesstcg.nyc3.cdn.digitaloceanspaces.com/tpci/SVE/SVE_001_R_PT.png' },
+  'R': { code: 'SVE', num: '2', filename: 'sve_2.png', cdn: 'https://limitlesstcg.nyc3.cdn.digitaloceanspaces.com/tpci/SVE/SVE_002_R_PT.png' },
+  'W': { code: 'SVE', num: '3', filename: 'sve_3.png', cdn: 'https://limitlesstcg.nyc3.cdn.digitaloceanspaces.com/tpci/SVE/SVE_003_R_PT.png' },
+  'L': { code: 'SVE', num: '4', filename: 'sve_4.png', cdn: 'https://limitlesstcg.nyc3.cdn.digitaloceanspaces.com/tpci/SVE/SVE_004_R_PT.png' },
+  'P': { code: 'SVE', num: '5', filename: 'sve_5.png', cdn: 'https://limitlesstcg.nyc3.cdn.digitaloceanspaces.com/tpci/SVE/SVE_005_R_PT.png' },
+  'F': { code: 'SVE', num: '6', filename: 'sve_6.png', cdn: 'https://limitlesstcg.nyc3.cdn.digitaloceanspaces.com/tpci/SVE/SVE_006_R_PT.png' },
+  'D': { code: 'SVE', num: '7', filename: 'sve_7.png', cdn: 'https://limitlesstcg.nyc3.cdn.digitaloceanspaces.com/tpci/SVE/SVE_007_R_PT.png' },
+  'M': { code: 'SVE', num: '8', filename: 'sve_8.png', cdn: 'https://limitlesstcg.nyc3.cdn.digitaloceanspaces.com/tpci/SVE/SVE_008_R_PT.png' },
+  'Y': { code: 'SM1', num: '169', filename: 'sm1_169.png', cdn: 'https://images.pokemontcg.io/sm1/169_hires.png' },
+};
+
+export const resolveEnergyColor = (
+  namePt: string = '', 
+  nameEn: string = '', 
+  colorCode: string = '', 
+  cardNum: string = ''
+): string => {
+  const normPt = (namePt || '').toLowerCase();
+  const normEn = (nameEn || '').toLowerCase();
+  const rawColor = (colorCode || '').toUpperCase();
+  const normNum = (cardNum || '').toUpperCase();
+
+  // If already a valid basic energy element code (G, R, W, L, P, F, D, M, Y), return it
+  if (['G', 'R', 'W', 'L', 'P', 'F', 'D', 'M', 'Y'].includes(rawColor)) {
+    return rawColor;
+  }
+
+  // Check card number hints for SVE (e.g. SVE001-SVE016)
+  if (normNum.includes('SVE001') || normNum.includes('SVE009') || normNum === '1' || normNum === '001' || normNum === '9' || normNum === '009') return 'G';
+  if (normNum.includes('SVE002') || normNum.includes('SVE010') || normNum === '2' || normNum === '002' || normNum === '10' || normNum === '010') return 'R';
+  if (normNum.includes('SVE003') || normNum.includes('SVE011') || normNum === '3' || normNum === '003' || normNum === '11' || normNum === '011') return 'W';
+  if (normNum.includes('SVE004') || normNum.includes('SVE012') || normNum === '4' || normNum === '004' || normNum === '12' || normNum === '012') return 'L';
+  if (normNum.includes('SVE005') || normNum.includes('SVE013') || normNum === '5' || normNum === '005' || normNum === '13' || normNum === '013') return 'P';
+  if (normNum.includes('SVE006') || normNum.includes('SVE014') || normNum === '6' || normNum === '006' || normNum === '14' || normNum === '014') return 'F';
+  if (normNum.includes('SVE007') || normNum.includes('SVE015') || normNum === '7' || normNum === '007' || normNum === '15' || normNum === '015') return 'D';
+  if (normNum.includes('SVE008') || normNum.includes('SVE016') || normNum === '8' || normNum === '008' || normNum === '16' || normNum === '016') return 'M';
+
+  // Check by name keywords
+  if (normPt.includes('planta') || normPt.includes('grama') || normEn.includes('grass')) return 'G';
+  if (normPt.includes('fogo') || normEn.includes('fire')) return 'R';
+  if (normPt.includes('água') || normPt.includes('agua') || normEn.includes('water')) return 'W';
+  if (normPt.includes('raio') || normPt.includes('elétr') || normPt.includes('eletr') || normEn.includes('lightning')) return 'L';
+  if (normPt.includes('psíquic') || normPt.includes('psiquic') || normEn.includes('psychic')) return 'P';
+  if (normPt.includes('luta') || normPt.includes('combate') || normEn.includes('fighting')) return 'F';
+  if (normPt.includes('escurid') || normPt.includes('noturn') || normPt.includes('sombri') || normEn.includes('dark')) return 'D';
+  if (normPt.includes('metal') || normPt.includes('aço') || normPt.includes('aco') || normEn.includes('metal') || normEn.includes('steel')) return 'M';
+  if (normPt.includes('fada') || normEn.includes('fairy')) return 'Y';
+
+  return rawColor || 'C';
+};
+
+export const isBasicEnergyCard = (
+  namePt: string = '',
+  nameEn: string = '',
+  setCode: string = '',
+  cardNum: string = '',
+  color: string = ''
+): boolean => {
+  const normPt = (namePt || '').toLowerCase();
+  const normEn = (nameEn || '').toLowerCase();
+  const sCode = (setCode || '').toUpperCase();
+  const cNum = (cardNum || '').toUpperCase();
+
+  // If explicitly special energy, return false
+  const specialKeywords = [
+    'borbulhante', 'bubbly', 'fraqueza', 'weakness', 'dupla', 'double',
+    'especial', 'special', 'misturada', 'blend', 'prism', 'aurora', 'rainbow',
+    'arco-íris', 'turbo', 'captura', 'capture', 'reversal', 'inversão', 'teracristal',
+    'jet', 'jato', 'gift', 'presente', 'terapagos', 'boomerang', 'bumerangue',
+    'medical', 'medicinal', 'v guard', 'guarda v', 'therapeutic', 'terapêutica',
+    'lucky', 'sorte', 'fusion', 'fusão', 'strike', 'golpe', 'speed', 'velocidade',
+    'horror', 'heat', 'calor', 'impact', 'twin', 'gêmea', 'coating', 'unit'
+  ];
+  if (specialKeywords.some(k => normPt.includes(k) || normEn.includes(k))) {
+    return false;
+  }
+
+  if (sCode === 'BAS' || sCode === 'SVE' || sCode === 'SV-BE') return true;
+  if (cNum === 'ENERGIA') return true;
+  if (normPt.includes('básica') || normEn.includes('basic energy')) return true;
+
+  const basicNames = [
+    'energia de planta', 'energia de grama', 'grass energy',
+    'energia de fogo', 'fire energy',
+    'energia de água', 'energia de agua', 'water energy',
+    'energia de raios', 'energia de raio', 'energia elétrica', 'energia eletrica', 'lightning energy',
+    'energia psíquica', 'energia psiquica', 'psychic energy',
+    'energia de luta', 'fighting energy',
+    'energia de escuridão', 'energia de escuridao', 'darkness energy',
+    'energia de metal', 'energia de aço', 'energia de aco', 'metal energy',
+    'energia de fada', 'fairy energy'
+  ];
+  if (basicNames.some(b => normPt.includes(b) || normEn.includes(b))) {
+    return true;
+  }
+
+  if ((sCode === 'SUM' || sCode === 'SM1') && ['164','165','166','167','168','169','170','171','172'].includes(cNum)) return true;
+  if ((sCode === 'SSH' || sCode === 'SWSH1') && ['189','190','191','192','193','194','195','196'].includes(cNum)) return true;
+
+  return false;
 };
 
 const TRAINER_KEYWORDS = [
@@ -222,24 +313,24 @@ const normalizeCards = (rawCards: Card[]): Card[] => {
       };
     }
 
-    const isBasicEnergy = 
-      c.set_code === 'BAS' || 
-      c.set_code === 'SVE' ||
-      c.set_code === 'SV-BE' ||
-      c.card_number === 'Energia' ||
-      (c.name_pt.toLowerCase().includes('energia') && Boolean(BASIC_ENERGY_CONFIG[c.color_code])) ||
-      c.name_pt.toLowerCase().includes('básica') ||
-      c.name_en.toLowerCase().includes('basic energy');
+    const effectiveColor = resolveEnergyColor(c.name_pt, c.name_en, c.color_code, c.card_number);
+    const isBasicEnergy = isBasicEnergyCard(c.name_pt, c.name_en, c.set_code, c.card_number, c.color_code);
 
-    if (isBasicEnergy && BASIC_ENERGY_CONFIG[c.color_code]) {
-      const meta = BASIC_ENERGY_CONFIG[c.color_code];
+    if (isBasicEnergy && BASIC_ENERGY_CONFIG[effectiveColor]) {
+      const meta = BASIC_ENERGY_CONFIG[effectiveColor];
+      const validFirebaseUrl = c.image_url && c.image_url.includes('firebasestorage.googleapis.com') ? c.image_url : '';
+      const finalImage = validFirebaseUrl || (effectiveColor === 'F' ? meta.cdn : getStorageCardUrl(meta.filename));
+
       return {
         ...c,
         set_code: meta.code,
         card_number: meta.num,
-        image_url: getStorageCardUrl(meta.filename),
-        card_category: 'Energy',
-        color_slug: 'energy'
+        color_code: effectiveColor,
+        color_name: COLOR_MAP[effectiveColor]?.name || c.color_name || 'Energy',
+        color_slug: 'energy',
+        color_bg: COLOR_MAP[effectiveColor]?.bg || c.color_bg || '#F59E0B',
+        image_url: finalImage,
+        card_category: 'Energy'
       };
     }
 
@@ -592,27 +683,25 @@ export const CollectionProvider: React.FC<{ children: React.ReactNode }> = ({ ch
       const comment = parts[12] || '';
       const totalInSet = parts[13] || '100';
 
-      const colorInfo = COLOR_MAP[color] || COLOR_MAP[''];
-      const isBasicEnergy = 
-        setCode === 'BAS' || 
-        setCode === 'SVE' || 
-        setCode === 'SV-BE' || 
-        cardNum.toLowerCase() === 'energia' || 
-        (cardPt.toLowerCase().includes('energia') && Boolean(BASIC_ENERGY_CONFIG[color])) ||
-        (cardPt.toLowerCase().includes('energia') && cardPt.toLowerCase().includes('básica')) ||
-        (color === 'E' && Boolean(BASIC_ENERGY_CONFIG[color]));
+      const isBasicEnergy = isBasicEnergyCard(cardPt, cardEn, setCode, cardNum, color);
+      const effectiveColor = isBasicEnergy 
+        ? resolveEnergyColor(cardPt, cardEn, color, cardNum) 
+        : (color || 'C');
+
+      const colorInfo = COLOR_MAP[effectiveColor] || COLOR_MAP[color] || COLOR_MAP[''];
       
       let finalSetCode = setCode;
       let finalCardNum = cardNum;
       let finalImageUrl = getStorageCardUrl(`${setCode.toLowerCase()}_${cardNum}.png`);
 
-      if (isBasicEnergy && BASIC_ENERGY_CONFIG[color]) {
-        finalSetCode = BASIC_ENERGY_CONFIG[color].code;
-        finalCardNum = BASIC_ENERGY_CONFIG[color].num;
-        finalImageUrl = getStorageCardUrl(BASIC_ENERGY_CONFIG[color].filename);
+      if (isBasicEnergy && BASIC_ENERGY_CONFIG[effectiveColor]) {
+        const meta = BASIC_ENERGY_CONFIG[effectiveColor];
+        finalSetCode = meta.code;
+        finalCardNum = meta.num;
+        finalImageUrl = effectiveColor === 'F' ? meta.cdn : getStorageCardUrl(meta.filename);
       }
 
-      const isEnergy = isKnownEnergy(cardPt, cardEn, setCode, color, cardNum);
+      const isEnergy = isBasicEnergy || isKnownEnergy(cardPt, cardEn, setCode, color, cardNum);
       const isTrainer = !isEnergy && (isKnownTrainer(cardPt, cardEn) || colorInfo.name === 'Trainer' || !color);
       const category: 'Pokémon' | 'Trainer' | 'Energy' = isEnergy ? 'Energy' : isTrainer ? 'Trainer' : 'Pokémon';
 

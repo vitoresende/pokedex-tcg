@@ -136,6 +136,35 @@ class PokedexSoundEffects {
   }
 
   /**
+   * Pokédex Success Fanfare (Major chord resolution)
+   */
+  public playSuccess() {
+    const ctx = this.getContext();
+    if (!ctx) return;
+    try {
+      const notes = [392.00, 493.88, 587.33, 783.99]; // G4, B4, D5, G5
+      notes.forEach((freq, index) => {
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        const startTime = ctx.currentTime + index * 0.06;
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(freq, startTime);
+
+        gain.gain.setValueAtTime(0.08, startTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, startTime + 0.16);
+
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+
+        osc.start(startTime);
+        osc.stop(startTime + 0.16);
+      });
+    } catch {
+      // Ignore
+    }
+  }
+
+  /**
    * Alert / Error / Warning Sound
    */
   public playAlert() {

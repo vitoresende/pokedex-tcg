@@ -7252,5 +7252,31 @@
     "image_filename": "sve_7.png",
     "image_url": "https://firebasestorage.googleapis.com/v0/b/pokedex-tcg-782d5.firebasestorage.app/o/cards%2Fsve_7.png?alt=media",
     "decks": []
+  },
+  {
+    "id": "tcg-280",
+    "name_pt": "Energia de Luta Básica",
+    "name_en": "Basic Fighting Energy",
+    "set_pt": "Cartas Promocionais / Básicas",
+    "set_en": "Promotional / Basic",
+    "set_code": "SVE",
+    "card_number": "6",
+    "total_in_set": "",
+    "quantity": 10,
+    "quality": "N",
+    "language": "BR",
+    "rarity_code": "C",
+    "rarity_name": "Comum",
+    "color_code": "F",
+    "color_name": "Luta",
+    "color_slug": "fighting",
+    "color_bg": "#C03028",
+    "card_category": "Energia",
+    "is_foil": false,
+    "extras": "",
+    "comment": "",
+    "image_filename": "sve_6.png",
+    "image_url": "https://limitlesstcg.nyc3.cdn.digitaloceanspaces.com/tpci/SVE/SVE_006_R_PT.png",
+    "decks": []
   }
 ]

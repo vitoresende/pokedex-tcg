@@ -3,12 +3,26 @@ import { Card } from '../types';
 import { Sparkles } from 'lucide-react';
 import { soundEffects } from '../services/audio';
 import { downloadAndUploadImageToStorage } from '../services/firebase';
+import { resolveEnergyColor, isBasicEnergyCard } from '../context/CollectionContext';
 
 interface HoloCardProps {
   card: Card;
   className?: string;
   isDetailed?: boolean;
 }
+
+// Mapeamento específico e inequívoco para cada tipo de Carta de Energia Básica
+const BASIC_ENERGY_FILES: Record<string, { file: string; url: string; sveNum: string }> = {
+  'G': { file: 'sve_1.png', url: 'https://images.pokemontcg.io/sve/1.png', sveNum: '001' },
+  'R': { file: 'sve_2.png', url: 'https://images.pokemontcg.io/sve/2.png', sveNum: '002' },
+  'W': { file: 'sve_3.png', url: 'https://images.pokemontcg.io/sve/3.png', sveNum: '003' },
+  'L': { file: 'sve_4.png', url: 'https://images.pokemontcg.io/sve/4.png', sveNum: '004' },
+  'P': { file: 'sve_5.png', url: 'https://images.pokemontcg.io/sve/5.png', sveNum: '005' },
+  'F': { file: 'sve_6.png', url: 'https://images.pokemontcg.io/sve/6.png', sveNum: '006' },
+  'D': { file: 'sve_7.png', url: 'https://images.pokemontcg.io/sve/7.png', sveNum: '007' },
+  'M': { file: 'sve_8.png', url: 'https://images.pokemontcg.io/sve/8.png', sveNum: '008' },
+  'Y': { file: 'sm1_169.png', url: 'https://images.pokemontcg.io/sm1/169.png', sveNum: '169' }
+};
 
 export const HoloCard: React.FC<HoloCardProps> = ({ card, className = '', isDetailed = false }) => {
   const [imageErrorLevel, setImageErrorLevel] = useState<number>(0);
@@ -59,39 +73,49 @@ export const HoloCard: React.FC<HoloCardProps> = ({ card, className = '', isDeta
     const paddedNum = cleanNum.padStart(3, '0');
     const cleanSet = (card.set_code || 'set').toLowerCase();
     
-    // Mapeamento específico e inequívoco para cada tipo de Carta de Energia Básica
-    const BASIC_ENERGY_FILES: Record<string, { file: string; url: string }> = {
-      'G': { file: 'sve_1.png', url: 'https://images.pokemontcg.io/sve/1.png' },
-      'R': { file: 'sve_2.png', url: 'https://images.pokemontcg.io/sve/2.png' },
-      'W': { file: 'sve_3.png', url: 'https://images.pokemontcg.io/sve/3.png' },
-      'L': { file: 'sve_4.png', url: 'https://images.pokemontcg.io/sve/4.png' },
-      'P': { file: 'sve_5.png', url: 'https://images.pokemontcg.io/sve/5.png' },
-      'F': { file: 'sve_6.png', url: 'https://images.pokemontcg.io/sve/6.png' },
-      'D': { file: 'sve_7.png', url: 'https://images.pokemontcg.io/sve/7.png' },
-      'M': { file: 'sve_8.png', url: 'https://images.pokemontcg.io/sve/8.png' },
-      'Y': { file: 'sm1_169.png', url: 'https://images.pokemontcg.io/sm1/169.png' }
-    };
 
-    const isBasicEnergy = 
-      card.set_code === 'BAS' || 
-      card.set_code === 'SVE' ||
-      card.set_code === 'SV-BE' ||
-      card.card_number === 'Energia' ||
-      (card.name_pt.toLowerCase().includes('energia') && Boolean(BASIC_ENERGY_FILES[card.color_code])) ||
-      card.name_pt.toLowerCase().includes('básica') ||
-      card.name_en.toLowerCase().includes('basic energy');
+    const effectiveColor = resolveEnergyColor(card.name_pt, card.name_en, card.color_code, card.card_number);
+    const isBasicEnergy = isBasicEnergyCard(card.name_pt, card.name_en, card.set_code, card.card_number, card.color_code);
 
     let cardFileName = `${cleanSet}_${(card.card_number || '1').replace(/\//g, '_')}.png`;
-    let fallbackEnergyUrl = '';
-
-    if (isBasicEnergy && BASIC_ENERGY_FILES[card.color_code]) {
-      cardFileName = BASIC_ENERGY_FILES[card.color_code].file;
-      fallbackEnergyUrl = BASIC_ENERGY_FILES[card.color_code].url;
-    }
 
     const sources: string[] = [];
 
-    // 1. Firebase Storage Bucket padrão do projeto (com nome de arquivo principal e variações com/sem zero)
+    // Fallbacks especiais e prioritários para Cartas de Energia Básica
+    if (isBasicEnergy && BASIC_ENERGY_FILES[effectiveColor]) {
+      const meta = BASIC_ENERGY_FILES[effectiveColor];
+      cardFileName = meta.file;
+
+      const parsedNum = parseInt(cleanNum, 10);
+      const isCustomSveNum = parsedNum >= 1 && parsedNum <= 16;
+      const sveTargetNum = isCustomSveNum ? String(parsedNum).padStart(3, '0') : meta.sveNum;
+
+      if (effectiveColor !== 'Y') {
+        // 1. DigitalOcean CDN do Limitless TCG (Scans oficiais 100% disponíveis de alta resolução)
+        sources.push(`https://limitlesstcg.nyc3.cdn.digitaloceanspaces.com/tpci/SVE/SVE_${sveTargetNum}_R_PT.png`);
+        sources.push(`https://limitlesstcg.nyc3.cdn.digitaloceanspaces.com/tpci/SVE/SVE_${sveTargetNum}_R_EN.png`);
+        if (sveTargetNum !== meta.sveNum) {
+          sources.push(`https://limitlesstcg.nyc3.cdn.digitaloceanspaces.com/tpci/SVE/SVE_${meta.sveNum}_R_PT.png`);
+          sources.push(`https://limitlesstcg.nyc3.cdn.digitaloceanspaces.com/tpci/SVE/SVE_${meta.sveNum}_R_EN.png`);
+        }
+      }
+
+      // 2. Firebase Storage Bucket oficial do projeto
+      if (storageBucket && !storageBucket.includes('demo') && !storageBucket.includes('Example')) {
+        sources.push(`https://firebasestorage.googleapis.com/v0/b/${storageBucket}/o/cards%2F${encodeURIComponent(meta.file)}?alt=media`);
+      }
+
+      // 3. Pokemontcg.io scans
+      if (effectiveColor === 'Y') {
+        sources.push(`https://images.pokemontcg.io/sm1/169_hires.png`);
+        sources.push(`https://images.pokemontcg.io/sm1/169.png`);
+      } else {
+        sources.push(`https://images.pokemontcg.io/sve/${parseInt(sveTargetNum, 10)}.png`);
+        sources.push(meta.url);
+      }
+    }
+
+    // 1. Firebase Storage Bucket padrão do projeto
     if (storageBucket && !storageBucket.includes('demo') && !storageBucket.includes('Example')) {
       sources.push(`https://firebasestorage.googleapis.com/v0/b/${storageBucket}/o/cards%2F${encodeURIComponent(cardFileName)}?alt=media`);
       
@@ -110,12 +134,7 @@ export const HoloCard: React.FC<HoloCardProps> = ({ card, className = '', isDeta
       sources.push(card.image_url);
     }
 
-    // 3. Fallback oficial específico para cartas de energia básica
-    if (fallbackEnergyUrl) {
-      sources.push(fallbackEnergyUrl);
-    }
-
-    // 4. Imagem customizada / URL direta
+    // 3. Imagem customizada / URL direta
     if (card.image_url) {
       sources.push(card.image_url);
     }
@@ -180,6 +199,8 @@ export const HoloCard: React.FC<HoloCardProps> = ({ card, className = '', isDeta
       sources.push(`https://images.pokemontcg.io/${pokemontcgSet}/${unpaddedNum}.png`);
 
       const SET_CODE_LIMITLESS_MAP: Record<string, string> = {
+        // Basic Energies
+        'SVE': 'SVE', 'SV-BE': 'SVE', 'BAS': 'SVE',
         // Scarlet & Violet aliases
         'SV1': 'SVI', 'SV01': 'SVI',
         'SV2': 'PAL', 'SV02': 'PAL',
@@ -234,6 +255,7 @@ export const HoloCard: React.FC<HoloCardProps> = ({ card, className = '', isDeta
 
       // 6. TCGdex High-Res Official Scans CDN (Portuguese & English)
       const SET_CODE_TCGDEX_MAP: Record<string, string> = {
+        'SVE': 'sv/sve', 'SV-BE': 'sv/sve', 'BAS': 'sv/sve',
         'PAL': 'sv/sv02', 'SV02': 'sv/sv02', 'SV2': 'sv/sv02',
         'SVI': 'sv/sv01', 'SV01': 'sv/sv01', 'SV1': 'sv/sv01',
         'OBF': 'sv/sv03', 'SV03': 'sv/sv03', 'SV3': 'sv/sv03',
@@ -318,9 +340,11 @@ export const HoloCard: React.FC<HoloCardProps> = ({ card, className = '', isDeta
             onLoad={() => {
               // Auto-cache to Google Cloud Storage if loaded from external fallback CDN
               if (currentSrc && !currentSrc.includes('firebasestorage.googleapis.com')) {
-                const cleanSet = (card.set_code || 'imp').toLowerCase();
-                const cleanNum = (card.card_number || '1').replace(/\D/g, '') || '1';
-                const targetFilename = `${cleanSet}_${cleanNum}.png`;
+                const effectiveColor = resolveEnergyColor(card.name_pt, card.name_en, card.color_code, card.card_number);
+                const isBasic = isBasicEnergyCard(card.name_pt, card.name_en, card.set_code, card.card_number, card.color_code);
+                const targetFilename = (isBasic && BASIC_ENERGY_FILES[effectiveColor])
+                  ? BASIC_ENERGY_FILES[effectiveColor].file
+                  : `${(card.set_code || 'imp').toLowerCase()}_${(card.card_number || '1').replace(/\D/g, '') || '1'}.png`;
                 downloadAndUploadImageToStorage(currentSrc, targetFilename).catch(() => {});
               }
             }}

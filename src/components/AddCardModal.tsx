@@ -59,6 +59,28 @@ export const AddCardModal: React.FC<AddCardModalProps> = ({ isOpen, onClose, ini
   const [searchCandidates, setSearchCandidates] = useState<CardLookupResult[]>([]);
   const [searchError, setSearchError] = useState('');
   const [searchSuccess, setSearchSuccess] = useState('');
+  const [addedSuccessInfo, setAddedSuccessInfo] = useState<{
+    name: string;
+    setCode: string;
+    cardNumber: string;
+    imageUrl?: string;
+  } | null>(null);
+
+  const handleResetFormForAnother = () => {
+    soundEffects.playClick();
+    setNamePt('');
+    setNameEn('');
+    setCardNumber('');
+    setImageUrl('');
+    setImageFile(null);
+    setImagePreview(null);
+    setQuickQuery('');
+    setSearchCandidates([]);
+    setSearchError('');
+    setSearchSuccess('');
+    setComment('');
+    setAddedSuccessInfo(null);
+  };
 
   const handleQuickSearch = async () => {
     if (!quickQuery.trim()) return;
@@ -144,7 +166,7 @@ export const AddCardModal: React.FC<AddCardModalProps> = ({ isOpen, onClose, ini
       setIsUploadingImage(false);
     }
 
-    addNewCard({
+    const added = addNewCard({
       name_en: nameEn.trim() || namePt.trim(),
       name_pt: namePt.trim() || nameEn.trim(),
       set_code: setCode.trim().toUpperCase(),
@@ -161,7 +183,13 @@ export const AddCardModal: React.FC<AddCardModalProps> = ({ isOpen, onClose, ini
       comment: comment.trim()
     });
 
-    onClose();
+    soundEffects.playSuccess();
+    setAddedSuccessInfo({
+      name: added.name_pt || added.name_en,
+      setCode: added.set_code,
+      cardNumber: added.card_number,
+      imageUrl: finalImageUrl
+    });
   };
 
   const handleCsvImport = () => {
@@ -251,7 +279,55 @@ export const AddCardModal: React.FC<AddCardModalProps> = ({ isOpen, onClose, ini
         {/* Modal Content */}
         <div className="p-5 sm:p-6 max-h-[75vh] overflow-y-auto font-mono text-xs">
           {tab === 'manual' ? (
-            <form onSubmit={handleManualSubmit} className="space-y-4">
+            addedSuccessInfo ? (
+              <div className="py-8 px-4 flex flex-col items-center text-center space-y-4 animate-in zoom-in-95 duration-200">
+                <div className="w-16 h-16 rounded-full bg-emerald-500/20 border-2 border-emerald-400 flex items-center justify-center text-emerald-400 shadow-[0_0_30px_rgba(16,185,129,0.35)] animate-bounce">
+                  <CheckCircle2 className="w-10 h-10" />
+                </div>
+
+                {addedSuccessInfo.imageUrl && (
+                  <div className="w-24 h-32 rounded-xl overflow-hidden border-2 border-emerald-400/50 shadow-2xl my-1 bg-black/60">
+                    <img src={addedSuccessInfo.imageUrl} alt="" className="w-full h-full object-cover" />
+                  </div>
+                )}
+
+                <div className="space-y-1">
+                  <h3 className="text-base font-black text-emerald-400 uppercase tracking-wider font-mono">
+                    {t('addCard.cardAddedSuccessTitle')}
+                  </h3>
+                  <p className="text-xs text-white font-mono font-bold">
+                    {addedSuccessInfo.name} <span className="text-slate-400">({addedSuccessInfo.setCode} #{addedSuccessInfo.cardNumber})</span>
+                  </p>
+                  <p className="text-[11px] text-slate-400 max-w-sm mx-auto font-sans">
+                    {t('addCard.cardAddedSuccessDesc')}
+                  </p>
+                </div>
+
+                <div className="flex flex-wrap items-center justify-center gap-3 pt-4">
+                  <button
+                    type="button"
+                    onClick={handleResetFormForAnother}
+                    className="bg-yellow-400 hover:bg-yellow-300 text-slate-950 font-black px-4 py-2.5 rounded-xl text-xs flex items-center gap-2 shadow active:scale-95 transition-all font-mono"
+                  >
+                    <Plus className="w-4 h-4" />
+                    <span>{t('addCard.addAnotherCard')}</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => {
+                      soundEffects.playClick();
+                      setAddedSuccessInfo(null);
+                      onClose();
+                    }}
+                    className="bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold px-4 py-2.5 rounded-xl text-xs transition-colors border border-slate-700 font-mono"
+                  >
+                    <span>{t('addCard.finishBtn')}</span>
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <form onSubmit={handleManualSubmit} className="space-y-4">
               {/* Smart Autofill Box */}
               <div className="bg-gradient-to-r from-slate-900 to-slate-950 p-3.5 rounded-2xl border-2 border-yellow-400/50 shadow-xl space-y-2">
                 <div className="flex items-center justify-between">
@@ -532,6 +608,7 @@ export const AddCardModal: React.FC<AddCardModalProps> = ({ isOpen, onClose, ini
                 )}
               </button>
             </form>
+            )
           ) : tab === 'csv' ? (
             <div className="space-y-4">
               <p className="text-slate-300 text-xs font-sans">

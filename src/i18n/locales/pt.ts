@@ -266,7 +266,11 @@ export const pt: TranslationKeys = {
     "importSuccess": "Importação concluída: {added} adicionadas, {updated} atualizadas",
     "importAndCreateDeck": "Importar & Criar Deck \"{name}\"",
     "importAndAddToDeck": "Importar & Adicionar ao Deck Existente",
-    "processCsv": "Processar Importação CSV"
+    "processCsv": "Processar Importação CSV",
+    "cardAddedSuccessTitle": "Carta Adicionada com Sucesso!",
+    "cardAddedSuccessDesc": "A carta foi registrada no seu catálogo e sincronizada com a sua Pokédex.",
+    "addAnotherCard": "+ Adicionar Outra Carta",
+    "finishBtn": "Concluir e Fechar"
   },
   "validator": {
     "title": "Validador de Deck (CSV vs Coleção)",

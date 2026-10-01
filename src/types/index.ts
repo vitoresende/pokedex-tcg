@@ -5,6 +5,7 @@ export interface Card {
   set_pt: string;
   set_en: string;
   set_code: string;
+  set_name?: string;
   card_number: string;
   total_in_set: string;
   quantity: number;

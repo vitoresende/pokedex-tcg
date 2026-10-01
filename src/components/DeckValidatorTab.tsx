@@ -15,7 +15,14 @@ import {
   Plus,
   X
 } from 'lucide-react';
-import { useCollection, isKnownEnergy, isKnownTrainer } from '../context/CollectionContext';
+import { 
+  useCollection, 
+  isKnownEnergy, 
+  isKnownTrainer, 
+  resolveEnergyColor, 
+  isBasicEnergyCard, 
+  BASIC_ENERGY_CONFIG 
+} from '../context/CollectionContext';
 import { useLanguage } from '../context/LanguageContext';
 import { soundEffects } from '../services/audio';
 import { Card } from '../types';
@@ -180,17 +187,14 @@ export const DeckValidatorTab: React.FC = () => {
       const cardNum = parts[11] || '1';
 
       // Aggregation key: basic energies by color code; others by normalized name and set
-      const isEnergy = isKnownEnergy(cardPt, cardEn, setCode, color, cardNum);
-      const isBasicEnergy = isEnergy && (
-        setCode === 'BAS' || 
-        setCode === 'SVE' || 
-        setCode === 'SV-BE' || 
-        cardPt.toLowerCase().includes('energia') ||
-        ['G','R','W','L','P','F','D','M','Y'].includes(color)
-      );
+      const isBasicEnergy = isBasicEnergyCard(cardPt, cardEn, setCode, cardNum, color);
+      const isEnergy = isBasicEnergy || isKnownEnergy(cardPt, cardEn, setCode, color, cardNum);
+      const effectiveColor = isBasicEnergy 
+        ? resolveEnergyColor(cardPt, cardEn, color, cardNum) 
+        : (color || 'C');
 
       const groupKey = isBasicEnergy 
-        ? `basic-energy-${color || 'C'}`
+        ? `basic-energy-${effectiveColor}`
         : `${cardEn.toLowerCase()}_${setCode.toLowerCase()}_${cardNum}`;
 
       if (aggregatedMap.has(groupKey)) {
@@ -204,7 +208,7 @@ export const DeckValidatorTab: React.FC = () => {
           cardPt,
           cardEn,
           cardNum,
-          color,
+          color: effectiveColor,
           totalRequired: qty,
         });
       }
@@ -218,16 +222,11 @@ export const DeckValidatorTab: React.FC = () => {
     const validatedItems: ValidatedCardItem[] = [];
 
     aggregatedMap.forEach((entry, key) => {
-      const isEnergy = isKnownEnergy(entry.cardPt, entry.cardEn, entry.setCode, entry.color, entry.cardNum);
-      const isBasicEnergy = isEnergy && (
-        entry.setCode === 'BAS' || 
-        entry.setCode === 'SVE' || 
-        entry.setCode === 'SV-BE' || 
-        entry.cardPt.toLowerCase().includes('energia') ||
-        ['G','R','W','L','P','F','D','M','Y'].includes(entry.color)
-      );
+      const isBasicEnergy = isBasicEnergyCard(entry.cardPt, entry.cardEn, entry.setCode, entry.cardNum, entry.color);
+      const isEnergy = isBasicEnergy || isKnownEnergy(entry.cardPt, entry.cardEn, entry.setCode, entry.color, entry.cardNum);
       const isTrainer = !isEnergy && (isKnownTrainer(entry.cardPt, entry.cardEn) || entry.color === '' || entry.color === 'T');
       const category: 'Pokémon' | 'Trainer' | 'Energy' = isEnergy ? 'Energy' : isTrainer ? 'Trainer' : 'Pokémon';
+      const effectiveColor = isBasicEnergy ? resolveEnergyColor(entry.cardPt, entry.cardEn, entry.color, entry.cardNum) : entry.color;
 
       let ownedExactQty = 0;
       let ownedTotalQty = 0;
@@ -235,14 +234,17 @@ export const DeckValidatorTab: React.FC = () => {
 
       if (isBasicEnergy) {
         // For basic energies, any basic energy card of this color in the collection counts!
-        const matchingEnergies = cards.filter(c => 
-          c.card_category === 'Energy' && 
-          (c.color_code === entry.color || c.name_pt.toLowerCase().includes('energia'))
-        );
+        const matchingEnergies = cards.filter(c => {
+          const isCardEnergy = c.card_category === 'Energy' || (c.card_category as string) === 'Energia';
+          if (!isCardEnergy) return false;
+          const cColor = resolveEnergyColor(c.name_pt, c.name_en, c.color_code, c.card_number);
+          return cColor === effectiveColor;
+        });
         ownedTotalQty = matchingEnergies.reduce((acc, c) => acc + (c.quantity || 1), 0);
         
         const exactMatches = matchingEnergies.filter(c => 
-          c.set_code.toUpperCase() === entry.setCode && c.card_number === entry.cardNum
+          c.set_code.toUpperCase() === entry.setCode && 
+          c.card_number.replace(/^0+/, '') === entry.cardNum.replace(/^0+/, '')
         );
         ownedExactQty = exactMatches.reduce((acc, c) => acc + (c.quantity || 1), 0);
         matchedCard = exactMatches[0] || matchingEnergies[0];
@@ -266,7 +268,10 @@ export const DeckValidatorTab: React.FC = () => {
       const isComplete = ownedTotalQty >= entry.totalRequired;
       const alternativeCopies = Math.max(0, ownedTotalQty - ownedExactQty);
 
-      const colorInfo = COLOR_MAP[entry.color] || COLOR_MAP[''];
+      const colorInfo = COLOR_MAP[effectiveColor] || COLOR_MAP[entry.color] || COLOR_MAP[''];
+      const defaultEnergyUrl = isBasicEnergy && BASIC_ENERGY_CONFIG[effectiveColor]
+        ? BASIC_ENERGY_CONFIG[effectiveColor].cdn
+        : '';
 
       // Construct a mock Card object for rendering in HoloCard
       const mockCard: Card = matchedCard || {
@@ -278,11 +283,11 @@ export const DeckValidatorTab: React.FC = () => {
         set_name: entry.setPt,
         quantity: ownedTotalQty,
         card_category: category,
-        color_code: entry.color,
+        color_code: effectiveColor,
         color_name: colorInfo.name,
         color_bg: colorInfo.bg,
         is_foil: false,
-        image_url: ''
+        image_url: defaultEnergyUrl
       };
 
       // Find similar cards from collection if missing or incomplete
@@ -712,7 +717,7 @@ export const DeckValidatorTab: React.FC = () => {
                       <div className="flex items-center space-x-3 min-w-0">
                         <div 
                           className="w-10 h-14 shrink-0 cursor-pointer rounded-lg overflow-hidden border border-slate-700 hover:scale-105 transition-transform"
-                          onClick={() => item.matchedCard && setSelectedCardForModal(item.matchedCard)}
+                          onClick={() => setSelectedCardForModal(item.matchedCard || item.mockCard)}
                           title="Ver Detalhes"
                         >
                           <HoloCard card={item.mockCard} />

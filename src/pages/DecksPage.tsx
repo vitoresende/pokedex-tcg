@@ -1,5 +1,10 @@
 import React, { useState } from 'react';
-import { useCollection } from '../context/CollectionContext';
+import { 
+  useCollection, 
+  resolveEnergyColor, 
+  isBasicEnergyCard, 
+  BASIC_ENERGY_CONFIG 
+} from '../context/CollectionContext';
 import { useLanguage } from '../context/LanguageContext';
 import { Deck, DeckCardItem } from '../types';
 import { 
@@ -87,14 +92,69 @@ export const DecksPage: React.FC = () => {
     setTimeout(() => setCopied(false), 2500);
   };
 
+  const findDeckCardMatch = (cardItem: DeckCardItem) => {
+    const itemNameLower = cardItem.name.toLowerCase();
+    let matched = cards.find(c => 
+      c.name_en.toLowerCase() === itemNameLower || 
+      c.name_pt.toLowerCase() === itemNameLower
+    );
+    if (!matched) {
+      matched = cards.find(c => 
+        c.name_en.toLowerCase().includes(itemNameLower) ||
+        c.name_pt.toLowerCase().includes(itemNameLower) ||
+        itemNameLower.includes(c.name_en.toLowerCase()) ||
+        itemNameLower.includes(c.name_pt.toLowerCase())
+      );
+    }
+    const isEnergy = cardItem.section === 'energies' || isBasicEnergyCard(cardItem.name, cardItem.name, cardItem.set || '', '', '');
+    if (!matched && isEnergy) {
+      const color = resolveEnergyColor(cardItem.name, cardItem.name, '', '');
+      matched = cards.find(c => 
+        (c.card_category === 'Energy' || (c.card_category as string) === 'Energia') && 
+        (c.color_code === color || resolveEnergyColor(c.name_pt, c.name_en, c.color_code, c.card_number) === color)
+      );
+    }
+    return matched;
+  };
+
   const handleCardClick = (cardItem: DeckCardItem) => {
     soundEffects.playClick();
-    const matchedCard = cards.find(c => 
-      c.name_en.toLowerCase().includes(cardItem.name.toLowerCase()) ||
-      c.name_pt.toLowerCase().includes(cardItem.name.toLowerCase())
-    );
+    const matchedCard = findDeckCardMatch(cardItem);
     if (matchedCard) {
       setSelectedCard(matchedCard);
+    } else {
+      const isEnergy = cardItem.section === 'energies' || isBasicEnergyCard(cardItem.name, cardItem.name, cardItem.set || '', '', '');
+      const isTrainer = cardItem.section === 'trainers';
+      const cat = isEnergy ? 'Energy' : isTrainer ? 'Trainer' : 'Pokémon';
+      const color = isEnergy ? resolveEnergyColor(cardItem.name, cardItem.name, '', '') : '';
+      const fallbackUrl = isEnergy && BASIC_ENERGY_CONFIG[color] ? BASIC_ENERGY_CONFIG[color].cdn : '';
+
+      setSelectedCard({
+        id: `deck-${cardItem.name}`,
+        name_pt: cardItem.name,
+        name_en: cardItem.name,
+        set_pt: cardItem.set || 'Básica',
+        set_en: cardItem.set || 'Basic',
+        set_code: cardItem.set || 'Básica',
+        set_name: cardItem.set || 'Deck',
+        card_number: '1',
+        total_in_set: '100',
+        quantity: cardItem.count,
+        quality: 'NM',
+        language: 'PT',
+        rarity_code: 'C',
+        rarity_name: 'Comum',
+        card_category: cat,
+        color_code: color,
+        color_name: cat,
+        color_slug: isEnergy ? 'energy' : isTrainer ? 'trainer' : 'colorless',
+        color_bg: '#232936',
+        is_foil: false,
+        extras: '',
+        comment: '',
+        image_url: fallbackUrl,
+        decks: [currentDeck.id]
+      });
     }
   };
 
@@ -355,7 +415,7 @@ export const DecksPage: React.FC = () => {
             </div>
             <div className="space-y-1.5">
               {currentDeck.cards.filter(c => c.section === 'pokemon').map((c, i) => {
-                const matchedCard = cards.find(card => card.name_en.toLowerCase() === c.name.toLowerCase() || card.name_pt.toLowerCase() === c.name.toLowerCase());
+                const matchedCard = findDeckCardMatch(c);
                 const displayName = matchedCard ? getCardName(matchedCard) : c.name;
                 return (
                   <div
@@ -389,7 +449,7 @@ export const DecksPage: React.FC = () => {
             </div>
             <div className="space-y-1.5">
               {currentDeck.cards.filter(c => c.section === 'trainers').map((c, i) => {
-                const matchedCard = cards.find(card => card.name_en.toLowerCase() === c.name.toLowerCase() || card.name_pt.toLowerCase() === c.name.toLowerCase());
+                const matchedCard = findDeckCardMatch(c);
                 const displayName = matchedCard ? getCardName(matchedCard) : c.name;
                 return (
                   <div
@@ -423,7 +483,7 @@ export const DecksPage: React.FC = () => {
             </div>
             <div className="space-y-1.5">
               {currentDeck.cards.filter(c => c.section === 'energies').map((c, i) => {
-                const matchedCard = cards.find(card => card.name_en.toLowerCase() === c.name.toLowerCase() || card.name_pt.toLowerCase() === c.name.toLowerCase());
+                const matchedCard = findDeckCardMatch(c);
                 const displayName = matchedCard ? getCardName(matchedCard) : c.name;
                 return (
                   <div
