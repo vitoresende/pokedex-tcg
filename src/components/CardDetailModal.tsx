@@ -11,7 +11,7 @@ import { useLanguage } from '../context/LanguageContext';
 import { soundEffects } from '../services/audio';
 import { findSimilarCards } from '../utils/cardSimilarity';
 import { lookupCardOnline, CardLookupResult } from '../services/cardLookup';
-import { formatSetWithYear } from '../utils/setMetadata';
+import { formatSetWithYear, getSetRegulationMark } from '../utils/setMetadata';
 
 interface CardDetailModalProps {
   card: Card | null;
@@ -306,7 +306,14 @@ export const CardDetailModal: React.FC<CardDetailModalProps> = ({ card, onClose,
               </div>
               <div className="flex justify-between py-1 border-b border-slate-800">
                 <span className="text-slate-400">{t('cardDetail.setCode')}</span>
-                <span className="text-slate-200">{card.set_code}</span>
+                <div className="flex items-center gap-1.5">
+                  <span className="text-slate-200">{card.set_code}</span>
+                  {getSetRegulationMark(card.set_code) && (
+                    <span className="bg-slate-800 text-yellow-300 font-bold px-1.5 py-0.2 rounded border border-yellow-400/40 font-mono text-[10px]" title="Marca de Regulamentação">
+                      [{getSetRegulationMark(card.set_code)}]
+                    </span>
+                  )}
+                </div>
               </div>
               <div className="flex justify-between py-1 border-b border-slate-800">
                 <span className="text-slate-400">{t('cardDetail.cardNumber')}</span>

@@ -328,6 +328,99 @@ export const SET_OFFICIAL_NAMES_PT: Record<string, string> = {
 };
 
 /**
+ * Official Regulation Mark Letters for Pokémon TCG sets.
+ * Introduced in the Sword & Shield era (D, E, F) and continued in Scarlet & Violet (G, H, I).
+ * Pre-SWSH expansions used set symbols/drawings ("desenhos") instead of regulation mark letters.
+ */
+export const SET_REGULATION_MARKS: Record<string, string> = {
+  // === 2025 ('I') ===
+  'BLK': 'I',
+  'WHT': 'I',
+  'DRI': 'I',
+  'PRE': 'I',
+  'PBL': 'I',
+  'JTG': 'I',
+  'SV10': 'I',
+
+  // === 2024 ('H') ===
+  'SSP': 'H',
+  'SV08': 'H', 'SV8': 'H',
+  'SCR': 'H',
+  'SV07': 'H', 'SV7': 'H',
+  'SFA': 'H',
+  'SV06.5': 'H', 'SV6.5': 'H',
+  'TWM': 'H',
+  'SV06': 'H', 'SV6': 'H',
+  'TEF': 'H',
+  'SV05': 'H', 'SV5': 'H',
+  'PAF': 'H',
+  'SV04.5': 'H', 'SV4.5': 'H',
+
+  // === 2023 ('G') ===
+  'PAR': 'G',
+  'SV04': 'G', 'SV4': 'G',
+  'MEW': 'G',
+  '151': 'G', 'SV03.5': 'G', 'SV3.5': 'G',
+  'OBF': 'G',
+  'SV03': 'G', 'SV3': 'G',
+  'PAL': 'G',
+  'SV02': 'G', 'SV2': 'G',
+  'SVI': 'G', 'SV1': 'G', 'SV01': 'G',
+  'SVE': 'G', 'SV-BE': 'G', 'BAS': 'G',
+  'SVP': 'G',
+
+  // === 2022-2023 SWSH Finale ('F') ===
+  'CRZ': 'F',
+  'SWSH12.5': 'F', 'SWSH12pt5': 'F',
+  'SIT': 'F',
+  'SWSH12': 'F',
+  'LOR': 'F',
+  'SWSH11': 'F',
+  'PGO': 'F',
+  'SWSH10.5': 'F',
+  'ASR': 'F',
+  'SWSH10': 'F',
+  'BRS': 'F',
+  'SWSH9': 'F',
+
+  // === 2021 ('E') ===
+  'FST': 'E',
+  'SWSH8': 'E',
+  'CEL': 'E',
+  'CEL25': 'E',
+  'EVS': 'E',
+  'SWSH7': 'E',
+  'CRE': 'E',
+  'SWSH6': 'E',
+  'BST': 'E',
+  'SWSH5': 'E',
+  'SHF': 'D',
+  'SWSH4.5': 'D',
+
+  // === 2020 ('D') ===
+  'VIV': 'D',
+  'SWSH4': 'D',
+  'CPA': 'D',
+  'SWSH3.5': 'D',
+  'DAA': 'D',
+  'SWSH3': 'D',
+  'RCL': 'D',
+  'SWSH2': 'D',
+  'SSH': 'D', 'SWSH': 'D', 'SWSH1': 'D',
+  'SWSHP': 'D',
+};
+
+/**
+ * Returns the regulation mark letter (e.g. 'D', 'E', 'F', 'G', 'H', 'I')
+ * for modern sets, or null if the set uses a set symbol/drawing (pre-SWSH).
+ */
+export function getSetRegulationMark(setCode: string): string | null {
+  if (!setCode) return null;
+  const clean = setCode.trim().toUpperCase();
+  return SET_REGULATION_MARKS[clean] || null;
+}
+
+/**
  * Returns the release year for a given set code, or null if unknown.
  */
 export function getSetReleaseYear(setCode: string): number | null {
@@ -337,22 +430,35 @@ export function getSetReleaseYear(setCode: string): number | null {
 }
 
 /**
- * Formats a collection expansion with its release year in front:
- * Example: "2022 - BRS - Astros Cintilantes"
+ * Formats a collection expansion with its release year and regulation mark letter in front:
+ * Example with letter: "2022 - F - BRS - Astros Cintilantes"
+ * Example without letter (drawing / pre-SWSH): "2017 - CRI - Caos Ascendente"
  * If year is unknown: "BRS - Astros Cintilantes"
  */
-export function formatSetWithYear(setCode: string, setName?: string): string {
+export function formatSetWithYear(setCode: string, setName?: string, customMark?: string): string {
   const cleanCode = (setCode || '').trim().toUpperCase();
   const year = getSetReleaseYear(cleanCode);
+  const mark = (customMark || getSetRegulationMark(cleanCode) || '').trim().toUpperCase();
   
   // Prefer official Portuguese name with guaranteed proper accents (ç, ã, é, etc.)
   const rawName = SET_OFFICIAL_NAMES_PT[cleanCode] || setName || cleanCode;
   const cleanName = fixMojibake(rawName).trim();
 
+  const parts: string[] = [];
   if (year) {
-    return `${year} - ${cleanCode} - ${cleanName}`;
+    parts.push(String(year));
   }
-  return `${cleanCode} - ${cleanName}`;
+  if (mark) {
+    parts.push(mark);
+  }
+  if (cleanCode) {
+    parts.push(cleanCode);
+  }
+  if (cleanName && cleanName !== cleanCode) {
+    parts.push(cleanName);
+  }
+
+  return parts.join(' - ');
 }
 
 /**
