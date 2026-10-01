@@ -1,11 +1,12 @@
 import React, { createContext, useContext, useState, useMemo, useEffect, useRef } from 'react';
 import initialCards from '../data/cards.json';
 import initialDecks from '../data/decks.json';
-import { Card, Deck, DeckCardItem } from '../types';
+import { Card, Deck, DeckCardItem, CardRarityInfo } from '../types';
 import { soundEffects } from '../services/audio';
 import { useAuth } from './AuthContext';
 import { syncUserCollectionToFirestore, loadUserCollectionFromFirestore } from '../services/firebase';
 import { loadAndApplySetsMetadata, syncSetsToCloudAndLocal, getCachedSetsList, SyncedSetItem } from '../services/tcgSetsService';
+import { loadAndApplyRaritiesMetadata, syncRaritiesToCloudAndLocal, getCachedRaritiesList } from '../services/raritiesService';
 import { fixMojibake } from '../utils/textSanitizer';
 
 interface FilterState {
@@ -68,6 +69,9 @@ interface CollectionContextType {
   setsVersion: number;
   allSetsList: SyncedSetItem[];
   syncSetsMetadata: () => Promise<{ success: boolean; total: number; error?: string }>;
+  allRaritiesList: CardRarityInfo[];
+  isSyncingRarities: boolean;
+  syncRaritiesMetadata: () => Promise<{ success: boolean; total: number; error?: string }>;
   addNewCard: (card: Partial<Card>) => Card;
   updateCard: (cardId: string, updatedData: Partial<Card>) => void;
   deleteCard: (cardId: string) => void;
@@ -484,6 +488,40 @@ export const CollectionProvider: React.FC<{ children: React.ReactNode }> = ({ ch
       return { success: false, total: 0, error: err?.message || 'Erro ao consultar API de coleções' };
     } finally {
       setIsSyncingSets(false);
+    }
+  };
+
+  // Dynamic Card Rarities metadata sync state
+  const [isSyncingRarities, setIsSyncingRarities] = useState<boolean>(false);
+  const [raritiesVersion, setRaritiesVersion] = useState<number>(0);
+
+  // Initialize rarities metadata from localStorage / Cloud Firestore
+  useEffect(() => {
+    loadAndApplyRaritiesMetadata().then(() => {
+      setRaritiesVersion(v => v + 1);
+    }).catch(err => {
+      console.warn('Could not load rarities metadata:', err);
+    });
+  }, []);
+
+  const allRaritiesList = useMemo(() => {
+    return getCachedRaritiesList();
+  }, [raritiesVersion]);
+
+  const syncRaritiesMetadata = async (): Promise<{ success: boolean; total: number; error?: string }> => {
+    setIsSyncingRarities(true);
+    soundEffects.playScan();
+    try {
+      const res = await syncRaritiesToCloudAndLocal();
+      setRaritiesVersion(v => v + 1);
+      soundEffects.playSuccess();
+      return { success: true, total: res.total };
+    } catch (err: any) {
+      console.error('Failed to sync rarities metadata:', err);
+      soundEffects.playAlert();
+      return { success: false, total: 0, error: err?.message || 'Falha ao sincronizar raridades' };
+    } finally {
+      setIsSyncingRarities(false);
     }
   };
 
@@ -1271,6 +1309,9 @@ export const CollectionProvider: React.FC<{ children: React.ReactNode }> = ({ ch
         setsVersion,
         allSetsList,
         syncSetsMetadata,
+        allRaritiesList,
+        isSyncingRarities,
+        syncRaritiesMetadata,
         addNewCard,
         updateCard,
         deleteCard,

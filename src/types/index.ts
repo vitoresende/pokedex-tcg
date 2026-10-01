@@ -142,6 +142,23 @@ export interface SpecialConditionRule {
   cure_pt?: string;
 }
 
+export interface CardRarityInfo {
+  id: string;
+  symbol_type: string;
+  symbol_name: string;
+  symbol_name_en?: string;
+  name: string;
+  name_en?: string;
+  code: string;
+  rate: string;
+  rate_en?: string;
+  reference?: string | null;
+  reference_en?: string | null;
+  description: string;
+  description_en?: string;
+  color: string;
+}
+
 export interface AuthUser {
   uid: string;
   email: string | null;

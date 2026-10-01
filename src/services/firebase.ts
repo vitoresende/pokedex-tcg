@@ -208,4 +208,40 @@ export async function loadSetsMetadataFromFirestore(): Promise<any | null> {
   }
 }
 
+/**
+ * Syncs global rarities metadata to Cloud Firestore under settings/rarities_metadata
+ */
+export async function syncRaritiesMetadataToFirestore(data: any): Promise<boolean> {
+  if (!db) return false;
+  try {
+    const settingsRef = doc(db, 'settings', 'rarities_metadata');
+    await setDoc(settingsRef, {
+      ...data,
+      lastUpdated: new Date().toISOString()
+    }, { merge: true });
+    return true;
+  } catch (error) {
+    console.error('Error syncing rarities metadata to Firestore:', error);
+    return false;
+  }
+}
+
+/**
+ * Loads global rarities metadata from Cloud Firestore under settings/rarities_metadata
+ */
+export async function loadRaritiesMetadataFromFirestore(): Promise<any | null> {
+  if (!db) return null;
+  try {
+    const settingsRef = doc(db, 'settings', 'rarities_metadata');
+    const snap = await getDoc(settingsRef);
+    if (snap.exists()) {
+      return snap.data();
+    }
+    return null;
+  } catch (error) {
+    console.warn('Could not load rarities metadata from Firestore (offline or uninitialized):', error);
+    return null;
+  }
+}
+
 export { auth, db, storage, isFirebaseConfigured, onAuthStateChanged };

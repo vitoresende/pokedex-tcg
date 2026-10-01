@@ -4,22 +4,27 @@ import rulesData from '../data/rules.json';
 import { CardTypeInfo, FormatRule, TrainerTypeRule, SpecialConditionRule } from '../types';
 import { 
   BookOpen, Sparkles, Layers, CheckCircle2, ChevronRight,
-  Shield, AlertTriangle, Search, X, RefreshCw, Tag, ChevronDown, Calendar
+  Shield, AlertTriangle, Search, X, RefreshCw, Tag, ChevronDown, Calendar, Star
 } from 'lucide-react';
 import { PokemonTypeIcon } from '../components/PokemonTypeIcon';
+import { RaritySymbolIcon } from '../components/RaritySymbolIcon';
 import { useLanguage } from '../context/LanguageContext';
 import { useCollection } from '../context/CollectionContext';
 import { soundEffects } from '../services/audio';
 
 export const RulesAndTypesPage: React.FC = () => {
-  const [activeTab, setActiveTab] = useState<'types' | 'formats' | 'trainers' | 'conditions' | 'sets'>('types');
+  const [activeTab, setActiveTab] = useState<'types' | 'formats' | 'trainers' | 'conditions' | 'sets' | 'rarities'>('types');
   const [selectedType, setSelectedType] = useState<CardTypeInfo>(typesData[0]);
   const [setSearchQuery, setSetSearchQuery] = useState('');
   const [selectedMarkFilter, setSelectedMarkFilter] = useState('ALL');
+  const [raritySearchQuery, setRaritySearchQuery] = useState('');
   const { t, language } = useLanguage();
-  const { allSetsList, isSyncingSets, syncSetsMetadata } = useCollection();
+  const { 
+    allSetsList, isSyncingSets, syncSetsMetadata,
+    allRaritiesList, isSyncingRarities, syncRaritiesMetadata 
+  } = useCollection();
 
-  const handleSelectTab = (tab: 'types' | 'formats' | 'trainers' | 'conditions' | 'sets') => {
+  const handleSelectTab = (tab: 'types' | 'formats' | 'trainers' | 'conditions' | 'sets' | 'rarities') => {
     soundEffects.playClick();
     setActiveTab(tab);
   };
@@ -56,6 +61,19 @@ export const RulesAndTypesPage: React.FC = () => {
       return true;
     });
   }, [allSetsList, selectedMarkFilter, setSearchQuery]);
+
+  const filteredRarities = useMemo(() => {
+    if (!raritySearchQuery.trim()) return allRaritiesList;
+    const q = raritySearchQuery.toLowerCase().trim();
+    return allRaritiesList.filter(r => {
+      const matchName = (r.name || '').toLowerCase().includes(q) || (r.name_en || '').toLowerCase().includes(q);
+      const matchSymbol = (r.symbol_name || '').toLowerCase().includes(q) || (r.symbol_name_en || '').toLowerCase().includes(q);
+      const matchCode = (r.code || '').toLowerCase().includes(q);
+      const matchRate = (r.rate || '').toLowerCase().includes(q) || (r.rate_en || '').toLowerCase().includes(q);
+      const matchRef = (r.reference || '').toLowerCase().includes(q) || (r.reference_en || '').toLowerCase().includes(q);
+      return matchName || matchSymbol || matchCode || matchRate || matchRef;
+    });
+  }, [allRaritiesList, raritySearchQuery]);
 
   return (
     <div className="space-y-6 pb-24 animate-in fade-in duration-300">
@@ -121,6 +139,16 @@ export const RulesAndTypesPage: React.FC = () => {
           }`}
         >
           {t('rules.tabSets')}
+        </button>
+        <button
+          onClick={() => handleSelectTab('rarities')}
+          className={`flex-1 py-2 px-3 rounded-xl whitespace-nowrap transition-all font-bold ${
+            activeTab === 'rarities'
+              ? 'bg-pokedex-red text-white shadow-md'
+              : 'text-slate-400 hover:text-slate-200'
+          }`}
+        >
+          {t('rules.tabRarities')}
         </button>
       </div>
 
@@ -573,6 +601,150 @@ export const RulesAndTypesPage: React.FC = () => {
                     setSetSearchQuery('');
                     setSelectedMarkFilter('ALL');
                   }}
+                  className="text-xs font-mono text-yellow-400 hover:text-yellow-300 underline"
+                >
+                  {t('rules.clearFilters')}
+                </button>
+              )}
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* TAB 6: Card Rarities & Pull Rates */}
+      {activeTab === 'rarities' && (
+        <div className="space-y-6">
+          {/* Header Card */}
+          <div className="bg-pokedex-card/90 rounded-3xl border border-slate-800 p-5 md:p-6 space-y-4 shadow-lg">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              <div>
+                <h3 className="text-lg font-bold font-display text-white flex items-center gap-2">
+                  <Star className="w-5 h-5 text-yellow-300" />
+                  <span>{t('rules.raritiesTitle')}</span>
+                  <span className="text-xs font-mono font-bold bg-yellow-950/60 text-yellow-300 border border-yellow-800/60 px-2 py-0.5 rounded-full">
+                    {filteredRarities.length} / {allRaritiesList.length}
+                  </span>
+                </h3>
+                <p className="text-xs text-slate-400 font-sans mt-1">
+                  {t('rules.raritiesSubtitle')}
+                </p>
+              </div>
+
+              {/* Sync Button */}
+              <button
+                onClick={() => syncRaritiesMetadata()}
+                disabled={isSyncingRarities}
+                className="inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-pokedex-red/90 hover:bg-pokedex-red text-white font-bold text-xs font-mono rounded-xl border border-red-500/40 shadow-md hover:shadow-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap self-start sm:self-auto"
+                title={t('rules.syncRaritiesBtn')}
+              >
+                <RefreshCw className={`w-4 h-4 ${isSyncingRarities ? 'animate-spin' : ''}`} />
+                <span>{isSyncingRarities ? t('rules.syncingRarities') : t('rules.syncRaritiesBtn')}</span>
+              </button>
+            </div>
+
+            {/* Search Input */}
+            <div className="pt-3 border-t border-slate-800/80">
+              <div className="relative">
+                <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
+                <input
+                  type="text"
+                  value={raritySearchQuery}
+                  onChange={(e) => setRaritySearchQuery(e.target.value)}
+                  placeholder={t('rules.searchRaritiesPlaceholder')}
+                  className="w-full bg-pokedex-darker/90 text-white text-xs pl-9 pr-8 py-2.5 rounded-xl border border-slate-800 focus:outline-none focus:border-yellow-400/60 transition-colors font-sans"
+                />
+                {raritySearchQuery && (
+                  <button
+                    onClick={() => setRaritySearchQuery('')}
+                    className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white"
+                  >
+                    <X className="w-3.5 h-3.5" />
+                  </button>
+                )}
+              </div>
+            </div>
+          </div>
+
+          {/* Rarities Grid */}
+          {filteredRarities.length > 0 ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              {filteredRarities.map((r) => {
+                const displayName = language === 'pt' ? r.name : (r.name_en || r.name);
+                const displaySymbol = language === 'pt' ? r.symbol_name : (r.symbol_name_en || r.symbol_name);
+                const displayRate = language === 'pt' ? r.rate : (r.rate_en || r.rate);
+                const displayRef = language === 'pt' ? r.reference : (r.reference_en || r.reference);
+                const displayDesc = language === 'pt' ? r.description : (r.description_en || r.description);
+
+                return (
+                  <div
+                    key={r.id}
+                    className="bg-pokedex-card/90 rounded-2xl border border-slate-800 hover:border-slate-700/80 p-5 transition-all duration-200 shadow-md flex flex-col justify-between space-y-4 group relative overflow-hidden"
+                  >
+                    {/* Background tint accent */}
+                    <div 
+                      className="absolute -top-12 -right-12 w-32 h-32 rounded-full blur-2xl opacity-15 pointer-events-none"
+                      style={{ backgroundColor: r.color }}
+                    />
+
+                    <div>
+                      {/* Top Row: Symbol & Code & Rate Badge */}
+                      <div className="flex items-start justify-between gap-3 mb-3">
+                        <div className="flex items-center gap-3">
+                          {/* Visual Rarity Symbol Icon */}
+                          <div className="w-14 h-12 rounded-xl bg-pokedex-darker/90 border border-slate-700/70 flex items-center justify-center p-2 shadow-inner group-hover:border-slate-600 transition-colors shrink-0">
+                            <RaritySymbolIcon symbolType={r.symbol_type} size="md" />
+                          </div>
+
+                          <div className="min-w-0">
+                            <div className="flex items-center gap-1.5 flex-wrap">
+                              <span className="text-[11px] font-mono font-bold text-yellow-400 bg-yellow-950/60 border border-yellow-800/60 px-2 py-0.5 rounded">
+                                {r.code}
+                              </span>
+                              <span className="text-[11px] font-mono text-slate-400 truncate">
+                                {displaySymbol}
+                              </span>
+                            </div>
+                            <h4 className="text-base font-bold font-display text-white mt-1 truncate" title={displayName}>
+                              {displayName}
+                            </h4>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Pull Rate Banner */}
+                      <div className="bg-pokedex-darker/80 px-3 py-2 rounded-xl border border-slate-800 flex items-center justify-between text-xs font-mono my-2.5">
+                        <span className="text-slate-400 text-[11px]">{t('rules.rarityPullRate')}:</span>
+                        <span className="text-emerald-400 font-bold text-xs">{displayRate}</span>
+                      </div>
+
+                      {/* Description */}
+                      <p className="text-xs text-slate-300 font-sans leading-relaxed mt-2">
+                        {displayDesc}
+                      </p>
+                    </div>
+
+                    {/* Reference Footer (if any) */}
+                    {displayRef && (
+                      <div className="pt-2.5 border-t border-slate-800/80 flex items-center justify-between text-[11px] font-mono">
+                        <span className="text-slate-500">{t('rules.rarityReference')}:</span>
+                        <span className="text-yellow-400/90 font-semibold bg-yellow-950/30 px-2 py-0.5 rounded border border-yellow-800/30">
+                          {displayRef}
+                        </span>
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          ) : (
+            <div className="bg-pokedex-card/90 rounded-3xl border border-slate-800 p-12 text-center space-y-3">
+              <Star className="w-12 h-12 text-slate-600 mx-auto" />
+              <p className="text-slate-300 font-display font-medium text-sm">
+                {t('rules.noRaritiesFound')}
+              </p>
+              {raritySearchQuery && (
+                <button
+                  onClick={() => setRaritySearchQuery('')}
                   className="text-xs font-mono text-yellow-400 hover:text-yellow-300 underline"
                 >
                   {t('rules.clearFilters')}

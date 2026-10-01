@@ -394,7 +394,17 @@ export const en = {
     "markOptionG": "Mark [G] (2023 - Standard)",
     "markOptionF": "Mark [F] (2022 - Expanded)",
     "markOptionE": "Mark [E] (2021 - Expanded)",
-    "markOptionD": "Mark [D] (2020 - Expanded)"
+    "markOptionD": "Mark [D] (2020 - Expanded)",
+    "tabRarities": "Card Rarities",
+    "raritiesTitle": "Official Card Rarities & Booster Pull Rates",
+    "raritiesSubtitle": "Identify rarity symbols, official names, booster pull rates, and reference sets",
+    "rarityPullRate": "Booster Pull Rate",
+    "raritySymbol": "Symbol",
+    "rarityReference": "Reference Expansion",
+    "searchRaritiesPlaceholder": "Search by rarity name, code, or pull rate...",
+    "syncRaritiesBtn": "Sync Rarities",
+    "syncingRarities": "Syncing Rarities...",
+    "noRaritiesFound": "No rarities found matching this search"
   },
   "pagination": {
     "pageInfo": "Page {current} of {total}",

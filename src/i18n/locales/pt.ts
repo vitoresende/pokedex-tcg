@@ -396,7 +396,17 @@ export const pt: TranslationKeys = {
     "markOptionG": "Marca [G] (2023 - Standard)",
     "markOptionF": "Marca [F] (2022 - Expandido)",
     "markOptionE": "Marca [E] (2021 - Expandido)",
-    "markOptionD": "Marca [D] (2020 - Expandido)"
+    "markOptionD": "Marca [D] (2020 - Expandido)",
+    "tabRarities": "Raridades das Cartas",
+    "raritiesTitle": "Guia Oficial de Raridades & Taxas de Booster",
+    "raritiesSubtitle": "Identifique símbolos, nomes oficiais, frequências de abertura por booster e coleções de referência",
+    "rarityPullRate": "Taxa por Booster",
+    "raritySymbol": "Símbolo",
+    "rarityReference": "Coleção de Referência",
+    "searchRaritiesPlaceholder": "Buscar por nome, símbolo ou taxa...",
+    "syncRaritiesBtn": "Sincronizar Raridades",
+    "syncingRarities": "Sincronizando Raridades...",
+    "noRaritiesFound": "Nenhuma raridade encontrada com este filtro"
   },
   "pagination": {
     "pageInfo": "Página {current} de {total}",
