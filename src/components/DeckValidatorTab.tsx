@@ -23,6 +23,7 @@ import {
   isBasicEnergyCard, 
   BASIC_ENERGY_CONFIG 
 } from '../context/CollectionContext';
+import { readFileSmart } from '../utils/textSanitizer';
 import { useLanguage } from '../context/LanguageContext';
 import { soundEffects } from '../services/audio';
 import { Card } from '../types';
@@ -130,12 +131,11 @@ export const DeckValidatorTab: React.FC = () => {
     const file = e.target.files?.[0];
     if (file) {
       soundEffects.playClick();
-      const reader = new FileReader();
-      reader.onload = (event) => {
-        const text = event.target?.result as string;
+      readFileSmart(file).then(text => {
         if (text) setCsvText(text);
-      };
-      reader.readAsText(file, 'latin1');
+      }).catch(err => {
+        console.error('Error reading CSV file:', err);
+      });
     }
   };
 

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Layers, X, Save, Plus, Trash2, Swords, Trophy, Sparkles, Palette } from 'lucide-react';
+import { Layers, X, Save, Plus, Trash2, Swords, Trophy, Sparkles, Palette, ChevronDown } from 'lucide-react';
 import { useCollection } from '../context/CollectionContext';
 import { useLanguage } from '../context/LanguageContext';
 import { Deck, DeckStrategyGuide } from '../types';
@@ -405,15 +405,18 @@ export const EditDeckModal: React.FC<EditDeckModalProps> = ({ deck, isOpen, onCl
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
                   <label className="text-slate-400 block text-[10px] uppercase mb-1">{t('editDeck.format')}</label>
-                  <select
-                    value={format}
-                    onChange={(e) => setFormat(e.target.value as any)}
-                    className="w-full bg-pokedex-darker border border-slate-700 rounded-xl p-2.5 text-white focus:outline-none focus:border-pokedex-blue font-sans text-xs"
-                  >
-                    <option value="Standard">{t('editDeck.formatStandard')}</option>
-                    <option value="Expanded">{t('editDeck.formatExpanded')}</option>
-                    <option value="Casual">{t('editDeck.formatCasual')}</option>
-                  </select>
+                  <div className="relative">
+                    <select
+                      value={format}
+                      onChange={(e) => setFormat(e.target.value as any)}
+                      className="w-full appearance-none bg-pokedex-darker border border-slate-700 rounded-xl pl-3 pr-8 py-2.5 text-white focus:outline-none focus:border-pokedex-blue font-sans text-xs cursor-pointer"
+                    >
+                      <option value="Standard">{t('editDeck.formatStandard')}</option>
+                      <option value="Expanded">{t('editDeck.formatExpanded')}</option>
+                      <option value="Casual">{t('editDeck.formatCasual')}</option>
+                    </select>
+                    <ChevronDown className="absolute right-2.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" />
+                  </div>
                 </div>
 
                 <div>
@@ -452,17 +455,17 @@ export const EditDeckModal: React.FC<EditDeckModalProps> = ({ deck, isOpen, onCl
           )}
 
           {/* Action Buttons */}
-          <div className="flex items-center justify-end gap-3 pt-3 border-t border-slate-800">
+          <div className="flex flex-col-reverse sm:flex-row sm:items-center sm:justify-end gap-2 pt-3 border-t border-slate-800">
             <button
               type="button"
               onClick={onClose}
-              className="px-5 py-2.5 rounded-xl text-slate-300 hover:text-white hover:bg-slate-800 transition-colors font-mono text-xs"
+              className="w-full sm:w-auto px-5 py-2.5 rounded-xl text-slate-300 hover:text-white hover:bg-slate-800 transition-colors font-mono text-xs text-center"
             >
               {t('common.cancel')}
             </button>
             <button
               type="submit"
-              className="bg-pokedex-red hover:bg-pokedex-lightred text-white font-bold px-6 py-2.5 rounded-xl shadow-lg transition-all active:scale-95 text-xs font-mono uppercase tracking-wider flex items-center gap-2 border border-white/20"
+              className="w-full sm:w-auto bg-pokedex-red hover:bg-pokedex-lightred text-white font-bold px-6 py-2.5 rounded-xl shadow-lg transition-all active:scale-95 text-xs font-mono uppercase tracking-wider flex items-center justify-center gap-2 border border-white/20"
             >
               <Save className="w-4 h-4 text-yellow-300" />
               <span>{t('editDeck.saveChanges')}</span>

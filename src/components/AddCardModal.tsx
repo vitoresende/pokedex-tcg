@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { 
   Plus, X, Upload, Sparkles, Check, Image as ImageIcon, 
-  Loader2, Layers, CheckCircle2, Search, Zap, AlertCircle 
+  Loader2, Layers, CheckCircle2, Search, Zap, AlertCircle, ChevronDown 
 } from 'lucide-react';
 import { useCollection } from '../context/CollectionContext';
 import { useLanguage } from '../context/LanguageContext';
@@ -9,6 +9,7 @@ import { soundEffects } from '../services/audio';
 import { uploadCardImageToStorage, downloadAndUploadImageToStorage } from '../services/firebase';
 import { DeckValidatorTab } from './DeckValidatorTab';
 import { lookupCardOnline, CardLookupResult } from '../services/cardLookup';
+import { readFileSmart } from '../utils/textSanitizer';
 
 interface AddCardModalProps {
   isOpen: boolean;
@@ -66,11 +67,18 @@ export const AddCardModal: React.FC<AddCardModalProps> = ({ isOpen, onClose, ini
     imageUrl?: string;
   } | null>(null);
 
-  const handleResetFormForAnother = () => {
-    soundEffects.playClick();
+  const clearForm = () => {
     setNamePt('');
     setNameEn('');
+    setSetCode('SV1');
+    setSetEn('Scarlet & Violet');
     setCardNumber('');
+    setTotalInSet('198');
+    setColorCode('R');
+    setRarityCode('C');
+    setQuantity(1);
+    setQuality('NM');
+    setIsFoil(false);
     setImageUrl('');
     setImageFile(null);
     setImagePreview(null);
@@ -79,7 +87,54 @@ export const AddCardModal: React.FC<AddCardModalProps> = ({ isOpen, onClose, ini
     setSearchError('');
     setSearchSuccess('');
     setComment('');
+  };
+
+  const handleResetFormForAnother = () => {
+    soundEffects.playClick();
+    clearForm();
     setAddedSuccessInfo(null);
+  };
+
+  const handleCloseModal = () => {
+    soundEffects.playClick();
+    clearForm();
+    setAddedSuccessInfo(null);
+    onClose();
+  };
+
+  const handleAddCandidateDirectly = (c: CardLookupResult, e: React.MouseEvent) => {
+    e.stopPropagation();
+    soundEffects.playScan();
+    const cleanSet = (c.setCode || 'SV1').trim().toUpperCase();
+    const cleanNum = (c.cardNumber || '1').trim();
+    const fallbackImage = `https://images.pokemontcg.io/${cleanSet.toLowerCase()}/${cleanNum.replace(/\D/g, '') || '1'}.png`;
+    const finalImage = c.imageUrl || fallbackImage;
+
+    const added = addNewCard({
+      name_en: c.nameEn || c.namePt,
+      name_pt: c.namePt || c.nameEn,
+      set_code: cleanSet,
+      set_en: c.setName,
+      set_pt: c.setName,
+      card_number: cleanNum,
+      total_in_set: c.totalInSet || '100',
+      color_code: c.colorCode || 'C',
+      rarity_code: c.rarityCode || 'C',
+      quantity: 1,
+      quality: 'NM',
+      is_foil: false,
+      image_url: finalImage,
+      comment: ''
+    });
+
+    clearForm();
+    soundEffects.playSuccess();
+    setAddedSuccessInfo({
+      name: added.name_pt || added.name_en,
+      setCode: added.set_code,
+      cardNumber: added.card_number,
+      imageUrl: finalImage
+    });
   };
 
   const handleQuickSearch = async () => {
@@ -183,6 +238,7 @@ export const AddCardModal: React.FC<AddCardModalProps> = ({ isOpen, onClose, ini
       comment: comment.trim()
     });
 
+    clearForm();
     soundEffects.playSuccess();
     setAddedSuccessInfo({
       name: added.name_pt || added.name_en,
@@ -203,7 +259,7 @@ export const AddCardModal: React.FC<AddCardModalProps> = ({ isOpen, onClose, ini
     setImportResult(res);
     setTimeout(() => {
       setImportResult(null);
-      onClose();
+      handleCloseModal();
     }, 2500);
   };
 
@@ -217,12 +273,11 @@ export const AddCardModal: React.FC<AddCardModalProps> = ({ isOpen, onClose, ini
           .substring(0, 30);
         setNewDeckName(cleanName);
       }
-      const reader = new FileReader();
-      reader.onload = (event) => {
-        const text = event.target?.result as string;
+      readFileSmart(file).then(text => {
         if (text) setCsvText(text);
-      };
-      reader.readAsText(file, 'latin1');
+      }).catch(err => {
+        console.error('Error reading CSV file:', err);
+      });
     }
   };
 
@@ -239,7 +294,7 @@ export const AddCardModal: React.FC<AddCardModalProps> = ({ isOpen, onClose, ini
           </div>
 
           <button
-            onClick={onClose}
+            onClick={handleCloseModal}
             aria-label={t('common.close')}
             className="w-8 h-8 rounded-full bg-pokedex-darkred hover:bg-black/40 text-white flex items-center justify-center transition-colors"
           >
@@ -251,7 +306,7 @@ export const AddCardModal: React.FC<AddCardModalProps> = ({ isOpen, onClose, ini
         <div className="flex border-b border-slate-800 bg-pokedex-darker text-xs font-mono">
           <button
             onClick={() => { soundEffects.playClick(); setTab('manual'); }}
-            className={`flex-1 py-3 font-bold transition-colors ${
+            className={`flex-1 py-3 px-2 font-bold transition-colors text-center truncate ${
               tab === 'manual' ? 'bg-slate-800 text-yellow-300 border-b-2 border-yellow-400' : 'text-slate-400 hover:text-white'
             }`}
           >
@@ -259,7 +314,7 @@ export const AddCardModal: React.FC<AddCardModalProps> = ({ isOpen, onClose, ini
           </button>
           <button
             onClick={() => { soundEffects.playClick(); setTab('csv'); }}
-            className={`flex-1 py-3 font-bold transition-colors ${
+            className={`flex-1 py-3 px-2 font-bold transition-colors text-center truncate ${
               tab === 'csv' ? 'bg-slate-800 text-yellow-300 border-b-2 border-yellow-400' : 'text-slate-400 hover:text-white'
             }`}
           >
@@ -267,12 +322,12 @@ export const AddCardModal: React.FC<AddCardModalProps> = ({ isOpen, onClose, ini
           </button>
           <button
             onClick={() => { soundEffects.playClick(); setTab('validate'); }}
-            className={`flex-1 py-3 font-bold transition-colors flex items-center justify-center space-x-1.5 ${
+            className={`flex-1 py-3 px-2 font-bold transition-colors flex items-center justify-center space-x-1.5 truncate ${
               tab === 'validate' ? 'bg-slate-800 text-yellow-300 border-b-2 border-yellow-400' : 'text-slate-400 hover:text-white'
             }`}
           >
-            <CheckCircle2 className="w-3.5 h-3.5 text-yellow-400" />
-            <span>{t('addCard.tabValidate')}</span>
+            <CheckCircle2 className="w-3.5 h-3.5 text-yellow-400 shrink-0" />
+            <span className="truncate">{t('addCard.tabValidate')}</span>
           </button>
         </div>
 
@@ -397,23 +452,34 @@ export const AddCardModal: React.FC<AddCardModalProps> = ({ isOpen, onClose, ini
                     <span className="text-[10px] text-yellow-300 font-mono block">
                       {t('addCard.quickSearchSelectPrompt', { count: searchCandidates.length })}
                     </span>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-1.5 max-h-44 overflow-y-auto pr-1 no-scrollbar">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-1.5 max-h-52 overflow-y-auto pr-1 no-scrollbar">
                       {searchCandidates.map((c) => (
-                        <button
+                        <div
                           key={c.id}
-                          type="button"
                           onClick={() => applyCardCandidate(c)}
-                          className="flex items-center gap-2.5 p-2 rounded-xl bg-slate-800/90 hover:bg-slate-700 text-left border border-slate-700 hover:border-yellow-400/60 transition-all active:scale-95"
+                          className="flex items-center justify-between gap-2 p-2 rounded-xl bg-slate-800/90 hover:bg-slate-700 text-left border border-slate-700 hover:border-yellow-400/60 transition-all cursor-pointer group"
                         >
-                          {c.imageUrl && (
-                            <img src={c.imageUrl} alt="" className="w-7 h-10 object-cover rounded shrink-0 border border-slate-600" />
-                          )}
-                          <div className="min-w-0 flex-1">
-                            <span className="font-bold text-white text-[11px] truncate block">{c.namePt || c.nameEn}</span>
-                            <span className="text-[9px] text-slate-300 font-mono block">{c.setName} ({c.setCode} #{c.cardNumber})</span>
-                            <span className="text-[8px] text-yellow-400/80 font-mono block">{c.rarityName} • {c.category}</span>
+                          <div className="flex items-center gap-2 min-w-0 flex-1">
+                            {c.imageUrl && (
+                              <img src={c.imageUrl} alt="" className="w-8 h-11 object-cover rounded shrink-0 border border-slate-600 shadow" />
+                            )}
+                            <div className="min-w-0 flex-1">
+                              <span className="font-bold text-white text-[11px] truncate block">{c.namePt || c.nameEn}</span>
+                              <span className="text-[9px] text-slate-300 font-mono block">{c.setName} ({c.setCode} #{c.cardNumber})</span>
+                              <span className="text-[8px] text-yellow-400/80 font-mono block">{c.rarityName} • {c.category}</span>
+                            </div>
                           </div>
-                        </button>
+
+                          <button
+                            type="button"
+                            onClick={(e) => handleAddCandidateDirectly(c, e)}
+                            className="bg-yellow-400 hover:bg-yellow-300 text-slate-950 font-bold px-2 py-1 rounded-lg text-[10px] font-mono shrink-0 active:scale-95 transition-all shadow flex items-center gap-1"
+                            title="Adicionar carta e limpar busca"
+                          >
+                            <Plus className="w-3 h-3" />
+                            <span>{t('cardDetail.addBtn')}</span>
+                          </button>
+                        </div>
                       ))}
                     </div>
                   </div>
@@ -485,43 +551,49 @@ export const AddCardModal: React.FC<AddCardModalProps> = ({ isOpen, onClose, ini
               <div className="grid grid-cols-3 gap-3">
                 <div>
                   <label className="text-slate-400 block text-[10px] uppercase mb-1">{t('addCard.typeCategory')}</label>
-                  <select
-                    value={colorCode}
-                    onChange={(e) => setColorCode(e.target.value)}
-                    className="w-full bg-pokedex-darker border border-slate-800 rounded-xl p-2 text-white focus:outline-none focus:border-pokedex-blue text-xs"
-                  >
-                    <option value="R">{t('filters.types.fire')}</option>
-                    <option value="W">{t('filters.types.water')}</option>
-                    <option value="G">{t('filters.types.grass')}</option>
-                    <option value="L">{t('filters.types.lightning')}</option>
-                    <option value="P">{t('filters.types.psychic')}</option>
-                    <option value="F">{t('filters.types.fighting')}</option>
-                    <option value="D">{t('filters.types.darkness')}</option>
-                    <option value="M">{t('filters.types.metal')}</option>
-                    <option value="Y">{t('filters.types.fairy')}</option>
-                    <option value="O">{t('filters.types.dragon')}</option>
-                    <option value="C">{t('filters.types.colorless')}</option>
-                    <option value="">{t('filters.types.trainer')}</option>
-                    <option value="E">{t('filters.types.energy')}</option>
-                  </select>
+                  <div className="relative">
+                    <select
+                      value={colorCode}
+                      onChange={(e) => setColorCode(e.target.value)}
+                      className="w-full appearance-none bg-pokedex-darker border border-slate-800 rounded-xl pl-3 pr-8 py-2 text-white focus:outline-none focus:border-pokedex-blue text-xs font-sans cursor-pointer"
+                    >
+                      <option value="R">{t('filters.types.fire')}</option>
+                      <option value="W">{t('filters.types.water')}</option>
+                      <option value="G">{t('filters.types.grass')}</option>
+                      <option value="L">{t('filters.types.lightning')}</option>
+                      <option value="P">{t('filters.types.psychic')}</option>
+                      <option value="F">{t('filters.types.fighting')}</option>
+                      <option value="D">{t('filters.types.darkness')}</option>
+                      <option value="M">{t('filters.types.metal')}</option>
+                      <option value="Y">{t('filters.types.fairy')}</option>
+                      <option value="O">{t('filters.types.dragon')}</option>
+                      <option value="C">{t('filters.types.colorless')}</option>
+                      <option value="">{t('filters.types.trainer')}</option>
+                      <option value="E">{t('filters.types.energy')}</option>
+                    </select>
+                    <ChevronDown className="absolute right-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400 pointer-events-none" />
+                  </div>
                 </div>
 
                 <div>
                   <label className="text-slate-400 block text-[10px] uppercase mb-1">{t('addCard.rarity')}</label>
-                  <select
-                    value={rarityCode}
-                    onChange={(e) => setRarityCode(e.target.value)}
-                    className="w-full bg-pokedex-darker border border-slate-800 rounded-xl p-2 text-white focus:outline-none focus:border-pokedex-blue text-xs"
-                  >
-                    <option value="C">{t('addCard.rarityCommon')}</option>
-                    <option value="U">{t('addCard.rarityUncommon')}</option>
-                    <option value="R">{t('addCard.rarityRare')}</option>
-                    <option value="RH">{t('addCard.rarityRareHolo')}</option>
-                    <option value="RU">{t('addCard.rarityUltraRare')}</option>
-                    <option value="RD">{t('addCard.rarityDoubleRare')}</option>
-                    <option value="IR">{t('addCard.rarityIllustrationRare')}</option>
-                    <option value="S">{t('addCard.raritySecretRare')}</option>
-                  </select>
+                  <div className="relative">
+                    <select
+                      value={rarityCode}
+                      onChange={(e) => setRarityCode(e.target.value)}
+                      className="w-full appearance-none bg-pokedex-darker border border-slate-800 rounded-xl pl-3 pr-8 py-2 text-white focus:outline-none focus:border-pokedex-blue text-xs font-sans cursor-pointer"
+                    >
+                      <option value="C">{t('addCard.rarityCommon')}</option>
+                      <option value="U">{t('addCard.rarityUncommon')}</option>
+                      <option value="R">{t('addCard.rarityRare')}</option>
+                      <option value="RH">{t('addCard.rarityRareHolo')}</option>
+                      <option value="RU">{t('addCard.rarityUltraRare')}</option>
+                      <option value="RD">{t('addCard.rarityDoubleRare')}</option>
+                      <option value="IR">{t('addCard.rarityIllustrationRare')}</option>
+                      <option value="S">{t('addCard.raritySecretRare')}</option>
+                    </select>
+                    <ChevronDown className="absolute right-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400 pointer-events-none" />
+                  </div>
                 </div>
 
                 <div>
@@ -684,15 +756,18 @@ export const AddCardModal: React.FC<AddCardModalProps> = ({ isOpen, onClose, ini
                 {deckMode === 'existing' && (
                   <div className="space-y-1.5 animate-in fade-in">
                     <label className="text-slate-400 block text-[10px] uppercase font-mono">{t('addCard.selectExistingDeck')}</label>
-                    <select
-                      value={targetDeckId}
-                      onChange={(e) => setTargetDeckId(e.target.value)}
-                      className="w-full bg-black/60 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-pokedex-blue font-sans"
-                    >
-                      {decks.map(d => (
-                        <option key={d.id} value={d.id}>{d.name} ({d.format})</option>
-                      ))}
-                    </select>
+                    <div className="relative">
+                      <select
+                        value={targetDeckId}
+                        onChange={(e) => setTargetDeckId(e.target.value)}
+                        className="w-full appearance-none bg-black/60 border border-slate-700 rounded-xl pl-3 pr-8 py-2 text-xs text-white focus:outline-none focus:border-pokedex-blue font-sans cursor-pointer truncate"
+                      >
+                        {decks.map(d => (
+                          <option key={d.id} value={d.id}>{d.name} ({d.format})</option>
+                        ))}
+                      </select>
+                      <ChevronDown className="absolute right-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400 pointer-events-none" />
+                    </div>
                   </div>
                 )}
 
@@ -712,15 +787,18 @@ export const AddCardModal: React.FC<AddCardModalProps> = ({ isOpen, onClose, ini
                       </div>
                       <div>
                         <label className="text-slate-400 block text-[10px] uppercase mb-1 font-mono">{t('addCard.format')}</label>
-                        <select
-                          value={newDeckFormat}
-                          onChange={(e) => setNewDeckFormat(e.target.value as any)}
-                          className="w-full bg-black/60 border border-slate-700 rounded-xl px-2.5 py-2 text-xs text-white focus:outline-none focus:border-pokedex-blue font-sans"
-                        >
-                          <option value="Standard">{t('createDeck.formatStandard')}</option>
-                          <option value="Expanded">{t('createDeck.formatExpanded')}</option>
-                          <option value="Casual">{t('createDeck.formatCasual')}</option>
-                        </select>
+                        <div className="relative">
+                          <select
+                            value={newDeckFormat}
+                            onChange={(e) => setNewDeckFormat(e.target.value as any)}
+                            className="w-full appearance-none bg-black/60 border border-slate-700 rounded-xl pl-2.5 pr-7 py-2 text-xs text-white focus:outline-none focus:border-pokedex-blue font-sans cursor-pointer"
+                          >
+                            <option value="Standard">{t('createDeck.formatStandard')}</option>
+                            <option value="Expanded">{t('createDeck.formatExpanded')}</option>
+                            <option value="Casual">{t('createDeck.formatCasual')}</option>
+                          </select>
+                          <ChevronDown className="absolute right-2 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400 pointer-events-none" />
+                        </div>
                       </div>
                     </div>
                   </div>

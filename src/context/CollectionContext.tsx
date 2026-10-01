@@ -5,6 +5,7 @@ import { Card, Deck, DeckCardItem } from '../types';
 import { soundEffects } from '../services/audio';
 import { useAuth } from './AuthContext';
 import { syncUserCollectionToFirestore, loadUserCollectionFromFirestore } from '../services/firebase';
+import { fixMojibake } from '../utils/textSanitizer';
 
 interface FilterState {
   searchQuery: string;
@@ -271,7 +272,15 @@ export const normalizeDeck = (rawDeck: Deck): Deck => {
 };
 
 const normalizeCards = (rawCards: Card[]): Card[] => {
-  return rawCards.map(c => {
+  return rawCards.map(rawC => {
+    const c = {
+      ...rawC,
+      name_pt: fixMojibake(rawC.name_pt || ''),
+      name_en: fixMojibake(rawC.name_en || rawC.name_pt || ''),
+      set_pt: fixMojibake(rawC.set_pt || ''),
+      set_en: fixMojibake(rawC.set_en || rawC.set_pt || '')
+    };
+
     // Determine standard category
     let category: 'Pokémon' | 'Trainer' | 'Energy' = 'Pokémon';
     const catLower = (c.card_category || '').toLowerCase();
@@ -630,7 +639,8 @@ export const CollectionProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     deckOption?: DeckImportOption
   ): { added: number; updated: number; deckName?: string } => {
     soundEffects.playScan();
-    const lines = csvContent.replace(/\r\n/g, '\n').replace(/\r/g, '\n').split('\n').filter(l => l.trim().length > 0);
+    const sanitizedCsv = fixMojibake(csvContent);
+    const lines = sanitizedCsv.replace(/\r\n/g, '\n').replace(/\r/g, '\n').split('\n').filter(l => l.trim().length > 0);
     if (lines.length <= 1) return { added: 0, updated: 0 };
 
     let added = 0;

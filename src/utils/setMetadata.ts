@@ -4,6 +4,7 @@
  * Provides official expansion release years and formatting helpers
  * to display sets uniformly across the application (e.g., "YYYY - SIGLA - Nome da Coleção").
  */
+import { fixMojibake } from './textSanitizer';
 
 export const SET_RELEASE_YEARS: Record<string, number> = {
   // === 2025 (Mega / Gen 9 Era) ===
@@ -240,6 +241,92 @@ export const SET_RELEASE_YEARS: Record<string, number> = {
   'BS': 1999, // Base Set
 };
 
+export const SET_OFFICIAL_NAMES_PT: Record<string, string> = {
+  // Scarlet & Violet
+  'PRE': 'Evoluções Prismáticas',
+  'PBL': 'Evoluções Prismáticas',
+  'SSP': 'Fagulhas Impetuosas',
+  'SCR': 'Coroa Estelar',
+  'SFA': 'Fábulas Nebulosas',
+  'TWM': 'Máscaras do Crepúsculo',
+  'TEF': 'Forças Temporais',
+  'PAF': 'Destinos de Paldea',
+  'PAR': 'Fenda Paradoxal',
+  '151': '151',
+  'MEW': '151',
+  'OBF': 'Obsidiana em Chamas',
+  'PAL': 'Evoluções em Paldea',
+  'SVI': 'Escarlate e Violeta',
+  'SV1': 'Escarlate e Violeta',
+  'SVP': 'Escarlate e Violeta Promos',
+  'SVE': 'Cartas Promocionais / Básicas',
+
+  // Sword & Shield
+  'CRZ': 'Zênite Régio',
+  'SIT': 'Tempestade Prateada',
+  'LOR': 'Origem Perdida',
+  'PGO': 'Pokémon GO',
+  'ASR': 'Resplendor Astral',
+  'BRS': 'Astros Cintilantes',
+  'FST': 'Golpe Fusão',
+  'CEL': 'Celebrações',
+  'EVS': 'Céus Evolutivos',
+  'CRE': 'Reinado Implacável',
+  'BST': 'Estilos de Batalha',
+  'SHF': 'Destinos Brilhantes',
+  'VIV': 'Voltagem Vívida',
+  'CPA': 'Caminho do Campeão',
+  'DAA': 'Escuridão Incandescente',
+  'RCL': 'Rixa Rebelde',
+  'SSH': 'Espada e Escudo',
+  'SWSH': 'Espada e Escudo',
+  'SWSHP': 'Espada e Escudo Promos',
+
+  // Sun & Moon
+  'CEC': 'Eclipse Cósmico',
+  'HIF': 'Destinos Ocultos',
+  'UNM': 'Sintonia Mental',
+  'UNB': 'Elos Inquebráveis',
+  'DET': 'Detetive Pikachu',
+  'TEU': 'União de Aliados',
+  'LOT': 'Trovões Perdidos',
+  'DRM': 'Majestade dos Dragões',
+  'CES': 'Tempestade Celestial',
+  'FLI': 'Luz Proibida',
+  'UPR': 'Ultra Prisma',
+  'CRI': 'Caos Ascendente',
+  'SLG': 'Lendas Luminescentes',
+  'BUS': 'Sombras Ardentes',
+  'GRI': 'Guardiões Ascendentes',
+  'SUM': 'Sol e Lua',
+  'SM1': 'Cartas Promocionais / Básicas',
+  'SMP': 'Sol e Lua Promos',
+
+  // XY
+  'EVO': 'Evoluções',
+  'STS': 'Cerco de Vapor',
+  'FCO': 'Fusão de Destinos',
+  'GEN': 'Gerações',
+  'BKP': 'Ponto de Ruptura',
+  'BKT': 'Origens Ancestrais',
+  'AOR': 'Origens Ancestrais',
+  'ROS': 'Céus Estrondosos',
+  'PRC': 'Conflito Primitivo',
+  'PHF': 'Forças Fantasmas',
+  'FFI': 'Punhos Furiosos',
+  'FLF': 'Flash de Fogo',
+  'XY': 'XY',
+  
+  // Black & White
+  'PLB': 'Explosão de Plasma',
+  'PFL': 'Congelamento de Plasma',
+  'PLS': 'Tempestade de Plasma',
+  'NXD': 'Próximos Destinos',
+  'EPO': 'Forças Emergentes',
+  'BLW': 'Black & White',
+  'BW': 'Black & White',
+};
+
 /**
  * Returns the release year for a given set code, or null if unknown.
  */
@@ -254,10 +341,13 @@ export function getSetReleaseYear(setCode: string): number | null {
  * Example: "2022 - BRS - Astros Cintilantes"
  * If year is unknown: "BRS - Astros Cintilantes"
  */
-export function formatSetWithYear(setCode: string, setName: string): string {
-  const year = getSetReleaseYear(setCode);
+export function formatSetWithYear(setCode: string, setName?: string): string {
   const cleanCode = (setCode || '').trim().toUpperCase();
-  const cleanName = (setName || '').trim();
+  const year = getSetReleaseYear(cleanCode);
+  
+  // Prefer official Portuguese name with guaranteed proper accents (ç, ã, é, etc.)
+  const rawName = SET_OFFICIAL_NAMES_PT[cleanCode] || setName || cleanCode;
+  const cleanName = fixMojibake(rawName).trim();
 
   if (year) {
     return `${year} - ${cleanCode} - ${cleanName}`;
@@ -280,3 +370,4 @@ export function sortSetsChronologically(setCodes: string[]): string[] {
     return a.localeCompare(b);
   });
 }
+

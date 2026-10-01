@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Layers, X, Plus, Trash2, Search, CheckCircle2 } from 'lucide-react';
+import { Layers, X, Plus, Trash2, Search, CheckCircle2, ChevronDown } from 'lucide-react';
 import { useCollection } from '../context/CollectionContext';
 import { useLanguage } from '../context/LanguageContext';
 import { Card, DeckCardItem } from '../types';
@@ -149,15 +149,18 @@ export const CreateDeckModal: React.FC<CreateDeckModalProps> = ({ isOpen, onClos
 
             <div>
               <label className="text-slate-400 block text-[10px] uppercase mb-1">{t('createDeck.format')}</label>
-              <select
-                value={format}
-                onChange={(e) => setFormat(e.target.value as any)}
-                className="w-full bg-pokedex-darker border border-slate-800 rounded-xl p-2.5 text-white focus:outline-none focus:border-pokedex-blue text-xs"
-              >
-                <option value="Standard">{t('createDeck.formatStandard')}</option>
-                <option value="Expanded">{t('createDeck.formatExpanded')}</option>
-                <option value="Casual">{t('createDeck.formatCasual')}</option>
-              </select>
+              <div className="relative">
+                <select
+                  value={format}
+                  onChange={(e) => setFormat(e.target.value as any)}
+                  className="w-full appearance-none bg-pokedex-darker border border-slate-800 rounded-xl pl-3 pr-8 py-2.5 text-white focus:outline-none focus:border-pokedex-blue text-xs font-sans cursor-pointer"
+                >
+                  <option value="Standard">{t('createDeck.formatStandard')}</option>
+                  <option value="Expanded">{t('createDeck.formatExpanded')}</option>
+                  <option value="Casual">{t('createDeck.formatCasual')}</option>
+                </select>
+                <ChevronDown className="absolute right-2.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" />
+              </div>
             </div>
           </div>
 

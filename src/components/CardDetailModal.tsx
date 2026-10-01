@@ -4,7 +4,7 @@ import { HoloCard } from './HoloCard';
 import { 
   X, Heart, Plus, Minus, Layers, Sparkles, Save, 
   Trash2, PlusCircle, CheckCircle2, Image as ImageIcon, 
-  RefreshCw, Search, Loader2 
+  RefreshCw, Search, Loader2, ChevronDown 
 } from 'lucide-react';
 import { useCollection } from '../context/CollectionContext';
 import { useLanguage } from '../context/LanguageContext';
@@ -336,16 +336,19 @@ export const CardDetailModal: React.FC<CardDetailModalProps> = ({ card, onClose,
                   {cardAddedToDeck && <span className="text-emerald-400 font-bold flex items-center gap-1"><CheckCircle2 className="w-3 h-3" /> {t('cardDetail.added')}</span>}
                 </div>
                 <div className="flex items-center gap-2 w-full min-w-0">
-                  <select
-                    value={selectedDeckForAdd}
-                    onChange={(e) => setSelectedDeckForAdd(e.target.value)}
-                    aria-label={t('cardDetail.addToDeck')}
-                    className="flex-1 min-w-0 bg-black/60 border border-slate-700 rounded-xl px-3 py-2 text-xs text-slate-200 focus:outline-none focus:border-pokedex-blue truncate"
-                  >
-                    {decks.map(d => (
-                      <option key={d.id} value={d.id}>{d.name}</option>
-                    ))}
-                  </select>
+                  <div className="relative flex-1 min-w-0">
+                    <select
+                      value={selectedDeckForAdd}
+                      onChange={(e) => setSelectedDeckForAdd(e.target.value)}
+                      aria-label={t('cardDetail.addToDeck')}
+                      className="w-full appearance-none bg-black/60 border border-slate-700 rounded-xl pl-3 pr-8 py-2 text-xs text-slate-200 focus:outline-none focus:border-pokedex-blue truncate font-sans cursor-pointer"
+                    >
+                      {decks.map(d => (
+                        <option key={d.id} value={d.id}>{d.name}</option>
+                      ))}
+                    </select>
+                    <ChevronDown className="absolute right-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400 pointer-events-none" />
+                  </div>
                   <button
                     type="button"
                     onClick={handleAddToDeck}

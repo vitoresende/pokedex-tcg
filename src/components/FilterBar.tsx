@@ -1,5 +1,5 @@
 import React from 'react';
-import { Search, X, Sparkles, Layers, CheckCircle2, CircleDashed } from 'lucide-react';
+import { Search, X, Sparkles, Layers, CheckCircle2, CircleDashed, ChevronDown } from 'lucide-react';
 import { PokemonTypeIcon } from './PokemonTypeIcon';
 import { useCollection } from '../context/CollectionContext';
 import { useLanguage } from '../context/LanguageContext';
@@ -106,63 +106,72 @@ export const FilterBar: React.FC = () => {
         </div>
 
         {/* Set, Category and Sort dropdowns */}
-        <div className="flex flex-wrap sm:flex-nowrap gap-2">
-          <select
-            value={filters.selectedCategory}
-            onChange={handleCategoryChange}
-            aria-label={t('filters.allCategories')}
-            className="bg-pokedex-darker border border-slate-800 rounded-xl px-3 py-2 text-xs font-mono text-slate-200 focus:outline-none focus:border-pokedex-blue"
-          >
-            <option value="ALL">{t('filters.allCategories')}</option>
-            <option value="Pokémon">{t('filters.pokemonOnly')}</option>
-            <option value="Trainer">{t('filters.trainersOnly')}</option>
-            <option value="Energy">{t('filters.energiesOnly')}</option>
-          </select>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:flex lg:flex-nowrap gap-2 items-center">
+          <div className="relative w-full lg:w-auto">
+            <select
+              value={filters.selectedCategory}
+              onChange={handleCategoryChange}
+              aria-label={t('filters.allCategories')}
+              className="w-full appearance-none bg-pokedex-darker border border-slate-800 rounded-xl pl-3 pr-9 py-2 text-xs font-sans text-slate-200 focus:outline-none focus:border-pokedex-blue cursor-pointer"
+            >
+              <option value="ALL">{t('filters.allCategories')}</option>
+              <option value="Pokémon">{t('filters.pokemonOnly')}</option>
+              <option value="Trainer">{t('filters.trainersOnly')}</option>
+              <option value="Energy">{t('filters.energiesOnly')}</option>
+            </select>
+            <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" />
+          </div>
 
-          <select
-            value={filters.selectedSet}
-            onChange={(e) => {
-              soundEffects.playClick();
-              setFilters(prev => ({ ...prev, selectedSet: e.target.value }));
-            }}
-            aria-label={t('filters.allSets')}
-            className="bg-pokedex-darker border border-slate-800 rounded-xl px-3 py-2 text-xs font-mono text-slate-200 focus:outline-none focus:border-pokedex-blue"
-          >
-            <option value="ALL">{t('filters.allSets')}</option>
-            {uniqueSets.map(setCode => {
-              const sample = cards.find(c => c.set_code === setCode);
-              const setName = language === 'pt' ? (sample?.set_pt || sample?.set_en || setCode) : (sample?.set_en || sample?.set_pt || setCode);
-              return (
-                <option key={setCode} value={setCode}>
-                  {formatSetWithYear(setCode, setName)}
-                </option>
-              );
-            })}
-          </select>
+          <div className="relative w-full lg:w-auto sm:col-span-2 lg:flex-1 lg:min-w-[220px]">
+            <select
+              value={filters.selectedSet}
+              onChange={(e) => {
+                soundEffects.playClick();
+                setFilters(prev => ({ ...prev, selectedSet: e.target.value }));
+              }}
+              aria-label={t('filters.allSets')}
+              className="w-full appearance-none bg-pokedex-darker border border-slate-800 rounded-xl pl-3 pr-9 py-2 text-xs font-sans text-slate-200 focus:outline-none focus:border-pokedex-blue cursor-pointer truncate"
+            >
+              <option value="ALL">{t('filters.allSets')}</option>
+              {uniqueSets.map(setCode => {
+                const sample = cards.find(c => c.set_code === setCode);
+                const setName = language === 'pt' ? (sample?.set_pt || sample?.set_en || setCode) : (sample?.set_en || sample?.set_pt || setCode);
+                return (
+                  <option key={setCode} value={setCode}>
+                    {formatSetWithYear(setCode, setName)}
+                  </option>
+                );
+              })}
+            </select>
+            <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" />
+          </div>
 
-          <select
-            value={filters.sortBy}
-            onChange={(e) => {
-              soundEffects.playClick();
-              setFilters(prev => ({ ...prev, sortBy: e.target.value as any }));
-            }}
-            aria-label={t('filters.sortBy')}
-            className="bg-pokedex-darker border border-slate-800 rounded-xl px-3 py-2 text-xs font-mono text-slate-200 focus:outline-none focus:border-pokedex-blue"
-          >
-            <option value="number">{t('filters.sortCardNum')}</option>
-            <option value="name">{t('filters.sortName')}</option>
-            <option value="quantity">{t('filters.sortQuantity')}</option>
-            <option value="rarity">{t('filters.sortRarity')}</option>
-          </select>
+          <div className="relative w-full lg:w-auto">
+            <select
+              value={filters.sortBy}
+              onChange={(e) => {
+                soundEffects.playClick();
+                setFilters(prev => ({ ...prev, sortBy: e.target.value as any }));
+              }}
+              aria-label={t('filters.sortBy')}
+              className="w-full appearance-none bg-pokedex-darker border border-slate-800 rounded-xl pl-3 pr-9 py-2 text-xs font-sans text-slate-200 focus:outline-none focus:border-pokedex-blue cursor-pointer"
+            >
+              <option value="number">{t('filters.sortCardNum')}</option>
+              <option value="name">{t('filters.sortName')}</option>
+              <option value="quantity">{t('filters.sortQuantity')}</option>
+              <option value="rarity">{t('filters.sortRarity')}</option>
+            </select>
+            <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" />
+          </div>
 
           {hasActiveFilters && (
             <button
               onClick={resetFilters}
               title={t('filters.resetFilters')}
-              className="px-3 py-2 rounded-xl bg-pokedex-red/20 border border-pokedex-red/50 text-pokedex-lightred text-xs font-bold hover:bg-pokedex-red hover:text-white transition-colors flex items-center gap-1"
+              className="w-full sm:w-auto px-3 py-2 rounded-xl bg-pokedex-red/20 border border-pokedex-red/50 text-pokedex-lightred text-xs font-bold hover:bg-pokedex-red hover:text-white transition-colors flex items-center justify-center gap-1.5 shrink-0"
             >
               <X className="w-3.5 h-3.5" />
-              <span className="hidden md:inline">{t('filters.resetFilters')}</span>
+              <span>{t('filters.resetFilters')}</span>
             </button>
           )}
         </div>
@@ -202,52 +211,52 @@ export const FilterBar: React.FC = () => {
       </div>
 
       {/* Quick Boolean Filter Badges */}
-      <div className="flex flex-wrap items-center gap-2 pt-1 border-t border-slate-800/80 text-xs font-mono">
+      <div className="flex flex-wrap items-center gap-1.5 sm:gap-2 pt-1 border-t border-slate-800/80 text-[11px] sm:text-xs font-mono">
         <button
           onClick={() => toggleBooleanFilter('onlyFoil')}
-          className={`px-2.5 py-1 rounded-lg border transition-all flex items-center space-x-1.5 ${
+          className={`px-2.5 py-1.5 rounded-xl border transition-all flex items-center space-x-1.5 whitespace-nowrap ${
             filters.onlyFoil
               ? 'bg-yellow-500/20 text-yellow-300 border-yellow-400/60 font-bold'
               : 'bg-pokedex-darker text-slate-400 border-slate-800 hover:text-slate-200'
           }`}
         >
-          <Sparkles className="w-3.5 h-3.5" />
+          <Sparkles className="w-3.5 h-3.5 shrink-0" />
           <span>{t('filters.foilOnly')}</span>
         </button>
 
         <button
           onClick={() => toggleBooleanFilter('onlyDeckCards')}
-          className={`px-2.5 py-1 rounded-lg border transition-all flex items-center space-x-1.5 ${
+          className={`px-2.5 py-1.5 rounded-xl border transition-all flex items-center space-x-1.5 whitespace-nowrap ${
             filters.onlyDeckCards
               ? 'bg-purple-500/20 text-purple-300 border-purple-400/60 font-bold'
               : 'bg-pokedex-darker text-slate-400 border-slate-800 hover:text-slate-200'
           }`}
         >
-          <Layers className="w-3.5 h-3.5" />
+          <Layers className="w-3.5 h-3.5 shrink-0" />
           <span>{t('filters.mappedInDecks')}</span>
         </button>
 
         <button
           onClick={() => toggleBooleanFilter('onlyOwned')}
-          className={`px-2.5 py-1 rounded-lg border transition-all flex items-center space-x-1.5 ${
+          className={`px-2.5 py-1.5 rounded-xl border transition-all flex items-center space-x-1.5 whitespace-nowrap ${
             filters.onlyOwned
               ? 'bg-emerald-500/20 text-emerald-300 border-emerald-400/60 font-bold'
               : 'bg-pokedex-darker text-slate-400 border-slate-800 hover:text-slate-200'
           }`}
         >
-          <CheckCircle2 className="w-3.5 h-3.5" />
+          <CheckCircle2 className="w-3.5 h-3.5 shrink-0" />
           <span>{t('filters.ownedOnly')}</span>
         </button>
 
         <button
           onClick={() => toggleBooleanFilter('onlyMissing')}
-          className={`px-2.5 py-1 rounded-lg border transition-all flex items-center space-x-1.5 ${
+          className={`px-2.5 py-1.5 rounded-xl border transition-all flex items-center space-x-1.5 whitespace-nowrap ${
             filters.onlyMissing
               ? 'bg-red-500/20 text-red-300 border-red-400/60 font-bold'
               : 'bg-pokedex-darker text-slate-400 border-slate-800 hover:text-slate-200'
           }`}
         >
-          <CircleDashed className="w-3.5 h-3.5" />
+          <CircleDashed className="w-3.5 h-3.5 shrink-0" />
           <span>{t('filters.missingOnly')}</span>
         </button>
       </div>
