@@ -11,6 +11,7 @@ import { useLanguage } from '../context/LanguageContext';
 import { soundEffects } from '../services/audio';
 import { findSimilarCards } from '../utils/cardSimilarity';
 import { lookupCardOnline, CardLookupResult } from '../services/cardLookup';
+import { formatSetWithYear } from '../utils/setMetadata';
 
 interface CardDetailModalProps {
   card: Card | null;
@@ -301,7 +302,7 @@ export const CardDetailModal: React.FC<CardDetailModalProps> = ({ card, onClose,
             <div className="bg-pokedex-darker rounded-2xl p-3 border border-slate-800 space-y-2">
               <div className="flex justify-between py-1 border-b border-slate-800">
                 <span className="text-slate-400">{t('cardDetail.expansionSet')}</span>
-                <span className="text-slate-200 font-semibold">{setName}</span>
+                <span className="text-slate-200 font-semibold">{formatSetWithYear(card.set_code, setName)}</span>
               </div>
               <div className="flex justify-between py-1 border-b border-slate-800">
                 <span className="text-slate-400">{t('cardDetail.setCode')}</span>

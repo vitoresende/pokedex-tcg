@@ -4,6 +4,7 @@ import { PokemonTypeIcon } from './PokemonTypeIcon';
 import { useCollection } from '../context/CollectionContext';
 import { useLanguage } from '../context/LanguageContext';
 import { soundEffects } from '../services/audio';
+import { formatSetWithYear, sortSetsChronologically } from '../utils/setMetadata';
 
 const TYPE_PILLS = [
   { id: 'ALL', color: '#64748B' },
@@ -26,8 +27,8 @@ export const FilterBar: React.FC = () => {
   const { filters, setFilters, resetFilters, cards } = useCollection();
   const { t, language } = useLanguage();
 
-  // Extract unique sets and rarities
-  const uniqueSets = Array.from(new Set(cards.map(c => c.set_code).filter(Boolean))).sort();
+  // Extract unique sets and rarities, sorted chronologically (newest first)
+  const uniqueSets = sortSetsChronologically(Array.from(new Set(cards.map(c => c.set_code).filter(Boolean))));
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFilters(prev => ({ ...prev, searchQuery: e.target.value }));
@@ -133,7 +134,7 @@ export const FilterBar: React.FC = () => {
               const setName = language === 'pt' ? (sample?.set_pt || sample?.set_en || setCode) : (sample?.set_en || sample?.set_pt || setCode);
               return (
                 <option key={setCode} value={setCode}>
-                  {setCode} - {setName}
+                  {formatSetWithYear(setCode, setName)}
                 </option>
               );
             })}
