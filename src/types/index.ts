@@ -23,6 +23,7 @@ export interface Card {
   comment: string;
   image_url: string;
   local_image?: string;
+  image_filename?: string;
   decks: string[];
 }
 

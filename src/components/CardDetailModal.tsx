@@ -12,6 +12,7 @@ import { soundEffects } from '../services/audio';
 import { findSimilarCards } from '../utils/cardSimilarity';
 import { lookupCardOnline, CardLookupResult } from '../services/cardLookup';
 import { formatSetWithYear, getSetRegulationMark } from '../utils/setMetadata';
+import { downloadAndUploadImageToStorage } from '../services/firebase';
 
 interface CardDetailModalProps {
   card: Card | null;
@@ -65,17 +66,34 @@ export const CardDetailModal: React.FC<CardDetailModalProps> = ({ card, onClose,
     }
   };
 
-  const handleApplyScan = (scan: CardLookupResult) => {
+  const handleApplyScan = async (scan: CardLookupResult) => {
     if (!card) return;
     soundEffects.playScan();
+    // Normalize SVI to SV1 to maintain consistency with SV1 catalog & assets
+    const normalizedSetCode = scan.setCode === 'SVI' ? 'SV1' : (card.set_code || scan.setCode);
+    // Preserve existing Portuguese set name if available, don't overwrite with English setName from TCGdex
+    const setPt = card.set_pt || scan.setName;
+    const cardNumber = scan.cardNumber || card.card_number;
+    const targetFilename = `${normalizedSetCode.toLowerCase()}_${cardNumber}.png`;
+
+    let finalImageUrl = scan.imageUrl;
+    if (finalImageUrl && !finalImageUrl.includes('firebasestorage.googleapis.com')) {
+      try {
+        finalImageUrl = await downloadAndUploadImageToStorage(finalImageUrl, targetFilename);
+      } catch (err) {
+        console.warn('Could not mirror scan image to storage, keeping original URL:', err);
+      }
+    }
+
     updateCard(card.id, {
-      image_url: scan.imageUrl,
-      set_code: scan.setCode,
-      set_pt: scan.setName,
-      set_en: scan.setName,
-      card_number: scan.cardNumber,
-      name_pt: scan.namePt,
-      name_en: scan.nameEn
+      image_url: finalImageUrl,
+      set_code: normalizedSetCode,
+      set_pt: setPt,
+      set_en: card.set_en || scan.setName,
+      card_number: cardNumber,
+      name_pt: card.name_pt || scan.namePt,
+      name_en: card.name_en || scan.nameEn,
+      image_filename: card.image_filename || targetFilename
     });
     setImageFixSuccess(true);
     setIsFixingImage(false);

@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Card } from '../types';
 import { Sparkles } from 'lucide-react';
 import { soundEffects } from '../services/audio';
@@ -30,6 +30,11 @@ export const HoloCard: React.FC<HoloCardProps> = ({ card, className = '', isDeta
   const [glarePosition, setGlarePosition] = useState<{ x: number; y: number }>({ x: 50, y: 50 });
   const [isHovered, setIsHovered] = useState<boolean>(false);
   const cardRef = useRef<HTMLDivElement>(null);
+
+  // Reset error fallback index whenever the card or its image changes
+  useEffect(() => {
+    setImageErrorLevel(0);
+  }, [card.id, card.image_url, card.card_number, card.set_code]);
 
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
     if (!cardRef.current) return;
@@ -80,6 +85,8 @@ export const HoloCard: React.FC<HoloCardProps> = ({ card, className = '', isDeta
 
     const sources: string[] = [];
 
+    const aliasSet = cleanSet === 'svi' ? 'sv1' : (cleanSet === 'sv1' ? 'svi' : null);
+
     // Fallbacks especiais e prioritários para Cartas de Energia Básica
     if (isBasicEnergy && BASIC_ENERGY_FILES[effectiveColor]) {
       const meta = BASIC_ENERGY_FILES[effectiveColor];
@@ -99,12 +106,15 @@ export const HoloCard: React.FC<HoloCardProps> = ({ card, className = '', isDeta
         }
       }
 
-      // 2. Firebase Storage Bucket oficial do projeto
+      // 2. Imagem local no bundle public/cards/
+      sources.push(`/cards/${encodeURIComponent(meta.file)}`);
+
+      // 3. Firebase Storage Bucket oficial do projeto
       if (storageBucket && !storageBucket.includes('demo') && !storageBucket.includes('Example')) {
         sources.push(`https://firebasestorage.googleapis.com/v0/b/${storageBucket}/o/cards%2F${encodeURIComponent(meta.file)}?alt=media`);
       }
 
-      // 3. Pokemontcg.io scans
+      // 4. Pokemontcg.io scans
       if (effectiveColor === 'Y') {
         sources.push(`https://images.pokemontcg.io/sm1/169_hires.png`);
         sources.push(`https://images.pokemontcg.io/sm1/169.png`);
@@ -112,30 +122,45 @@ export const HoloCard: React.FC<HoloCardProps> = ({ card, className = '', isDeta
         sources.push(`https://images.pokemontcg.io/sve/${parseInt(sveTargetNum, 10)}.png`);
         sources.push(meta.url);
       }
-    }
-
-    // 1. Firebase Storage Bucket padrão do projeto
-    if (storageBucket && !storageBucket.includes('demo') && !storageBucket.includes('Example')) {
-      sources.push(`https://firebasestorage.googleapis.com/v0/b/${storageBucket}/o/cards%2F${encodeURIComponent(cardFileName)}?alt=media`);
-      
-      const altFileName = `${cleanSet}_${unpaddedNum}.png`;
-      if (altFileName !== cardFileName) {
-        sources.push(`https://firebasestorage.googleapis.com/v0/b/${storageBucket}/o/cards%2F${encodeURIComponent(altFileName)}?alt=media`);
+    } else {
+      // 1. Direct explicit image_url (e.g. from TCGdex, Limitless or user scan selection)
+      if (card.image_url) {
+        sources.push(card.image_url);
       }
-      const paddedFileName = `${cleanSet}_${paddedNum}.png`;
-      if (paddedFileName !== cardFileName && paddedFileName !== altFileName) {
-        sources.push(`https://firebasestorage.googleapis.com/v0/b/${storageBucket}/o/cards%2F${encodeURIComponent(paddedFileName)}?alt=media`);
+
+      // 2. Direct local bundle image (bundled in public/cards/)
+      if (card.image_filename) {
+        sources.push(`/cards/${encodeURIComponent(card.image_filename)}`);
       }
-    }
+      sources.push(`/cards/${encodeURIComponent(cardFileName)}`);
+      sources.push(`/cards/${cleanSet}_${paddedNum}.png`);
+      sources.push(`/cards/${cleanSet}_${unpaddedNum}.png`);
+      if (aliasSet) {
+        sources.push(`/cards/${aliasSet}_${paddedNum}.png`);
+        sources.push(`/cards/${aliasSet}_${unpaddedNum}.png`);
+      }
 
-    // 2. Direct Cloud Storage URL
-    if (card.image_url && card.image_url.includes('firebasestorage.googleapis.com')) {
-      sources.push(card.image_url);
-    }
+      // 3. Firebase Storage Bucket padrão do projeto com suporte a aliases
+      if (storageBucket && !storageBucket.includes('demo') && !storageBucket.includes('Example')) {
+        if (card.image_filename) {
+          sources.push(`https://firebasestorage.googleapis.com/v0/b/${storageBucket}/o/cards%2F${encodeURIComponent(card.image_filename)}?alt=media`);
+        }
+        sources.push(`https://firebasestorage.googleapis.com/v0/b/${storageBucket}/o/cards%2F${encodeURIComponent(cardFileName)}?alt=media`);
 
-    // 3. Imagem customizada / URL direta
-    if (card.image_url) {
-      sources.push(card.image_url);
+        const altFileName = `${cleanSet}_${unpaddedNum}.png`;
+        if (altFileName !== cardFileName) {
+          sources.push(`https://firebasestorage.googleapis.com/v0/b/${storageBucket}/o/cards%2F${encodeURIComponent(altFileName)}?alt=media`);
+        }
+        const paddedFileName = `${cleanSet}_${paddedNum}.png`;
+        if (paddedFileName !== cardFileName && paddedFileName !== altFileName) {
+          sources.push(`https://firebasestorage.googleapis.com/v0/b/${storageBucket}/o/cards%2F${encodeURIComponent(paddedFileName)}?alt=media`);
+        }
+
+        if (aliasSet) {
+          sources.push(`https://firebasestorage.googleapis.com/v0/b/${storageBucket}/o/cards%2F${encodeURIComponent(`${aliasSet}_${paddedNum}.png`)}?alt=media`);
+          sources.push(`https://firebasestorage.googleapis.com/v0/b/${storageBucket}/o/cards%2F${encodeURIComponent(`${aliasSet}_${unpaddedNum}.png`)}?alt=media`);
+        }
+      }
     }
 
     // 5. Fallback CDNs complementares (Pokemontcg.io e Limitless TCG)

@@ -355,11 +355,23 @@ const normalizeCards = (rawCards: Card[]): Card[] => {
       };
     }
 
-    // Ensure image_url uses Google Cloud Storage
-    const setCode = (c.set_code || '').toLowerCase();
+    // Resolve standard set code and image_url
+    let setCodeUpper = (c.set_code || '').toUpperCase();
+    if (setCodeUpper === 'SVI') {
+      setCodeUpper = 'SV1';
+    }
+
     let imageUrl = c.image_url;
-    if (!imageUrl || !imageUrl.includes('firebasestorage.googleapis.com')) {
-      imageUrl = getStorageCardUrl(`${setCode}_${c.card_number}.png`);
+    // Heal any image_url that was previously corrupted to non-existent svi_*.png back to sv1_*.png
+    if (imageUrl && imageUrl.includes('cards%2Fsvi_')) {
+      imageUrl = imageUrl.replace('cards%2Fsvi_', 'cards%2Fsv1_');
+    }
+
+    const imageFilename = c.image_filename || `${setCodeUpper.toLowerCase()}_${c.card_number}.png`;
+
+    // Only assign default storage URL if imageUrl is truly missing or empty, preserving custom/online scans
+    if (!imageUrl) {
+      imageUrl = getStorageCardUrl(imageFilename);
     }
 
     let colorSlug = c.color_slug;
@@ -378,6 +390,8 @@ const normalizeCards = (rawCards: Card[]): Card[] => {
 
     return {
       ...c,
+      set_code: setCodeUpper || c.set_code,
+      image_filename: imageFilename,
       card_category: category,
       color_slug: colorSlug,
       color_name: colorName,

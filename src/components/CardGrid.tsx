@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card } from '../types';
 import { CardItem } from './CardItem';
 import { ChevronLeft, ChevronRight, Inbox } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
+import { useCollection } from '../context/CollectionContext';
 import { soundEffects } from '../services/audio';
 
 interface CardGridProps {
@@ -15,9 +16,24 @@ const ITEMS_PER_PAGE = 24;
 export const CardGrid: React.FC<CardGridProps> = ({ cards, onSelectCard }) => {
   const [currentPage, setCurrentPage] = useState<number>(1);
   const { t } = useLanguage();
+  const { filters } = useCollection();
+
+  // Reset to page 1 whenever any filter or search query changes
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [filters]);
 
   const totalPages = Math.ceil(cards.length / ITEMS_PER_PAGE) || 1;
-  const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+  const safeCurrentPage = Math.min(Math.max(1, currentPage), totalPages);
+
+  // If page went out of bounds (e.g., list shrunk), bring it back into bounds
+  useEffect(() => {
+    if (currentPage > totalPages) {
+      setCurrentPage(1);
+    }
+  }, [currentPage, totalPages]);
+
+  const startIndex = (safeCurrentPage - 1) * ITEMS_PER_PAGE;
   const paginatedCards = cards.slice(startIndex, startIndex + ITEMS_PER_PAGE);
 
   const handlePageChange = (page: number) => {
@@ -57,8 +73,8 @@ export const CardGrid: React.FC<CardGridProps> = ({ cards, onSelectCard }) => {
       {totalPages > 1 && (
         <div className="flex items-center justify-center space-x-2 pt-4 pb-2">
           <button
-            onClick={() => handlePageChange(Math.max(1, currentPage - 1))}
-            disabled={currentPage === 1}
+            onClick={() => handlePageChange(Math.max(1, safeCurrentPage - 1))}
+            disabled={safeCurrentPage === 1}
             aria-label={t('pagination.prev')}
             className="p-2 rounded-xl bg-pokedex-card border border-slate-800 disabled:opacity-30 text-slate-300 hover:text-white transition-colors"
           >
@@ -66,12 +82,12 @@ export const CardGrid: React.FC<CardGridProps> = ({ cards, onSelectCard }) => {
           </button>
 
           <span className="px-4 py-1.5 rounded-xl bg-pokedex-darker border border-slate-800 text-xs font-mono font-bold text-yellow-300">
-            {t('pagination.pageInfo', { current: currentPage, total: totalPages })} ({cards.length} {t('common.all')})
+            {t('pagination.pageInfo', { current: safeCurrentPage, total: totalPages })} ({cards.length} {t('common.all')})
           </span>
 
           <button
-            onClick={() => handlePageChange(Math.min(totalPages, currentPage + 1))}
-            disabled={currentPage === totalPages}
+            onClick={() => handlePageChange(Math.min(totalPages, safeCurrentPage + 1))}
+            disabled={safeCurrentPage === totalPages}
             aria-label={t('pagination.next')}
             className="p-2 rounded-xl bg-pokedex-card border border-slate-800 disabled:opacity-30 text-slate-300 hover:text-white transition-colors"
           >
