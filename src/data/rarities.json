@@ -222,5 +222,37 @@
     "description": "Nova raridade que estreia na coleção comemorativa de 30 anos do Pokémon TCG, destacada por artes com visual futurista, efeitos metálicos e acabamento holográfico especial.",
     "description_en": "Brand new rarity debuting in the Pokémon TCG 30th Anniversary collection, highlighted by futuristic artwork, metallic foils, and special holographic finish.",
     "color": "#8b5cf6"
+  },
+  {
+    "id": "promo",
+    "symbol_type": "promo-star",
+    "symbol_name": "Estrela com PROMO",
+    "symbol_name_en": "Black Star Promo",
+    "name": "Promocional (Promo)",
+    "name_en": "Promo Card",
+    "code": "PR / PROMO",
+    "rate": "Produtos especiais, eventos ou campanhas",
+    "rate_en": "Special products, events, or campaigns",
+    "reference": "Blisters, ETBs, Latas e Pré-Lançamentos",
+    "reference_en": "Blisters, ETBs, Tins & Prereleases",
+    "description": "Cartas promocionais são distribuídas em produtos especiais, eventos ou campanhas. Geralmente, não são obtidas aleatoriamente em boosters.",
+    "description_en": "Promotional cards distributed in special collection boxes, tins, pre-releases, or events. Typically not obtained randomly in regular booster packs.",
+    "color": "#1e293b"
+  },
+  {
+    "id": "secret-rare",
+    "symbol_type": "secret-number",
+    "symbol_name": "Numeração Secreta (ex: 83/82)",
+    "symbol_name_en": "Secret Collector Number",
+    "name": "Rara Secreta",
+    "name_en": "Secret Rare",
+    "code": "SR / Secreta",
+    "rate": "Tiragem secreta / Alta raridade",
+    "rate_en": "Secret pull rate / High rarity",
+    "reference": "Team Rocket (83/82), Destinos Ocultos, etc.",
+    "reference_en": "Team Rocket (83/82), Hidden Fates, etc.",
+    "description": "A principal característica é que a numeração ultrapassa o total oficial da coleção (ex: 83/82), geralmente apresentando artes, acabamentos ou versões alternativas mais raras. Não possui um símbolo geométrico exclusivo.",
+    "description_en": "The defining feature is that the collector number exceeds the official set total (e.g. 83/82), typically showcasing alternate artwork, golden foils, or rainbow textures. Does not have a standalone geometric symbol.",
+    "color": "#ca8a04"
   }
 ]

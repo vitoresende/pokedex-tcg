@@ -281,6 +281,43 @@ export const RaritySymbolIcon: React.FC<RaritySymbolIconProps> = ({
           </svg>
         );
 
+      case 'promo-star':
+      case 'promo':
+        // Promo Card: Official Black Star Promo with "PROMO" lettering
+        return (
+          <svg viewBox="0 0 24 24" className={`${singleDim} ${className}`} aria-label="Carta Promocional (Promo)">
+            <polygon points={STAR_POINTS} fill="#0f172a" stroke="#000000" strokeWidth="0.6" />
+            <text x="12" y="13.2" textAnchor="middle" fill="#ffffff" fontSize="3.6" fontWeight="900" fontFamily="system-ui, -apple-system, sans-serif" letterSpacing="0.3">
+              PROMO
+            </text>
+          </svg>
+        );
+
+      case 'secret-number':
+      case 'secret-rare':
+      case 'secret':
+        // Secret Rare: Collector number exceeding set total (e.g. 83/82), with gold border and sparkle
+        const secretBorderId = `secretBorder_${uid}`;
+        return (
+          <svg viewBox="0 0 44 24" className={`${doubleDim} ${className}`} aria-label="Rara Secreta (83/82)">
+            <defs>
+              <linearGradient id={secretBorderId} x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stopColor="#fef08a" />
+                <stop offset="50%" stopColor="#eab308" />
+                <stop offset="100%" stopColor="#b45309" />
+              </linearGradient>
+            </defs>
+            <rect x="1" y="2" width="42" height="20" rx="5" fill="#090d16" stroke={`url(#${secretBorderId})`} strokeWidth="1.2" />
+            {/* Secret gold star sparkle */}
+            <polygon points="36,3.5 37,6 39.5,7 37,8 36,10.5 35,8 32.5,7 35,6" fill="#fde047" />
+            <text x="17" y="14.5" textAnchor="middle" fontFamily="ui-monospace, monospace" fontWeight="900" fontSize="8.5">
+              <tspan fill="#facc15">83</tspan>
+              <tspan fill="#64748b" fontSize="7.5">/</tspan>
+              <tspan fill="#94a3b8" fontSize="7.5">82</tspan>
+            </text>
+          </svg>
+        );
+
       default:
         return (
           <svg viewBox="0 0 24 24" className={`${singleDim} ${className}`}>

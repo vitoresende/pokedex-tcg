@@ -13,6 +13,17 @@ export interface RaritiesMetadataPayload {
 let inMemoryRaritiesList: CardRarityInfo[] | null = null;
 
 /**
+ * Helper to ensure new baseline rarities are always included even if older cache exists
+ */
+function mergeWithBaseline(list: CardRarityInfo[]): CardRarityInfo[] {
+  const defaults = defaultRarities as CardRarityInfo[];
+  const existingIds = new Set(list.map((r) => r.id));
+  const missing = defaults.filter((d) => !existingIds.has(d.id));
+  if (missing.length === 0) return list;
+  return [...list, ...missing];
+}
+
+/**
  * Returns the active list of rarities from memory, localStorage, or fallback baseline JSON
  */
 export function getCachedRaritiesList(): CardRarityInfo[] {
@@ -26,7 +37,7 @@ export function getCachedRaritiesList(): CardRarityInfo[] {
     if (raw) {
       const parsed: RaritiesMetadataPayload = JSON.parse(raw);
       if (parsed && Array.isArray(parsed.rarities) && parsed.rarities.length > 0) {
-        inMemoryRaritiesList = parsed.rarities;
+        inMemoryRaritiesList = mergeWithBaseline(parsed.rarities);
         return inMemoryRaritiesList;
       }
     }
@@ -92,9 +103,13 @@ export async function loadAndApplyRaritiesMetadata(): Promise<CardRarityInfo[]> 
   try {
     const cloudData = await loadRaritiesMetadataFromFirestore();
     if (cloudData && Array.isArray(cloudData.rarities) && cloudData.rarities.length > 0) {
-      inMemoryRaritiesList = cloudData.rarities;
+      inMemoryRaritiesList = mergeWithBaseline(cloudData.rarities);
       try {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(cloudData));
+        localStorage.setItem(STORAGE_KEY, JSON.stringify({
+          ...cloudData,
+          rarities: inMemoryRaritiesList,
+          totalRarities: inMemoryRaritiesList.length
+        }));
       } catch (e) {
         // ignore
       }
