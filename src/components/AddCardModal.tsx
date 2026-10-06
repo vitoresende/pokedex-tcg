@@ -65,6 +65,8 @@ export const AddCardModal: React.FC<AddCardModalProps> = ({ isOpen, onClose, ini
     setCode: string;
     cardNumber: string;
     imageUrl?: string;
+    isDuplicate?: boolean;
+    quantity?: number;
   } | null>(null);
 
   const clearForm = () => {
@@ -133,7 +135,9 @@ export const AddCardModal: React.FC<AddCardModalProps> = ({ isOpen, onClose, ini
       name: added.name_pt || added.name_en,
       setCode: added.set_code,
       cardNumber: added.card_number,
-      imageUrl: finalImage
+      imageUrl: finalImage,
+      isDuplicate: added.isDuplicate,
+      quantity: added.quantity
     });
   };
 
@@ -244,7 +248,9 @@ export const AddCardModal: React.FC<AddCardModalProps> = ({ isOpen, onClose, ini
       name: added.name_pt || added.name_en,
       setCode: added.set_code,
       cardNumber: added.card_number,
-      imageUrl: finalImageUrl
+      imageUrl: finalImageUrl,
+      isDuplicate: added.isDuplicate,
+      quantity: added.quantity
     });
   };
 
@@ -348,13 +354,23 @@ export const AddCardModal: React.FC<AddCardModalProps> = ({ isOpen, onClose, ini
 
                 <div className="space-y-1">
                   <h3 className="text-base font-black text-emerald-400 uppercase tracking-wider font-mono">
-                    {t('addCard.cardAddedSuccessTitle')}
+                    {addedSuccessInfo.isDuplicate
+                      ? t('addCard.cardUpdatedSuccessTitle')
+                      : t('addCard.cardAddedSuccessTitle')}
                   </h3>
-                  <p className="text-xs text-white font-mono font-bold">
-                    {addedSuccessInfo.name} <span className="text-slate-400">({addedSuccessInfo.setCode} #{addedSuccessInfo.cardNumber})</span>
+                  <p className="text-xs text-white font-mono font-bold flex items-center justify-center gap-1.5 flex-wrap">
+                    <span>{addedSuccessInfo.name}</span>
+                    <span className="text-slate-400">({addedSuccessInfo.setCode} #{addedSuccessInfo.cardNumber})</span>
+                    {addedSuccessInfo.quantity !== undefined && (
+                      <span className="px-2 py-0.5 rounded-full bg-yellow-400/20 text-yellow-300 border border-yellow-400/40 text-[10px] font-mono">
+                        x{addedSuccessInfo.quantity}
+                      </span>
+                    )}
                   </p>
                   <p className="text-[11px] text-slate-400 max-w-sm mx-auto font-sans">
-                    {t('addCard.cardAddedSuccessDesc')}
+                    {addedSuccessInfo.isDuplicate
+                      ? t('addCard.cardUpdatedSuccessDesc', { count: addedSuccessInfo.quantity })
+                      : t('addCard.cardAddedSuccessDesc')}
                   </p>
                 </div>
 

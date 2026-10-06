@@ -269,6 +269,8 @@ export const pt: TranslationKeys = {
     "processCsv": "Processar Importação CSV",
     "cardAddedSuccessTitle": "Carta Adicionada com Sucesso!",
     "cardAddedSuccessDesc": "A carta foi registrada no seu catálogo e sincronizada com a sua Pokédex.",
+    "cardUpdatedSuccessTitle": "Carta Repetida - Quantidade Atualizada!",
+    "cardUpdatedSuccessDesc": "Esta carta já constava na sua coleção. O número de cópias foi atualizado para x{count} sem criar uma carta duplicada.",
     "addAnotherCard": "+ Adicionar Outra Carta",
     "finishBtn": "Concluir e Fechar"
   },
