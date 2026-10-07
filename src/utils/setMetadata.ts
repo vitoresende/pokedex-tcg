@@ -123,7 +123,7 @@ export const SET_RELEASE_YEARS: Record<string, number> = {
   'SM5': 2018,
 
   // === 2017 (Sun & Moon) ===
-  'CRI': 2017, // Crimson Invasion / Caos Ascendente / Invasão Carmim
+  'CRI': 2017, 'CIN': 2017, // Crimson Invasion / Invasão Carmim
   'SM4': 2017,
   'SLG': 2017, // Shining Legends / Lendas Brilhantes
   'SM3.5': 2017,
@@ -325,7 +325,8 @@ export const SET_OFFICIAL_NAMES_PT: Record<string, string> = {
   'CES': 'Tempestade Celestial',
   'FLI': 'Luz Proibida',
   'UPR': 'Ultra Prisma',
-  'CRI': 'Caos Ascendente',
+  'CRI': 'Invasão Carmim',
+  'CIN': 'Invasão Carmim',
   'SLG': 'Lendas Luminescentes',
   'BUS': 'Sombras Ardentes',
   'GRI': 'Guardiões Ascendentes',
@@ -597,6 +598,12 @@ export function getSetRegulationMark(setCode: string, setName?: string): string 
   const raw = (setCode || '').trim().toUpperCase();
   const norm = normalizeSetCode(raw);
 
+  // Pre-SWSH sets (before 2020) used expansion symbols, never regulation mark letters (D, E, F, G, H, I, J)
+  const year = getSetReleaseYear(raw, setName);
+  if (year && year < 2020) {
+    return null;
+  }
+
   // 1. Direct dictionary match
   if (raw && SET_REGULATION_MARKS[raw]) return SET_REGULATION_MARKS[raw];
   if (norm && SET_REGULATION_MARKS[norm]) return SET_REGULATION_MARKS[norm];
@@ -651,7 +658,7 @@ export function getSetReleaseYear(setCode: string, setName?: string): number | n
  * Formats a collection expansion with its release year and regulation mark letter in front:
  * Example with letter: "2026 - J - ME05 - Escuridão Absoluta"
  * Example with letter: "2022 - F - BRS - Astros Cintilantes"
- * Example without letter (drawing / pre-SWSH): "2017 - CRI - Caos Ascendente"
+ * Example without letter (drawing / pre-SWSH): "2017 - CRI - Invasão Carmim"
  * If year is unknown: "ME05 - Escuridão Absoluta"
  */
 export function formatSetWithYear(setCode: string, setName?: string, customMark?: string): string {

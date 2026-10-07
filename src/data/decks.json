@@ -298,7 +298,7 @@
       {
         "section": "pokemon",
         "name": "Litleo",
-        "set": "Caos Ascendente - CRI 14",
+        "set": "Caos Ascendente - ME04 14",
         "count": 2,
         "owned": 2,
         "rarity": "C"
@@ -314,7 +314,7 @@
       {
         "section": "pokemon",
         "name": "Vulpix",
-        "set": "Caos Ascendente - CRI 8",
+        "set": "Caos Ascendente - ME04 8",
         "count": 1,
         "owned": 1,
         "rarity": "C"
@@ -595,7 +595,7 @@
       {
         "section": "pokemon",
         "name": "Patrat",
-        "set": "Caos Ascendente - CRI 70",
+        "set": "Caos Ascendente - ME04 70",
         "count": 2,
         "owned": 2,
         "rarity": "C"
@@ -1011,7 +1011,7 @@
       {
         "section": "pokemon",
         "name": "Togedemaru",
-        "set": "Fogo Fantasmagórico - PFL 73",
+        "set": "Fogo Fantasmagórico - ME02 73",
         "count": 1,
         "owned": 1,
         "rarity": "C"
