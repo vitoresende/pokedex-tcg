@@ -223,6 +223,9 @@ export const HoloCard: React.FC<HoloCardProps> = ({ card, className = '', isDeta
       sources.push(`https://images.pokemontcg.io/${pokemontcgSet}/${unpaddedNum}.png`);
 
       const SET_CODE_LIMITLESS_MAP: Record<string, string> = {
+        // Megaevolução aliases
+        'ME04': 'CRI', 'ME4': 'CRI',
+        'ME02': 'PFL', 'ME2': 'PFL',
         // Basic Energies
         'SVE': 'SVE', 'SV-BE': 'SVE', 'BAS': 'SVE',
         // Scarlet & Violet aliases

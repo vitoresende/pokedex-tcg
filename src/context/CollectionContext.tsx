@@ -320,12 +320,23 @@ export const findExistingCardIndex = (
     }
   }
 
+  // Helper to match sets with alias awareness (e.g. CRI <-> ME04, PFL <-> ME02, SVI <-> SV1)
+  const isSetEquivalent = (setA: string, setB: string) => {
+    if (setA === setB) return true;
+    if ((setA === 'ME04' || setA === 'ME4') && setB === 'CRI') return true;
+    if ((setB === 'ME04' || setB === 'ME4') && setA === 'CRI') return true;
+    if ((setA === 'ME02' || setA === 'ME2') && setB === 'PFL') return true;
+    if ((setB === 'ME02' || setB === 'ME2') && setA === 'PFL') return true;
+    if ((setA === 'SVI' || setA === 'SV01') && (setB === 'SV1' || setB === 'SVI')) return true;
+    return false;
+  };
+
   // 1. Primary check: matching normalized set_code and normalized card_number
   if (targetSet && targetNum) {
     const idx = list.findIndex(c => {
       const cSet = normalizeSetCode(c.set_code);
       const cNum = normalizeCardNumber(c.card_number);
-      return cSet === targetSet && cNum === targetNum;
+      return isSetEquivalent(cSet, targetSet) && cNum === targetNum;
     });
     if (idx !== -1) return idx;
   }
@@ -349,7 +360,7 @@ export const findExistingCardIndex = (
     if (namePtT || nameEnT) {
       const idx = list.findIndex(c => {
         const cSet = normalizeSetCode(c.set_code);
-        if (cSet !== targetSet) return false;
+        if (!isSetEquivalent(cSet, targetSet)) return false;
 
         const namePtC = normalizeCardName(c.name_pt);
         const nameEnC = normalizeCardName(c.name_en);
@@ -378,7 +389,14 @@ export const normalizeDeck = (rawDeck: Deck): Deck => {
     } else if (isKnownTrainer(item.name, item.name)) {
       section = 'trainers';
     }
-    return { ...item, section };
+    let setStr = item.set || '';
+    if (setStr.includes('Caos Ascendente - CRI ')) {
+      setStr = setStr.replace('Caos Ascendente - CRI ', 'Caos Ascendente - ME04 ');
+    }
+    if (setStr.includes('Fogo Fantasmagórico - PFL ')) {
+      setStr = setStr.replace('Fogo Fantasmagórico - PFL ', 'Fogo Fantasmagórico - ME02 ');
+    }
+    return { ...item, set: setStr, section };
   });
 
   const pokeCount = cards.filter(c => c.section === 'pokemon').reduce((a, b) => a + b.count, 0);
@@ -398,7 +416,7 @@ export const normalizeDeck = (rawDeck: Deck): Deck => {
 };
 
 const normalizeCards = (rawCards: Card[]): Card[] => {
-  return rawCards.map(rawC => {
+  const mappedList = rawCards.map(rawC => {
     const c = {
       ...rawC,
       name_pt: fixMojibake(rawC.name_pt || ''),
@@ -406,6 +424,16 @@ const normalizeCards = (rawCards: Card[]): Card[] => {
       set_pt: fixMojibake(rawC.set_pt || ''),
       set_en: fixMojibake(rawC.set_en || rawC.set_pt || '')
     };
+
+    // Migrate misclassified CRI cards to ME04 (Caos Ascendente)
+    if (c.set_code === 'CRI' && ((c.set_pt && c.set_pt.toLowerCase().includes('caos')) || (c.set_en && c.set_en.toLowerCase().includes('chaos')))) {
+      c.set_code = 'ME04';
+    }
+
+    // Migrate misclassified PFL cards to ME02 (Fogo Fantasmagórico)
+    if (c.set_code === 'PFL' && ((c.set_pt && c.set_pt.toLowerCase().includes('fogo')) || (c.set_en && c.set_en.toLowerCase().includes('phantasmal')))) {
+      c.set_code = 'ME02';
+    }
 
     // Determine standard category
     let category: 'Pokémon' | 'Trainer' | 'Energy' = 'Pokémon';
@@ -424,10 +452,10 @@ const normalizeCards = (rawCards: Card[]): Card[] => {
     }
 
     // Special Energy specific overrides
-    if (c.name_en.toLowerCase().includes('bubbly') || (c.set_code === 'CRI' && (c.card_number === '084' || c.card_number === '84'))) {
+    if (c.name_en.toLowerCase().includes('bubbly') || ((c.set_code === 'CRI' || c.set_code === 'ME04' || c.set_code === 'ME4') && (c.card_number === '084' || c.card_number === '84'))) {
       return {
         ...c,
-        set_code: 'CRI',
+        set_code: 'ME04',
         card_number: '084',
         card_category: 'Energy',
         color_slug: 'energy',
@@ -513,6 +541,26 @@ const normalizeCards = (rawCards: Card[]): Card[] => {
       image_url: imageUrl
     };
   });
+
+  // Deduplicate cards by canonical set_code and card_number to avoid duplicate cards
+  const seenMap = new Map<string, Card>();
+  for (const c of mappedList) {
+    const key = (c.set_code && c.card_number)
+      ? `${normalizeSetCode(c.set_code)}#${normalizeCardNumber(c.card_number)}`
+      : (c.id || Math.random().toString());
+
+    if (seenMap.has(key)) {
+      const existing = seenMap.get(key)!;
+      existing.quantity = (existing.quantity || 0) + (c.quantity || 0);
+      if (Array.isArray(c.decks)) {
+        existing.decks = Array.from(new Set([...(existing.decks || []), ...c.decks]));
+      }
+    } else {
+      seenMap.set(key, c);
+    }
+  }
+
+  return Array.from(seenMap.values());
 };
 
 const CollectionContext = createContext<CollectionContextType | undefined>(undefined);
