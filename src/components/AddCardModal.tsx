@@ -369,7 +369,7 @@ export const AddCardModal: React.FC<AddCardModalProps> = ({ isOpen, onClose, ini
                   </p>
                   <p className="text-[11px] text-slate-400 max-w-sm mx-auto font-sans">
                     {addedSuccessInfo.isDuplicate
-                      ? t('addCard.cardUpdatedSuccessDesc', { count: addedSuccessInfo.quantity })
+                      ? t('addCard.cardUpdatedSuccessDesc', { count: addedSuccessInfo.quantity ?? 1 })
                       : t('addCard.cardAddedSuccessDesc')}
                   </p>
                 </div>
