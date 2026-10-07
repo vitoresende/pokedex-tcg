@@ -72,7 +72,7 @@ interface CollectionContextType {
   allRaritiesList: CardRarityInfo[];
   isSyncingRarities: boolean;
   syncRaritiesMetadata: () => Promise<{ success: boolean; total: number; error?: string }>;
-  addNewCard: (card: Partial<Card>) => Card;
+  addNewCard: (card: Partial<Card>) => Card & { isDuplicate?: boolean };
   updateCard: (cardId: string, updatedData: Partial<Card>) => void;
   deleteCard: (cardId: string) => void;
   importCardsFromCsv: (csvContent: string, deckOption?: DeckImportOption) => { added: number; updated: number; deckName?: string };
@@ -254,6 +254,120 @@ export const isKnownEnergy = (namePt: string, nameEn: string, setCode: string, c
     nPt.includes('energia') ||
     nEn.includes('energy')
   );
+};
+
+export const normalizeCardNumber = (num: string | number | undefined | null): string => {
+  if (num === undefined || num === null) return '';
+  const str = String(num).trim().replace(/^#+/, '').trim();
+  const part = str.split('/')[0].trim();
+  if (/^\d+$/.test(part)) {
+    return part.replace(/^0+/, '') || '0';
+  }
+  return part.toUpperCase();
+};
+
+export const normalizeSetCode = (code: string | undefined | null): string => {
+  if (!code) return '';
+  const upper = code.trim().toUpperCase();
+  if (upper === 'SVI') return 'SV1';
+  return upper;
+};
+
+export const normalizeCardName = (name: string | undefined | null): string => {
+  if (!name) return '';
+  return name.trim().toLowerCase().replace(/\s+/g, ' ');
+};
+
+export const findExistingCardIndex = (
+  list: Card[],
+  target: {
+    id?: string;
+    set_code?: string;
+    card_number?: string;
+    name_pt?: string;
+    name_en?: string;
+    color_code?: string;
+  }
+): number => {
+  if (target.id) {
+    const idx = list.findIndex(c => c.id === target.id);
+    if (idx !== -1) return idx;
+  }
+
+  const isBasic = isBasicEnergyCard(
+    target.name_pt || '',
+    target.name_en || '',
+    target.set_code || '',
+    target.card_number || '',
+    target.color_code || ''
+  );
+
+  let targetSet = normalizeSetCode(target.set_code);
+  let targetNum = normalizeCardNumber(target.card_number);
+  let targetEnergyColor = '';
+
+  if (isBasic) {
+    targetEnergyColor = resolveEnergyColor(
+      target.name_pt || '',
+      target.name_en || '',
+      target.color_code || '',
+      target.card_number || ''
+    );
+    if (BASIC_ENERGY_CONFIG[targetEnergyColor]) {
+      const meta = BASIC_ENERGY_CONFIG[targetEnergyColor];
+      targetSet = meta.code;
+      targetNum = normalizeCardNumber(meta.num);
+    }
+  }
+
+  // 1. Primary check: matching normalized set_code and normalized card_number
+  if (targetSet && targetNum) {
+    const idx = list.findIndex(c => {
+      const cSet = normalizeSetCode(c.set_code);
+      const cNum = normalizeCardNumber(c.card_number);
+      return cSet === targetSet && cNum === targetNum;
+    });
+    if (idx !== -1) return idx;
+  }
+
+  // 2. Basic Energy fallback: matching energy category and color
+  if (isBasic && targetEnergyColor) {
+    const idx = list.findIndex(c => {
+      const isCardEnergy = c.card_category === 'Energy' || (c.card_category as string) === 'Energia';
+      if (!isCardEnergy) return false;
+      const cColor = resolveEnergyColor(c.name_pt, c.name_en, c.color_code, c.card_number);
+      return cColor === targetEnergyColor;
+    });
+    if (idx !== -1) return idx;
+  }
+
+  // 3. Secondary check: same set_code and matching card name (when card numbers don't conflict)
+  if (targetSet) {
+    const namePtT = normalizeCardName(target.name_pt);
+    const nameEnT = normalizeCardName(target.name_en);
+
+    if (namePtT || nameEnT) {
+      const idx = list.findIndex(c => {
+        const cSet = normalizeSetCode(c.set_code);
+        if (cSet !== targetSet) return false;
+
+        const namePtC = normalizeCardName(c.name_pt);
+        const nameEnC = normalizeCardName(c.name_en);
+
+        const nameMatches =
+          (namePtT && (namePtT === namePtC || namePtT === nameEnC)) ||
+          (nameEnT && (nameEnT === namePtC || nameEnT === nameEnC));
+
+        if (!nameMatches) return false;
+
+        const cNum = normalizeCardNumber(c.card_number);
+        return !cNum || !targetNum || cNum === targetNum;
+      });
+      if (idx !== -1) return idx;
+    }
+  }
+
+  return -1;
 };
 
 export const normalizeDeck = (rawDeck: Deck): Deck => {
@@ -692,8 +806,39 @@ export const CollectionProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     }));
   };
 
-  const addNewCard = (cardData: Partial<Card>): Card => {
+  const addNewCard = (cardData: Partial<Card>): Card & { isDuplicate?: boolean } => {
     soundEffects.playScan();
+
+    const qtyToAdd = Math.max(1, Number(cardData.quantity) || 1);
+    const existingIndex = findExistingCardIndex(cards, cardData);
+
+    if (existingIndex >= 0) {
+      const existingCard = cards[existingIndex];
+      const nextQuantity = existingCard.quantity + qtyToAdd;
+
+      const updatedCard: Card = {
+        ...existingCard,
+        quantity: nextQuantity,
+        is_foil: existingCard.is_foil || !!cardData.is_foil,
+        image_url: (cardData.image_url && !existingCard.image_url) 
+          ? cardData.image_url 
+          : existingCard.image_url
+      };
+
+      setCards(prev => prev.map((c, idx) => (idx === existingIndex ? updatedCard : c)));
+
+      if (selectedCard && selectedCard.id === existingCard.id) {
+        setSelectedCard(updatedCard);
+      }
+
+      soundEffects.playSuccess();
+
+      return {
+        ...updatedCard,
+        isDuplicate: true
+      };
+    }
+
     const newId = `custom-card-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`;
     const colorInfo = COLOR_MAP[cardData.color_code || ''] || COLOR_MAP[''];
     
@@ -706,7 +851,7 @@ export const CollectionProvider: React.FC<{ children: React.ReactNode }> = ({ ch
       set_code: (cardData.set_code || 'CUS').toUpperCase(),
       card_number: cardData.card_number || '1',
       total_in_set: cardData.total_in_set || '100',
-      quantity: cardData.quantity !== undefined ? cardData.quantity : 1,
+      quantity: qtyToAdd,
       quality: cardData.quality || 'NM',
       language: cardData.language || 'EN',
       rarity_code: cardData.rarity_code || 'C',
@@ -733,7 +878,10 @@ export const CollectionProvider: React.FC<{ children: React.ReactNode }> = ({ ch
       }
     }
 
-    return newCard;
+    return {
+      ...newCard,
+      isDuplicate: false
+    };
   };
 
   const updateCard = (cardId: string, updatedData: Partial<Card>) => {
@@ -864,10 +1012,13 @@ export const CollectionProvider: React.FC<{ children: React.ReactNode }> = ({ ch
         section
       });
 
-      const existingIndex = newCardsList.findIndex(c => 
-        c.set_code.toUpperCase() === finalSetCode.toUpperCase() && 
-        c.card_number === finalCardNum
-      );
+      const existingIndex = findExistingCardIndex(newCardsList, {
+        set_code: finalSetCode,
+        card_number: finalCardNum,
+        name_pt: cardPt,
+        name_en: cardEn,
+        color_code: effectiveColor
+      });
 
       if (existingIndex >= 0) {
         const existingCard = newCardsList[existingIndex];

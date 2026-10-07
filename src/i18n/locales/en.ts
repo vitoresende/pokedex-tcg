@@ -267,6 +267,8 @@ export const en = {
     "processCsv": "Process CSV Import",
     "cardAddedSuccessTitle": "Card Added Successfully!",
     "cardAddedSuccessDesc": "The card has been registered to your catalog and synced to Pokédex.",
+    "cardUpdatedSuccessTitle": "Duplicate Card - Quantity Updated!",
+    "cardUpdatedSuccessDesc": "This card already existed in your collection. Its quantity was updated to x{count} without creating a duplicate entry.",
     "addAnotherCard": "+ Add Another Card",
     "finishBtn": "Done & Close"
   },
