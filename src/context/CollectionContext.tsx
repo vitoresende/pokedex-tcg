@@ -416,7 +416,7 @@ export const normalizeDeck = (rawDeck: Deck): Deck => {
 };
 
 const normalizeCards = (rawCards: Card[]): Card[] => {
-  const mappedList = rawCards.map(rawC => {
+  const mappedList: Card[] = rawCards.map((rawC): Card => {
     const c = {
       ...rawC,
       name_pt: fixMojibake(rawC.name_pt || ''),
@@ -457,7 +457,7 @@ const normalizeCards = (rawCards: Card[]): Card[] => {
         ...c,
         set_code: 'ME04',
         card_number: '084',
-        card_category: 'Energy',
+        card_category: 'Energy' as const,
         color_slug: 'energy',
         color_code: 'E',
         image_url: getStorageCardUrl('cri_084.png')
@@ -469,7 +469,7 @@ const normalizeCards = (rawCards: Card[]): Card[] => {
         ...c,
         set_code: 'UNM',
         card_number: '213',
-        card_category: 'Energy',
+        card_category: 'Energy' as const,
         color_slug: 'energy',
         color_code: 'C',
         image_url: getStorageCardUrl('unm_213.png')
@@ -493,7 +493,7 @@ const normalizeCards = (rawCards: Card[]): Card[] => {
         color_slug: 'energy',
         color_bg: COLOR_MAP[effectiveColor]?.bg || c.color_bg || '#F59E0B',
         image_url: finalImage,
-        card_category: 'Energy'
+        card_category: 'Energy' as const
       };
     }
 
