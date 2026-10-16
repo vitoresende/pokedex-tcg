@@ -16,7 +16,9 @@ interface AuthContextType {
   isAllowed: boolean;
   allowedEmails: string[];
   authError: string | null;
+  guestShareToken: string | null;
   clearAuthError: () => void;
+  exitGuestMode: () => void;
   loginWithGoogle: () => Promise<void>;
   logout: () => Promise<void>;
   loginAsDemoUser: (asAuthorized?: boolean) => void;
@@ -28,10 +30,28 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [user, setUser] = useState<AuthUser | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [authError, setAuthError] = useState<string | null>(null);
+  const [guestShareToken, setGuestShareToken] = useState<string | null>(() => {
+    if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search);
+      const token = params.get('share')?.trim();
+      return token || null;
+    }
+    return null;
+  });
   const allowedEmails = getAllowedEmails();
 
   const clearAuthError = () => {
     setAuthError(null);
+  };
+
+  const exitGuestMode = () => {
+    soundEffects.playClick();
+    setGuestShareToken(null);
+    if (typeof window !== 'undefined') {
+      const url = new URL(window.location.href);
+      url.searchParams.delete('share');
+      window.history.replaceState({}, '', url.pathname + url.search + url.hash);
+    }
   };
 
   useEffect(() => {
@@ -52,7 +72,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           isAllowed: allowed,
           token
         });
-        if (!allowed) {
+        if (!allowed && !guestShareToken) {
           soundEffects.playAlert();
         }
       } else {
@@ -62,7 +82,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     });
 
     return () => unsubscribe();
-  }, []);
+  }, [guestShareToken]);
 
   const loginWithGoogle = async () => {
     try {
@@ -146,7 +166,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         isAllowed: user ? user.isAllowed : false,
         allowedEmails,
         authError,
+        guestShareToken,
         clearAuthError,
+        exitGuestMode,
         loginWithGoogle,
         logout,
         loginAsDemoUser

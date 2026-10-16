@@ -21,7 +21,8 @@ export const RulesAndTypesPage: React.FC = () => {
   const { t, language } = useLanguage();
   const { 
     allSetsList, isSyncingSets, syncSetsMetadata,
-    allRaritiesList, isSyncingRarities, syncRaritiesMetadata 
+    allRaritiesList, isSyncingRarities, syncRaritiesMetadata,
+    isReadOnly
   } = useCollection();
 
   const handleSelectTab = (tab: 'types' | 'formats' | 'trainers' | 'conditions' | 'sets' | 'rarities') => {
@@ -535,15 +536,17 @@ export const RulesAndTypesPage: React.FC = () => {
               </div>
 
               {/* Sync Button */}
-              <button
-                onClick={() => syncSetsMetadata()}
-                disabled={isSyncingSets}
-                className="inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-pokedex-red/90 hover:bg-pokedex-red text-white font-bold text-xs font-mono rounded-xl border border-red-500/40 shadow-md hover:shadow-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap self-start sm:self-auto"
-                title={t('rules.syncSetsListBtn')}
-              >
-                <RefreshCw className={`w-4 h-4 ${isSyncingSets ? 'animate-spin' : ''}`} />
-                <span>{isSyncingSets ? t('profile.syncingSets') : t('rules.syncSetsListBtn')}</span>
-              </button>
+              {!isReadOnly && (
+                <button
+                  onClick={() => syncSetsMetadata()}
+                  disabled={isSyncingSets}
+                  className="inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-pokedex-red/90 hover:bg-pokedex-red text-white font-bold text-xs font-mono rounded-xl border border-red-500/40 shadow-md hover:shadow-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap self-start sm:self-auto"
+                  title={t('rules.syncSetsListBtn')}
+                >
+                  <RefreshCw className={`w-4 h-4 ${isSyncingSets ? 'animate-spin' : ''}`} />
+                  <span>{isSyncingSets ? t('profile.syncingSets') : t('rules.syncSetsListBtn')}</span>
+                </button>
+              )}
             </div>
 
             {/* Filter Bar: Search + Regulation Mark Selector */}
@@ -767,15 +770,17 @@ export const RulesAndTypesPage: React.FC = () => {
               </div>
 
               {/* Sync Button */}
-              <button
-                onClick={() => syncRaritiesMetadata()}
-                disabled={isSyncingRarities}
-                className="inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-pokedex-red/90 hover:bg-pokedex-red text-white font-bold text-xs font-mono rounded-xl border border-red-500/40 shadow-md hover:shadow-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap self-start sm:self-auto"
-                title={t('rules.syncRaritiesBtn')}
-              >
-                <RefreshCw className={`w-4 h-4 ${isSyncingRarities ? 'animate-spin' : ''}`} />
-                <span>{isSyncingRarities ? t('rules.syncingRarities') : t('rules.syncRaritiesBtn')}</span>
-              </button>
+              {!isReadOnly && (
+                <button
+                  onClick={() => syncRaritiesMetadata()}
+                  disabled={isSyncingRarities}
+                  className="inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-pokedex-red/90 hover:bg-pokedex-red text-white font-bold text-xs font-mono rounded-xl border border-red-500/40 shadow-md hover:shadow-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap self-start sm:self-auto"
+                  title={t('rules.syncRaritiesBtn')}
+                >
+                  <RefreshCw className={`w-4 h-4 ${isSyncingRarities ? 'animate-spin' : ''}`} />
+                  <span>{isSyncingRarities ? t('rules.syncingRarities') : t('rules.syncRaritiesBtn')}</span>
+                </button>
+              )}
             </div>
 
             {/* Search Input */}

@@ -14,11 +14,12 @@ interface PokedexPageProps {
 }
 
 export const PokedexPage: React.FC<PokedexPageProps> = ({ onNavigateToDeck }) => {
-  const { filteredCards, stats, selectedCard, setSelectedCard } = useCollection();
+  const { filteredCards, stats, selectedCard, setSelectedCard, isReadOnly } = useCollection();
   const { t } = useLanguage();
   const [addCardModalOpen, setAddCardModalOpen] = useState(false);
 
   const handleOpenAddModal = () => {
+    if (isReadOnly) return;
     soundEffects.playClick();
     setAddCardModalOpen(true);
   };
@@ -37,13 +38,15 @@ export const PokedexPage: React.FC<PokedexPageProps> = ({ onNavigateToDeck }) =>
           </p>
         </div>
 
-        <button
-          onClick={handleOpenAddModal}
-          className="bg-pokedex-red hover:bg-pokedex-lightred text-white font-bold px-4 py-2 rounded-2xl shadow-lg transition-all active:scale-95 text-xs font-mono flex items-center justify-center space-x-2 border border-white/20"
-        >
-          <Plus className="w-4 h-4 text-yellow-300" />
-          <span>{t('pokedex.addCardsBtn')}</span>
-        </button>
+        {!isReadOnly && (
+          <button
+            onClick={handleOpenAddModal}
+            className="bg-pokedex-red hover:bg-pokedex-lightred text-white font-bold px-4 py-2 rounded-2xl shadow-lg transition-all active:scale-95 text-xs font-mono flex items-center justify-center space-x-2 border border-white/20"
+          >
+            <Plus className="w-4 h-4 text-yellow-300" />
+            <span>{t('pokedex.addCardsBtn')}</span>
+          </button>
+        )}
       </div>
 
       {/* Pokédex Status Deck Matrix / KPI Banner */}

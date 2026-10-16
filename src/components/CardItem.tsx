@@ -12,7 +12,7 @@ interface CardItemProps {
 }
 
 export const CardItem: React.FC<CardItemProps> = ({ card, onSelect }) => {
-  const { favorites, toggleFavorite, updateCardQuantity } = useCollection();
+  const { favorites, toggleFavorite, updateCardQuantity, isReadOnly } = useCollection();
   const { t, getCardName, getCardSetName } = useLanguage();
   const isFavorite = favorites.includes(card.id);
 
@@ -26,11 +26,13 @@ export const CardItem: React.FC<CardItemProps> = ({ card, onSelect }) => {
 
   const handleQuantityDelta = (e: React.MouseEvent, delta: number) => {
     e.stopPropagation();
+    if (isReadOnly) return;
     updateCardQuantity(card.id, delta);
   };
 
   const handleFavoriteClick = (e: React.MouseEvent) => {
     e.stopPropagation();
+    if (isReadOnly) return;
     toggleFavorite(card.id);
   };
 
@@ -47,18 +49,23 @@ export const CardItem: React.FC<CardItemProps> = ({ card, onSelect }) => {
       <div className="aspect-[2.5/3.5] w-full relative mb-2">
         <HoloCard card={card} className="w-full h-full" />
         
-        {/* Favorite Button */}
-        <button
-          onClick={handleFavoriteClick}
-          aria-label={isFavorite ? t('cardItem.removeFavorite') : t('cardItem.addFavorite')}
-          className={`absolute top-2 left-2 z-30 p-1.5 rounded-full backdrop-blur-md transition-transform active:scale-90 ${
-            isFavorite 
-              ? 'bg-red-500/90 text-white shadow-md' 
-              : 'bg-black/60 text-slate-300 hover:text-white'
-          }`}
-        >
-          <Heart className={`w-3.5 h-3.5 ${isFavorite ? 'fill-current' : ''}`} />
-        </button>
+        {/* Favorite Button / Indicator */}
+        {(!isReadOnly || isFavorite) && (
+          <button
+            onClick={handleFavoriteClick}
+            disabled={isReadOnly}
+            aria-label={isFavorite ? t('cardItem.removeFavorite') : t('cardItem.addFavorite')}
+            className={`absolute top-2 left-2 z-30 p-1.5 rounded-full backdrop-blur-md transition-transform ${
+              !isReadOnly ? 'active:scale-90' : 'cursor-default'
+            } ${
+              isFavorite 
+                ? 'bg-red-500/90 text-white shadow-md' 
+                : 'bg-black/60 text-slate-300 hover:text-white'
+            }`}
+          >
+            <Heart className={`w-3.5 h-3.5 ${isFavorite ? 'fill-current' : ''}`} />
+          </button>
+        )}
 
         {/* Quantity Badge */}
         <div className={`absolute bottom-2 right-2 z-30 px-2 py-0.5 rounded-full text-xs font-mono font-black backdrop-blur-md border shadow-md flex items-center gap-1 ${
@@ -108,26 +115,32 @@ export const CardItem: React.FC<CardItemProps> = ({ card, onSelect }) => {
           <span className="text-[10px] text-slate-400 font-mono">
             {card.rarity_name}
           </span>
-          <div className="flex items-center space-x-1" onClick={(e) => e.stopPropagation()}>
-            <button
-              onClick={(e) => handleQuantityDelta(e, -1)}
-              disabled={card.quantity <= 0}
-              aria-label="Decrease quantity"
-              className="w-6 h-6 rounded bg-slate-800 hover:bg-slate-700 disabled:opacity-30 text-slate-200 flex items-center justify-center text-xs active:scale-95 transition-all"
-            >
-              <Minus className="w-3 h-3" />
-            </button>
-            <span className="w-5 text-center font-mono font-bold text-xs text-yellow-300">
-              {card.quantity}
+          {!isReadOnly ? (
+            <div className="flex items-center space-x-1" onClick={(e) => e.stopPropagation()}>
+              <button
+                onClick={(e) => handleQuantityDelta(e, -1)}
+                disabled={card.quantity <= 0}
+                aria-label="Decrease quantity"
+                className="w-6 h-6 rounded bg-slate-800 hover:bg-slate-700 disabled:opacity-30 text-slate-200 flex items-center justify-center text-xs active:scale-95 transition-all"
+              >
+                <Minus className="w-3 h-3" />
+              </button>
+              <span className="w-5 text-center font-mono font-bold text-xs text-yellow-300">
+                {card.quantity}
+              </span>
+              <button
+                onClick={(e) => handleQuantityDelta(e, 1)}
+                aria-label="Increase quantity"
+                className="w-6 h-6 rounded bg-pokedex-blue/80 hover:bg-pokedex-blue text-white flex items-center justify-center text-xs active:scale-95 transition-all shadow"
+              >
+                <Plus className="w-3 h-3" />
+              </button>
+            </div>
+          ) : (
+            <span className="font-mono font-bold text-xs text-yellow-300">
+              {card.quantity}x
             </span>
-            <button
-              onClick={(e) => handleQuantityDelta(e, 1)}
-              aria-label="Increase quantity"
-              className="w-6 h-6 rounded bg-pokedex-blue/80 hover:bg-pokedex-blue text-white flex items-center justify-center text-xs active:scale-95 transition-all shadow"
-            >
-              <Plus className="w-3 h-3" />
-            </button>
-          </div>
+          )}
         </div>
       </div>
     </div>

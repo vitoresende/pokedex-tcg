@@ -336,7 +336,23 @@ export const pt: TranslationKeys = {
     "syncSetsBtn": "Sincronizar Coleções Agora",
     "syncingSets": "Buscando Coleções na API...",
     "setsSyncSuccess": "{total} coleções sincronizadas com sucesso!",
-    "setsSyncExplanation": "Consulta a API oficial com todas as coleções do Pokémon TCG, calcula automaticamente os anos e as letras de rotação competitiva (D, E, F, G, H, I, J...) e grava as configurações no Firebase."
+    "setsSyncExplanation": "Consulta a API oficial com todas as coleções do Pokémon TCG, calcula automaticamente os anos e as letras de rotação competitiva (D, E, F, G, H, I, J...) e grava as configurações no Firebase.",
+    "shareTitle": "Compartilhamento da Coleção (Link Somente Leitura)",
+    "shareDesc": "Dê acesso seguro às suas cartas e decks para outro usuário via link secreto sem usar sua conta",
+    "shareActiveBadge": "Link Ativo",
+    "shareInactiveBadge": "Desativado",
+    "shareGenerateBtn": "Gerar Link de Compartilhamento",
+    "shareRotateBtn": "Gerar Novo Link",
+    "shareRevokeBtn": "Revogar Acesso",
+    "shareCopyBtn": "Copiar Link",
+    "shareCopiedBtn": "Link Copiado!",
+    "shareExplanation": "Qualquer pessoa com este link secreto poderá visualizar suas cartas e decks em Modo Somente Leitura (sem precisar fazer login). Ela não poderá adicionar, editar ou excluir nada. Ao gerar um novo link ou revogar o acesso, o link anterior deixa de funcionar imediatamente.",
+    "shareConfirmRevoke": "Deseja revogar o link atual? Qualquer pessoa usando este link perderá o acesso imediatamente.",
+    "shareConfirmRotate": "Deseja gerar um novo link? O link antigo deixará de funcionar imediatamente.",
+    "visitorModeTitle": "Modo Visitante (Somente Leitura)",
+    "visitorModeDesc": "Você está visualizando a coleção compartilhada de {owner}. Edições estão desativadas para proteger as cartas do proprietário.",
+    "visitorBannerText": "Modo Somente Leitura • Coleção de {owner}",
+    "exitVisitorBtn": "Sair do Modo Visitante"
   },
   "accessGate": {
     "booting": "Iniciando Pokédex OS...",
@@ -349,7 +365,10 @@ export const pt: TranslationKeys = {
     "signInTitle": "Identificação de Treinador",
     "welcomeDesc": "Faça login com sua conta Google autorizada para acessar sua coleção e decks de Pokémon.",
     "signInGoogle": "Entrar com o Google (Gmail)",
-    "authError": "Erro de Autenticação"
+    "authError": "Erro de Autenticação",
+    "invalidShareTitle": "Link Inválido ou Revogado",
+    "invalidShareDesc": "Este link de coleção compartilhada não está mais ativo ou foi revogado pelo treinador.",
+    "goToLoginBtn": "Ir para Login de Treinador"
   },
   "rules": {
     "title": "Regras, Tipos & Formatos de Batalha",

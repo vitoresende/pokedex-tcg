@@ -19,7 +19,7 @@ import { EditDeckModal } from '../components/EditDeckModal';
 import { AddCardModal } from '../components/AddCardModal';
 
 export const DecksPage: React.FC = () => {
-  const { decks, cards, selectedCard, setSelectedCard, deleteDeck, removeCardFromDeck } = useCollection();
+  const { decks, cards, selectedCard, setSelectedCard, deleteDeck, removeCardFromDeck, isReadOnly } = useCollection();
   const { 
     t, language, getCardName, 
     localizePlaybookTitle, localizePlaybookStep, 
@@ -89,6 +89,7 @@ export const DecksPage: React.FC = () => {
   }, [decks, deckSearchQuery]);
 
   const handleDeleteCurrentDeck = () => {
+    if (isReadOnly) return;
     if (confirm(t('decks.confirmDelete', { name: currentDeck.name }))) {
       soundEffects.playClick();
       deleteDeck(currentDeck.id);
@@ -202,22 +203,24 @@ export const DecksPage: React.FC = () => {
           </p>
         </div>
 
-        <div className="grid grid-cols-2 sm:flex sm:items-center gap-2 w-full sm:w-auto">
+        <div className="flex items-center gap-2 w-full sm:w-auto">
           <button
             onClick={() => { soundEffects.playClick(); setValidateModalOpen(true); }}
-            className="bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold px-2.5 sm:px-3.5 py-2 rounded-2xl shadow-lg transition-all active:scale-95 text-[11px] sm:text-xs font-mono flex items-center justify-center space-x-1.5 border border-slate-700 min-w-0"
+            className="flex-1 sm:flex-none bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold px-2.5 sm:px-3.5 py-2 rounded-2xl shadow-lg transition-all active:scale-95 text-[11px] sm:text-xs font-mono flex items-center justify-center space-x-1.5 border border-slate-700 min-w-0"
           >
             <CheckCircle2 className="w-4 h-4 text-yellow-400 shrink-0" />
             <span className="truncate">{t('decks.validateDeck')}</span>
           </button>
 
-          <button
-            onClick={() => { soundEffects.playClick(); setCreateModalOpen(true); }}
-            className="bg-pokedex-red hover:bg-pokedex-lightred text-white font-bold px-2.5 sm:px-4 py-2 rounded-2xl shadow-lg transition-all active:scale-95 text-[11px] sm:text-xs font-mono flex items-center justify-center space-x-1.5 border border-white/20 min-w-0"
-          >
-            <Plus className="w-4 h-4 text-yellow-300 shrink-0" />
-            <span className="truncate">{t('decks.createDeck')}</span>
-          </button>
+          {!isReadOnly && (
+            <button
+              onClick={() => { soundEffects.playClick(); setCreateModalOpen(true); }}
+              className="flex-1 sm:flex-none bg-pokedex-red hover:bg-pokedex-lightred text-white font-bold px-2.5 sm:px-4 py-2 rounded-2xl shadow-lg transition-all active:scale-95 text-[11px] sm:text-xs font-mono flex items-center justify-center space-x-1.5 border border-white/20 min-w-0"
+            >
+              <Plus className="w-4 h-4 text-yellow-300 shrink-0" />
+              <span className="truncate">{t('decks.createDeck')}</span>
+            </button>
+          )}
         </div>
       </div>
 
@@ -334,28 +337,30 @@ export const DecksPage: React.FC = () => {
           </div>
 
           {/* Action Buttons: Copy, Edit & Delete */}
-          <div className="grid grid-cols-2 sm:flex sm:items-center gap-2 w-full sm:w-auto">
-            <button
-              onClick={() => { soundEffects.playClick(); setEditModalOpen(true); }}
-              className="bg-blue-600/90 hover:bg-blue-600 text-white font-bold px-2.5 sm:px-3.5 py-2 rounded-xl border border-blue-400/40 text-[11px] sm:text-xs flex items-center justify-center space-x-1.5 transition-all active:scale-95 shadow-md font-mono min-w-0"
-            >
-              <Pencil className="w-3.5 h-3.5 text-yellow-300 shrink-0" />
-              <span className="truncate">{t('decks.editDeckBtn')}</span>
-            </button>
+          <div className="flex flex-wrap sm:flex-nowrap items-center gap-2 w-full sm:w-auto">
+            {!isReadOnly && (
+              <button
+                onClick={() => { soundEffects.playClick(); setEditModalOpen(true); }}
+                className="flex-1 sm:flex-none bg-blue-600/90 hover:bg-blue-600 text-white font-bold px-2.5 sm:px-3.5 py-2 rounded-xl border border-blue-400/40 text-[11px] sm:text-xs flex items-center justify-center space-x-1.5 transition-all active:scale-95 shadow-md font-mono min-w-0"
+              >
+                <Pencil className="w-3.5 h-3.5 text-yellow-300 shrink-0" />
+                <span className="truncate">{t('decks.editDeckBtn')}</span>
+              </button>
+            )}
 
             <button
               onClick={handleCopyDecklist}
-              className="bg-pokedex-darker hover:bg-slate-800 text-slate-100 font-bold px-2.5 sm:px-3.5 py-2 rounded-xl border border-slate-700 text-[11px] sm:text-xs flex items-center justify-center space-x-1.5 transition-all active:scale-95 shadow-md font-mono min-w-0"
+              className="flex-1 sm:flex-none bg-pokedex-darker hover:bg-slate-800 text-slate-100 font-bold px-2.5 sm:px-3.5 py-2 rounded-xl border border-slate-700 text-[11px] sm:text-xs flex items-center justify-center space-x-1.5 transition-all active:scale-95 shadow-md font-mono min-w-0"
             >
               {copied ? <Check className="w-4 h-4 text-emerald-400 shrink-0" /> : <Copy className="w-4 h-4 text-yellow-300 shrink-0" />}
               <span className="truncate">{copied ? t('decks.decklistCopied') : t('decks.exportLive')}</span>
             </button>
 
-            {decks.length > 1 && (
+            {!isReadOnly && decks.length > 1 && (
               <button
                 onClick={handleDeleteCurrentDeck}
                 title={t('decks.deleteDeck')}
-                className="col-span-2 sm:col-span-1 p-2 rounded-xl bg-red-950/60 hover:bg-red-900 border border-red-800/60 text-red-300 transition-colors flex items-center justify-center gap-1.5 text-xs font-mono"
+                className="w-full sm:w-auto p-2 rounded-xl bg-red-950/60 hover:bg-red-900 border border-red-800/60 text-red-300 transition-colors flex items-center justify-center gap-1.5 text-xs font-mono"
               >
                 <Trash2 className="w-4 h-4" />
                 <span className="sm:hidden">{t('decks.deleteDeck')}</span>
@@ -418,13 +423,15 @@ export const DecksPage: React.FC = () => {
                 {t('decks.playbook')}
               </h3>
             </div>
-            <button
-              onClick={() => { soundEffects.playClick(); setEditModalOpen(true); }}
-              className="sm:hidden text-[11px] text-yellow-300 hover:text-yellow-200 flex items-center gap-1 bg-black/40 px-2.5 py-1 rounded-lg border border-slate-700 font-mono"
-            >
-              <Pencil className="w-3 h-3" />
-              <span>{t('common.edit')}</span>
-            </button>
+            {!isReadOnly && (
+              <button
+                onClick={() => { soundEffects.playClick(); setEditModalOpen(true); }}
+                className="sm:hidden text-[11px] text-yellow-300 hover:text-yellow-200 flex items-center gap-1 bg-black/40 px-2.5 py-1 rounded-lg border border-slate-700 font-mono"
+              >
+                <Pencil className="w-3 h-3" />
+                <span>{t('common.edit')}</span>
+              </button>
+            )}
           </div>
 
           <div className="flex items-center gap-2 w-full sm:w-auto">
@@ -455,13 +462,15 @@ export const DecksPage: React.FC = () => {
               </button>
             </div>
 
-            <button
-              onClick={() => { soundEffects.playClick(); setEditModalOpen(true); }}
-              className="hidden sm:flex text-xs text-yellow-300 hover:text-yellow-200 items-center gap-1.5 bg-black/40 hover:bg-black/60 px-3 py-1.5 rounded-xl border border-slate-700 font-mono transition-colors"
-            >
-              <Pencil className="w-3.5 h-3.5" />
-              <span>{t('decks.customizePlaybook')}</span>
-            </button>
+            {!isReadOnly && (
+              <button
+                onClick={() => { soundEffects.playClick(); setEditModalOpen(true); }}
+                className="hidden sm:flex text-xs text-yellow-300 hover:text-yellow-200 items-center gap-1.5 bg-black/40 hover:bg-black/60 px-3 py-1.5 rounded-xl border border-slate-700 font-mono transition-colors"
+              >
+                <Pencil className="w-3.5 h-3.5" />
+                <span>{t('decks.customizePlaybook')}</span>
+              </button>
+            )}
           </div>
         </div>
 
@@ -519,13 +528,15 @@ export const DecksPage: React.FC = () => {
                       <span className="font-mono font-bold text-yellow-300">{c.count}x</span>
                       <span className="text-slate-100 font-semibold truncate hover:text-cyan-300">{displayName}</span>
                     </div>
-                    <button
-                      onClick={() => removeCardFromDeck(currentDeck.id, c.name)}
-                      title={t('decks.removeFromDeck')}
-                      className="text-slate-500 hover:text-red-400 p-1"
-                    >
-                      <Trash2 className="w-3 h-3" />
-                    </button>
+                    {!isReadOnly && (
+                      <button
+                        onClick={() => removeCardFromDeck(currentDeck.id, c.name)}
+                        title={t('decks.removeFromDeck')}
+                        className="text-slate-500 hover:text-red-400 p-1"
+                      >
+                        <Trash2 className="w-3 h-3" />
+                      </button>
+                    )}
                   </div>
                 );
               })}
@@ -553,13 +564,15 @@ export const DecksPage: React.FC = () => {
                       <span className="font-mono font-bold text-yellow-300">{c.count}x</span>
                       <span className="text-slate-100 font-semibold truncate hover:text-cyan-300">{displayName}</span>
                     </div>
-                    <button
-                      onClick={() => removeCardFromDeck(currentDeck.id, c.name)}
-                      title={t('decks.removeFromDeck')}
-                      className="text-slate-500 hover:text-red-400 p-1"
-                    >
-                      <Trash2 className="w-3 h-3" />
-                    </button>
+                    {!isReadOnly && (
+                      <button
+                        onClick={() => removeCardFromDeck(currentDeck.id, c.name)}
+                        title={t('decks.removeFromDeck')}
+                        className="text-slate-500 hover:text-red-400 p-1"
+                      >
+                        <Trash2 className="w-3 h-3" />
+                      </button>
+                    )}
                   </div>
                 );
               })}
@@ -587,13 +600,15 @@ export const DecksPage: React.FC = () => {
                       <span className="font-mono font-bold text-yellow-300">{c.count}x</span>
                       <span className="text-slate-100 font-semibold truncate hover:text-cyan-300">{displayName}</span>
                     </div>
-                    <button
-                      onClick={() => removeCardFromDeck(currentDeck.id, c.name)}
-                      title={t('decks.removeFromDeck')}
-                      className="text-slate-500 hover:text-red-400 p-1"
-                    >
-                      <Trash2 className="w-3 h-3" />
-                    </button>
+                    {!isReadOnly && (
+                      <button
+                        onClick={() => removeCardFromDeck(currentDeck.id, c.name)}
+                        title={t('decks.removeFromDeck')}
+                        className="text-slate-500 hover:text-red-400 p-1"
+                      >
+                        <Trash2 className="w-3 h-3" />
+                      </button>
+                    )}
                   </div>
                 );
               })}
@@ -610,17 +625,21 @@ export const DecksPage: React.FC = () => {
       />
 
       {/* Create New Deck Modal */}
-      <CreateDeckModal
-        isOpen={createModalOpen}
-        onClose={() => setCreateModalOpen(false)}
-      />
+      {!isReadOnly && (
+        <CreateDeckModal
+          isOpen={createModalOpen}
+          onClose={() => setCreateModalOpen(false)}
+        />
+      )}
 
       {/* Edit Deck & Strategic Playbook Modal */}
-      <EditDeckModal
-        deck={currentDeck}
-        isOpen={editModalOpen}
-        onClose={() => setEditModalOpen(false)}
-      />
+      {!isReadOnly && (
+        <EditDeckModal
+          deck={currentDeck}
+          isOpen={editModalOpen}
+          onClose={() => setEditModalOpen(false)}
+        />
+      )}
 
       {/* Deck Validator Modal */}
       {validateModalOpen && (
@@ -739,18 +758,20 @@ export const DecksPage: React.FC = () => {
             </div>
 
             {/* Modal Footer */}
-            <div className="pt-3 border-t border-slate-800 flex items-center justify-between gap-2">
-              <button
-                onClick={() => {
-                  setIsDeckPickerOpen(false);
-                  setCreateModalOpen(true);
-                }}
-                className="w-full py-2.5 px-4 rounded-xl bg-slate-800 hover:bg-slate-700 text-yellow-300 font-bold text-xs font-mono flex items-center justify-center gap-2 transition-all border border-slate-700"
-              >
-                <Plus className="w-4 h-4" />
-                <span>{t('decks.createDeck')}</span>
-              </button>
-            </div>
+            {!isReadOnly && (
+              <div className="pt-3 border-t border-slate-800 flex items-center justify-between gap-2">
+                <button
+                  onClick={() => {
+                    setIsDeckPickerOpen(false);
+                    setCreateModalOpen(true);
+                  }}
+                  className="w-full py-2.5 px-4 rounded-xl bg-slate-800 hover:bg-slate-700 text-yellow-300 font-bold text-xs font-mono flex items-center justify-center gap-2 transition-all border border-slate-700"
+                >
+                  <Plus className="w-4 h-4" />
+                  <span>{t('decks.createDeck')}</span>
+                </button>
+              </div>
+            )}
           </div>
         </div>
       )}

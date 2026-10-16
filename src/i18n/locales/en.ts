@@ -334,7 +334,23 @@ export const en = {
     "syncSetsBtn": "Sync TCG Sets Now",
     "syncingSets": "Fetching Sets from API...",
     "setsSyncSuccess": "{total} sets synced successfully!",
-    "setsSyncExplanation": "Fetches all Pokémon TCG expansions from the official open API, calculates release years and competitive regulation mark rotation letters (D, E, F, G, H, I, J...), and saves configuration to Firebase."
+    "setsSyncExplanation": "Fetches all Pokémon TCG expansions from the official open API, calculates release years and competitive regulation mark rotation letters (D, E, F, G, H, I, J...), and saves configuration to Firebase.",
+    "shareTitle": "Collection Sharing (Read-Only Visitor Link)",
+    "shareDesc": "Allow another user to view your cards and decks safely via a secret link without logging into your account",
+    "shareActiveBadge": "Link Active",
+    "shareInactiveBadge": "Disabled",
+    "shareGenerateBtn": "Generate Share Link",
+    "shareRotateBtn": "Generate New Link",
+    "shareRevokeBtn": "Revoke Access",
+    "shareCopyBtn": "Copy Link",
+    "shareCopiedBtn": "Link Copied!",
+    "shareExplanation": "Anyone with this secret link can browse your cards and decks in Read-Only mode. They cannot add, edit, or delete anything. Revoking or generating a new link immediately invalidates the previous link.",
+    "shareConfirmRevoke": "Revoke the current share link? Anyone using it will immediately lose access.",
+    "shareConfirmRotate": "Generate a new link? The previous link will stop working immediately.",
+    "visitorModeTitle": "Read-Only Visitor Mode",
+    "visitorModeDesc": "You are viewing the shared collection of {owner}. Modifications are disabled to protect the owner's cards.",
+    "visitorBannerText": "Read-Only Mode • Collection of {owner}",
+    "exitVisitorBtn": "Exit Visitor Mode"
   },
   "accessGate": {
     "booting": "Booting Pokédex OS...",
@@ -347,7 +363,10 @@ export const en = {
     "signInTitle": "Sign In",
     "welcomeDesc": "Sign in with your authorized Google account to access your Pokémon collection and decks.",
     "signInGoogle": "Sign In with Google (Gmail)",
-    "authError": "Authentication Error"
+    "authError": "Authentication Error",
+    "invalidShareTitle": "Invalid or Revoked Link",
+    "invalidShareDesc": "This shared collection link is no longer active or was revoked by the trainer.",
+    "goToLoginBtn": "Go to Trainer Sign In"
   },
   "rules": {
     "title": "Rules, Types & Battle Formats",

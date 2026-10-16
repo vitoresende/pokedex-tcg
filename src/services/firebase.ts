@@ -7,7 +7,7 @@ import {
   onAuthStateChanged,
   User as FirebaseUser
 } from 'firebase/auth';
-import { getFirestore, doc, setDoc, getDoc, collection, Firestore } from 'firebase/firestore';
+import { getFirestore, doc, setDoc, getDoc, deleteDoc, collection, Firestore } from 'firebase/firestore';
 import { getStorage, ref, uploadBytes, getDownloadURL, FirebaseStorage } from 'firebase/storage';
 
 // Configuration read from environment variables (.env)
@@ -93,7 +93,28 @@ export async function logoutUser(): Promise<void> {
 }
 
 /**
+ * Generates a high-entropy secret token for read-only collection sharing
+ */
+export function generateSecureShareToken(): string {
+  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+  const randomBytes = new Uint8Array(24);
+  if (typeof window !== 'undefined' && window.crypto && window.crypto.getRandomValues) {
+    window.crypto.getRandomValues(randomBytes);
+  } else {
+    for (let i = 0; i < 24; i++) {
+      randomBytes[i] = Math.floor(Math.random() * 256);
+    }
+  }
+  let token = 'pkx_';
+  for (let i = 0; i < randomBytes.length; i++) {
+    token += chars[randomBytes[i] % chars.length];
+  }
+  return token;
+}
+
+/**
  * Sync user collection, custom cards, and decks to Cloud Firestore
+ * Also updates the public read-only snapshot if a shareToken is active.
  */
 export async function syncUserCollectionToFirestore(
   userId: string, 
@@ -103,19 +124,128 @@ export async function syncUserCollectionToFirestore(
     favorites: string[];
     decks?: any[];
     cards?: any[];
+    shareToken?: string | null;
+    ownerName?: string;
   }
 ) {
   if (!db || !userId) return false;
   try {
+    const timestamp = new Date().toISOString();
     const userRef = doc(db, 'users', userId);
     await setDoc(userRef, {
       ...data,
-      lastUpdated: new Date().toISOString()
+      lastUpdated: timestamp
     }, { merge: true });
+
+    if (data.shareToken) {
+      const sharedRef = doc(db, 'shared_collections', data.shareToken);
+      await setDoc(sharedRef, {
+        ownerUid: userId,
+        ownerName: data.ownerName || 'Treinador Pokémon',
+        quantities: data.quantities,
+        notes: data.notes,
+        favorites: data.favorites,
+        decks: data.decks || [],
+        cards: data.cards || [],
+        lastUpdated: timestamp
+      }, { merge: true });
+    }
     return true;
   } catch (error) {
     console.error('Error syncing to Firestore:', error);
     throw error;
+  }
+}
+
+/**
+ * Creates or rotates a share link token and publishes the read-only collection snapshot
+ */
+export async function publishSharedCollectionToFirestore(
+  userId: string,
+  ownerName: string,
+  newToken: string,
+  previousToken: string | null,
+  data: {
+    quantities: Record<string, number>;
+    notes: Record<string, string>;
+    favorites: string[];
+    decks: any[];
+    cards: any[];
+  }
+): Promise<boolean> {
+  if (!db || !userId || !newToken) return false;
+  try {
+    if (previousToken && previousToken !== newToken) {
+      try {
+        await deleteDoc(doc(db, 'shared_collections', previousToken));
+      } catch (e) {
+        console.warn('Could not delete previous share token doc:', e);
+      }
+    }
+
+    const timestamp = new Date().toISOString();
+    const sharedRef = doc(db, 'shared_collections', newToken);
+    await setDoc(sharedRef, {
+      ownerUid: userId,
+      ownerName: ownerName || 'Treinador Pokémon',
+      quantities: data.quantities,
+      notes: data.notes,
+      favorites: data.favorites,
+      decks: data.decks,
+      cards: data.cards,
+      lastUpdated: timestamp
+    });
+
+    const userRef = doc(db, 'users', userId);
+    await setDoc(userRef, {
+      shareToken: newToken,
+      lastUpdated: timestamp
+    }, { merge: true });
+
+    return true;
+  } catch (error) {
+    console.error('Error publishing shared collection:', error);
+    throw error;
+  }
+}
+
+/**
+ * Revokes an active share token and removes the shared collection snapshot from Firestore
+ */
+export async function revokeSharedCollectionFromFirestore(
+  userId: string,
+  shareToken: string
+): Promise<boolean> {
+  if (!db || !userId || !shareToken) return false;
+  try {
+    await deleteDoc(doc(db, 'shared_collections', shareToken));
+    const userRef = doc(db, 'users', userId);
+    await setDoc(userRef, {
+      shareToken: null,
+      lastUpdated: new Date().toISOString()
+    }, { merge: true });
+    return true;
+  } catch (error) {
+    console.error('Error revoking shared collection:', error);
+    throw error;
+  }
+}
+
+/**
+ * Loads a shared collection snapshot by its secret token (Read-Only Visitor Mode)
+ */
+export async function loadSharedCollectionFromFirestore(shareToken: string) {
+  if (!db || !shareToken) return null;
+  try {
+    const sharedRef = doc(db, 'shared_collections', shareToken);
+    const snap = await getDoc(sharedRef);
+    if (snap.exists()) {
+      return snap.data();
+    }
+    return null;
+  } catch (error) {
+    console.error('Error loading shared collection from Firestore:', error);
+    return null;
   }
 }
 

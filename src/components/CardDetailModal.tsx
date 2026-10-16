@@ -23,7 +23,7 @@ interface CardDetailModalProps {
 export const CardDetailModal: React.FC<CardDetailModalProps> = ({ card, onClose, onNavigateToDeck }) => {
   const { 
     cards, favorites, toggleFavorite, updateCardQuantity, notes, 
-    updateCardNote, decks, addCardToDeck, updateCard, deleteCard 
+    updateCardNote, decks, addCardToDeck, updateCard, deleteCard, isReadOnly 
   } = useCollection();
   const { t, getCardName, getCardSetName, language } = useLanguage();
   
@@ -49,7 +49,7 @@ export const CardDetailModal: React.FC<CardDetailModalProps> = ({ card, onClose,
   }, [card, notes]);
 
   const handleSearchOnlineScans = async () => {
-    if (!card) return;
+    if (!card || isReadOnly) return;
     soundEffects.playClick();
     setIsSearchingScans(true);
     try {
@@ -67,7 +67,7 @@ export const CardDetailModal: React.FC<CardDetailModalProps> = ({ card, onClose,
   };
 
   const handleApplyScan = async (scan: CardLookupResult) => {
-    if (!card) return;
+    if (!card || isReadOnly) return;
     soundEffects.playScan();
     // Normalize SVI to SV1 to maintain consistency with SV1 catalog & assets
     const normalizedSetCode = scan.setCode === 'SVI' ? 'SV1' : (card.set_code || scan.setCode);
@@ -110,6 +110,7 @@ export const CardDetailModal: React.FC<CardDetailModalProps> = ({ card, onClose,
   const setName = getCardSetName(card);
 
   const handleSaveNote = () => {
+    if (isReadOnly) return;
     soundEffects.playClick();
     updateCardNote(card.id, localNote);
     setNoteSaved(true);
@@ -125,13 +126,14 @@ export const CardDetailModal: React.FC<CardDetailModalProps> = ({ card, onClose,
   };
 
   const handleAddToDeck = () => {
-    if (!selectedDeckForAdd) return;
+    if (isReadOnly || !selectedDeckForAdd) return;
     addCardToDeck(selectedDeckForAdd, card, 1);
     setCardAddedToDeck(true);
     setTimeout(() => setCardAddedToDeck(false), 2000);
   };
 
   const handleDelete = () => {
+    if (isReadOnly) return;
     if (confirm(t('cardDetail.confirmDelete', { name: cardName }))) {
       deleteCard(card.id);
       onClose();
@@ -171,7 +173,8 @@ export const CardDetailModal: React.FC<CardDetailModalProps> = ({ card, onClose,
             {/* Quick Actions: Favorite & Quantity */}
             <div className="w-full flex items-center justify-between bg-pokedex-darker p-3 rounded-2xl border border-slate-800">
               <button
-                onClick={() => toggleFavorite(card.id)}
+                onClick={() => !isReadOnly && toggleFavorite(card.id)}
+                disabled={isReadOnly}
                 className={`flex items-center space-x-2 px-3 py-1.5 rounded-xl text-xs font-bold transition-colors ${
                   isFavorite ? 'bg-red-500/20 text-red-400 border border-red-500/40' : 'bg-slate-800 text-slate-300'
                 }`}
@@ -182,111 +185,119 @@ export const CardDetailModal: React.FC<CardDetailModalProps> = ({ card, onClose,
 
               <div className="flex items-center space-x-2">
                 <span className="text-xs text-slate-400 font-mono">{t('cardDetail.qty')}</span>
-                <button
-                  onClick={() => updateCardQuantity(card.id, -1)}
-                  disabled={card.quantity <= 0}
-                  aria-label="Decrease quantity"
-                  className="w-7 h-7 rounded-lg bg-slate-800 hover:bg-slate-700 disabled:opacity-30 text-white flex items-center justify-center text-sm"
-                >
-                  <Minus className="w-3.5 h-3.5" />
-                </button>
+                {!isReadOnly && (
+                  <button
+                    onClick={() => updateCardQuantity(card.id, -1)}
+                    disabled={card.quantity <= 0}
+                    aria-label="Decrease quantity"
+                    className="w-7 h-7 rounded-lg bg-slate-800 hover:bg-slate-700 disabled:opacity-30 text-white flex items-center justify-center text-sm"
+                  >
+                    <Minus className="w-3.5 h-3.5" />
+                  </button>
+                )}
                 <span className="font-mono font-bold text-sm text-yellow-300 w-6 text-center">
                   {card.quantity}
                 </span>
-                <button
-                  onClick={() => updateCardQuantity(card.id, 1)}
-                  aria-label="Increase quantity"
-                  className="w-7 h-7 rounded-lg bg-pokedex-blue hover:bg-blue-600 text-white flex items-center justify-center text-sm"
-                >
-                  <Plus className="w-3.5 h-3.5" />
-                </button>
+                {!isReadOnly && (
+                  <button
+                    onClick={() => updateCardQuantity(card.id, 1)}
+                    aria-label="Increase quantity"
+                    className="w-7 h-7 rounded-lg bg-pokedex-blue hover:bg-blue-600 text-white flex items-center justify-center text-sm"
+                  >
+                    <Plus className="w-3.5 h-3.5" />
+                  </button>
+                )}
               </div>
             </div>
 
-            {/* Image / Scan Correction Trigger */}
-            <div className="w-full mt-3">
-              <button
-                type="button"
-                onClick={() => {
-                  soundEffects.playClick();
-                  setIsFixingImage(!isFixingImage);
-                  if (!isFixingImage && scanResults.length === 0) {
-                    handleSearchOnlineScans();
-                  }
-                }}
-                className="w-full py-1.5 px-3 rounded-xl bg-slate-800/80 hover:bg-slate-700 text-yellow-300 hover:text-yellow-200 text-[11px] font-mono flex items-center justify-center gap-1.5 transition-colors border border-slate-700"
-              >
-                <ImageIcon className="w-3.5 h-3.5 text-yellow-400" />
-                <span>{language === 'pt' ? 'Buscar / Atualizar Imagem Oficial' : 'Search / Update Official Scan'}</span>
-              </button>
+            {/* Image / Scan Correction Trigger & Delete Card (Owner only) */}
+            {!isReadOnly && (
+              <>
+                <div className="w-full mt-3">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      soundEffects.playClick();
+                      setIsFixingImage(!isFixingImage);
+                      if (!isFixingImage && scanResults.length === 0) {
+                        handleSearchOnlineScans();
+                      }
+                    }}
+                    className="w-full py-1.5 px-3 rounded-xl bg-slate-800/80 hover:bg-slate-700 text-yellow-300 hover:text-yellow-200 text-[11px] font-mono flex items-center justify-center gap-1.5 transition-colors border border-slate-700"
+                  >
+                    <ImageIcon className="w-3.5 h-3.5 text-yellow-400" />
+                    <span>{language === 'pt' ? 'Buscar / Atualizar Imagem Oficial' : 'Search / Update Official Scan'}</span>
+                  </button>
 
-              {imageFixSuccess && (
-                <p className="text-emerald-400 text-[10px] font-mono text-center mt-1 flex items-center justify-center gap-1 font-bold">
-                  <CheckCircle2 className="w-3 h-3" />
-                  <span>{language === 'pt' ? 'Imagem atualizada com sucesso!' : 'Image updated successfully!'}</span>
-                </p>
-              )}
-
-              {/* Scans Drawer */}
-              {isFixingImage && (
-                <div className="mt-2 p-2.5 rounded-xl bg-slate-950 border border-slate-800 space-y-2">
-                  <div className="flex items-center justify-between">
-                    <span className="text-[10px] text-slate-400 font-mono uppercase">
-                      {language === 'pt' ? 'Scans Oficiais Encontrados:' : 'Found Official Scans:'}
-                    </span>
-                    <button
-                      type="button"
-                      onClick={handleSearchOnlineScans}
-                      disabled={isSearchingScans}
-                      className="text-yellow-400 hover:text-yellow-300 text-[10px] font-mono flex items-center gap-1"
-                    >
-                      <RefreshCw className={`w-3 h-3 ${isSearchingScans ? 'animate-spin' : ''}`} />
-                      <span>{language === 'pt' ? 'Rebuscar' : 'Refresh'}</span>
-                    </button>
-                  </div>
-
-                  {isSearchingScans ? (
-                    <div className="py-4 text-center text-slate-400 text-xs font-mono flex items-center justify-center gap-2">
-                      <Loader2 className="w-4 h-4 animate-spin text-yellow-400" />
-                      <span>{language === 'pt' ? 'Consultando base de scans...' : 'Looking up scans...'}</span>
-                    </div>
-                  ) : scanResults.length > 0 ? (
-                    <div className="grid grid-cols-2 gap-2 max-h-48 overflow-y-auto pr-1 no-scrollbar">
-                      {scanResults.map(scan => (
-                        <button
-                          key={scan.id}
-                          type="button"
-                          onClick={() => handleApplyScan(scan)}
-                          className="flex flex-col items-center p-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 border border-slate-800 hover:border-yellow-400 text-left transition-all group"
-                        >
-                          {scan.imageUrl ? (
-                            <img src={scan.imageUrl} alt="" className="w-14 h-20 object-cover rounded shadow group-hover:scale-105 transition-transform" />
-                          ) : (
-                            <div className="w-14 h-20 bg-slate-800 rounded flex items-center justify-center text-[9px] text-slate-500">Sem scan</div>
-                          )}
-                          <span className="font-bold text-[10px] text-white mt-1 text-center truncate w-full">{scan.setName}</span>
-                          <span className="text-[9px] text-slate-400 font-mono text-center">#{scan.cardNumber}</span>
-                          <span className="text-[9px] text-yellow-400 font-bold mt-0.5 group-hover:underline">Aplicar</span>
-                        </button>
-                      ))}
-                    </div>
-                  ) : (
-                    <p className="text-[10px] text-slate-400 font-mono text-center py-2">
-                      {language === 'pt' ? 'Nenhum scan correspondente encontrado automaticamente.' : 'No matching scans found automatically.'}
+                  {imageFixSuccess && (
+                    <p className="text-emerald-400 text-[10px] font-mono text-center mt-1 flex items-center justify-center gap-1 font-bold">
+                      <CheckCircle2 className="w-3 h-3" />
+                      <span>{language === 'pt' ? 'Imagem atualizada com sucesso!' : 'Image updated successfully!'}</span>
                     </p>
                   )}
-                </div>
-              )}
-            </div>
 
-            {/* Delete Card Button */}
-            <button
-              onClick={handleDelete}
-              className="mt-3 text-red-400/80 hover:text-red-400 text-[11px] font-mono flex items-center gap-1.5 transition-colors"
-            >
-              <Trash2 className="w-3.5 h-3.5" />
-              <span>{t('cardDetail.removeCard')}</span>
-            </button>
+                  {/* Scans Drawer */}
+                  {isFixingImage && (
+                    <div className="mt-2 p-2.5 rounded-xl bg-slate-950 border border-slate-800 space-y-2">
+                      <div className="flex items-center justify-between">
+                        <span className="text-[10px] text-slate-400 font-mono uppercase">
+                          {language === 'pt' ? 'Scans Oficiais Encontrados:' : 'Found Official Scans:'}
+                        </span>
+                        <button
+                          type="button"
+                          onClick={handleSearchOnlineScans}
+                          disabled={isSearchingScans}
+                          className="text-yellow-400 hover:text-yellow-300 text-[10px] font-mono flex items-center gap-1"
+                        >
+                          <RefreshCw className={`w-3 h-3 ${isSearchingScans ? 'animate-spin' : ''}`} />
+                          <span>{language === 'pt' ? 'Rebuscar' : 'Refresh'}</span>
+                        </button>
+                      </div>
+
+                      {isSearchingScans ? (
+                        <div className="py-4 text-center text-slate-400 text-xs font-mono flex items-center justify-center gap-2">
+                          <Loader2 className="w-4 h-4 animate-spin text-yellow-400" />
+                          <span>{language === 'pt' ? 'Consultando base de scans...' : 'Looking up scans...'}</span>
+                        </div>
+                      ) : scanResults.length > 0 ? (
+                        <div className="grid grid-cols-2 gap-2 max-h-48 overflow-y-auto pr-1 no-scrollbar">
+                          {scanResults.map(scan => (
+                            <button
+                              key={scan.id}
+                              type="button"
+                              onClick={() => handleApplyScan(scan)}
+                              className="flex flex-col items-center p-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 border border-slate-800 hover:border-yellow-400 text-left transition-all group"
+                            >
+                              {scan.imageUrl ? (
+                                <img src={scan.imageUrl} alt="" className="w-14 h-20 object-cover rounded shadow group-hover:scale-105 transition-transform" />
+                              ) : (
+                                <div className="w-14 h-20 bg-slate-800 rounded flex items-center justify-center text-[9px] text-slate-500">Sem scan</div>
+                              )}
+                              <span className="font-bold text-[10px] text-white mt-1 text-center truncate w-full">{scan.setName}</span>
+                              <span className="text-[9px] text-slate-400 font-mono text-center">#{scan.cardNumber}</span>
+                              <span className="text-[9px] text-yellow-400 font-bold mt-0.5 group-hover:underline">Aplicar</span>
+                            </button>
+                          ))}
+                        </div>
+                      ) : (
+                        <p className="text-[10px] text-slate-400 font-mono text-center py-2">
+                          {language === 'pt' ? 'Nenhum scan correspondente encontrado automaticamente.' : 'No matching scans found automatically.'}
+                        </p>
+                      )}
+                    </div>
+                  )}
+                </div>
+
+                {/* Delete Card Button */}
+                <button
+                  onClick={handleDelete}
+                  className="mt-3 text-red-400/80 hover:text-red-400 text-[11px] font-mono flex items-center gap-1.5 transition-colors"
+                >
+                  <Trash2 className="w-3.5 h-3.5" />
+                  <span>{t('cardDetail.removeCard')}</span>
+                </button>
+              </>
+            )}
           </div>
 
           {/* Right Column: Detailed Stats, Deck Inclusion & Notes */}
@@ -354,7 +365,7 @@ export const CardDetailModal: React.FC<CardDetailModalProps> = ({ card, onClose,
             </div>
 
             {/* Add to Deck Selector */}
-            {decks.length > 0 && (
+            {!isReadOnly && decks.length > 0 && (
               <div className="bg-pokedex-darker p-3 rounded-2xl border border-slate-800 space-y-2 w-full overflow-hidden">
                 <div className="flex items-center justify-between text-[10px] text-slate-400 uppercase font-mono">
                   <span>{t('cardDetail.addToDeck')}</span>
@@ -448,27 +459,36 @@ export const CardDetailModal: React.FC<CardDetailModalProps> = ({ card, onClose,
             )}
 
             {/* Personal Notes / Strategy Comment */}
-            <div className="space-y-1.5">
-              <label htmlFor="card-note-input" className="text-slate-400 flex items-center justify-between">
-                <span>{t('cardDetail.personalNotes')}</span>
-                {noteSaved && <span className="text-emerald-400 text-[10px]">{t('cardDetail.saved')}</span>}
-              </label>
-              <textarea
-                id="card-note-input"
-                value={localNote}
-                onChange={(e) => setLocalNote(e.target.value)}
-                placeholder={t('cardDetail.notesPlaceholder')}
-                rows={2}
-                className="w-full bg-pokedex-darker border border-slate-800 rounded-xl p-2.5 text-slate-200 focus:outline-none focus:border-pokedex-blue text-xs resize-none"
-              />
-              <button
-                onClick={handleSaveNote}
-                className="w-full bg-slate-800 hover:bg-slate-700 text-white font-bold py-1.5 rounded-xl border border-slate-700 transition-colors flex items-center justify-center gap-1.5"
-              >
-                <Save className="w-3.5 h-3.5 text-yellow-300" />
-                <span>{t('cardDetail.saveCardNote')}</span>
-              </button>
-            </div>
+            {!isReadOnly ? (
+              <div className="space-y-1.5">
+                <label htmlFor="card-note-input" className="text-slate-400 flex items-center justify-between">
+                  <span>{t('cardDetail.personalNotes')}</span>
+                  {noteSaved && <span className="text-emerald-400 text-[10px]">{t('cardDetail.saved')}</span>}
+                </label>
+                <textarea
+                  id="card-note-input"
+                  value={localNote}
+                  onChange={(e) => setLocalNote(e.target.value)}
+                  placeholder={t('cardDetail.notesPlaceholder')}
+                  rows={2}
+                  className="w-full bg-pokedex-darker border border-slate-800 rounded-xl p-2.5 text-slate-200 focus:outline-none focus:border-pokedex-blue text-xs resize-none"
+                />
+                <button
+                  onClick={handleSaveNote}
+                  className="w-full bg-slate-800 hover:bg-slate-700 text-white font-bold py-1.5 rounded-xl border border-slate-700 transition-colors flex items-center justify-center gap-1.5"
+                >
+                  <Save className="w-3.5 h-3.5 text-yellow-300" />
+                  <span>{t('cardDetail.saveCardNote')}</span>
+                </button>
+              </div>
+            ) : localNote ? (
+              <div className="space-y-1.5">
+                <span className="text-slate-400 block">{t('cardDetail.personalNotes')}</span>
+                <div className="w-full bg-pokedex-darker border border-slate-800 rounded-xl p-2.5 text-slate-200 text-xs font-sans">
+                  {localNote}
+                </div>
+              </div>
+            ) : null}
           </div>
         </div>
       </div>

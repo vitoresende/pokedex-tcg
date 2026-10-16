@@ -6,11 +6,11 @@ import {
 } from 'lucide-react';
 
 export const AccessGate: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const { user, loading, isAllowed, authError, clearAuthError, loginWithGoogle, logout } = useAuth();
+  const { user, loading, isAllowed, authError, guestShareToken, clearAuthError, loginWithGoogle, logout } = useAuth();
   const { t } = useLanguage();
 
   // 1. Loading State: Pokédex Boot Loader
-  if (loading) {
+  if (loading && !guestShareToken) {
     return (
       <div className="min-h-screen bg-pokedex-darker flex flex-col items-center justify-center p-4 text-white font-mono">
         <div className="relative w-20 h-20 rounded-full bg-white p-1.5 shadow-[0_0_30px_rgba(41,182,246,0.6)] flex items-center justify-center animate-pulse mb-6">
@@ -26,8 +26,8 @@ export const AccessGate: React.FC<{ children: React.ReactNode }> = ({ children }
     );
   }
 
-  // 2. Authorized State: Grant Full Access to Application
-  if (user && isAllowed) {
+  // 2. Authorized State OR Read-Only Share Link Visitor State: Grant Access
+  if ((user && isAllowed) || guestShareToken) {
     return <>{children}</>;
   }
 

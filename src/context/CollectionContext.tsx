@@ -1,10 +1,17 @@
-import React, { createContext, useContext, useState, useMemo, useEffect, useRef } from 'react';
+import React, { createContext, useContext, useState, useMemo, useEffect } from 'react';
 import initialCards from '../data/cards.json';
 import initialDecks from '../data/decks.json';
 import { Card, Deck, DeckCardItem, CardRarityInfo } from '../types';
 import { soundEffects } from '../services/audio';
 import { useAuth } from './AuthContext';
-import { syncUserCollectionToFirestore, loadUserCollectionFromFirestore } from '../services/firebase';
+import { 
+  syncUserCollectionToFirestore, 
+  loadUserCollectionFromFirestore,
+  generateSecureShareToken,
+  publishSharedCollectionToFirestore,
+  revokeSharedCollectionFromFirestore,
+  loadSharedCollectionFromFirestore
+} from '../services/firebase';
 import { loadAndApplySetsMetadata, syncSetsToCloudAndLocal, getCachedSetsList, ensureSetInCatalog, SyncedSetItem } from '../services/tcgSetsService';
 import { loadAndApplyRaritiesMetadata, syncRaritiesToCloudAndLocal, getCachedRaritiesList } from '../services/raritiesService';
 import { fixMojibake } from '../utils/textSanitizer';
@@ -45,6 +52,13 @@ interface CollectionContextType {
   syncing: boolean;
   syncStatus: CloudSyncStatus;
   lastSyncedAt: Date | null;
+  isReadOnly: boolean;
+  sharedOwnerName: string | null;
+  sharedCollectionError: boolean;
+  activeShareToken: string | null;
+  isManagingShare: boolean;
+  generateShareLink: () => Promise<string | null>;
+  revokeShareLink: () => Promise<boolean>;
   stats: {
     totalOwnedCards: number;
     uniqueCardsCount: number;
@@ -566,7 +580,8 @@ const normalizeCards = (rawCards: Card[]): Card[] => {
 const CollectionContext = createContext<CollectionContextType | undefined>(undefined);
 
 export const CollectionProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const { user, isAllowed } = useAuth();
+  const { user, isAllowed, guestShareToken } = useAuth();
+  const isReadOnly = Boolean(guestShareToken);
   
   const [cards, setCards] = useState<Card[]>(() => {
     const saved = localStorage.getItem('pokedex_tcg_cards');
@@ -612,6 +627,12 @@ export const CollectionProvider: React.FC<{ children: React.ReactNode }> = ({ ch
   const [lastSyncedAt, setLastSyncedAt] = useState<Date | null>(null);
   const [isInitializedFromCloud, setIsInitializedFromCloud] = useState<boolean>(false);
 
+  // Sharing & Read-Only Visitor State
+  const [sharedOwnerName, setSharedOwnerName] = useState<string | null>(null);
+  const [sharedCollectionError, setSharedCollectionError] = useState<boolean>(false);
+  const [activeShareToken, setActiveShareToken] = useState<string | null>(null);
+  const [isManagingShare, setIsManagingShare] = useState<boolean>(false);
+
   // Dynamic TCG Sets metadata sync state
   const [isSyncingSets, setIsSyncingSets] = useState<boolean>(false);
   const [setsSyncStatus, setSetsSyncStatus] = useState<CloudSyncStatus>('idle');
@@ -639,6 +660,7 @@ export const CollectionProvider: React.FC<{ children: React.ReactNode }> = ({ ch
   }, [setsVersion]);
 
   const syncSetsMetadata = async (): Promise<{ success: boolean; total: number; error?: string }> => {
+    if (isReadOnly) return { success: false, total: 0, error: 'Read-only visitor mode' };
     setIsSyncingSets(true);
     setSetsSyncStatus('syncing');
     soundEffects.playScan();
@@ -685,6 +707,7 @@ export const CollectionProvider: React.FC<{ children: React.ReactNode }> = ({ ch
   }, [raritiesVersion]);
 
   const syncRaritiesMetadata = async (): Promise<{ success: boolean; total: number; error?: string }> => {
+    if (isReadOnly) return { success: false, total: 0, error: 'Read-only visitor mode' };
     setIsSyncingRarities(true);
     soundEffects.playScan();
     try {
@@ -701,26 +724,88 @@ export const CollectionProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     }
   };
 
-  // Local storage persistence
+  // Local storage persistence (skip in read-only visitor mode so local storage is never polluted)
   useEffect(() => {
+    if (isReadOnly) return;
     localStorage.setItem('pokedex_tcg_cards', JSON.stringify(cards));
-  }, [cards]);
+  }, [cards, isReadOnly]);
 
   useEffect(() => {
+    if (isReadOnly) return;
     localStorage.setItem('pokedex_tcg_decks', JSON.stringify(decks));
-  }, [decks]);
+  }, [decks, isReadOnly]);
 
   useEffect(() => {
+    if (isReadOnly) return;
     localStorage.setItem('pokedex_tcg_favorites', JSON.stringify(favorites));
-  }, [favorites]);
+  }, [favorites, isReadOnly]);
 
   useEffect(() => {
+    if (isReadOnly) return;
     localStorage.setItem('pokedex_tcg_notes', JSON.stringify(notes));
-  }, [notes]);
+  }, [notes, isReadOnly]);
 
-  // Load from Firestore on user login
+  // Load shared collection when visiting via ?share=TOKEN
   useEffect(() => {
-    if (!user?.uid || !isAllowed) {
+    if (!guestShareToken) {
+      setSharedOwnerName(null);
+      setSharedCollectionError(false);
+      return;
+    }
+
+    let isMounted = true;
+
+    async function loadSharedData() {
+      try {
+        setSyncStatus('syncing');
+        setSyncing(true);
+        setSharedCollectionError(false);
+        const data = await loadSharedCollectionFromFirestore(guestShareToken!);
+        if (!isMounted) return;
+
+        if (data) {
+          setSharedOwnerName(data.ownerName || 'Treinador Pokémon');
+          if (data.cards && Array.isArray(data.cards) && data.cards.length > 0) {
+            setCards(normalizeCards(data.cards));
+          } else if (data.quantities) {
+            const baseCards = normalizeCards(initialCards as Card[]);
+            setCards(baseCards.map(c => ({
+              ...c,
+              quantity: data.quantities[c.id] !== undefined ? data.quantities[c.id] : c.quantity
+            })));
+          }
+          if (data.favorites) setFavorites(data.favorites);
+          if (data.notes) setNotes(data.notes);
+          if (data.decks && Array.isArray(data.decks)) setDecks(data.decks.map(normalizeDeck));
+          setLastSyncedAt(data.lastUpdated ? new Date(data.lastUpdated) : new Date());
+          setSyncStatus('synced');
+        } else {
+          setSharedCollectionError(true);
+          setSyncStatus('error');
+        }
+      } catch (err) {
+        console.error('Error loading shared collection:', err);
+        if (isMounted) {
+          setSharedCollectionError(true);
+          setSyncStatus('error');
+        }
+      } finally {
+        if (isMounted) {
+          setSyncing(false);
+        }
+      }
+    }
+
+    loadSharedData();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [guestShareToken]);
+
+  // Load from Firestore on authenticated owner login (when not in guestShareToken mode)
+  useEffect(() => {
+    if (guestShareToken || !user?.uid || !isAllowed) {
       setIsInitializedFromCloud(false);
       return;
     }
@@ -747,6 +832,7 @@ export const CollectionProvider: React.FC<{ children: React.ReactNode }> = ({ ch
           if (data.favorites) setFavorites(data.favorites);
           if (data.notes) setNotes(data.notes);
           if (data.decks && Array.isArray(data.decks)) setDecks(data.decks.map(normalizeDeck));
+          setActiveShareToken(data.shareToken || null);
           setLastSyncedAt(data.lastUpdated ? new Date(data.lastUpdated) : new Date());
           setSyncStatus('synced');
         } else {
@@ -780,11 +866,11 @@ export const CollectionProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     return () => {
       isMounted = false;
     };
-  }, [user?.uid, isAllowed]);
+  }, [user?.uid, isAllowed, guestShareToken]);
 
   // Continuous Automatic Debounced Sync to Firestore (Real-Time Background Sync)
   useEffect(() => {
-    if (!isInitializedFromCloud || !user?.uid || !isAllowed) return;
+    if (isReadOnly || !isInitializedFromCloud || !user?.uid || !isAllowed) return;
 
     setSyncStatus('syncing');
     setSyncing(true);
@@ -793,13 +879,16 @@ export const CollectionProvider: React.FC<{ children: React.ReactNode }> = ({ ch
       try {
         const quantities: Record<string, number> = {};
         cards.forEach(c => { quantities[c.id] = c.quantity; });
+        const ownerName = user.displayName || user.email?.split('@')[0] || 'Treinador Pokémon';
         
         await syncUserCollectionToFirestore(user.uid, {
           quantities,
           notes,
           favorites,
           decks,
-          cards
+          cards,
+          shareToken: activeShareToken,
+          ownerName
         });
 
         setSyncStatus('synced');
@@ -813,7 +902,7 @@ export const CollectionProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     }, 800);
 
     return () => clearTimeout(timer);
-  }, [cards, favorites, notes, decks, isInitializedFromCloud, user?.uid, isAllowed]);
+  }, [cards, favorites, notes, decks, isInitializedFromCloud, user?.uid, user?.displayName, user?.email, isAllowed, isReadOnly, activeShareToken]);
 
   const setMuted = (muted: boolean) => {
     setIsMuted(muted);
@@ -826,6 +915,7 @@ export const CollectionProvider: React.FC<{ children: React.ReactNode }> = ({ ch
   };
 
   const updateCardQuantity = (cardId: string, delta: number) => {
+    if (isReadOnly) return;
     soundEffects.playClick();
     setCards(prev => prev.map(c => {
       if (c.id === cardId) {
@@ -841,6 +931,7 @@ export const CollectionProvider: React.FC<{ children: React.ReactNode }> = ({ ch
   };
 
   const toggleFavorite = (cardId: string) => {
+    if (isReadOnly) return;
     soundEffects.playFoilShine();
     setFavorites(prev => 
       prev.includes(cardId) ? prev.filter(id => id !== cardId) : [...prev, cardId]
@@ -848,6 +939,7 @@ export const CollectionProvider: React.FC<{ children: React.ReactNode }> = ({ ch
   };
 
   const updateCardNote = (cardId: string, note: string) => {
+    if (isReadOnly) return;
     setNotes(prev => ({
       ...prev,
       [cardId]: note
@@ -855,13 +947,19 @@ export const CollectionProvider: React.FC<{ children: React.ReactNode }> = ({ ch
   };
 
   const addNewCard = (cardData: Partial<Card>): Card & { isDuplicate?: boolean } => {
-    soundEffects.playScan();
-
     const qtyToAdd = Math.max(1, Number(cardData.quantity) || 1);
     const existingIndex = findExistingCardIndex(cards, cardData);
 
     if (existingIndex >= 0) {
       const existingCard = cards[existingIndex];
+      if (isReadOnly) {
+        return {
+          ...existingCard,
+          isDuplicate: true
+        };
+      }
+
+      soundEffects.playScan();
       const nextQuantity = existingCard.quantity + qtyToAdd;
 
       const updatedCard: Card = {
@@ -917,6 +1015,14 @@ export const CollectionProvider: React.FC<{ children: React.ReactNode }> = ({ ch
       decks: []
     };
 
+    if (isReadOnly) {
+      return {
+        ...newCard,
+        isDuplicate: false
+      };
+    }
+    soundEffects.playScan();
+
     setCards(prev => [newCard, ...prev]);
 
     if (newCard.set_code) {
@@ -933,6 +1039,7 @@ export const CollectionProvider: React.FC<{ children: React.ReactNode }> = ({ ch
   };
 
   const updateCard = (cardId: string, updatedData: Partial<Card>) => {
+    if (isReadOnly) return;
     soundEffects.playClick();
     setCards(prev => prev.map(c => {
       if (c.id === cardId) {
@@ -946,6 +1053,7 @@ export const CollectionProvider: React.FC<{ children: React.ReactNode }> = ({ ch
   };
 
   const deleteCard = (cardId: string) => {
+    if (isReadOnly) return;
     soundEffects.playClick();
     setCards(prev => prev.filter(c => c.id !== cardId));
     if (selectedCard?.id === cardId) {
@@ -957,6 +1065,7 @@ export const CollectionProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     csvContent: string, 
     deckOption?: DeckImportOption
   ): { added: number; updated: number; deckName?: string } => {
+    if (isReadOnly) return { added: 0, updated: 0 };
     soundEffects.playScan();
     const sanitizedCsv = fixMojibake(csvContent);
     const lines = sanitizedCsv.replace(/\r\n/g, '\n').replace(/\r/g, '\n').split('\n').filter(l => l.trim().length > 0);
@@ -1202,7 +1311,6 @@ export const CollectionProvider: React.FC<{ children: React.ReactNode }> = ({ ch
   };
 
   const createNewDeck = (deckData: Partial<Deck>): Deck => {
-    soundEffects.playScan();
     const newId = `custom-deck-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`;
     
     const newDeck: Deck = {
@@ -1226,12 +1334,16 @@ export const CollectionProvider: React.FC<{ children: React.ReactNode }> = ({ ch
       prize_trade_tip: deckData.prize_trade_tip || 'Manage your prize race efficiently.'
     };
 
+    if (isReadOnly) return newDeck;
+    soundEffects.playScan();
+
     setDecks(prev => [newDeck, ...prev]);
     setSelectedDeck(newDeck);
     return newDeck;
   };
 
   const updateDeck = (deckId: string, updatedData: Partial<Deck>) => {
+    if (isReadOnly) return;
     soundEffects.playScan();
     setDecks(prev => prev.map(d => {
       if (d.id !== deckId) return d;
@@ -1265,6 +1377,7 @@ export const CollectionProvider: React.FC<{ children: React.ReactNode }> = ({ ch
   };
 
   const deleteDeck = (deckId: string) => {
+    if (isReadOnly) return;
     soundEffects.playClick();
     setDecks(prev => prev.filter(d => d.id !== deckId));
     if (selectedDeck?.id === deckId) {
@@ -1273,6 +1386,7 @@ export const CollectionProvider: React.FC<{ children: React.ReactNode }> = ({ ch
   };
 
   const addCardToDeck = (deckId: string, card: Card, count: number = 1) => {
+    if (isReadOnly) return;
     soundEffects.playClick();
     setDecks(prev => prev.map(d => {
       if (d.id !== deckId) return d;
@@ -1315,6 +1429,7 @@ export const CollectionProvider: React.FC<{ children: React.ReactNode }> = ({ ch
   };
 
   const removeCardFromDeck = (deckId: string, cardName: string) => {
+    if (isReadOnly) return;
     soundEffects.playClick();
     setDecks(prev => prev.map(d => {
       if (d.id !== deckId) return d;
@@ -1334,19 +1449,22 @@ export const CollectionProvider: React.FC<{ children: React.ReactNode }> = ({ ch
   };
 
   const syncToCloud = async (): Promise<boolean> => {
-    if (!user?.uid) return false;
+    if (isReadOnly || !user?.uid) return false;
     setSyncing(true);
     setSyncStatus('syncing');
     soundEffects.playScan();
     try {
       const quantities: Record<string, number> = {};
       cards.forEach(c => { quantities[c.id] = c.quantity; });
+      const ownerName = user.displayName || user.email?.split('@')[0] || 'Treinador Pokémon';
       await syncUserCollectionToFirestore(user.uid, {
         quantities,
         notes,
         favorites,
         decks,
-        cards
+        cards,
+        shareToken: activeShareToken,
+        ownerName
       });
       setSyncStatus('synced');
       setLastSyncedAt(new Date());
@@ -1357,6 +1475,59 @@ export const CollectionProvider: React.FC<{ children: React.ReactNode }> = ({ ch
       setSyncStatus('error');
       setSyncing(false);
       return false;
+    }
+  };
+
+  const generateShareLink = async (): Promise<string | null> => {
+    if (isReadOnly || !user?.uid || !isAllowed) return null;
+    setIsManagingShare(true);
+    soundEffects.playScan();
+    try {
+      const newToken = generateSecureShareToken();
+      const quantities: Record<string, number> = {};
+      cards.forEach(c => { quantities[c.id] = c.quantity; });
+      const ownerName = user.displayName || user.email?.split('@')[0] || 'Treinador Pokémon';
+
+      await publishSharedCollectionToFirestore(
+        user.uid,
+        ownerName,
+        newToken,
+        activeShareToken,
+        {
+          quantities,
+          notes,
+          favorites,
+          decks,
+          cards
+        }
+      );
+
+      setActiveShareToken(newToken);
+      soundEffects.playSuccess();
+      return newToken;
+    } catch (err) {
+      console.error('Error generating share link:', err);
+      soundEffects.playAlert();
+      return null;
+    } finally {
+      setIsManagingShare(false);
+    }
+  };
+
+  const revokeShareLink = async (): Promise<boolean> => {
+    if (isReadOnly || !user?.uid || !isAllowed || !activeShareToken) return false;
+    setIsManagingShare(true);
+    soundEffects.playClick();
+    try {
+      await revokeSharedCollectionFromFirestore(user.uid, activeShareToken);
+      setActiveShareToken(null);
+      return true;
+    } catch (err) {
+      console.error('Error revoking share link:', err);
+      soundEffects.playAlert();
+      return false;
+    } finally {
+      setIsManagingShare(false);
     }
   };
 
@@ -1518,6 +1689,13 @@ export const CollectionProvider: React.FC<{ children: React.ReactNode }> = ({ ch
         syncing,
         syncStatus,
         lastSyncedAt,
+        isReadOnly,
+        sharedOwnerName,
+        sharedCollectionError,
+        activeShareToken,
+        isManagingShare,
+        generateShareLink,
+        revokeShareLink,
         stats,
         setFilters,
         resetFilters,
