@@ -191,42 +191,45 @@ export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ chil
 
   const t = (path: string, params?: Record<string, string | number>): string => {
     const keys = path.split(".");
-    let current: any = dictionaries[language];
-    let fallback: any = dictionaries.en;
 
-    for (const key of keys) {
-      if (current && typeof current === "object" && key in current) {
-        current = current[key];
-      } else {
-        current = undefined;
-        break;
-      }
-    }
-
-    if (current === undefined || typeof current !== "string") {
-      // Fallback to English
-      for (const key of keys) {
-        if (fallback && typeof fallback === "object" && key in fallback) {
-          fallback = fallback[key];
+    const resolvePath = (dict: any): any => {
+      let curr = dict;
+      for (const rawKey of keys) {
+        if (!curr || typeof curr !== "object") return undefined;
+        if (rawKey in curr) {
+          curr = curr[rawKey];
         } else {
-          fallback = undefined;
-          break;
+          // Case-insensitive fallback
+          const lower = rawKey.toLowerCase();
+          const matchedKey = Object.keys(curr).find((k) => k.toLowerCase() === lower);
+          if (matchedKey && matchedKey in curr) {
+            curr = curr[matchedKey];
+          } else {
+            return undefined;
+          }
         }
       }
-      current = typeof fallback === "string" ? fallback : path;
+      return curr;
+    };
+
+    let result = resolvePath(dictionaries[language]);
+
+    // Fallback to English dictionary if missing in current language
+    if (result === undefined || typeof result !== "string") {
+      result = resolvePath(dictionaries.en);
     }
 
-    if (typeof current !== "string") {
+    if (result === undefined || typeof result !== "string") {
       return path;
     }
 
     if (params) {
-      return current.replace(/\{([a-zA-Z0-9_-]+)\}/g, (_, key) => {
+      return result.replace(/\{([a-zA-Z0-9_-]+)\}/g, (_, key) => {
         return params[key] !== undefined ? String(params[key]) : `{${key}}`;
       });
     }
 
-    return current;
+    return result;
   };
 
   const getCardName = (card: { name_pt?: string; name_en?: string }): string => {
