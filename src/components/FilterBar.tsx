@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { Search, X, Sparkles, Layers, CheckCircle2, CircleDashed, ChevronDown, RefreshCw } from 'lucide-react';
+import { Search, X, Sparkles, Layers, CheckCircle2, CircleDashed, ChevronDown, RefreshCw, Copy } from 'lucide-react';
 import { PokemonTypeIcon } from './PokemonTypeIcon';
 import { useCollection } from '../context/CollectionContext';
 import { useLanguage } from '../context/LanguageContext';
@@ -60,13 +60,14 @@ export const FilterBar: React.FC = () => {
     }));
   };
 
-  const toggleBooleanFilter = (key: 'onlyFoil' | 'onlyOwned' | 'onlyMissing' | 'onlyDeckCards') => {
+  const toggleBooleanFilter = (key: 'onlyFoil' | 'onlyOwned' | 'onlyMissing' | 'onlyDeckCards' | 'onlyDuplicates') => {
     soundEffects.playClick();
     setFilters(prev => {
       const next = !prev[key];
-      // Mutual exclusion for owned vs missing
+      // Mutual exclusion for owned vs missing, and duplicates vs missing
       if (key === 'onlyOwned' && next) return { ...prev, onlyOwned: true, onlyMissing: false };
-      if (key === 'onlyMissing' && next) return { ...prev, onlyMissing: true, onlyOwned: false };
+      if (key === 'onlyDuplicates' && next) return { ...prev, onlyDuplicates: true, onlyMissing: false };
+      if (key === 'onlyMissing' && next) return { ...prev, onlyMissing: true, onlyOwned: false, onlyDuplicates: false };
       return { ...prev, [key]: next };
     });
   };
@@ -80,6 +81,7 @@ export const FilterBar: React.FC = () => {
     filters.onlyFoil ||
     filters.onlyOwned ||
     filters.onlyMissing ||
+    filters.onlyDuplicates ||
     filters.onlyDeckCards;
 
   return (
@@ -262,6 +264,18 @@ export const FilterBar: React.FC = () => {
         >
           <CheckCircle2 className="w-3.5 h-3.5 shrink-0" />
           <span>{t('filters.ownedOnly')}</span>
+        </button>
+
+        <button
+          onClick={() => toggleBooleanFilter('onlyDuplicates')}
+          className={`px-2.5 py-1.5 rounded-xl border transition-all flex items-center space-x-1.5 whitespace-nowrap ${
+            filters.onlyDuplicates
+              ? 'bg-cyan-500/20 text-cyan-300 border-cyan-400/60 font-bold shadow-md'
+              : 'bg-pokedex-darker text-slate-400 border-slate-800 hover:text-slate-200'
+          }`}
+        >
+          <Copy className="w-3.5 h-3.5 shrink-0" />
+          <span>{t('filters.duplicatesOnly')}</span>
         </button>
 
         <button

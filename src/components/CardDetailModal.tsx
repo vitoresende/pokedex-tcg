@@ -141,7 +141,7 @@ export const CardDetailModal: React.FC<CardDetailModalProps> = ({ card, onClose,
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md overflow-y-auto animate-in fade-in duration-200">
+    <div className="fixed inset-0 z-[70] flex items-center justify-center p-4 pb-20 sm:pb-4 bg-black/85 backdrop-blur-md overflow-y-auto animate-in fade-in duration-200">
       {/* Pokédex Device Modal Frame */}
       <div className="relative w-full max-w-2xl bg-pokedex-screen border-4 border-pokedex-darkred rounded-3xl shadow-2xl overflow-hidden text-slate-100 my-8">
         {/* Top Pokédex Bezel */}

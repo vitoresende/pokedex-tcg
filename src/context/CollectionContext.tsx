@@ -25,6 +25,7 @@ interface FilterState {
   onlyFoil: boolean;
   onlyOwned: boolean;
   onlyMissing: boolean;
+  onlyDuplicates: boolean;
   onlyDeckCards: boolean;
   sortBy: 'number' | 'name' | 'quantity' | 'rarity';
   sortDirection: 'asc' | 'desc';
@@ -106,6 +107,7 @@ const defaultFilters: FilterState = {
   onlyFoil: false,
   onlyOwned: false,
   onlyMissing: false,
+  onlyDuplicates: false,
   onlyDeckCards: false,
   sortBy: 'number',
   sortDirection: 'asc'
@@ -1648,6 +1650,9 @@ export const CollectionProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     }
     if (filters.onlyMissing) {
       result = result.filter(c => c.quantity === 0);
+    }
+    if (filters.onlyDuplicates) {
+      result = result.filter(c => (c.quantity || 0) > 1);
     }
     if (filters.onlyDeckCards) {
       result = result.filter(c => c.decks && c.decks.length > 0);

@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { ShieldAlert, LogIn, RefreshCw } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { ShieldAlert, LogIn, RefreshCw, Sparkles } from 'lucide-react';
 import { LanguageProvider, useLanguage } from './context/LanguageContext';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { CollectionProvider, useCollection } from './context/CollectionContext';
@@ -11,12 +11,36 @@ import { NationalDexPage } from './pages/NationalDexPage';
 import { DecksPage } from './pages/DecksPage';
 import { RulesAndTypesPage } from './pages/RulesAndTypesPage';
 import { AuthProfilePage } from './pages/AuthProfilePage';
+import { checkForAppUpdate, forceAppUpdateAndClearCache, AppVersionInfo } from './services/versionService';
 
 const MainLayout: React.FC = () => {
   const [activeTab, setActiveTab] = useState<NavTab>('pokedex');
+  const [remoteUpdate, setRemoteUpdate] = useState<AppVersionInfo | null>(null);
   const { isReadOnly, sharedCollectionError, syncing } = useCollection();
   const { exitGuestMode } = useAuth();
   const { t } = useLanguage();
+
+  useEffect(() => {
+    let mounted = true;
+    const check = async () => {
+      const res = await checkForAppUpdate();
+      if (mounted && res.hasUpdate && res.remoteInfo) {
+        setRemoteUpdate(res.remoteInfo);
+      }
+    };
+    check();
+
+    const handleVisibility = () => {
+      if (document.visibilityState === 'visible') {
+        check();
+      }
+    };
+    document.addEventListener('visibilitychange', handleVisibility);
+    return () => {
+      mounted = false;
+      document.removeEventListener('visibilitychange', handleVisibility);
+    };
+  }, []);
 
   const handleNavigateToDeck = (_deckId: string) => {
     setActiveTab('decks');
@@ -69,6 +93,24 @@ const MainLayout: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-pokedex-darker flex flex-col">
+      {/* Dynamic Update Notification Banner for PWA and Mobile */}
+      {remoteUpdate && (
+        <div className="bg-gradient-to-r from-yellow-400 via-amber-300 to-yellow-400 text-slate-950 px-3 sm:px-4 py-2 flex items-center justify-between shadow-lg sticky top-0 z-50 border-b border-yellow-500 font-mono text-xs animate-in slide-in-from-top duration-300">
+          <div className="flex items-center space-x-2 font-bold truncate mr-2">
+            <Sparkles className="w-4 h-4 text-pokedex-red shrink-0 animate-pulse" />
+            <span className="truncate">
+              {t('profile.updateBannerText', { version: remoteUpdate.version })}
+            </span>
+          </div>
+          <button
+            onClick={() => forceAppUpdateAndClearCache()}
+            className="bg-black hover:bg-slate-800 text-yellow-300 font-bold px-3 py-1 rounded-lg text-xs uppercase shadow transition-all active:scale-95 shrink-0"
+          >
+            {t('profile.updateBannerBtn')}
+          </button>
+        </div>
+      )}
+
       {/* Pokédex Top Device Header */}
       <PokedexHeader onNavigateToAuth={() => setActiveTab('auth')} />
 

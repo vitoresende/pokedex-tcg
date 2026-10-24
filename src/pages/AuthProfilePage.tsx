@@ -6,8 +6,10 @@ import {
   User, ShieldCheck, LogIn, LogOut, Cloud, 
   CheckCircle2, AlertTriangle, UploadCloud, RefreshCw,
   Globe, Check, Volume2, VolumeX, Layers,
-  Share2, Copy, Link2, Trash2, Eye
+  Share2, Copy, Link2, Trash2, Eye, Cpu, Smartphone, Download
 } from 'lucide-react';
+import { soundEffects } from '../services/audio';
+import { CURRENT_VERSION_INFO, checkForAppUpdate, forceAppUpdateAndClearCache } from '../services/versionService';
 
 export const AuthProfilePage: React.FC = () => {
   const { user, isAllowed, allowedEmails, authError, loginWithGoogle, logout, exitGuestMode } = useAuth();
@@ -22,6 +24,41 @@ export const AuthProfilePage: React.FC = () => {
   const [photoError, setPhotoError] = useState<boolean>(false);
   const [copiedShareLink, setCopiedShareLink] = useState<boolean>(false);
   const [shareFeedback, setShareFeedback] = useState<string>('');
+  const [isCheckingUpdate, setIsCheckingUpdate] = useState<boolean>(false);
+  const [updateStatus, setUpdateStatus] = useState<{
+    checked: boolean;
+    hasUpdate: boolean;
+    remoteVersion?: string;
+    message?: string;
+  } | null>(null);
+  const [isPurgingPwa, setIsPurgingPwa] = useState<boolean>(false);
+
+  const handleCheckUpdate = async () => {
+    soundEffects.playClick();
+    setIsCheckingUpdate(true);
+    setUpdateStatus(null);
+    const res = await checkForAppUpdate();
+    setIsCheckingUpdate(false);
+    if (res.hasUpdate) {
+      setUpdateStatus({
+        checked: true,
+        hasUpdate: true,
+        remoteVersion: res.remoteInfo?.version,
+      });
+    } else {
+      setUpdateStatus({
+        checked: true,
+        hasUpdate: false,
+        message: res.error ? `Erro: ${res.error}` : t('profile.statusUpToDate'),
+      });
+    }
+  };
+
+  const handleForcePurgePwa = async () => {
+    soundEffects.playClick();
+    setIsPurgingPwa(true);
+    await forceAppUpdateAndClearCache();
+  };
 
   const shareUrl = activeShareToken && typeof window !== 'undefined'
     ? `${window.location.origin}${window.location.pathname}?share=${encodeURIComponent(activeShareToken)}`
@@ -658,6 +695,107 @@ export const AuthProfilePage: React.FC = () => {
           </div>
         </>
       )}
+
+      {/* App Version & PWA Cache Management Card */}
+      <div className="bg-pokedex-card/90 rounded-3xl border border-slate-800 p-6 space-y-4 shadow-md">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div className="flex items-center space-x-3">
+            <div className="p-2 rounded-xl bg-cyan-500/20 text-cyan-300 border border-cyan-500/30">
+              <Cpu className="w-6 h-6" />
+            </div>
+            <div>
+              <h3 className="font-bold text-sm text-white font-mono uppercase">
+                {t('profile.versionTitle')}
+              </h3>
+              <p className="text-xs text-slate-400 font-sans">
+                {t('profile.versionSubtitle')}
+              </p>
+            </div>
+          </div>
+
+          <div className="flex items-center space-x-2">
+            <span className="bg-yellow-400/20 text-yellow-300 text-xs font-mono font-bold px-3 py-1 rounded-full border border-yellow-400/30 flex items-center gap-1.5 whitespace-nowrap">
+              <Smartphone className="w-3.5 h-3.5" />
+              v{CURRENT_VERSION_INFO.version} (Build #{CURRENT_VERSION_INFO.buildNumber})
+            </span>
+          </div>
+        </div>
+
+        {/* Version Details Grid */}
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 font-mono text-xs">
+          <div className="bg-pokedex-darker p-3.5 rounded-2xl border border-slate-800">
+            <span className="text-slate-400 text-[10px] uppercase block">{t('profile.installedVersion')}</span>
+            <span className="text-white font-bold text-base mt-0.5 block">v{CURRENT_VERSION_INFO.version}</span>
+          </div>
+          <div className="bg-pokedex-darker p-3.5 rounded-2xl border border-slate-800">
+            <span className="text-slate-400 text-[10px] uppercase block">{t('profile.buildNumber')}</span>
+            <span className="text-cyan-300 font-bold text-base mt-0.5 block">#{CURRENT_VERSION_INFO.buildNumber}</span>
+          </div>
+          <div className="bg-pokedex-darker p-3.5 rounded-2xl border border-slate-800">
+            <span className="text-slate-400 text-[10px] uppercase block">{t('profile.buildTime')}</span>
+            <span className="text-emerald-400 font-medium text-xs mt-1 block truncate">
+              {new Date(CURRENT_VERSION_INFO.buildTime).toLocaleString()}
+            </span>
+          </div>
+        </div>
+
+        {/* Update feedback if checked */}
+        {updateStatus && (
+          <div
+            className={`p-3 rounded-2xl border text-xs font-mono flex items-center justify-between gap-2 animate-in fade-in ${
+              updateStatus.hasUpdate
+                ? 'bg-yellow-950/40 border-yellow-500/40 text-yellow-300'
+                : 'bg-emerald-950/40 border-emerald-500/40 text-emerald-300'
+            }`}
+          >
+            <div className="flex items-center space-x-2">
+              <CheckCircle2 className="w-4 h-4 shrink-0" />
+              <span>
+                {updateStatus.hasUpdate
+                  ? `${t('profile.statusUpdateAvailable')}: v${updateStatus.remoteVersion}`
+                  : updateStatus.message}
+              </span>
+            </div>
+
+            {updateStatus.hasUpdate && (
+              <button
+                onClick={handleForcePurgePwa}
+                disabled={isPurgingPwa}
+                className="bg-yellow-400 text-slate-950 hover:bg-yellow-300 font-bold px-3 py-1 rounded-xl text-xs uppercase transition-all active:scale-95 shrink-0"
+              >
+                {t('profile.updateBannerBtn')}
+              </button>
+            )}
+          </div>
+        )}
+
+        {/* Action Buttons & Explanation */}
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 pt-1">
+          <p className="text-slate-400 text-xs font-sans flex-1">
+            {t('profile.pwaHelp')}
+          </p>
+
+          <div className="flex flex-col sm:flex-row gap-2 shrink-0">
+            <button
+              onClick={handleCheckUpdate}
+              disabled={isCheckingUpdate || isPurgingPwa}
+              className="bg-slate-800 hover:bg-slate-700 disabled:opacity-40 text-slate-200 font-bold py-2.5 px-4 rounded-xl shadow-md transition-all active:scale-95 flex items-center justify-center space-x-2 text-xs font-mono uppercase border border-slate-700"
+            >
+              <RefreshCw className={`w-3.5 h-3.5 ${isCheckingUpdate ? 'animate-spin text-yellow-300' : ''}`} />
+              <span>{isCheckingUpdate ? t('profile.checkingUpdates') : t('profile.checkUpdatesBtn')}</span>
+            </button>
+
+            <button
+              onClick={handleForcePurgePwa}
+              disabled={isPurgingPwa}
+              className="bg-pokedex-blue hover:bg-blue-600 disabled:opacity-50 text-white font-bold py-2.5 px-4 rounded-xl shadow-md transition-all active:scale-95 flex items-center justify-center space-x-2 text-xs font-mono uppercase border border-blue-400/30"
+            >
+              <Download className={`w-3.5 h-3.5 ${isPurgingPwa ? 'animate-bounce' : ''}`} />
+              <span>{isPurgingPwa ? t('common.loading') : t('profile.forceUpdateBtn')}</span>
+            </button>
+          </div>
+        </div>
+      </div>
     </div>
   );
 };

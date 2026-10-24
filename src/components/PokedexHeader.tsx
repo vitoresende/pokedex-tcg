@@ -4,6 +4,7 @@ import { useCollection } from '../context/CollectionContext';
 import { useAuth } from '../context/AuthContext';
 import { useLanguage } from '../context/LanguageContext';
 import { soundEffects } from '../services/audio';
+import { CURRENT_VERSION_INFO } from '../services/versionService';
 
 interface PokedexHeaderProps {
   onNavigateToAuth: () => void;
@@ -59,8 +60,12 @@ export const PokedexHeader: React.FC<PokedexHeaderProps> = ({ onNavigateToAuth }
             <h1 className="font-display font-black text-xl tracking-wider text-white uppercase drop-shadow-md">
               Pokédex TCG Master
             </h1>
-            <span className="bg-pokedex-darkred/60 text-yellow-300 font-mono text-xs px-2 py-0.5 rounded font-bold border border-yellow-400/30">
-              {t('nav.version')}
+            <span 
+              onClick={onNavigateToAuth}
+              title={`Build #${CURRENT_VERSION_INFO.buildNumber} - Clique para ver detalhes`}
+              className="bg-pokedex-darkred/60 text-yellow-300 font-mono text-xs px-2 py-0.5 rounded font-bold border border-yellow-400/30 cursor-pointer hover:bg-pokedex-darkred transition-colors"
+            >
+              v{CURRENT_VERSION_INFO.version}
             </span>
           </div>
         </div>

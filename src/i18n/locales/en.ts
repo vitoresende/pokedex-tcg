@@ -80,6 +80,7 @@ export const en = {
     "foilOnly": "Foil / Holo Only",
     "mappedInDecks": "Mapped in Decks",
     "ownedOnly": "Owned (Qty > 0)",
+    "duplicatesOnly": "Duplicates (>1)",
     "missingOnly": "Missing (Qty = 0)",
     "types": {
       "ALL": "All Types",
@@ -378,7 +379,20 @@ export const en = {
     "authError": "Authentication Error",
     "invalidShareTitle": "Invalid or Revoked Link",
     "invalidShareDesc": "This shared collection link is no longer active or was revoked by the trainer.",
-    "goToLoginBtn": "Go to Trainer Sign In"
+    "goToLoginBtn": "Go to Trainer Sign In",
+    "versionTitle": "System Version & PWA Updates",
+    "versionSubtitle": "Compiled release tracking, cache purging and PWA update management",
+    "installedVersion": "Installed Version",
+    "buildNumber": "Build",
+    "buildTime": "Build Date",
+    "statusUpToDate": "App Up to Date",
+    "statusUpdateAvailable": "New Version Available",
+    "checkUpdatesBtn": "Check for Updates",
+    "checkingUpdates": "Checking...",
+    "forceUpdateBtn": "Force Reload & Purge PWA Cache",
+    "pwaHelp": "If you installed this app on your phone as a PWA and screens are not updating, click 'Force Reload'. This unregisters service workers, deletes CacheStorage, and downloads the latest build from the servers.",
+    "updateBannerText": "New version {version} is available!",
+    "updateBannerBtn": "Update Now"
   },
   "rules": {
     "title": "Rules, Types & Battle Formats",
