@@ -1,11 +1,14 @@
 {
   "name": "pokedex-tcg",
   "private": true,
-  "version": "1.0.0",
+  "version": "1.0.2",
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc && vite build",
+    "build": "node scripts/bump_version.js auto && tsc && vite build",
+    "version:patch": "node scripts/bump_version.js patch",
+    "version:minor": "node scripts/bump_version.js minor",
+    "version:major": "node scripts/bump_version.js major",
     "preview": "vite preview",
     "download:cards": "python3 scripts/download_images.py",
     "upload:firebase": "node scripts/upload_to_firebase.js",

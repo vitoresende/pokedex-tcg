@@ -82,6 +82,7 @@ export const pt: TranslationKeys = {
     "foilOnly": "Apenas Foil / Holo",
     "mappedInDecks": "Presentes em Decks",
     "ownedOnly": "Obtidas (Qtd > 0)",
+    "duplicatesOnly": "Repetidas (>1)",
     "missingOnly": "Faltando (Qtd = 0)",
     "types": {
       "ALL": "Todos os Tipos",
@@ -380,7 +381,20 @@ export const pt: TranslationKeys = {
     "authError": "Erro de Autenticação",
     "invalidShareTitle": "Link Inválido ou Revogado",
     "invalidShareDesc": "Este link de coleção compartilhada não está mais ativo ou foi revogado pelo treinador.",
-    "goToLoginBtn": "Ir para Login de Treinador"
+    "goToLoginBtn": "Ir para Login de Treinador",
+    "versionTitle": "Versão do Sistema & Atualizações PWA",
+    "versionSubtitle": "Controle de versão compilada, limpeza profunda de cache e atualização de PWA",
+    "installedVersion": "Versão Instalada",
+    "buildNumber": "Build",
+    "buildTime": "Data de Compilação",
+    "statusUpToDate": "Aplicação Atualizada",
+    "statusUpdateAvailable": "Nova Versão Disponível",
+    "checkUpdatesBtn": "Verificar Atualização",
+    "checkingUpdates": "Verificando...",
+    "forceUpdateBtn": "Forçar Atualização & Limpar Cache PWA",
+    "pwaHelp": "Se você instalou o app no celular como PWA e as telas não estiverem atualizando, clique em 'Forçar Atualização'. Isso desregistra os service workers, limpa o CacheStorage e baixa a versão mais recente dos servidores.",
+    "updateBannerText": "Nova versão {version} disponível!",
+    "updateBannerBtn": "Atualizar Agora"
   },
   "rules": {
     "title": "Regras, Tipos & Formatos de Batalha",
