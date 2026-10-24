@@ -35,9 +35,13 @@ const MainLayout: React.FC = () => {
         check();
       }
     };
+    const interval = setInterval(check, 60000);
+    window.addEventListener('focus', check);
     document.addEventListener('visibilitychange', handleVisibility);
     return () => {
       mounted = false;
+      clearInterval(interval);
+      window.removeEventListener('focus', check);
       document.removeEventListener('visibilitychange', handleVisibility);
     };
   }, []);

@@ -69,8 +69,9 @@ export async function forceAppUpdateAndClearCache(): Promise<void> {
       await Promise.all(keys.map((k) => caches.delete(k)));
     }
 
-    // 3. Clear sessionStorage
+    // 3. Clear localStorage version marker & sessionStorage
     try {
+      localStorage.removeItem('pokedex_installed_version');
       sessionStorage.clear();
     } catch {
       // ignore
@@ -79,8 +80,8 @@ export async function forceAppUpdateAndClearCache(): Promise<void> {
     console.warn('[versionService] Cache clearing warning:', err);
   }
 
-  // 4. Force browser hard navigation with cache-buster parameter
+  // 4. Force browser hard navigation with cache-buster parameter using replace() to bypass bfcache
   const target = new URL(window.location.origin + window.location.pathname);
-  target.searchParams.set('v_reload', String(Date.now()));
-  window.location.href = target.toString();
+  target.searchParams.set('v_flush', String(Date.now()));
+  window.location.replace(target.toString());
 }

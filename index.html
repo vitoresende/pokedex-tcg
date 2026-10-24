@@ -13,24 +13,50 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Rajdhani:wght@500;600;700&family=Orbitron:wght@600;800;900&display=swap" rel="stylesheet">
     
+    <!-- Anti-cache Meta Headers -->
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate, max-age=0" />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="0" />
+
     <title>Pokédex TCG Master</title>
 
-    <!-- Auto-unregister any stale Service Workers / PWA caches on localhost -->
+    <!-- Bulletproof PWA Cache Buster & Service Worker Purge -->
     <script>
-      if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.getRegistrations().then(function(registrations) {
-          for(var reg of registrations) {
-            reg.unregister();
-          }
-        });
-      }
-      if ('caches' in window) {
-        caches.keys().then(function(names) {
-          for (var name of names) {
-            caches.delete(name);
-          }
-        });
-      }
+      (function() {
+        // 1. Purge any registered service workers (PWA offline workers)
+        if ('serviceWorker' in navigator) {
+          navigator.serviceWorker.getRegistrations().then(function(regs) {
+            for (var r of regs) { r.unregister(); }
+          });
+        }
+
+        // 2. Clear stale CacheStorage
+        if ('caches' in window) {
+          caches.keys().then(function(keys) {
+            for (var k of keys) { caches.delete(k); }
+          });
+        }
+
+        // 3. Automated check: verify if remote version has changed
+        try {
+          fetch('/version.json?_t=' + Date.now(), {
+            cache: 'no-store',
+            headers: { 'Cache-Control': 'no-cache, no-store, must-revalidate' }
+          })
+          .then(function(res) { return res.json(); })
+          .then(function(data) {
+            if (!data || !data.version) return;
+            var storedVersion = localStorage.getItem('pokedex_installed_version');
+            if (storedVersion && storedVersion !== data.version) {
+              localStorage.setItem('pokedex_installed_version', data.version);
+              window.location.replace('/?v_reload=' + Date.now());
+            } else {
+              localStorage.setItem('pokedex_installed_version', data.version);
+            }
+          })
+          .catch(function() {});
+        } catch(e) {}
+      })();
     </script>
   </head>
   <body class="bg-pokedex-darker text-slate-100 min-h-screen antialiased selection:bg-pokedex-red selection:text-white">
