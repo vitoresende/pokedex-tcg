@@ -15,9 +15,10 @@ interface AddCardModalProps {
   isOpen: boolean;
   onClose: () => void;
   initialTab?: 'manual' | 'csv' | 'validate';
+  initialName?: string;
 }
 
-export const AddCardModal: React.FC<AddCardModalProps> = ({ isOpen, onClose, initialTab }) => {
+export const AddCardModal: React.FC<AddCardModalProps> = ({ isOpen, onClose, initialTab, initialName }) => {
   const { addNewCard, importCardsFromCsv, decks } = useCollection();
   const { t } = useLanguage();
   const [tab, setTab] = useState<'manual' | 'csv' | 'validate'>(initialTab || 'manual');
@@ -27,6 +28,14 @@ export const AddCardModal: React.FC<AddCardModalProps> = ({ isOpen, onClose, ini
       setTab(initialTab);
     }
   }, [initialTab, isOpen]);
+
+  useEffect(() => {
+    if (isOpen && initialName) {
+      setNameEn(initialName);
+      setNamePt(initialName);
+      setQuickQuery(initialName);
+    }
+  }, [isOpen, initialName]);
 
   // Manual Form State
   const [nameEn, setNameEn] = useState('');

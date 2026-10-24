@@ -184,3 +184,13 @@ export interface RpcCallRecord {
   responseData: any;
   headers: Record<string, string>;
 }
+
+export interface NationalPokemon {
+  id: number;
+  number: string;
+  name: string;
+  types: string[];
+  generation: number;
+  artwork_url: string;
+  sprite_url: string;
+}

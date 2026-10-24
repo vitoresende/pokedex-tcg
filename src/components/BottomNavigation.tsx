@@ -3,18 +3,28 @@ import { Layers, Sparkles, BookOpen, User } from 'lucide-react';
 import { soundEffects } from '../services/audio';
 import { useLanguage } from '../context/LanguageContext';
 
-export type NavTab = 'pokedex' | 'decks' | 'rules' | 'auth';
+export type NavTab = 'pokedex' | 'nationalDex' | 'decks' | 'rules' | 'auth';
 
 interface BottomNavigationProps {
   activeTab: NavTab;
   onTabChange: (tab: NavTab) => void;
 }
 
+const PokeballIcon: React.FC<{ className?: string }> = ({ className = 'w-5 h-5' }) => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
+    <circle cx="12" cy="12" r="10" />
+    <path d="M2 12h7" />
+    <path d="M15 12h7" />
+    <circle cx="12" cy="12" r="3" fill="currentColor" fillOpacity="0.2" />
+  </svg>
+);
+
 export const BottomNavigation: React.FC<BottomNavigationProps> = ({ activeTab, onTabChange }) => {
   const { t } = useLanguage();
 
   const tabs = [
     { id: 'pokedex' as NavTab, label: t('nav.pokedex'), icon: Sparkles },
+    { id: 'nationalDex' as NavTab, label: t('nav.nationalDex'), icon: PokeballIcon },
     { id: 'decks' as NavTab, label: t('nav.decks'), icon: Layers },
     { id: 'rules' as NavTab, label: t('nav.rules'), icon: BookOpen },
     { id: 'auth' as NavTab, label: t('nav.profile'), icon: User },
@@ -27,7 +37,7 @@ export const BottomNavigation: React.FC<BottomNavigationProps> = ({ activeTab, o
 
   return (
     <nav className="fixed bottom-0 left-0 right-0 z-50 bg-pokedex-darker/95 backdrop-blur-md border-t border-pokedex-border/60 pb-safe">
-      <div className="max-w-md mx-auto px-2 py-1.5 flex items-center justify-around">
+      <div className="max-w-lg mx-auto px-1 sm:px-2 py-1.5 flex items-center justify-around">
         {tabs.map((tab) => {
           const Icon = tab.icon;
           const isActive = activeTab === tab.id;
@@ -36,7 +46,7 @@ export const BottomNavigation: React.FC<BottomNavigationProps> = ({ activeTab, o
             <button
               key={tab.id}
               onClick={() => handleSelect(tab.id)}
-              className={`flex flex-col items-center justify-center py-1 px-4 rounded-xl transition-all duration-200 relative ${
+              className={`flex flex-col items-center justify-center py-1 px-1.5 sm:px-3 rounded-xl transition-all duration-200 relative ${
                 isActive
                   ? 'text-yellow-300 font-bold scale-105'
                   : 'text-slate-400 hover:text-slate-200'
