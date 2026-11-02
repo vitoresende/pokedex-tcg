@@ -8,6 +8,7 @@ import { fixMojibake } from './textSanitizer';
 
 export const SET_RELEASE_YEARS: Record<string, number> = {
   // === 2026 (Megaevolução Era) ===
+  '30TH': 2026, '30TH-C': 2026, '30C': 2026, // Celebração de 30 Anos / 30th Celebration
   'ME02.5': 2026, 'ME2.5': 2026, // Heróis Excelsos / Ascended Heroes
   'ME03': 2026, 'ME3': 2026, // Equilíbrio Perfeito / Perfect Order
   'ME04': 2026, 'ME4': 2026, // Caos Ascendente / Chaos Rising
@@ -257,6 +258,9 @@ export const SET_RELEASE_YEARS: Record<string, number> = {
 
 export const SET_OFFICIAL_NAMES_PT: Record<string, string> = {
   // Megaevolução (2025-2026)
+  '30TH': 'Celebração de 30 Anos',
+  '30TH-C': 'Coleção Clássica de 30 Anos',
+  '30C': 'Celebração de 30 Anos',
   'ME01': 'Megaevolução',
   'ME1': 'Megaevolução',
   'ME02': 'Fogo Fantasmagórico',
@@ -366,6 +370,7 @@ export const SET_OFFICIAL_NAMES_PT: Record<string, string> = {
  */
 export const SET_REGULATION_MARKS: Record<string, string> = {
   // === 2026 ('J' - Megaevolução Era) ===
+  '30TH': 'J', '30TH-C': 'J', '30C': 'J',
   'ME02.5': 'J', 'ME2.5': 'J', // Heróis Excelsos / Ascended Heroes
   'ME03': 'J', 'ME3': 'J', // Equilíbrio Perfeito / Perfect Order
   'ME04': 'J', 'ME4': 'J', // Caos Ascendente / Chaos Rising

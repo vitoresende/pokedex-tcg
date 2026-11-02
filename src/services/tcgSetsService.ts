@@ -39,6 +39,7 @@ const STORAGE_KEY = 'pokedex_tcg_sets_metadata';
  * Maps known TCGdex IDs to standard tournament codes
  */
 const KNOWN_ID_TO_CODE: Record<string, string> = {
+  '30th': '30TH', '30th-c': '30TH-C', '30c': '30TH',
   'me01': 'ME01', 'me02': 'ME02', 'me02.5': 'ME02.5', 'me03': 'ME03',
   'me04': 'ME04', 'me05': 'ME05', 'me06': 'ME06', 'me07': 'ME07', 'me08': 'ME08',
   'mee': 'MEE', 'mep': 'MEP',
