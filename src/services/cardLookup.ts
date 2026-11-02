@@ -1,4 +1,4 @@
-import { Card } from '../types';
+import type { Card } from '../types';
 
 export interface CardLookupResult {
   id: string;
@@ -22,9 +22,15 @@ export interface ParsedQuery {
   name: string;
   number?: string;
   total?: string;
+  setHint?: string;
 }
 
 const SET_ID_TO_CODE: Record<string, string> = {
+  // Celebração de 30 Anos (2026)
+  '30th': '30TH',
+  '30th-c': '30TH-C',
+  '30c': '30TH',
+
   // Megaevolução (2025-2026)
   'me01': 'ME01', 'me1': 'ME01',
   'me02': 'ME02', 'me2': 'ME02',
@@ -119,7 +125,10 @@ const RARITY_MAP: Record<string, string> = {
   'illustration rare': 'IR',
   'rara secreta': 'S',
   'secreta rara': 'S',
-  'secret rare': 'S'
+  'secret rare': 'S',
+  'rara futurista': '30th',
+  'futuristic rare': '30th',
+  'futuristic': '30th'
 };
 
 const TYPE_MAP: Record<string, { code: string; name: string }> = {
@@ -153,6 +162,58 @@ const TYPE_MAP: Record<string, { code: string; name: string }> = {
   'colorless': { code: 'C', name: 'Colorless' }
 };
 
+const TRAINER_TRANSLATIONS_EN_TO_PT: Record<string, string> = {
+  'switch': 'Substituição',
+  'ultra ball': 'Ultra Bola',
+  'poké pad': 'Poké Bloco',
+  'poke pad': 'Poké Bloco',
+  'professor\'s research': 'Pesquisa de Professores',
+  'boss\'s orders': 'Ordens da Chefia',
+  'rare candy': 'Doce Raro',
+  'energy retrieval': 'Recuperação de Energia',
+  'super rod': 'Supervara',
+  'nest ball': 'Bola Ninho',
+  'buddy-buddy poffin': 'Poffin de Companheirismo',
+  'earthen vessel': 'Vaso Terrestre',
+  'counter catcher': 'Pegador de Reversão',
+  'night stretcher': 'Maca Noturna'
+};
+
+const TRAINER_TRANSLATIONS_PT_TO_EN: Record<string, string> = {
+  'substituicao': 'Switch',
+  'substituição': 'Switch',
+  'ultra bola': 'Ultra Ball',
+  'poke bloco': 'Poké Pad',
+  'poké bloco': 'Poké Pad'
+};
+
+/**
+ * Translates known English card names or prefixes (e.g. Alolan, Hisuian) to Portuguese.
+ */
+function translateNameToPt(nameEn: string): string {
+  if (!nameEn) return '';
+  const lower = nameEn.toLowerCase().trim();
+  if (TRAINER_TRANSLATIONS_EN_TO_PT[lower]) {
+    return TRAINER_TRANSLATIONS_EN_TO_PT[lower];
+  }
+
+  // Handle regional forms
+  if (nameEn.startsWith('Alolan ')) {
+    return nameEn.replace('Alolan ', '') + ' de Alola';
+  }
+  if (nameEn.startsWith('Galarian ')) {
+    return nameEn.replace('Galarian ', '') + ' de Galar';
+  }
+  if (nameEn.startsWith('Hisuian ')) {
+    return nameEn.replace('Hisuian ', '') + ' de Hisui';
+  }
+  if (nameEn.startsWith('Paldean ')) {
+    return nameEn.replace('Paldean ', '') + ' de Paldea';
+  }
+
+  return nameEn;
+}
+
 /**
  * Parses user search query string into card name, card number, and total in set.
  * Supports:
@@ -160,11 +221,20 @@ const TYPE_MAP: Record<string, { code: string; name: string }> = {
  * - "Mewtwo 081/182"
  * - "10/78 Charizard"
  * - "Ultra Bola 196"
+ * - "Pikachu 30th" or "Pikachu 30 anos"
  * - "Pikachu"
  */
 export function parseCardQuery(input: string): ParsedQuery {
-  const trimmed = input.trim();
+  let trimmed = input.trim();
   if (!trimmed) return { name: '' };
+
+  let setHint: string | undefined = undefined;
+
+  // Check 30th / 30 anos set hints
+  if (/\b(30th|30 anos|30ano|trinta anos)\b/i.test(trimmed)) {
+    setHint = '30th';
+    trimmed = trimmed.replace(/\b(30th|30 anos|30ano|trinta anos)\b/gi, '').trim();
+  }
 
   // Format: "Charizard 10/125" or "Charizard 081/182"
   const slashMatch = trimmed.match(/^(.*?)\s*#?(\d+)\s*\/\s*(\d+)\s*$/i);
@@ -172,7 +242,8 @@ export function parseCardQuery(input: string): ParsedQuery {
     return {
       name: slashMatch[1].trim(),
       number: slashMatch[2].trim(),
-      total: slashMatch[3].trim()
+      total: slashMatch[3].trim(),
+      setHint
     };
   }
 
@@ -182,7 +253,8 @@ export function parseCardQuery(input: string): ParsedQuery {
     return {
       name: prefixSlashMatch[3].trim(),
       number: prefixSlashMatch[1].trim(),
-      total: prefixSlashMatch[2].trim()
+      total: prefixSlashMatch[2].trim(),
+      setHint
     };
   }
 
@@ -191,11 +263,12 @@ export function parseCardQuery(input: string): ParsedQuery {
   if (numberMatch && numberMatch[1].trim().length > 0) {
     return {
       name: numberMatch[1].trim(),
-      number: numberMatch[2].trim()
+      number: numberMatch[2].trim(),
+      setHint
     };
   }
 
-  return { name: trimmed };
+  return { name: trimmed, setHint };
 }
 
 const COMMON_TYPOS: Record<string, string> = {
@@ -217,7 +290,7 @@ const COMMON_TYPOS: Record<string, string> = {
 };
 
 /**
- * Queries TCGdex API (Portuguese first, English fallback) to retrieve and format card candidates.
+ * Queries TCGdex API (Portuguese first, merged with English fallback) to retrieve and format card candidates.
  */
 export async function lookupCardOnline(query: string): Promise<CardLookupResult[]> {
   const parsed = parseCardQuery(query);
@@ -225,43 +298,69 @@ export async function lookupCardOnline(query: string): Promise<CardLookupResult[
 
   const rawNameLower = parsed.name.toLowerCase().trim();
   const searchName = COMMON_TYPOS[rawNameLower] || parsed.name;
+  const englishSearchName = TRAINER_TRANSLATIONS_PT_TO_EN[rawNameLower] || searchName;
 
   try {
-    // 1. Query Portuguese endpoint
+    // 1. Query Portuguese and English endpoints concurrently for comprehensive candidate pool
+    const [ptRes, enRes] = await Promise.all([
+      fetch(`https://api.tcgdex.net/v2/pt/cards?name=${encodeURIComponent(searchName)}`).catch(() => null),
+      fetch(`https://api.tcgdex.net/v2/en/cards?name=${encodeURIComponent(englishSearchName)}`).catch(() => null)
+    ]);
+
     let ptList: any[] = [];
-    try {
-      const ptRes = await fetch(`https://api.tcgdex.net/v2/pt/cards?name=${encodeURIComponent(searchName)}`);
-      if (ptRes.ok) {
+    let enList: any[] = [];
+
+    if (ptRes && ptRes.ok) {
+      try {
         ptList = await ptRes.json();
-      }
-    } catch (e) {
-      console.warn('Could not query Portuguese TCGdex endpoint:', e);
+      } catch (_) {}
+    }
+    if (enRes && enRes.ok) {
+      try {
+        enList = await enRes.json();
+      } catch (_) {}
     }
 
-    // 2. Query English endpoint if no PT results
-    let candidatesList = Array.isArray(ptList) ? ptList : [];
+    if (!Array.isArray(ptList)) ptList = [];
+    if (!Array.isArray(enList)) enList = [];
 
-    if (candidatesList.length === 0) {
-      try {
-        const enRes = await fetch(`https://api.tcgdex.net/v2/en/cards?name=${encodeURIComponent(searchName)}`);
-        if (enRes.ok) {
-          const enList = await enRes.json();
-          if (Array.isArray(enList) && enList.length > 0) {
-            candidatesList = enList;
-          }
-        }
-      } catch (e) {
-        console.warn('Could not query English TCGdex endpoint:', e);
+    // Combine candidates: prioritize PT cards, append EN cards not present in PT
+    const seenIds = new Set<string>();
+    const candidatesList: any[] = [];
+
+    for (const c of ptList) {
+      if (c && c.id && !seenIds.has(c.id)) {
+        candidatesList.push(c);
+        seenIds.add(c.id);
+      }
+    }
+
+    for (const c of enList) {
+      if (c && c.id && !seenIds.has(c.id)) {
+        candidatesList.push(c);
+        seenIds.add(c.id);
       }
     }
 
     if (candidatesList.length === 0) return [];
 
-    // 3. Filter / prioritize candidates by card number if specified
+    // 2. Filter / prioritize candidates by setHint or card number if specified
     let filtered = candidatesList;
+
+    if (parsed.setHint) {
+      const hintLower = parsed.setHint.toLowerCase();
+      const hintMatches = candidatesList.filter(c => {
+        const setId = (c.id || '').toLowerCase();
+        return setId.startsWith(hintLower) || setId.includes(hintLower);
+      });
+      if (hintMatches.length > 0) {
+        filtered = hintMatches;
+      }
+    }
+
     if (parsed.number) {
       const targetClean = parsed.number.replace(/^0+/, '') || '1';
-      const exactNumMatches = candidatesList.filter(c => {
+      const exactNumMatches = filtered.filter(c => {
         const cClean = (c.localId || '').replace(/^0+/, '') || '1';
         return cClean === targetClean;
       });
@@ -272,22 +371,21 @@ export async function lookupCardOnline(query: string): Promise<CardLookupResult[
         filtered = exactWithImage;
       } else if (exactNumMatches.length > 0) {
         // Exact match exists but has NO image on TCGdex (e.g. promo card mep-086).
-        // Find near matches (e.g. #085) or other printings that DO have valid images
-        const nearMatches = candidatesList.filter(c => {
+        const nearMatches = filtered.filter(c => {
           const cNum = parseInt((c.localId || '').replace(/\D/g, ''), 10);
           const targetNum = parseInt(targetClean, 10);
           return Math.abs(cNum - targetNum) <= 2 && Boolean(c.image);
         });
-        filtered = [...exactNumMatches, ...nearMatches, ...candidatesList.filter(c => Boolean(c.image))];
+        filtered = [...exactNumMatches, ...nearMatches, ...filtered.filter(c => Boolean(c.image))];
       } else {
         // No exact match for this number: check close numbers (+- 2)
-        const nearMatches = candidatesList.filter(c => {
+        const nearMatches = filtered.filter(c => {
           const cNum = parseInt((c.localId || '').replace(/\D/g, ''), 10);
           const targetNum = parseInt(targetClean, 10);
           return Math.abs(cNum - targetNum) <= 2;
         });
         if (nearMatches.length > 0) {
-          filtered = [...nearMatches, ...candidatesList];
+          filtered = [...nearMatches, ...filtered];
         }
       }
     }
@@ -323,9 +421,20 @@ export async function lookupCardOnline(query: string): Promise<CardLookupResult[
 
           if (!detail) return null;
 
+          // If Portuguese name was not provided by PT endpoint, translate English name
+          if (!namePt || namePt === nameEn) {
+            namePt = translateNameToPt(nameEn);
+          }
+
           const setIdLower = (detail.set?.id || '').toLowerCase();
           const setCode = SET_ID_TO_CODE[setIdLower] || (detail.set?.id || 'IMP').toUpperCase();
-          const setName = detail.set?.name || 'Pokémon TCG';
+          
+          let setName = detail.set?.name || 'Pokémon TCG';
+          if (setIdLower === '30th' || setCode === '30TH') {
+            setName = 'Celebração de 30 Anos';
+          } else if (setIdLower === '30th-c' || setCode === '30TH-C') {
+            setName = 'Coleção Clássica de 30 Anos';
+          }
 
           const primaryTypeStr = (detail.types && detail.types[0]) ? detail.types[0].toLowerCase() : '';
           const typeInfo = TYPE_MAP[primaryTypeStr] || { code: 'C', name: 'Colorless' };
@@ -369,6 +478,25 @@ export async function lookupCardOnline(query: string): Promise<CardLookupResult[
             imageUrl = `https://images.pokemontcg.io/${detail.set.id.toLowerCase()}/${cleanNum}.png`;
           }
 
+          let rarityName = detail.rarity || 'Comum';
+          if (rarityLower === 'futuristic rare') {
+            rarityName = 'Rara Futurista';
+          } else if (rarityLower === 'illustration rare') {
+            rarityName = 'Ilustração Rara';
+          } else if (rarityLower === 'special illustration rare') {
+            rarityName = 'Ilustração Rara Especial';
+          } else if (rarityLower === 'double rare') {
+            rarityName = 'Dupla Rara';
+          } else if (rarityLower === 'ultra rare') {
+            rarityName = 'Ultra Rara';
+          } else if (rarityLower === 'common') {
+            rarityName = 'Comum';
+          } else if (rarityLower === 'uncommon') {
+            rarityName = 'Incomum';
+          } else if (rarityLower === 'rare') {
+            rarityName = 'Rara';
+          }
+
           return {
             id: detail.id,
             namePt: namePt || detail.name,
@@ -381,7 +509,7 @@ export async function lookupCardOnline(query: string): Promise<CardLookupResult[
             colorCode,
             colorName,
             rarityCode,
-            rarityName: detail.rarity || 'Comum',
+            rarityName,
             imageUrl,
             hp: detail.hp,
             types: detail.types
