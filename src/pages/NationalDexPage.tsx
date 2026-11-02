@@ -1,7 +1,8 @@
 import React, { useState, useMemo } from 'react';
 import { 
   Sparkles, Search, X, ShieldCheck, HelpCircle, Layers, 
-  ArrowUpDown, Filter, ChevronDown, CheckCircle2, Award 
+  ArrowUpDown, Filter, ChevronDown, CheckCircle2, Award, 
+  CircleDollarSign, Star 
 } from 'lucide-react';
 import { useCollection } from '../context/CollectionContext';
 import { useLanguage } from '../context/LanguageContext';
@@ -40,11 +41,11 @@ interface NationalDexPageProps {
 
 export const NationalDexPage: React.FC<NationalDexPageProps> = ({ onNavigateToDeck }) => {
   const { cards, selectedCard, setSelectedCard } = useCollection();
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
 
   // Filters State
   const [searchQuery, setSearchQuery] = useState('');
-  const [ownershipFilter, setOwnershipFilter] = useState<'all' | 'owned' | 'missing'>('all');
+  const [ownershipFilter, setOwnershipFilter] = useState<'all' | 'owned' | 'missing' | 'deck'>('all');
   const [selectedGen, setSelectedGen] = useState<number | 'all'>('all');
   const [selectedType, setSelectedType] = useState<string>('all');
   const [sortBy, setSortBy] = useState<'number-asc' | 'number-desc' | 'name-asc' | 'owned-first'>('number-asc');
@@ -62,10 +63,21 @@ export const NationalDexPage: React.FC<NationalDexPageProps> = ({ onNavigateToDe
     return buildPokemonCardsMap(cards);
   }, [cards]);
 
-  // Overall Statistics
-  const { ownedCount, missingCount, completionPercent, totalOwnedCardsCount } = useMemo(() => {
+  // Overall Statistics including Deck Value
+  const { 
+    ownedCount, 
+    missingCount, 
+    completionPercent, 
+    totalOwnedCardsCount,
+    totalDeckValue,
+    deckSelectedCount,
+    deckValuedPokemonsCount
+  } = useMemo(() => {
     let owned = 0;
     let totalCardsCount = 0;
+    let deckValueSum = 0;
+    let selectedCount = 0;
+    let valuedCount = 0;
 
     for (const p of POKEMON_LIST) {
       const pCards = pokemonCardsMap.get(p.id) || [];
@@ -73,6 +85,17 @@ export const NationalDexPage: React.FC<NationalDexPageProps> = ({ onNavigateToDe
       if (hasAnyOwned) {
         owned++;
         totalCardsCount += pCards.reduce((sum, c) => sum + (c.quantity || 0), 0);
+      }
+
+      // Check chosen deck card for this pokemon
+      const chosen = pCards.find((c) => c.is_deck_card);
+      if (chosen) {
+        selectedCount++;
+        const priceNum = chosen.price !== undefined && chosen.price !== null ? Number(chosen.price) : 0;
+        if (!isNaN(priceNum) && priceNum > 0) {
+          deckValueSum += priceNum;
+          valuedCount++;
+        }
       }
     }
 
@@ -84,6 +107,9 @@ export const NationalDexPage: React.FC<NationalDexPageProps> = ({ onNavigateToDe
       missingCount: missing,
       completionPercent: percent,
       totalOwnedCardsCount: totalCardsCount,
+      totalDeckValue: deckValueSum,
+      deckSelectedCount: selectedCount,
+      deckValuedPokemonsCount: valuedCount,
     };
   }, [pokemonCardsMap]);
 
@@ -98,6 +124,7 @@ export const NationalDexPage: React.FC<NationalDexPageProps> = ({ onNavigateToDe
 
       if (ownershipFilter === 'owned' && !isOwned) return false;
       if (ownershipFilter === 'missing' && isOwned) return false;
+      if (ownershipFilter === 'deck' && !pCards.some((c) => c.is_deck_card)) return false;
 
       // 2. Generation Filter
       if (selectedGen !== 'all' && p.generation !== selectedGen) return false;
@@ -174,7 +201,7 @@ export const NationalDexPage: React.FC<NationalDexPageProps> = ({ onNavigateToDe
       </div>
 
       {/* KPI Status Matrix */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 sm:gap-3">
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2.5 sm:gap-3">
         {/* Total Pokemons Captured / Owned */}
         <div className="bg-pokedex-card/90 rounded-2xl p-3 border border-slate-800 flex items-center space-x-3 shadow-md">
           <div className="p-2.5 rounded-xl bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
@@ -223,8 +250,26 @@ export const NationalDexPage: React.FC<NationalDexPageProps> = ({ onNavigateToDe
           </div>
         </div>
 
+        {/* Total Deck Value KPI */}
+        <div className="col-span-2 sm:col-span-1 bg-pokedex-card/90 rounded-2xl p-3 border border-yellow-500/30 flex items-center space-x-3 shadow-md bg-gradient-to-br from-yellow-950/20 via-pokedex-card to-pokedex-card">
+          <div className="p-2.5 rounded-xl bg-yellow-400/20 text-yellow-300 border border-yellow-400/30 shadow-inner">
+            <CircleDollarSign className="w-5 h-5 text-yellow-400" />
+          </div>
+          <div className="min-w-0">
+            <span className="text-[10px] font-mono text-slate-400 uppercase tracking-wider block truncate">
+              {t('nationalDex.deckValue')}
+            </span>
+            <span className="text-lg font-black font-display text-yellow-300 truncate block">
+              {language === 'pt' ? 'R$' : '$'} {totalDeckValue.toLocaleString(language === 'pt' ? 'pt-BR' : 'en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+            </span>
+            <span className="text-[9px] font-mono text-slate-400 block truncate">
+              {t('nationalDex.deckValuedPokemons', { count: deckValuedPokemonsCount })} ({deckSelectedCount})
+            </span>
+          </div>
+        </div>
+
         {/* Completion Progress Gauge */}
-        <div className="bg-pokedex-card/90 rounded-2xl p-3 border border-slate-800 flex flex-col justify-between shadow-md">
+        <div className="col-span-2 sm:col-span-1 bg-pokedex-card/90 rounded-2xl p-3 border border-slate-800 flex flex-col justify-between shadow-md">
           <div className="flex items-center justify-between text-[10px] font-mono">
             <span className="text-slate-400 uppercase tracking-wider">
               {t('nationalDex.completion')}
@@ -268,7 +313,7 @@ export const NationalDexPage: React.FC<NationalDexPageProps> = ({ onNavigateToDe
           </div>
 
           {/* Quick Ownership Segment Tabs */}
-          <div className="flex items-center bg-slate-900/90 p-1 rounded-xl border border-slate-800 shrink-0">
+          <div className="flex items-center bg-slate-900/90 p-1 rounded-xl border border-slate-800 shrink-0 flex-wrap gap-1">
             <button
               onClick={() => {
                 soundEffects.playClick();
@@ -295,6 +340,20 @@ export const NationalDexPage: React.FC<NationalDexPageProps> = ({ onNavigateToDe
             >
               <CheckCircle2 className="w-3.5 h-3.5" />
               <span>{t('nationalDex.filterOwned', { count: ownedCount })}</span>
+            </button>
+            <button
+              onClick={() => {
+                soundEffects.playClick();
+                setOwnershipFilter('deck');
+              }}
+              className={`px-3 py-1.5 rounded-lg text-xs font-mono font-bold transition-all flex items-center gap-1 ${
+                ownershipFilter === 'deck'
+                  ? 'bg-amber-500 text-slate-950 shadow-md font-black'
+                  : 'text-yellow-400/80 hover:text-yellow-300'
+              }`}
+            >
+              <Star className="w-3.5 h-3.5 fill-current" />
+              <span>{t('nationalDex.filterDeck', { count: deckSelectedCount })}</span>
             </button>
             <button
               onClick={() => {
@@ -391,7 +450,7 @@ export const NationalDexPage: React.FC<NationalDexPageProps> = ({ onNavigateToDe
         </span>
         {ownershipFilter !== 'all' && (
           <span className="text-yellow-300/80">
-            Filtro ativo: {ownershipFilter === 'owned' ? 'Obtidos' : 'Faltando'}
+            Filtro ativo: {ownershipFilter === 'owned' ? 'Obtidos' : ownershipFilter === 'missing' ? 'Faltando' : 'No Deck'}
           </span>
         )}
       </div>
@@ -413,13 +472,16 @@ export const NationalDexPage: React.FC<NationalDexPageProps> = ({ onNavigateToDe
             const pCards = pokemonCardsMap.get(pokemon.id) || [];
             const totalCopies = pCards.reduce((acc, c) => acc + (c.quantity || 0), 0);
             const isOwned = pCards.length > 0 && totalCopies > 0;
+            const chosenCard = pCards.find((c) => c.is_deck_card);
 
             return (
               <div
                 key={pokemon.id}
                 onClick={() => handleSelectPokemon(pokemon)}
                 className={`group relative bg-pokedex-card/80 hover:bg-pokedex-card rounded-2xl p-3 border transition-all duration-200 cursor-pointer shadow-md hover:shadow-xl flex flex-col justify-between select-none ${
-                  isOwned
+                  chosenCard
+                    ? 'border-amber-400/80 hover:border-yellow-300 bg-gradient-to-b from-amber-950/30 via-pokedex-card to-pokedex-card hover:scale-[1.02] ring-1 ring-amber-400/40'
+                    : isOwned
                     ? 'border-emerald-600/50 hover:border-emerald-400/80 bg-gradient-to-b from-emerald-950/20 via-pokedex-card to-pokedex-card hover:scale-[1.02]'
                     : 'border-slate-800 hover:border-slate-600 opacity-75 hover:opacity-100 grayscale-[40%] hover:grayscale-0'
                 }`}
@@ -430,7 +492,12 @@ export const NationalDexPage: React.FC<NationalDexPageProps> = ({ onNavigateToDe
                     #{pokemon.number}
                   </span>
 
-                  {isOwned ? (
+                  {chosenCard ? (
+                    <span className="inline-flex items-center space-x-1 text-[9px] font-mono font-black text-amber-300 bg-amber-950/90 border border-yellow-400/60 px-2 py-0.5 rounded-full shadow-sm animate-in fade-in">
+                      <Star className="w-2.5 h-2.5 fill-current text-yellow-400" />
+                      <span>Deck</span>
+                    </span>
+                  ) : isOwned ? (
                     <span className="inline-flex items-center space-x-1 text-[9px] font-mono font-black text-emerald-300 bg-emerald-950/80 border border-emerald-500/40 px-1.5 py-0.5 rounded-full shadow-sm">
                       <CheckCircle2 className="w-3 h-3 text-emerald-400" />
                       <span>{pCards.length} {pCards.length === 1 ? 'carta' : 'cartas'}</span>
@@ -476,8 +543,24 @@ export const NationalDexPage: React.FC<NationalDexPageProps> = ({ onNavigateToDe
                     ))}
                   </div>
 
-                  {/* Quantity Owned Footer Pill */}
-                  {isOwned && (
+                  {/* If chosen for deck, display chosen card details and price tag */}
+                  {chosenCard && (
+                    <div className="pt-1 mt-1 border-t border-amber-500/30">
+                      <div className="flex items-center justify-between text-[10px] font-mono bg-yellow-400/15 px-2 py-1 rounded-lg border border-yellow-400/30">
+                        <span className="text-yellow-300/90 font-bold truncate max-w-[70px]">
+                          {chosenCard.set_code} #{chosenCard.card_number}
+                        </span>
+                        <span className="text-yellow-300 font-black">
+                          {chosenCard.price !== undefined
+                            ? `${language === 'pt' ? 'R$' : '$'} ${chosenCard.price.toFixed(2)}`
+                            : '—'}
+                        </span>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Quantity Owned Footer Pill (if not in deck, show copies count) */}
+                  {isOwned && !chosenCard && (
                     <div className="pt-0.5">
                       <span className="text-[10px] font-mono text-emerald-400/90 font-medium">
                         {totalCopies} {totalCopies === 1 ? 'cópia obtida' : 'cópias obtidas'}

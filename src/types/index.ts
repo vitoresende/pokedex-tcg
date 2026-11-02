@@ -25,6 +25,9 @@ export interface Card {
   local_image?: string;
   image_filename?: string;
   decks: string[];
+  price?: number;
+  price_updated_at?: string;
+  is_deck_card?: boolean;
 }
 
 export interface DeckCardItem {

@@ -125,7 +125,16 @@ export const en = {
     "saved": "Saved!",
     "notesPlaceholder": "Ex: Turn 1 combo with Mewtwo & Mew-GX, save for late-game...",
     "saveCardNote": "Save Card Note",
-    "foilHolo": "Foil / Holo"
+    "foilHolo": "Foil / Holo",
+    "priceSectionTitle": "Market & Collection Value",
+    "priceLabel": "Card Value ($)",
+    "pricePlaceholder": "Ex: 25.00 or 150.50",
+    "priceUpdatedLabel": "Update Date",
+    "savePrice": "Save Value",
+    "priceSaved": "Value saved!",
+    "deckCardToggle": "Deck Card for this Pokémon",
+    "deckCardActive": "This is the chosen card for this Pokémon in the deck",
+    "deckCardInactive": "Not selected for deck"
   },
   "decks": {
     "title": "Tactical Deck Builder",
@@ -510,7 +519,19 @@ export const en = {
     "kalos": "Kalos",
     "alola": "Alola",
     "galar": "Galar",
-    "paldea": "Paldea"
+    "paldea": "Paldea",
+    "deckValue": "Deck Value",
+    "deckValuedPokemons": "{count} valued Pokémon",
+    "deckSelectedCount": "{count} in deck",
+    "filterDeck": "In Deck ({count})",
+    "deckCard": "Deck Card",
+    "selectForDeck": "Select for Deck",
+    "removeFromDeck": "Remove from Deck",
+    "chosenDeckCard": "Chosen Deck Card",
+    "noDeckCard": "No card chosen for deck",
+    "price": "Value",
+    "updatedAt": "Updated at",
+    "noPrice": "No value set"
   }
 } as const;
 

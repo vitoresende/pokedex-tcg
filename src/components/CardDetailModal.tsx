@@ -4,7 +4,7 @@ import { HoloCard } from './HoloCard';
 import { 
   X, Heart, Plus, Minus, Layers, Sparkles, Save, 
   Trash2, PlusCircle, CheckCircle2, Image as ImageIcon, 
-  RefreshCw, Search, Loader2, ChevronDown 
+  RefreshCw, Search, Loader2, ChevronDown, CircleDollarSign, Star, Calendar 
 } from 'lucide-react';
 import { useCollection } from '../context/CollectionContext';
 import { useLanguage } from '../context/LanguageContext';
@@ -13,6 +13,7 @@ import { findSimilarCards } from '../utils/cardSimilarity';
 import { lookupCardOnline, CardLookupResult } from '../services/cardLookup';
 import { formatSetWithYear, getSetRegulationMark } from '../utils/setMetadata';
 import { downloadAndUploadImageToStorage } from '../services/firebase';
+import { getPokemonIdsForCard } from '../utils/nationalPokemonMatcher';
 
 interface CardDetailModalProps {
   card: Card | null;
@@ -23,7 +24,8 @@ interface CardDetailModalProps {
 export const CardDetailModal: React.FC<CardDetailModalProps> = ({ card, onClose, onNavigateToDeck }) => {
   const { 
     cards, favorites, toggleFavorite, updateCardQuantity, notes, 
-    updateCardNote, decks, addCardToDeck, updateCard, deleteCard, isReadOnly 
+    updateCardNote, decks, addCardToDeck, updateCard, deleteCard, 
+    selectDeckCardForPokemon, isReadOnly 
   } = useCollection();
   const { t, getCardName, getCardSetName, language } = useLanguage();
   
@@ -31,6 +33,10 @@ export const CardDetailModal: React.FC<CardDetailModalProps> = ({ card, onClose,
   const [noteSaved, setNoteSaved] = useState<boolean>(false);
   const [selectedDeckForAdd, setSelectedDeckForAdd] = useState<string>(decks[0]?.id || '');
   const [cardAddedToDeck, setCardAddedToDeck] = useState<boolean>(false);
+
+  const [priceInput, setPriceInput] = useState<string>('');
+  const [priceDateInput, setPriceDateInput] = useState<string>('');
+  const [priceSaved, setPriceSaved] = useState<boolean>(false);
 
   const [isFixingImage, setIsFixingImage] = useState(false);
   const [isSearchingScans, setIsSearchingScans] = useState(false);
@@ -44,6 +50,9 @@ export const CardDetailModal: React.FC<CardDetailModalProps> = ({ card, onClose,
       setCardAddedToDeck(false);
       setIsFixingImage(false);
       setScanResults([]);
+      setPriceInput(card.price !== undefined && card.price !== null ? String(card.price) : '');
+      setPriceDateInput(card.price_updated_at || '');
+      setPriceSaved(false);
       soundEffects.playScan();
     }
   }, [card, notes]);
@@ -122,6 +131,43 @@ export const CardDetailModal: React.FC<CardDetailModalProps> = ({ card, onClose,
     onClose();
     if (onNavigateToDeck) {
       onNavigateToDeck(deckId);
+    }
+  };
+
+  const handlePriceChange = (val: string) => {
+    setPriceInput(val);
+    if (!priceDateInput && val.trim()) {
+      setPriceDateInput(new Date().toISOString().split('T')[0]);
+    }
+  };
+
+  const handleSavePrice = () => {
+    if (isReadOnly || !card) return;
+    soundEffects.playClick();
+    const cleaned = priceInput.replace(/[^\d.,]/g, '').replace(',', '.');
+    const parsed = cleaned.trim() ? parseFloat(cleaned) : undefined;
+    const finalPrice = parsed !== undefined && !isNaN(parsed) ? parsed : undefined;
+    const finalDate = finalPrice !== undefined ? (priceDateInput || new Date().toISOString().split('T')[0]) : undefined;
+    
+    updateCard(card.id, {
+      price: finalPrice,
+      price_updated_at: finalDate
+    });
+    setPriceSaved(true);
+    setTimeout(() => setPriceSaved(false), 2000);
+  };
+
+  const matchedPokemonIds = card && card.card_category === 'Pokémon' ? getPokemonIdsForCard(card) : [];
+  const hasPokemonMatch = matchedPokemonIds.length > 0;
+  const isDeckCard = Boolean(card?.is_deck_card);
+
+  const handleToggleDeckCard = () => {
+    if (isReadOnly || !card) return;
+    soundEffects.playClick();
+    if (hasPokemonMatch) {
+      selectDeckCardForPokemon(matchedPokemonIds[0], card.id);
+    } else {
+      updateCard(card.id, { is_deck_card: !card.is_deck_card });
     }
   };
 
@@ -362,6 +408,112 @@ export const CardDetailModal: React.FC<CardDetailModalProps> = ({ card, onClose,
                   {card.language === 'Português' || card.language === 'Portuguese' ? (language === 'pt' ? 'Português' : 'Portuguese') : (language === 'pt' ? 'Inglês' : 'English')}
                 </span>
               </div>
+            </div>
+
+            {/* Market Value & Deck Card Configuration */}
+            <div className="bg-pokedex-darker rounded-2xl p-3 border border-slate-800 space-y-3">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center space-x-1.5 text-yellow-300 font-bold text-[11px] uppercase tracking-wider">
+                  <CircleDollarSign className="w-4 h-4 text-yellow-400" />
+                  <span>{t('cardDetail.priceSectionTitle')}</span>
+                </div>
+                {priceSaved && (
+                  <span className="text-emerald-400 font-bold text-[10px] flex items-center gap-1 font-mono animate-in fade-in">
+                    <CheckCircle2 className="w-3 h-3" />
+                    <span>{t('cardDetail.priceSaved')}</span>
+                  </span>
+                )}
+              </div>
+
+              {/* Chosen Deck Card Toggle for Pokémon */}
+              {hasPokemonMatch && (
+                <div className="pt-0.5">
+                  <button
+                    type="button"
+                    onClick={handleToggleDeckCard}
+                    disabled={isReadOnly}
+                    className={`w-full py-2 px-3 rounded-xl border text-xs font-mono font-bold flex items-center justify-between transition-all active:scale-[0.98] ${
+                      isDeckCard
+                        ? 'bg-amber-500/20 text-yellow-300 border-yellow-400/50 shadow-[0_0_12px_rgba(234,179,8,0.25)]'
+                        : 'bg-slate-900/80 hover:bg-slate-800 text-slate-300 border-slate-700/80'
+                    }`}
+                  >
+                    <div className="flex items-center space-x-2">
+                      <Star className={`w-4 h-4 ${isDeckCard ? 'text-yellow-400 fill-yellow-400 animate-pulse' : 'text-slate-400'}`} />
+                      <span className="text-left">{t('cardDetail.deckCardToggle')}</span>
+                    </div>
+                    <span className={`text-[10px] px-2 py-0.5 rounded-md font-mono font-black shrink-0 ${
+                      isDeckCard ? 'bg-yellow-400 text-slate-950 shadow-sm' : 'bg-slate-800 text-slate-400'
+                    }`}>
+                      {isDeckCard ? '✓ ATIVA NO DECK' : 'SELECIONAR'}
+                    </span>
+                  </button>
+                  {isDeckCard && (
+                    <p className="text-[10px] font-mono text-yellow-300/80 mt-1 pl-1">
+                      ⭐ {t('cardDetail.deckCardActive')}
+                    </p>
+                  )}
+                </div>
+              )}
+
+              {/* Inputs for Price and Updated Date */}
+              {!isReadOnly ? (
+                <div className="space-y-2 pt-1">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                    {/* Price Input */}
+                    <div>
+                      <label className="text-[10px] font-mono text-slate-400 uppercase block mb-1">
+                        {t('cardDetail.priceLabel')}
+                      </label>
+                      <div className="relative">
+                        <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-xs font-mono font-bold text-yellow-400">
+                          {language === 'pt' ? 'R$' : '$'}
+                        </span>
+                        <input
+                          type="text"
+                          value={priceInput}
+                          onChange={(e) => handlePriceChange(e.target.value)}
+                          placeholder={t('cardDetail.pricePlaceholder')}
+                          className="w-full bg-slate-900/90 border border-slate-700 rounded-xl pl-9 pr-3 py-1.5 text-xs font-mono text-white placeholder-slate-500 focus:outline-none focus:border-yellow-400 transition-colors"
+                        />
+                      </div>
+                    </div>
+
+                    {/* Date Input */}
+                    <div>
+                      <label className="text-[10px] font-mono text-slate-400 uppercase block mb-1">
+                        {t('cardDetail.priceUpdatedLabel')}
+                      </label>
+                      <div className="relative">
+                        <input
+                          type="date"
+                          value={priceDateInput}
+                          onChange={(e) => setPriceDateInput(e.target.value)}
+                          className="w-full bg-slate-900/90 border border-slate-700 rounded-xl px-2.5 py-1.5 text-xs font-mono text-white focus:outline-none focus:border-yellow-400 transition-colors cursor-pointer"
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Save Price Button */}
+                  <button
+                    type="button"
+                    onClick={handleSavePrice}
+                    className="w-full bg-slate-800 hover:bg-slate-700 text-yellow-300 font-bold py-1.5 px-3 rounded-xl border border-slate-700/80 hover:border-yellow-400/40 transition-all flex items-center justify-center gap-1.5 shadow active:scale-[0.98]"
+                  >
+                    <Save className="w-3.5 h-3.5 text-yellow-400" />
+                    <span>{t('cardDetail.savePrice')}</span>
+                  </button>
+                </div>
+              ) : (
+                <div className="flex justify-between py-1 border-t border-slate-800 text-xs font-mono">
+                  <span className="text-slate-400">{t('cardDetail.priceLabel')}</span>
+                  <span className="text-yellow-300 font-bold">
+                    {card.price !== undefined ? `${language === 'pt' ? 'R$' : '$'} ${card.price.toFixed(2)}` : '—'}
+                    {card.price_updated_at ? ` (${card.price_updated_at})` : ''}
+                  </span>
+                </div>
+              )}
             </div>
 
             {/* Add to Deck Selector */}
