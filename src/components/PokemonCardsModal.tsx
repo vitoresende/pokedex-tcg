@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { X, Sparkles, Layers, Plus, ExternalLink, ShieldCheck, HelpCircle } from 'lucide-react';
+import { X, Sparkles, Layers, Plus, ExternalLink, ShieldCheck, HelpCircle, Star, CircleDollarSign } from 'lucide-react';
 import { Card, NationalPokemon } from '../types';
 import { CardItem } from './CardItem';
 import { PokemonTypeIcon } from './PokemonTypeIcon';
@@ -60,8 +60,8 @@ export const PokemonCardsModal: React.FC<PokemonCardsModalProps> = ({
   onSelectCard,
   onAddCardForPokemon,
 }) => {
-  const { t } = useLanguage();
-  const { isReadOnly } = useCollection();
+  const { t, language } = useLanguage();
+  const { isReadOnly, selectDeckCardForPokemon } = useCollection();
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -79,6 +79,7 @@ export const PokemonCardsModal: React.FC<PokemonCardsModalProps> = ({
   const totalFoils = ownedCards.filter((c) => c.is_foil).length;
   const isOwned = ownedCards.length > 0 && totalCopies > 0;
   const regionName = REGION_MAP[pokemon.generation] || `Gen ${pokemon.generation}`;
+  const chosenDeckCard = ownedCards.find((c) => c.is_deck_card);
 
   return (
     <div
@@ -196,6 +197,25 @@ export const PokemonCardsModal: React.FC<PokemonCardsModalProps> = ({
                       ✨ {totalFoils} {totalFoils === 1 ? 'carta brilhante (foil/holo)' : 'cartas brilhantes (foil/holo)'}
                     </p>
                   )}
+                  {/* Chosen Deck Card Info Banner */}
+                  {chosenDeckCard && (
+                    <div className="mt-2 pt-2 border-t border-emerald-500/20 flex flex-wrap items-center justify-between gap-2 text-xs">
+                      <span className="text-yellow-300 font-bold flex items-center gap-1.5">
+                        <Star className="w-3.5 h-3.5 text-yellow-400 fill-yellow-400" />
+                        <span>{t('nationalDex.chosenDeckCard')}: {chosenDeckCard.name_pt || chosenDeckCard.name_en} ({chosenDeckCard.set_code} #{chosenDeckCard.card_number})</span>
+                      </span>
+                      {chosenDeckCard.price !== undefined ? (
+                        <span className="bg-yellow-400 text-slate-950 font-black px-2 py-0.5 rounded text-[11px] shadow">
+                          {language === 'pt' ? 'R$' : '$'} {chosenDeckCard.price.toFixed(2)}
+                          {chosenDeckCard.price_updated_at ? ` • ${chosenDeckCard.price_updated_at}` : ''}
+                        </span>
+                      ) : (
+                        <span className="text-[10px] text-slate-400 italic">
+                          ({t('nationalDex.noPrice')})
+                        </span>
+                      )}
+                    </div>
+                  )}
                 </div>
               ) : (
                 <div className="bg-slate-900/60 border border-slate-800 rounded-xl p-3 text-xs font-mono space-y-2">
@@ -235,14 +255,32 @@ export const PokemonCardsModal: React.FC<PokemonCardsModalProps> = ({
 
               <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
                 {ownedCards.map((card) => (
-                  <CardItem
-                    key={card.id}
-                    card={card}
-                    onSelect={(c) => {
-                      soundEffects.playClick();
-                      onSelectCard(c);
-                    }}
-                  />
+                  <div key={card.id} className="flex flex-col space-y-2">
+                    <CardItem
+                      card={card}
+                      onSelect={(c) => {
+                        soundEffects.playClick();
+                        onSelectCard(c);
+                      }}
+                    />
+                    {!isReadOnly && (
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          selectDeckCardForPokemon(pokemon.id, card.id);
+                        }}
+                        className={`w-full py-1.5 px-2 rounded-xl text-[11px] font-mono font-bold flex items-center justify-center gap-1.5 transition-all shadow active:scale-95 border ${
+                          card.is_deck_card
+                            ? 'bg-amber-400 hover:bg-amber-300 text-slate-950 border-yellow-200 shadow-[0_0_10px_rgba(250,204,21,0.4)]'
+                            : 'bg-slate-800 hover:bg-slate-700 text-slate-300 border-slate-700 hover:border-yellow-400/40'
+                        }`}
+                      >
+                        <Star className={`w-3.5 h-3.5 ${card.is_deck_card ? 'fill-current text-slate-950' : 'text-yellow-400'}`} />
+                        <span>{card.is_deck_card ? t('nationalDex.chosenDeckCard') : t('nationalDex.selectForDeck')}</span>
+                      </button>
+                    )}
+                  </div>
                 ))}
               </div>
             </div>

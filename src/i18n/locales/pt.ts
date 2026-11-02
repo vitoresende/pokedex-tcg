@@ -127,7 +127,16 @@ export const pt: TranslationKeys = {
     "saved": "Salvo!",
     "notesPlaceholder": "Ex: Combo de turno 1 com Mewtwo & Mew-GX, guardar para late-game...",
     "saveCardNote": "Salvar Anotação da Carta",
-    "foilHolo": "Foil / Holográfica"
+    "foilHolo": "Foil / Holográfica",
+    "priceSectionTitle": "Valor de Mercado & Coleção",
+    "priceLabel": "Valor da Carta (R$)",
+    "pricePlaceholder": "Ex: 25,00 ou 150.50",
+    "priceUpdatedLabel": "Data da Atualização",
+    "savePrice": "Salvar Valor",
+    "priceSaved": "Valor salvo!",
+    "deckCardToggle": "Carta Escolhida para o Deck deste Pokémon",
+    "deckCardActive": "Esta é a carta escolhida deste Pokémon para o deck",
+    "deckCardInactive": "Não selecionada para o deck"
   },
   "decks": {
     "title": "Construtor Tático de Decks",
@@ -512,6 +521,18 @@ export const pt: TranslationKeys = {
     "kalos": "Kalos",
     "alola": "Alola",
     "galar": "Galar",
-    "paldea": "Paldea"
+    "paldea": "Paldea",
+    "deckValue": "Valor do Deck",
+    "deckValuedPokemons": "{count} pokémons com valor",
+    "deckSelectedCount": "{count} no deck",
+    "filterDeck": "No Deck ({count})",
+    "deckCard": "Carta do Deck",
+    "selectForDeck": "Selecionar para o Deck",
+    "removeFromDeck": "Remover do Deck",
+    "chosenDeckCard": "Carta Escolhida",
+    "noDeckCard": "Nenhuma carta escolhida para o deck",
+    "price": "Valor",
+    "updatedAt": "Atualizado em",
+    "noPrice": "Sem valor"
   }
 };

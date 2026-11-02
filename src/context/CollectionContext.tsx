@@ -15,6 +15,7 @@ import {
 import { loadAndApplySetsMetadata, syncSetsToCloudAndLocal, getCachedSetsList, ensureSetInCatalog, SyncedSetItem } from '../services/tcgSetsService';
 import { loadAndApplyRaritiesMetadata, syncRaritiesToCloudAndLocal, getCachedRaritiesList } from '../services/raritiesService';
 import { fixMojibake } from '../utils/textSanitizer';
+import { getPokemonIdsForCard } from '../utils/nationalPokemonMatcher';
 
 interface FilterState {
   searchQuery: string;
@@ -96,6 +97,7 @@ interface CollectionContextType {
   deleteDeck: (deckId: string) => void;
   addCardToDeck: (deckId: string, card: Card, count?: number) => void;
   removeCardFromDeck: (deckId: string, cardName: string) => void;
+  selectDeckCardForPokemon: (pokemonId: number, cardId: string | null) => void;
 }
 
 const defaultFilters: FilterState = {
@@ -571,6 +573,9 @@ const normalizeCards = (rawCards: Card[]): Card[] => {
       if (Array.isArray(c.decks)) {
         existing.decks = Array.from(new Set([...(existing.decks || []), ...c.decks]));
       }
+      if (c.price !== undefined) existing.price = c.price;
+      if (c.price_updated_at) existing.price_updated_at = c.price_updated_at;
+      if (c.is_deck_card !== undefined) existing.is_deck_card = c.is_deck_card;
     } else {
       seenMap.set(key, c);
     }
@@ -1060,6 +1065,42 @@ export const CollectionProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     setCards(prev => prev.filter(c => c.id !== cardId));
     if (selectedCard?.id === cardId) {
       setSelectedCard(null);
+    }
+  };
+
+  const selectDeckCardForPokemon = (pokemonId: number, cardId: string | null) => {
+    if (isReadOnly) return;
+    soundEffects.playClick();
+    setCards(prev => {
+      const pokemonCardIds = new Set(
+        prev.filter(c => getPokemonIdsForCard(c).includes(pokemonId)).map(c => c.id)
+      );
+
+      return prev.map(c => {
+        if (pokemonCardIds.has(c.id)) {
+          if (c.id === cardId) {
+            return { ...c, is_deck_card: !c.is_deck_card };
+          } else {
+            return { ...c, is_deck_card: false };
+          }
+        }
+        return c;
+      });
+    });
+
+    if (selectedCard) {
+      setSelectedCard(prev => {
+        if (!prev) return null;
+        const ids = getPokemonIdsForCard(prev);
+        if (ids.includes(pokemonId)) {
+          if (prev.id === cardId) {
+            return { ...prev, is_deck_card: !prev.is_deck_card };
+          } else {
+            return { ...prev, is_deck_card: false };
+          }
+        }
+        return prev;
+      });
     }
   };
 
@@ -1730,7 +1771,8 @@ export const CollectionProvider: React.FC<{ children: React.ReactNode }> = ({ ch
         updateDeck,
         deleteDeck,
         addCardToDeck,
-        removeCardFromDeck
+        removeCardFromDeck,
+        selectDeckCardForPokemon
       }}
     >
       {children}
