@@ -241,7 +241,7 @@ export const pt: TranslationKeys = {
     "nameEnPlaceholder": "Ex: Charizard ex",
     "namePt": "Nome da Carta (Português / Sinônimo)",
     "namePtPlaceholder": "Ex: Charizard ex",
-    "setCode": "Sigla da Coleção *",
+    "setCode": "Sigla Coleção *",
     "setCodePlaceholder": "Ex: SVI, PAF, OBF",
     "cardNumber": "Nº da Carta *",
     "cardNumberPlaceholder": "Ex: 054 ou 125",

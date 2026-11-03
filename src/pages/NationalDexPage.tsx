@@ -200,18 +200,18 @@ export const NationalDexPage: React.FC<NationalDexPageProps> = ({ onNavigateToDe
         </div>
       </div>
 
-      {/* KPI Status Matrix */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2.5 sm:gap-3">
+      {/* KPI Status Matrix (4 Cards) */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-3">
         {/* Total Pokemons Captured / Owned */}
-        <div className="bg-pokedex-card/90 rounded-2xl p-3 border border-slate-800 flex items-center space-x-3 shadow-md">
-          <div className="p-2.5 rounded-xl bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
+        <div className="bg-pokedex-card/90 rounded-2xl p-3 border border-slate-800 flex items-center space-x-3 shadow-md min-w-0">
+          <div className="p-2.5 rounded-xl bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 shrink-0">
             <CheckCircle2 className="w-5 h-5" />
           </div>
-          <div>
-            <span className="text-[10px] font-mono text-slate-400 uppercase tracking-wider block">
+          <div className="min-w-0 flex-1">
+            <span className="text-[10px] font-mono text-slate-400 uppercase tracking-wider block truncate">
               {t('nationalDex.obtained')}
             </span>
-            <span className="text-lg font-black font-display text-emerald-400">
+            <span className="text-lg font-black font-display text-emerald-400 truncate block">
               {ownedCount}{' '}
               <small className="text-xs font-normal text-slate-400">/ 1025</small>
             </span>
@@ -219,15 +219,15 @@ export const NationalDexPage: React.FC<NationalDexPageProps> = ({ onNavigateToDe
         </div>
 
         {/* Missing Pokémon */}
-        <div className="bg-pokedex-card/90 rounded-2xl p-3 border border-slate-800 flex items-center space-x-3 shadow-md">
-          <div className="p-2.5 rounded-xl bg-red-500/20 text-red-400 border border-red-500/30">
+        <div className="bg-pokedex-card/90 rounded-2xl p-3 border border-slate-800 flex items-center space-x-3 shadow-md min-w-0">
+          <div className="p-2.5 rounded-xl bg-red-500/20 text-red-400 border border-red-500/30 shrink-0">
             <HelpCircle className="w-5 h-5" />
           </div>
-          <div>
-            <span className="text-[10px] font-mono text-slate-400 uppercase tracking-wider block">
+          <div className="min-w-0 flex-1">
+            <span className="text-[10px] font-mono text-slate-400 uppercase tracking-wider block truncate">
               {t('nationalDex.missing')}
             </span>
-            <span className="text-lg font-black font-display text-slate-300">
+            <span className="text-lg font-black font-display text-slate-300 truncate block">
               {missingCount}{' '}
               <small className="text-xs font-normal text-slate-500">restantes</small>
             </span>
@@ -235,15 +235,15 @@ export const NationalDexPage: React.FC<NationalDexPageProps> = ({ onNavigateToDe
         </div>
 
         {/* Total Pokémon Cards in Collection */}
-        <div className="bg-pokedex-card/90 rounded-2xl p-3 border border-slate-800 flex items-center space-x-3 shadow-md">
-          <div className="p-2.5 rounded-xl bg-blue-500/20 text-pokedex-blue border border-blue-500/30">
+        <div className="bg-pokedex-card/90 rounded-2xl p-3 border border-slate-800 flex items-center space-x-3 shadow-md min-w-0">
+          <div className="p-2.5 rounded-xl bg-blue-500/20 text-pokedex-blue border border-blue-500/30 shrink-0">
             <Layers className="w-5 h-5" />
           </div>
-          <div>
-            <span className="text-[10px] font-mono text-slate-400 uppercase tracking-wider block">
+          <div className="min-w-0 flex-1">
+            <span className="text-[10px] font-mono text-slate-400 uppercase tracking-wider block truncate">
               {t('nationalDex.totalCardsInCollection')}
             </span>
-            <span className="text-lg font-black font-display text-white">
+            <span className="text-lg font-black font-display text-white truncate block">
               {totalOwnedCardsCount}{' '}
               <small className="text-xs font-normal text-slate-400">{t('common.cards')}</small>
             </span>
@@ -251,15 +251,18 @@ export const NationalDexPage: React.FC<NationalDexPageProps> = ({ onNavigateToDe
         </div>
 
         {/* Total Deck Value KPI */}
-        <div className="col-span-2 sm:col-span-1 bg-pokedex-card/90 rounded-2xl p-3 border border-yellow-500/30 flex items-center space-x-3 shadow-md bg-gradient-to-br from-yellow-950/20 via-pokedex-card to-pokedex-card">
-          <div className="p-2.5 rounded-xl bg-yellow-400/20 text-yellow-300 border border-yellow-400/30 shadow-inner">
+        <div className="bg-pokedex-card/90 rounded-2xl p-3 border border-yellow-500/30 flex items-center space-x-3 shadow-md bg-gradient-to-br from-yellow-950/20 via-pokedex-card to-pokedex-card min-w-0">
+          <div className="p-2.5 rounded-xl bg-yellow-400/20 text-yellow-300 border border-yellow-400/30 shadow-inner shrink-0">
             <CircleDollarSign className="w-5 h-5 text-yellow-400" />
           </div>
-          <div className="min-w-0">
+          <div className="min-w-0 flex-1">
             <span className="text-[10px] font-mono text-slate-400 uppercase tracking-wider block truncate">
               {t('nationalDex.deckValue')}
             </span>
-            <span className="text-lg font-black font-display text-yellow-300 truncate block">
+            <span
+              className="text-base sm:text-lg font-black font-display text-yellow-300 truncate block leading-tight tracking-tight whitespace-nowrap"
+              title={`${language === 'pt' ? 'R$' : '$'} ${totalDeckValue.toLocaleString(language === 'pt' ? 'pt-BR' : 'en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`}
+            >
               {language === 'pt' ? 'R$' : '$'} {totalDeckValue.toLocaleString(language === 'pt' ? 'pt-BR' : 'en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
             </span>
             <span className="text-[9px] font-mono text-slate-400 block truncate">
@@ -267,24 +270,26 @@ export const NationalDexPage: React.FC<NationalDexPageProps> = ({ onNavigateToDe
             </span>
           </div>
         </div>
+      </div>
 
-        {/* Completion Progress Gauge */}
-        <div className="col-span-2 sm:col-span-1 bg-pokedex-card/90 rounded-2xl p-3 border border-slate-800 flex flex-col justify-between shadow-md">
-          <div className="flex items-center justify-between text-[10px] font-mono">
-            <span className="text-slate-400 uppercase tracking-wider">
+      {/* Completion Progress Gauge (Full Width) */}
+      <div className="w-full bg-pokedex-card/90 rounded-2xl p-3.5 border border-slate-800 shadow-md space-y-2">
+        <div className="flex items-center justify-between text-[11px] font-mono">
+          <div className="flex items-center gap-2">
+            <span className="text-slate-300 uppercase tracking-wider font-bold">
               {t('nationalDex.completion')}
             </span>
-            <span className="text-yellow-300 font-bold">{completionPercent}%</span>
+            <span className="text-[10px] text-slate-400">
+              ({ownedCount} de 1025 Pokémon)
+            </span>
           </div>
-          <div className="w-full bg-slate-800 h-2.5 rounded-full overflow-hidden mt-1.5 border border-slate-700">
-            <div
-              className="bg-gradient-to-r from-emerald-500 via-cyan-400 to-yellow-300 h-full rounded-full transition-all duration-500 shadow-[0_0_10px_rgba(52,211,153,0.5)]"
-              style={{ width: `${completionPercent}%` }}
-            />
-          </div>
-          <span className="text-[9px] text-slate-400 font-mono mt-1 text-right">
-            {ownedCount} de 1025 Pokémon
-          </span>
+          <span className="text-yellow-300 font-bold text-xs sm:text-sm">{completionPercent}%</span>
+        </div>
+        <div className="w-full bg-slate-800 h-2.5 sm:h-3 rounded-full overflow-hidden border border-slate-700">
+          <div
+            className="bg-gradient-to-r from-emerald-500 via-cyan-400 to-yellow-300 h-full rounded-full transition-all duration-500 shadow-[0_0_10px_rgba(52,211,153,0.5)]"
+            style={{ width: `${completionPercent}%` }}
+          />
         </div>
       </div>
 
