@@ -418,8 +418,8 @@ export const AddCardModal: React.FC<AddCardModalProps> = ({ isOpen, onClose, ini
                   <span className="text-[9px] text-slate-400 font-mono">TCGdex & Pokédex API</span>
                 </div>
 
-                <div className="flex items-center gap-2">
-                  <div className="relative flex-1">
+                <div className="space-y-2">
+                  <div className="relative w-full">
                     <Search className="w-4 h-4 text-slate-400 absolute left-3 top-3" />
                     <input
                       type="text"
@@ -432,7 +432,7 @@ export const AddCardModal: React.FC<AddCardModalProps> = ({ isOpen, onClose, ini
                         }
                       }}
                       placeholder={t('addCard.quickSearchPlaceholder')}
-                      className="w-full bg-black/60 border border-slate-700 rounded-xl pl-9 pr-3 py-2 text-white focus:outline-none focus:border-yellow-400 text-xs font-sans placeholder-slate-500"
+                      className="w-full bg-black/60 border border-slate-700 rounded-xl pl-9 pr-3 py-2.5 text-white focus:outline-none focus:border-yellow-400 text-xs font-sans placeholder-slate-500"
                     />
                   </div>
 
@@ -440,7 +440,7 @@ export const AddCardModal: React.FC<AddCardModalProps> = ({ isOpen, onClose, ini
                     type="button"
                     onClick={handleQuickSearch}
                     disabled={!quickQuery.trim() || isSearchingCard}
-                    className="bg-yellow-400 hover:bg-yellow-300 text-slate-950 font-black px-4 py-2 rounded-xl text-xs flex items-center gap-1.5 transition-all active:scale-95 disabled:opacity-50 shrink-0 shadow border border-yellow-300/40 font-mono"
+                    className="w-full bg-yellow-400 hover:bg-yellow-300 text-slate-950 font-black px-4 py-2.5 rounded-xl text-xs flex items-center justify-center gap-1.5 transition-all active:scale-95 disabled:opacity-50 shadow border border-yellow-300/40 font-mono"
                   >
                     {isSearchingCard ? (
                       <>
@@ -538,7 +538,7 @@ export const AddCardModal: React.FC<AddCardModalProps> = ({ isOpen, onClose, ini
 
               <div className="grid grid-cols-3 gap-3">
                 <div>
-                  <label className="text-slate-400 block text-[10px] uppercase mb-1">{t('addCard.setCode')}</label>
+                  <label className="text-slate-400 block text-[10px] uppercase mb-1 h-7 flex items-end leading-tight">{t('addCard.setCode')}</label>
                   <input
                     type="text"
                     required
@@ -550,7 +550,7 @@ export const AddCardModal: React.FC<AddCardModalProps> = ({ isOpen, onClose, ini
                 </div>
 
                 <div>
-                  <label className="text-slate-400 block text-[10px] uppercase mb-1">{t('addCard.cardNumber')}</label>
+                  <label className="text-slate-400 block text-[10px] uppercase mb-1 h-7 flex items-end leading-tight">{t('addCard.cardNumber')}</label>
                   <input
                     type="text"
                     required
@@ -562,7 +562,7 @@ export const AddCardModal: React.FC<AddCardModalProps> = ({ isOpen, onClose, ini
                 </div>
 
                 <div>
-                  <label className="text-slate-400 block text-[10px] uppercase mb-1">{t('addCard.totalInSet')}</label>
+                  <label className="text-slate-400 block text-[10px] uppercase mb-1 h-7 flex items-end leading-tight">{t('addCard.totalInSet')}</label>
                   <input
                     type="text"
                     value={totalInSet}
@@ -575,7 +575,7 @@ export const AddCardModal: React.FC<AddCardModalProps> = ({ isOpen, onClose, ini
 
               <div className="grid grid-cols-3 gap-3">
                 <div>
-                  <label className="text-slate-400 block text-[10px] uppercase mb-1">{t('addCard.typeCategory')}</label>
+                  <label className="text-slate-400 block text-[10px] uppercase mb-1 h-7 flex items-end leading-tight">{t('addCard.typeCategory')}</label>
                   <div className="relative">
                     <select
                       value={colorCode}
@@ -601,7 +601,7 @@ export const AddCardModal: React.FC<AddCardModalProps> = ({ isOpen, onClose, ini
                 </div>
 
                 <div>
-                  <label className="text-slate-400 block text-[10px] uppercase mb-1">{t('addCard.rarity')}</label>
+                  <label className="text-slate-400 block text-[10px] uppercase mb-1 h-7 flex items-end leading-tight">{t('addCard.rarity')}</label>
                   <div className="relative">
                     <select
                       value={rarityCode}
@@ -622,7 +622,7 @@ export const AddCardModal: React.FC<AddCardModalProps> = ({ isOpen, onClose, ini
                 </div>
 
                 <div>
-                  <label className="text-slate-400 block text-[10px] uppercase mb-1">{t('addCard.quantity')}</label>
+                  <label className="text-slate-400 block text-[10px] uppercase mb-1 h-7 flex items-end leading-tight">{t('addCard.quantity')}</label>
                   <input
                     type="number"
                     min="0"
