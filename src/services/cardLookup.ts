@@ -143,21 +143,30 @@ const TYPE_MAP: Record<string, { code: string; name: string }> = {
   'elétrico': { code: 'L', name: 'Lightning' },
   'eletrico': { code: 'L', name: 'Lightning' },
   'raio': { code: 'L', name: 'Lightning' },
+  'raios': { code: 'L', name: 'Lightning' },
   'lightning': { code: 'L', name: 'Lightning' },
   'psíquico': { code: 'P', name: 'Psychic' },
   'psiquico': { code: 'P', name: 'Psychic' },
   'psychic': { code: 'P', name: 'Psychic' },
   'luta': { code: 'F', name: 'Fighting' },
+  'lutador': { code: 'F', name: 'Fighting' },
+  'combate': { code: 'F', name: 'Fighting' },
   'fighting': { code: 'F', name: 'Fighting' },
   'escuridão': { code: 'D', name: 'Darkness' },
   'escuridao': { code: 'D', name: 'Darkness' },
+  'sombrio': { code: 'D', name: 'Darkness' },
+  'noturno': { code: 'D', name: 'Darkness' },
+  'dark': { code: 'D', name: 'Darkness' },
   'darkness': { code: 'D', name: 'Darkness' },
   'metal': { code: 'M', name: 'Metal' },
+  'aço': { code: 'M', name: 'Metal' },
+  'aco': { code: 'M', name: 'Metal' },
+  'steel': { code: 'M', name: 'Metal' },
   'fada': { code: 'Y', name: 'Fairy' },
   'fairy': { code: 'Y', name: 'Fairy' },
-  'dragão': { code: 'N', name: 'Dragon' },
-  'dragao': { code: 'N', name: 'Dragon' },
-  'dragon': { code: 'N', name: 'Dragon' },
+  'dragão': { code: 'O', name: 'Dragon' },
+  'dragao': { code: 'O', name: 'Dragon' },
+  'dragon': { code: 'O', name: 'Dragon' },
   'incolor': { code: 'C', name: 'Colorless' },
   'colorless': { code: 'C', name: 'Colorless' }
 };
@@ -445,7 +454,7 @@ export async function lookupCardOnline(query: string): Promise<CardLookupResult[
 
           if (detail.category === 'Treinador' || detail.category === 'Trainer') {
             category = 'Trainer';
-            colorCode = 'T';
+            colorCode = '';
             colorName = 'Trainer';
           } else if (detail.category === 'Energia' || detail.category === 'Energy') {
             category = 'Energy';

@@ -23,14 +23,11 @@ const PREPARED_POKEMON: NormalizedPokemon[] = (nationalPokemonList as NationalPo
   .sort((a, b) => b.norm.length - a.norm.length);
 
 /**
- * Returns an array of National Pokédex IDs (1..1025) that match a given TCG card.
- * Handles single Pokémon, forms (e.g. Alolan Sandshrew -> Sandshrew),
- * suffixes (e.g. Krookodile ex -> Krookodile), and Tag Teams (e.g. Mewtwo & Mew -> [150, 151]).
+ * Matches raw card names (EN/PT) against the 1025 National Pokédex species,
+ * regardless of the card's current category field.
  */
-export function getPokemonIdsForCard(card: Card): number[] {
-  if (card.card_category !== 'Pokémon') return [];
-
-  const names = [card.name_en, card.name_pt].filter(Boolean);
+export function matchPokemonIdsByName(nameEn?: string, namePt?: string): number[] {
+  const names = [nameEn, namePt].filter(Boolean) as string[];
   const matched: NormalizedPokemon[] = [];
 
   for (const name of names) {
@@ -49,6 +46,16 @@ export function getPokemonIdsForCard(card: Card): number[] {
   }
 
   return matched.map((m) => m.id);
+}
+
+/**
+ * Returns an array of National Pokédex IDs (1..1025) that match a given TCG card.
+ * Handles single Pokémon, forms (e.g. Alolan Sandshrew -> Sandshrew),
+ * suffixes (e.g. Krookodile ex -> Krookodile), and Tag Teams (e.g. Mewtwo & Mew -> [150, 151]).
+ */
+export function getPokemonIdsForCard(card: Card): number[] {
+  if (card.card_category !== 'Pokémon') return [];
+  return matchPokemonIdsByName(card.name_en, card.name_pt);
 }
 
 /**

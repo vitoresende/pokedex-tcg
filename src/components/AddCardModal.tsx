@@ -121,6 +121,8 @@ export const AddCardModal: React.FC<AddCardModalProps> = ({ isOpen, onClose, ini
     const fallbackImage = `https://images.pokemontcg.io/${cleanSet.toLowerCase()}/${cleanNum.replace(/\D/g, '') || '1'}.png`;
     const finalImage = c.imageUrl || fallbackImage;
 
+    const normalizedColor = c.colorCode === 'N' ? 'O' : c.colorCode === 'T' ? '' : (c.colorCode ?? 'C');
+
     const added = addNewCard({
       name_en: c.nameEn || c.namePt,
       name_pt: c.namePt || c.nameEn,
@@ -129,7 +131,8 @@ export const AddCardModal: React.FC<AddCardModalProps> = ({ isOpen, onClose, ini
       set_pt: c.setName,
       card_number: cleanNum,
       total_in_set: c.totalInSet || '100',
-      color_code: c.colorCode || 'C',
+      color_code: normalizedColor,
+      card_category: c.category,
       rarity_code: c.rarityCode || 'C',
       quantity: 1,
       quality: 'NM',
@@ -183,7 +186,8 @@ export const AddCardModal: React.FC<AddCardModalProps> = ({ isOpen, onClose, ini
     setSetEn(candidate.setName);
     setCardNumber(candidate.cardNumber);
     setTotalInSet(candidate.totalInSet);
-    setColorCode(candidate.colorCode);
+    const normalizedCandidateColor = candidate.colorCode === 'N' ? 'O' : candidate.colorCode === 'T' ? '' : candidate.colorCode;
+    setColorCode(normalizedCandidateColor);
     setRarityCode(candidate.rarityCode);
     setImageUrl(candidate.imageUrl || '');
     setImagePreview(candidate.imageUrl || null);
@@ -243,6 +247,7 @@ export const AddCardModal: React.FC<AddCardModalProps> = ({ isOpen, onClose, ini
       card_number: cardNumber.trim() || '1',
       total_in_set: totalInSet.trim() || '100',
       color_code: colorCode,
+      card_category: colorCode === '' ? 'Trainer' : colorCode === 'E' ? 'Energy' : 'Pokémon',
       rarity_code: rarityCode,
       quantity: Number(quantity) || 1,
       quality,

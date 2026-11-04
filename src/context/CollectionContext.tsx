@@ -15,7 +15,7 @@ import {
 import { loadAndApplySetsMetadata, syncSetsToCloudAndLocal, getCachedSetsList, ensureSetInCatalog, SyncedSetItem } from '../services/tcgSetsService';
 import { loadAndApplyRaritiesMetadata, syncRaritiesToCloudAndLocal, getCachedRaritiesList } from '../services/raritiesService';
 import { fixMojibake } from '../utils/textSanitizer';
-import { getPokemonIdsForCard } from '../utils/nationalPokemonMatcher';
+import { getPokemonIdsForCard, matchPokemonIdsByName } from '../utils/nationalPokemonMatcher';
 
 interface FilterState {
   searchQuery: string;
@@ -126,8 +126,10 @@ const COLOR_MAP: Record<string, { name: string; slug: string; bg: string }> = {
   M: { name: 'Metal', slug: 'metal', bg: '#B8B8D0' },
   Y: { name: 'Fairy', slug: 'fairy', bg: '#EE99AC' },
   O: { name: 'Dragon', slug: 'dragon', bg: '#7038F8' },
+  N: { name: 'Dragon', slug: 'dragon', bg: '#7038F8' },
   C: { name: 'Colorless', slug: 'colorless', bg: '#A8A878' },
   E: { name: 'Energy', slug: 'energy', bg: '#F59E0B' },
+  T: { name: 'Trainer', slug: 'trainer', bg: '#14B8A6' },
   '': { name: 'Trainer', slug: 'trainer', bg: '#14B8A6' }
 };
 
@@ -253,9 +255,9 @@ const TRAINER_KEYWORDS = [
 ];
 
 export const isKnownTrainer = (namePt: string, nameEn: string): boolean => {
-  const nPt = (namePt || '').toLowerCase();
-  const nEn = (nameEn || '').toLowerCase();
-  return TRAINER_KEYWORDS.some(k => nPt.includes(k) || nEn.includes(k));
+  if (!namePt && !nameEn) return false;
+  if (isKnownEnergy(namePt, nameEn, '', '', '')) return false;
+  return matchPokemonIdsByName(nameEn, namePt).length === 0;
 };
 
 export const isKnownEnergy = (namePt: string, nameEn: string, setCode: string, color: string, cardNum: string): boolean => {
@@ -433,6 +435,32 @@ export const normalizeDeck = (rawDeck: Deck): Deck => {
   };
 };
 
+const HEALED_POKEMON_COLOR_BY_SET_NUM: Record<string, string> = {
+  'ME01#101': 'O', // Latios (Dragão)
+  'ME01#88': 'D',  // Yveltal (Sombrio)
+  'ME01#89': 'D',  // Nickit (Sombrio)
+  'ME03#49': 'D',  // Haunter (Sombrio)
+  'ME03#50': 'D',  // Gengar (Sombrio)
+  'ME05#52': 'D',  // Malamar (Sombrio)
+  'ME05#54': 'D',  // Thievul (Sombrio)
+  'ME05#57': 'D',  // Maschiff (Sombrio)
+  'ME05#58': 'D',  // Mabosstiff (Sombrio)
+  'ME05#59': 'D',  // Chi-Yu (Sombrio)
+  'ME05#92': 'D',  // Thievul (Sombrio)
+  'ME01#68': 'F',  // Sandshrew (Lutador)
+  'ME01#69': 'F',  // Sandslash (Lutador)
+  'ME01#73': 'F',  // Hariyama (Lutador)
+  'ME01#82': 'F',  // Nacli (Lutador)
+  'ME03#39': 'F',  // Hippopotas (Lutador)
+  'ME03#40': 'F',  // Hippowdon (Lutador)
+  'ME03#43': 'F',  // Barbaracle (Lutador)
+  'ME04#47': 'F',  // Claydol (Lutador)
+  'ME05#42': 'F',  // Mankey (Lutador)
+  'ME05#47': 'F',  // Koraidon (Lutador)
+  'MEP#68': 'F',   // Makuhita (Lutador)
+  'MEP#87': 'F',   // Binacle (Lutador)
+};
+
 const normalizeCards = (rawCards: Card[]): Card[] => {
   const mappedList: Card[] = rawCards.map((rawC): Card => {
     const c = {
@@ -453,20 +481,25 @@ const normalizeCards = (rawCards: Card[]): Card[] => {
       c.set_code = 'ME02';
     }
 
-    // Determine standard category
+    // Heal Dragon 'N' code to 'O' and heal previously mis-mapped Sombrio/Lutador cards
+    if (c.color_code === 'N') {
+      c.color_code = 'O';
+    }
+    const canonicalLookupKey = `${normalizeSetCode(c.set_code)}#${normalizeCardNumber(c.card_number)}`;
+    if (HEALED_POKEMON_COLOR_BY_SET_NUM[canonicalLookupKey]) {
+      c.color_code = HEALED_POKEMON_COLOR_BY_SET_NUM[canonicalLookupKey];
+    }
+
+    // Determine standard category using National Dex species verification
+    const hasPokemonMatch = matchPokemonIdsByName(c.name_en, c.name_pt).length > 0;
     let category: 'Pokémon' | 'Trainer' | 'Energy' = 'Pokémon';
-    const catLower = (c.card_category || '').toLowerCase();
     
     if (isKnownEnergy(c.name_pt, c.name_en, c.set_code, c.color_code, c.card_number)) {
       category = 'Energy';
-    } else if (
-      isKnownTrainer(c.name_pt, c.name_en) ||
-      catLower === 'trainer' || 
-      catLower === 'treinador' || 
-      c.color_slug === 'trainer' || 
-      !c.color_code
-    ) {
+    } else if (!hasPokemonMatch) {
       category = 'Trainer';
+    } else {
+      category = 'Pokémon';
     }
 
     // Special Energy specific overrides
@@ -546,6 +579,13 @@ const normalizeCards = (rawCards: Card[]): Card[] => {
       colorSlug = 'energy';
       colorName = 'Energy';
       colorBg = '#F59E0B';
+    } else if (category === 'Pokémon') {
+      const mappedColor = COLOR_MAP[c.color_code] || COLOR_MAP['C'];
+      if (!colorSlug || colorSlug === 'trainer' || c.color_name === 'Trainer' || HEALED_POKEMON_COLOR_BY_SET_NUM[canonicalLookupKey]) {
+        colorSlug = mappedColor.slug;
+        colorName = mappedColor.name;
+        colorBg = mappedColor.bg;
+      }
     }
 
     return {
