@@ -9,12 +9,13 @@ const rootDir = path.resolve(__dirname, '..');
 const packageJsonPath = path.join(rootDir, 'package.json');
 const publicVersionPath = path.join(rootDir, 'public', 'version.json');
 const srcVersionPath = path.join(rootDir, 'src', 'version.json');
+const firebasercPath = path.join(rootDir, '.firebaserc');
 
 // Get mode from CLI args: 'patch' | 'minor' | 'major' | 'auto' | 'show'
 const arg = (process.argv[2] || 'auto').toLowerCase().replace(/^--?/, '');
 
 function parseSemver(versionStr) {
-  const parts = versionStr.split('.').map((p) => parseInt(p, 10) || 0);
+  const parts = String(versionStr || '1.0.0').split('.').map((p) => parseInt(p, 10) || 0);
   while (parts.length < 3) parts.push(0);
   return {
     major: parts[0],
@@ -23,20 +24,67 @@ function parseSemver(versionStr) {
   };
 }
 
-function bumpVersion() {
+function compareSemver(a, b) {
+  const sa = parseSemver(a);
+  const sb = parseSemver(b);
+  if (sa.major !== sb.major) return sa.major - sb.major;
+  if (sa.minor !== sb.minor) return sa.minor - sb.minor;
+  return sa.patch - sb.patch;
+}
+
+async function fetchRemoteVersion() {
+  try {
+    let projectId = process.env.VITE_FIREBASE_PROJECT_ID || '';
+    if (!projectId && fs.existsSync(firebasercPath)) {
+      const rc = JSON.parse(fs.readFileSync(firebasercPath, 'utf-8'));
+      projectId = rc?.projects?.default || '';
+    }
+    if (!projectId || projectId === 'your-pokedex-project') return null;
+
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 4000);
+    const res = await fetch(`https://${projectId}.web.app/version.json?_t=${Date.now()}`, {
+      signal: controller.signal,
+      headers: { 'Cache-Control': 'no-cache' },
+    });
+    clearTimeout(timeout);
+    if (!res.ok) return null;
+    return await res.json();
+  } catch {
+    return null;
+  }
+}
+
+async function bumpVersion() {
   const pkg = JSON.parse(fs.readFileSync(packageJsonPath, 'utf-8'));
-  const currentVersion = pkg.version || '1.0.0';
-  const semver = parseSemver(currentVersion);
+  let currentVersion = pkg.version || '1.0.0';
 
   let prevBuildNumber = 0;
   if (fs.existsSync(publicVersionPath)) {
     try {
       const existing = JSON.parse(fs.readFileSync(publicVersionPath, 'utf-8'));
       prevBuildNumber = Number(existing.buildNumber) || 0;
+      if (existing.version && compareSemver(existing.version, currentVersion) > 0) {
+        currentVersion = existing.version;
+      }
     } catch {
       prevBuildNumber = 0;
     }
   }
+
+  // Consult live deployed version on Firebase Hosting so stateless CI (Cloud Build)
+  // always increments from the currently deployed production version
+  const remoteData = await fetchRemoteVersion();
+  if (remoteData) {
+    if (remoteData.version && compareSemver(remoteData.version, currentVersion) > 0) {
+      currentVersion = remoteData.version;
+    }
+    if (Number(remoteData.buildNumber) > prevBuildNumber) {
+      prevBuildNumber = Number(remoteData.buildNumber);
+    }
+  }
+
+  const semver = parseSemver(currentVersion);
 
   let nextVersion = currentVersion;
   const nextBuildNumber = prevBuildNumber + 1;

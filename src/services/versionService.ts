@@ -72,6 +72,7 @@ export async function forceAppUpdateAndClearCache(): Promise<void> {
     // 3. Clear localStorage version marker & sessionStorage
     try {
       localStorage.removeItem('pokedex_installed_version');
+      localStorage.removeItem('pokedex_installed_build_key');
       sessionStorage.clear();
     } catch {
       // ignore

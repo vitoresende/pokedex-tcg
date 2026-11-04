@@ -37,7 +37,7 @@
           });
         }
 
-        // 3. Automated check: verify if remote version has changed
+        // 3. Automated check: verify if remote version or buildTime has changed
         try {
           fetch('/version.json?_t=' + Date.now(), {
             cache: 'no-store',
@@ -46,12 +46,16 @@
           .then(function(res) { return res.json(); })
           .then(function(data) {
             if (!data || !data.version) return;
+            var remoteKey = data.version + '_' + (data.buildNumber || '') + '_' + (data.buildTime || '');
             var storedVersion = localStorage.getItem('pokedex_installed_version');
-            if (storedVersion && storedVersion !== data.version) {
+            var storedKey = localStorage.getItem('pokedex_installed_build_key');
+            if ((storedVersion && storedVersion !== data.version) || (storedKey && storedKey !== remoteKey)) {
               localStorage.setItem('pokedex_installed_version', data.version);
+              localStorage.setItem('pokedex_installed_build_key', remoteKey);
               window.location.replace('/?v_reload=' + Date.now());
             } else {
               localStorage.setItem('pokedex_installed_version', data.version);
+              localStorage.setItem('pokedex_installed_build_key', remoteKey);
             }
           })
           .catch(function() {});

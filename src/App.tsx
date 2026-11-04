@@ -100,7 +100,7 @@ const MainLayout: React.FC = () => {
       {/* Dynamic Update Notification Banner for PWA and Mobile */}
       {remoteUpdate && (
         <div className="bg-gradient-to-r from-yellow-400 via-amber-300 to-yellow-400 text-slate-950 px-3 sm:px-4 py-2 flex items-center justify-between shadow-lg sticky top-0 z-50 border-b border-yellow-500 font-mono text-xs animate-in slide-in-from-top duration-300">
-          <div className="flex items-center space-x-2 font-bold truncate mr-2">
+          <div className="flex items-center space-x-2 font-bold truncate mr-2 min-w-0">
             <Sparkles className="w-4 h-4 text-pokedex-red shrink-0 animate-pulse" />
             <span className="truncate">
               {t('profile.updateBannerText', { version: remoteUpdate.version })}
