@@ -52,43 +52,43 @@ export const PokedexPage: React.FC<PokedexPageProps> = ({ onNavigateToDeck }) =>
       {/* Pokédex Status Deck Matrix / KPI Banner */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 sm:gap-3">
         {/* Total Owned */}
-        <div className="bg-pokedex-card/90 rounded-2xl p-3 border border-slate-800 flex items-center space-x-3 shadow-md">
-          <div className="p-2.5 rounded-xl bg-pokedex-red/20 text-pokedex-lightred border border-pokedex-red/30">
+        <div className="bg-pokedex-card/90 rounded-2xl p-3 border border-slate-800 flex items-center space-x-2.5 sm:space-x-3 shadow-md min-w-0 overflow-hidden">
+          <div className="p-2 sm:p-2.5 rounded-xl bg-pokedex-red/20 text-pokedex-lightred border border-pokedex-red/30 shrink-0">
             <Database className="w-5 h-5" />
           </div>
-          <div>
-            <span className="text-[10px] font-mono text-slate-400 uppercase tracking-wider block">{t('pokedex.totalOwned')}</span>
-            <span className="text-lg font-black font-display text-white">{stats.totalOwnedCards} <small className="text-xs font-normal text-slate-400">{t('common.cards')}</small></span>
+          <div className="min-w-0 flex-1">
+            <span className="text-[10px] font-mono text-slate-400 uppercase tracking-wider block truncate">{t('pokedex.totalOwned')}</span>
+            <span className="text-base sm:text-lg font-black font-display text-white truncate block">{stats.totalOwnedCards} <small className="text-xs font-normal text-slate-400">{t('common.cards')}</small></span>
           </div>
         </div>
 
         {/* Unique Cards */}
-        <div className="bg-pokedex-card/90 rounded-2xl p-3 border border-slate-800 flex items-center space-x-3 shadow-md">
-          <div className="p-2.5 rounded-xl bg-blue-500/20 text-pokedex-blue border border-blue-500/30">
+        <div className="bg-pokedex-card/90 rounded-2xl p-3 border border-slate-800 flex items-center space-x-2.5 sm:space-x-3 shadow-md min-w-0 overflow-hidden">
+          <div className="p-2 sm:p-2.5 rounded-xl bg-blue-500/20 text-pokedex-blue border border-blue-500/30 shrink-0">
             <Award className="w-5 h-5" />
           </div>
-          <div>
-            <span className="text-[10px] font-mono text-slate-400 uppercase tracking-wider block">{t('pokedex.uniqueRegistered')}</span>
-            <span className="text-lg font-black font-display text-white">{stats.uniqueCardsCount} <small className="text-xs font-normal text-slate-400">{t('common.cards')}</small></span>
+          <div className="min-w-0 flex-1">
+            <span className="text-[10px] font-mono text-slate-400 uppercase tracking-wider block truncate">{t('pokedex.uniqueRegistered')}</span>
+            <span className="text-base sm:text-lg font-black font-display text-white truncate block">{stats.uniqueCardsCount} <small className="text-xs font-normal text-slate-400">{t('common.cards')}</small></span>
           </div>
         </div>
 
         {/* Holographics / Foils */}
-        <div className="bg-pokedex-card/90 rounded-2xl p-3 border border-slate-800 flex items-center space-x-3 shadow-md">
-          <div className="p-2.5 rounded-xl bg-yellow-500/20 text-yellow-300 border border-yellow-500/30">
+        <div className="bg-pokedex-card/90 rounded-2xl p-3 border border-slate-800 flex items-center space-x-2.5 sm:space-x-3 shadow-md min-w-0 overflow-hidden">
+          <div className="p-2 sm:p-2.5 rounded-xl bg-yellow-500/20 text-yellow-300 border border-yellow-500/30 shrink-0">
             <Sparkles className="w-5 h-5" />
           </div>
-          <div>
-            <span className="text-[10px] font-mono text-slate-400 uppercase tracking-wider block">{t('pokedex.foilHolo')}</span>
-            <span className="text-lg font-black font-display text-yellow-300">{stats.foilCardsCount} <small className="text-xs font-normal text-yellow-500/80">{t('common.shining')}</small></span>
+          <div className="min-w-0 flex-1">
+            <span className="text-[10px] font-mono text-slate-400 uppercase tracking-wider block truncate">{t('pokedex.foilHolo')}</span>
+            <span className="text-base sm:text-lg font-black font-display text-yellow-300 truncate block">{stats.foilCardsCount} <small className="text-xs font-normal text-yellow-500/80">{t('common.shining')}</small></span>
           </div>
         </div>
 
         {/* Completion Progress */}
-        <div className="bg-pokedex-card/90 rounded-2xl p-3 border border-slate-800 flex flex-col justify-between shadow-md">
-          <div className="flex items-center justify-between text-[10px] font-mono">
-            <span className="text-slate-400 uppercase tracking-wider">{t('pokedex.completion')}</span>
-            <span className="text-emerald-400 font-bold">{stats.completionPercentage}%</span>
+        <div className="bg-pokedex-card/90 rounded-2xl p-3 border border-slate-800 flex flex-col justify-between shadow-md min-w-0 overflow-hidden">
+          <div className="flex items-center justify-between gap-1 text-[10px] font-mono min-w-0">
+            <span className="text-slate-400 uppercase tracking-wider truncate">{t('pokedex.completion')}</span>
+            <span className="text-emerald-400 font-bold shrink-0">{stats.completionPercentage}%</span>
           </div>
           <div className="w-full bg-slate-800 h-2 rounded-full overflow-hidden mt-1.5 border border-slate-700">
             <div 
@@ -96,7 +96,7 @@ export const PokedexPage: React.FC<PokedexPageProps> = ({ onNavigateToDeck }) =>
               style={{ width: `${stats.completionPercentage}%` }}
             />
           </div>
-          <span className="text-[9px] text-slate-400 font-mono mt-1 text-right">{stats.totalSetsCount} {t('common.sets')}</span>
+          <span className="text-[9px] text-slate-400 font-mono mt-1 text-right truncate">{stats.totalSetsCount} {t('common.sets')}</span>
         </div>
       </div>
 

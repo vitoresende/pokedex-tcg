@@ -349,10 +349,10 @@ export const CardDetailModal: React.FC<CardDetailModalProps> = ({ card, onClose,
           {/* Right Column: Detailed Stats, Deck Inclusion & Notes */}
           <div className="space-y-4 text-xs font-mono">
             {/* Titles */}
-            <div>
-              <div className="flex items-center justify-between mb-1">
+            <div className="min-w-0">
+              <div className="flex flex-wrap items-center justify-between gap-1.5 mb-1">
                 <span 
-                  className="text-[10px] font-bold px-2 py-0.5 rounded-full border uppercase"
+                  className="text-[10px] font-bold px-2 py-0.5 rounded-full border uppercase max-w-full truncate"
                   style={{ 
                     backgroundColor: `${card.color_bg}22`,
                     color: card.color_bg,
@@ -362,8 +362,8 @@ export const CardDetailModal: React.FC<CardDetailModalProps> = ({ card, onClose,
                   {t(`filters.types.${card.color_name.toLowerCase()}`) !== `filters.types.${card.color_name.toLowerCase()}` ? t(`filters.types.${card.color_name.toLowerCase()}`) : card.color_name} • {card.card_category === 'Trainer' ? (language === 'pt' ? 'Treinador' : 'Trainer') : card.card_category === 'Energy' ? (language === 'pt' ? 'Energia' : 'Energy') : 'Pokémon'}
                 </span>
                 {card.is_foil && (
-                  <span className="bg-yellow-500/20 text-yellow-300 border border-yellow-400/40 text-[10px] px-2 py-0.5 rounded-full flex items-center gap-1">
-                    <Sparkles className="w-3 h-3" /> {t('cardDetail.foilHolo')}
+                  <span className="bg-yellow-500/20 text-yellow-300 border border-yellow-400/40 text-[10px] px-2 py-0.5 rounded-full inline-flex items-center gap-1 shrink-0">
+                    <Sparkles className="w-3 h-3 shrink-0" /> {t('cardDetail.foilHolo')}
                   </span>
                 )}
               </div>

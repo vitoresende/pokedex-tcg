@@ -620,21 +620,21 @@ export const DeckValidatorTab: React.FC = () => {
             </div>
 
             {/* Quick Metrics Grid */}
-            <div className="grid grid-cols-4 gap-2 mt-4 pt-3 border-t border-slate-800">
-              <div className="bg-slate-900/60 rounded-xl p-2 text-center border border-slate-800">
-                <span className="text-[9px] text-slate-400 uppercase tracking-wider block">{t('validator.totalInDeck')}</span>
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 mt-4 pt-3 border-t border-slate-800">
+              <div className="bg-slate-900/60 rounded-xl p-2 text-center border border-slate-800 min-w-0">
+                <span className="text-[9px] text-slate-400 uppercase tracking-wider block truncate">{t('validator.totalInDeck')}</span>
                 <span className="font-bold text-sm sm:text-base text-white">{validationResult.totalRequired}</span>
               </div>
-              <div className="bg-slate-900/60 rounded-xl p-2 text-center border border-slate-800">
-                <span className="text-[9px] text-slate-400 uppercase tracking-wider block">{t('validator.inCollection')}</span>
+              <div className="bg-slate-900/60 rounded-xl p-2 text-center border border-slate-800 min-w-0">
+                <span className="text-[9px] text-slate-400 uppercase tracking-wider block truncate">{t('validator.inCollection')}</span>
                 <span className="font-bold text-sm sm:text-base text-emerald-400">{validationResult.totalOwned}</span>
               </div>
-              <div className="bg-slate-900/60 rounded-xl p-2 text-center border border-slate-800">
-                <span className="text-[9px] text-slate-400 uppercase tracking-wider block">Substitutas</span>
+              <div className="bg-slate-900/60 rounded-xl p-2 text-center border border-slate-800 min-w-0">
+                <span className="text-[9px] text-slate-400 uppercase tracking-wider block truncate">Substitutas</span>
                 <span className="font-bold text-sm sm:text-base text-cyan-400">+{totalSubstitutesCount}</span>
               </div>
-              <div className="bg-slate-900/60 rounded-xl p-2 text-center border border-slate-800">
-                <span className="text-[9px] text-slate-400 uppercase tracking-wider block">{t('validator.missingCount')}</span>
+              <div className="bg-slate-900/60 rounded-xl p-2 text-center border border-slate-800 min-w-0">
+                <span className="text-[9px] text-slate-400 uppercase tracking-wider block truncate">{t('validator.missingCount')}</span>
                 <span className={`font-bold text-sm sm:text-base ${Math.max(0, validationResult.totalMissing - totalSubstitutesCount) > 0 ? 'text-rose-400' : 'text-emerald-400'}`}>
                   {Math.max(0, validationResult.totalMissing - totalSubstitutesCount)}
                 </span>
@@ -643,10 +643,10 @@ export const DeckValidatorTab: React.FC = () => {
           </div>
 
           {/* Filter Bar */}
-          <div className="flex items-center space-x-2 border-b border-slate-800 pb-2">
+          <div className="flex flex-wrap items-center gap-1.5 sm:gap-2 border-b border-slate-800 pb-2">
             <button
               onClick={() => { soundEffects.playClick(); setFilter('all'); }}
-              className={`px-3 py-1.5 rounded-xl text-xs font-mono transition-colors ${
+              className={`shrink-0 max-w-full truncate px-3 py-1.5 rounded-xl text-xs font-mono transition-colors ${
                 filter === 'all'
                   ? 'bg-yellow-400 text-slate-950 font-bold'
                   : 'bg-slate-900 text-slate-400 hover:text-white border border-slate-800'
@@ -656,7 +656,7 @@ export const DeckValidatorTab: React.FC = () => {
             </button>
             <button
               onClick={() => { soundEffects.playClick(); setFilter('missing'); }}
-              className={`px-3 py-1.5 rounded-xl text-xs font-mono transition-colors ${
+              className={`shrink-0 max-w-full truncate px-3 py-1.5 rounded-xl text-xs font-mono transition-colors ${
                 filter === 'missing'
                   ? 'bg-rose-500 text-white font-bold'
                   : 'bg-slate-900 text-slate-400 hover:text-white border border-slate-800'
@@ -666,7 +666,7 @@ export const DeckValidatorTab: React.FC = () => {
             </button>
             <button
               onClick={() => { soundEffects.playClick(); setFilter('complete'); }}
-              className={`px-3 py-1.5 rounded-xl text-xs font-mono transition-colors ${
+              className={`shrink-0 max-w-full truncate px-3 py-1.5 rounded-xl text-xs font-mono transition-colors ${
                 filter === 'complete'
                   ? 'bg-emerald-600 text-white font-bold'
                   : 'bg-slate-900 text-slate-400 hover:text-white border border-slate-800'

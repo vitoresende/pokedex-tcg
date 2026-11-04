@@ -3,8 +3,9 @@
 @tailwind utilities;
 
 @layer base {
+  html,
   body {
-    @apply bg-pokedex-darker text-slate-100 min-h-screen font-sans;
+    @apply bg-pokedex-darker text-slate-100 min-h-screen font-sans overflow-x-hidden max-w-full;
     -webkit-tap-highlight-color: transparent;
   }
 }

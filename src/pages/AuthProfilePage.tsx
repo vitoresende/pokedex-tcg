@@ -370,17 +370,17 @@ export const AuthProfilePage: React.FC = () => {
             </div>
           </div>
 
-          <div className="grid grid-cols-3 gap-3 font-mono text-xs">
-            <div className="bg-pokedex-darker p-3.5 rounded-2xl border border-slate-800 text-center">
-              <span className="text-slate-400 text-[10px] uppercase block">{t('profile.totalOwned')}</span>
+          <div className="grid grid-cols-3 gap-2 sm:gap-3 font-mono text-xs">
+            <div className="bg-pokedex-darker p-3 sm:p-3.5 rounded-2xl border border-slate-800 text-center min-w-0 overflow-hidden">
+              <span className="text-slate-400 text-[10px] uppercase block truncate">{t('profile.totalOwned')}</span>
               <span className="text-yellow-300 font-bold text-lg">{stats.totalOwnedCards}</span>
             </div>
-            <div className="bg-pokedex-darker p-3.5 rounded-2xl border border-slate-800 text-center">
-              <span className="text-slate-400 text-[10px] uppercase block">{t('profile.customDecks')}</span>
+            <div className="bg-pokedex-darker p-3 sm:p-3.5 rounded-2xl border border-slate-800 text-center min-w-0 overflow-hidden">
+              <span className="text-slate-400 text-[10px] uppercase block truncate">{t('profile.customDecks')}</span>
               <span className="text-cyan-300 font-bold text-lg">{decks.length}</span>
             </div>
-            <div className="bg-pokedex-darker p-3.5 rounded-2xl border border-slate-800 text-center">
-              <span className="text-slate-400 text-[10px] uppercase block">{t('profile.favorites')}</span>
+            <div className="bg-pokedex-darker p-3 sm:p-3.5 rounded-2xl border border-slate-800 text-center min-w-0 overflow-hidden">
+              <span className="text-slate-400 text-[10px] uppercase block truncate">{t('profile.favorites')}</span>
               <span className="text-rose-400 font-bold text-lg">{favorites.length}</span>
             </div>
           </div>
@@ -506,12 +506,12 @@ export const AuthProfilePage: React.FC = () => {
 
           {/* Real-Time Continuous Cloud Firestore Sync Card */}
           <div className="bg-pokedex-card/90 rounded-3xl border border-slate-800 p-6 space-y-4 shadow-md">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-3">
-                <div className="p-2 rounded-xl bg-pokedex-blue/20 text-pokedex-blue border border-pokedex-blue/30">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+              <div className="flex items-center space-x-3 min-w-0">
+                <div className="p-2 rounded-xl bg-pokedex-blue/20 text-pokedex-blue border border-pokedex-blue/30 shrink-0">
                   <Cloud className="w-6 h-6" />
                 </div>
-                <div>
+                <div className="min-w-0">
                   <h3 className="font-bold text-sm text-white font-mono uppercase">
                     {t('profile.cloudSync')}
                   </h3>
@@ -521,21 +521,21 @@ export const AuthProfilePage: React.FC = () => {
                 </div>
               </div>
 
-              <div className="flex items-center space-x-2">
+              <div className="flex items-center space-x-2 shrink-0">
                 {syncStatus === 'syncing' ? (
-                  <span className="bg-cyan-500/20 text-cyan-300 text-xs font-mono font-bold px-3 py-1 rounded-full border border-cyan-500/30 flex items-center gap-1.5 animate-pulse">
-                    <RefreshCw className="w-3.5 h-3.5 animate-spin" /> {t('profile.syncing')}
+                  <span className="bg-cyan-500/20 text-cyan-300 text-xs font-mono font-bold px-3 py-1 rounded-full border border-cyan-500/30 flex items-center gap-1.5 animate-pulse whitespace-nowrap">
+                    <RefreshCw className="w-3.5 h-3.5 animate-spin shrink-0" /> {t('profile.syncing')}
                   </span>
                 ) : syncStatus === 'synced' ? (
-                  <span className="bg-emerald-500/20 text-emerald-300 text-xs font-mono font-bold px-3 py-1 rounded-full border border-emerald-500/30 flex items-center gap-1.5">
-                    <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" /> {t('common.synced')}
+                  <span className="bg-emerald-500/20 text-emerald-300 text-xs font-mono font-bold px-3 py-1 rounded-full border border-emerald-500/30 flex items-center gap-1.5 whitespace-nowrap">
+                    <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 shrink-0" /> {t('common.synced')}
                   </span>
                 ) : syncStatus === 'error' ? (
-                  <span className="bg-red-500/20 text-red-300 text-xs font-mono font-bold px-3 py-1 rounded-full border border-red-500/30 flex items-center gap-1.5">
-                    <AlertTriangle className="w-3.5 h-3.5 text-red-400" /> {t('common.syncError')}
+                  <span className="bg-red-500/20 text-red-300 text-xs font-mono font-bold px-3 py-1 rounded-full border border-red-500/30 flex items-center gap-1.5 whitespace-nowrap">
+                    <AlertTriangle className="w-3.5 h-3.5 text-red-400 shrink-0" /> {t('common.syncError')}
                   </span>
                 ) : (
-                  <span className="bg-slate-800 text-slate-400 text-xs font-mono font-bold px-3 py-1 rounded-full border border-slate-700">
+                  <span className="bg-slate-800 text-slate-400 text-xs font-mono font-bold px-3 py-1 rounded-full border border-slate-700 whitespace-nowrap">
                     {t('common.ready')}
                   </span>
                 )}
@@ -544,21 +544,21 @@ export const AuthProfilePage: React.FC = () => {
 
             {/* Live Metrics Grid */}
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 font-mono text-xs">
-              <div className="bg-pokedex-darker p-3.5 rounded-2xl border border-slate-800 text-center">
-                <span className="text-slate-400 text-[10px] uppercase block">{t('profile.totalOwned')}</span>
+              <div className="bg-pokedex-darker p-3.5 rounded-2xl border border-slate-800 text-center min-w-0 overflow-hidden">
+                <span className="text-slate-400 text-[10px] uppercase block truncate">{t('profile.totalOwned')}</span>
                 <span className="text-yellow-300 font-bold text-lg">{stats.totalOwnedCards}</span>
               </div>
-              <div className="bg-pokedex-darker p-3.5 rounded-2xl border border-slate-800 text-center">
-                <span className="text-slate-400 text-[10px] uppercase block">{t('profile.customDecks')}</span>
+              <div className="bg-pokedex-darker p-3.5 rounded-2xl border border-slate-800 text-center min-w-0 overflow-hidden">
+                <span className="text-slate-400 text-[10px] uppercase block truncate">{t('profile.customDecks')}</span>
                 <span className="text-cyan-300 font-bold text-lg">{decks.length}</span>
               </div>
-              <div className="bg-pokedex-darker p-3.5 rounded-2xl border border-slate-800 text-center">
-                <span className="text-slate-400 text-[10px] uppercase block">{t('profile.favorites')}</span>
+              <div className="bg-pokedex-darker p-3.5 rounded-2xl border border-slate-800 text-center min-w-0 overflow-hidden">
+                <span className="text-slate-400 text-[10px] uppercase block truncate">{t('profile.favorites')}</span>
                 <span className="text-rose-400 font-bold text-lg">{favorites.length}</span>
               </div>
-              <div className="bg-pokedex-darker p-3.5 rounded-2xl border border-slate-800 text-center">
-                <span className="text-slate-400 text-[10px] uppercase block">{t('profile.lastCloudSync')}</span>
-                <span className="text-emerald-400 font-bold text-xs mt-1 block">{formattedLastSynced}</span>
+              <div className="bg-pokedex-darker p-3.5 rounded-2xl border border-slate-800 text-center min-w-0 overflow-hidden">
+                <span className="text-slate-400 text-[10px] uppercase block truncate">{t('profile.lastCloudSync')}</span>
+                <span className="text-emerald-400 font-bold text-xs mt-1 block truncate">{formattedLastSynced}</span>
               </div>
             </div>
 
@@ -588,12 +588,12 @@ export const AuthProfilePage: React.FC = () => {
 
           {/* TCG Sets Metadata Sync Card (Cloud Firestore settings/sets_metadata & TCGdex API) */}
           <div className="bg-pokedex-card/90 rounded-3xl border border-slate-800 p-6 space-y-4 shadow-md">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-3">
-                <div className="p-2 rounded-xl bg-yellow-500/20 text-yellow-300 border border-yellow-500/30">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+              <div className="flex items-center space-x-3 min-w-0">
+                <div className="p-2 rounded-xl bg-yellow-500/20 text-yellow-300 border border-yellow-500/30 shrink-0">
                   <Layers className="w-6 h-6" />
                 </div>
-                <div>
+                <div className="min-w-0">
                   <h3 className="font-bold text-sm text-white font-mono uppercase">
                     {t('profile.setsSyncTitle')}
                   </h3>
@@ -603,21 +603,21 @@ export const AuthProfilePage: React.FC = () => {
                 </div>
               </div>
 
-              <div className="flex items-center space-x-2">
+              <div className="flex items-center space-x-2 shrink-0">
                 {setsSyncStatus === 'syncing' ? (
-                  <span className="bg-cyan-500/20 text-cyan-300 text-xs font-mono font-bold px-3 py-1 rounded-full border border-cyan-500/30 flex items-center gap-1.5 animate-pulse">
-                    <RefreshCw className="w-3.5 h-3.5 animate-spin" /> {t('profile.syncingSets')}
+                  <span className="bg-cyan-500/20 text-cyan-300 text-xs font-mono font-bold px-3 py-1 rounded-full border border-cyan-500/30 flex items-center gap-1.5 animate-pulse whitespace-nowrap">
+                    <RefreshCw className="w-3.5 h-3.5 animate-spin shrink-0" /> {t('profile.syncingSets')}
                   </span>
                 ) : setsSyncStatus === 'synced' ? (
-                  <span className="bg-emerald-500/20 text-emerald-300 text-xs font-mono font-bold px-3 py-1 rounded-full border border-emerald-500/30 flex items-center gap-1.5">
-                    <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" /> {t('common.synced')}
+                  <span className="bg-emerald-500/20 text-emerald-300 text-xs font-mono font-bold px-3 py-1 rounded-full border border-emerald-500/30 flex items-center gap-1.5 whitespace-nowrap">
+                    <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 shrink-0" /> {t('common.synced')}
                   </span>
                 ) : setsSyncStatus === 'error' ? (
-                  <span className="bg-red-500/20 text-red-300 text-xs font-mono font-bold px-3 py-1 rounded-full border border-red-500/30 flex items-center gap-1.5">
-                    <AlertTriangle className="w-3.5 h-3.5 text-red-400" /> {t('common.syncError')}
+                  <span className="bg-red-500/20 text-red-300 text-xs font-mono font-bold px-3 py-1 rounded-full border border-red-500/30 flex items-center gap-1.5 whitespace-nowrap">
+                    <AlertTriangle className="w-3.5 h-3.5 text-red-400 shrink-0" /> {t('common.syncError')}
                   </span>
                 ) : (
-                  <span className="bg-slate-800 text-slate-400 text-xs font-mono font-bold px-3 py-1 rounded-full border border-slate-700">
+                  <span className="bg-slate-800 text-slate-400 text-xs font-mono font-bold px-3 py-1 rounded-full border border-slate-700 whitespace-nowrap">
                     {t('common.ready')}
                   </span>
                 )}

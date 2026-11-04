@@ -39,7 +39,7 @@ export const CardItem: React.FC<CardItemProps> = ({ card, onSelect }) => {
   return (
     <div 
       onClick={handleCardClick}
-      className={`group relative bg-pokedex-card/80 hover:bg-pokedex-card rounded-2xl p-2.5 border transition-all duration-200 cursor-pointer shadow-md hover:shadow-pokedex-glow/20 flex flex-col justify-between ${
+      className={`group relative min-w-0 overflow-hidden bg-pokedex-card/80 hover:bg-pokedex-card rounded-2xl p-2 sm:p-2.5 border transition-all duration-200 cursor-pointer shadow-md hover:shadow-pokedex-glow/20 flex flex-col justify-between ${
         card.quantity > 0 
           ? 'border-slate-700/80 hover:border-pokedex-blue/60' 
           : 'border-dashed border-red-500/30 opacity-75 grayscale-[40%]'
@@ -96,13 +96,13 @@ export const CardItem: React.FC<CardItemProps> = ({ card, onSelect }) => {
       </div>
 
       {/* Card Information */}
-      <div className="space-y-1">
-        <div className="flex items-start justify-between gap-1">
-          <h3 className="font-bold text-xs text-white truncate group-hover:text-pokedex-cyan transition-colors" title={cardName}>
+      <div className="space-y-1 min-w-0">
+        <div className="flex items-start justify-between gap-1 min-w-0">
+          <h3 className="font-bold text-xs text-white truncate group-hover:text-pokedex-cyan transition-colors min-w-0 flex-1" title={cardName}>
             {cardName}
           </h3>
           <span 
-            className="text-[10px] font-mono font-bold px-1.5 py-0.2 rounded border uppercase tracking-wider shrink-0"
+            className="text-[9px] sm:text-[10px] font-mono font-bold px-1.5 py-0.2 rounded border uppercase tracking-wider shrink-0 max-w-[48%] truncate"
             style={{ 
               backgroundColor: `${card.color_bg}22`,
               color: card.color_bg,
@@ -113,9 +113,9 @@ export const CardItem: React.FC<CardItemProps> = ({ card, onSelect }) => {
           </span>
         </div>
 
-        <div className="flex items-center justify-between text-[10px] text-slate-400 font-mono">
-          <span className="truncate max-w-[90px]">{setName}</span>
-          <span className="bg-slate-800 px-1 rounded text-slate-300">#{card.card_number}</span>
+        <div className="flex items-center justify-between gap-1 text-[10px] text-slate-400 font-mono min-w-0">
+          <span className="truncate min-w-0 flex-1">{setName}</span>
+          <span className="bg-slate-800 px-1 rounded text-slate-300 shrink-0">#{card.card_number}</span>
         </div>
 
         {/* Price Tag if defined */}

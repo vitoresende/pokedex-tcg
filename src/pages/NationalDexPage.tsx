@@ -318,61 +318,61 @@ export const NationalDexPage: React.FC<NationalDexPageProps> = ({ onNavigateToDe
           </div>
 
           {/* Quick Ownership Segment Tabs */}
-          <div className="flex items-center bg-slate-900/90 p-1 rounded-xl border border-slate-800 shrink-0 flex-wrap gap-1">
+          <div className="grid grid-cols-2 sm:flex items-center bg-slate-900/90 p-1 rounded-xl border border-slate-800 shrink-0 flex-wrap gap-1 min-w-0">
             <button
               onClick={() => {
                 soundEffects.playClick();
                 setOwnershipFilter('all');
               }}
-              className={`px-3 py-1.5 rounded-lg text-xs font-mono font-bold transition-all ${
+              className={`min-w-0 overflow-hidden px-2.5 sm:px-3 py-1.5 rounded-lg text-xs font-mono font-bold transition-all flex items-center justify-center ${
                 ownershipFilter === 'all'
                   ? 'bg-pokedex-blue text-white shadow-md'
                   : 'text-slate-400 hover:text-slate-200'
               }`}
             >
-              {t('nationalDex.filterAll')}
+              <span className="truncate">{t('nationalDex.filterAll')}</span>
             </button>
             <button
               onClick={() => {
                 soundEffects.playClick();
                 setOwnershipFilter('owned');
               }}
-              className={`px-3 py-1.5 rounded-lg text-xs font-mono font-bold transition-all flex items-center gap-1 ${
+              className={`min-w-0 overflow-hidden px-2.5 sm:px-3 py-1.5 rounded-lg text-xs font-mono font-bold transition-all flex items-center justify-center gap-1 ${
                 ownershipFilter === 'owned'
                   ? 'bg-emerald-600 text-white shadow-md'
                   : 'text-emerald-400/80 hover:text-emerald-300'
               }`}
             >
-              <CheckCircle2 className="w-3.5 h-3.5" />
-              <span>{t('nationalDex.filterOwned', { count: ownedCount })}</span>
+              <CheckCircle2 className="w-3.5 h-3.5 shrink-0" />
+              <span className="truncate">{t('nationalDex.filterOwned', { count: ownedCount })}</span>
             </button>
             <button
               onClick={() => {
                 soundEffects.playClick();
                 setOwnershipFilter('deck');
               }}
-              className={`px-3 py-1.5 rounded-lg text-xs font-mono font-bold transition-all flex items-center gap-1 ${
+              className={`min-w-0 overflow-hidden px-2.5 sm:px-3 py-1.5 rounded-lg text-xs font-mono font-bold transition-all flex items-center justify-center gap-1 ${
                 ownershipFilter === 'deck'
                   ? 'bg-amber-500 text-slate-950 shadow-md font-black'
                   : 'text-yellow-400/80 hover:text-yellow-300'
               }`}
             >
-              <Star className="w-3.5 h-3.5 fill-current" />
-              <span>{t('nationalDex.filterDeck', { count: deckSelectedCount })}</span>
+              <Star className="w-3.5 h-3.5 fill-current shrink-0" />
+              <span className="truncate">{t('nationalDex.filterDeck', { count: deckSelectedCount })}</span>
             </button>
             <button
               onClick={() => {
                 soundEffects.playClick();
                 setOwnershipFilter('missing');
               }}
-              className={`px-3 py-1.5 rounded-lg text-xs font-mono font-bold transition-all flex items-center gap-1 ${
+              className={`min-w-0 overflow-hidden px-2.5 sm:px-3 py-1.5 rounded-lg text-xs font-mono font-bold transition-all flex items-center justify-center gap-1 ${
                 ownershipFilter === 'missing'
                   ? 'bg-red-700 text-white shadow-md'
                   : 'text-red-400/80 hover:text-red-300'
               }`}
             >
-              <HelpCircle className="w-3.5 h-3.5" />
-              <span>{t('nationalDex.filterMissing', { count: missingCount })}</span>
+              <HelpCircle className="w-3.5 h-3.5 shrink-0" />
+              <span className="truncate">{t('nationalDex.filterMissing', { count: missingCount })}</span>
             </button>
           </div>
         </div>
@@ -483,7 +483,7 @@ export const NationalDexPage: React.FC<NationalDexPageProps> = ({ onNavigateToDe
               <div
                 key={pokemon.id}
                 onClick={() => handleSelectPokemon(pokemon)}
-                className={`group relative bg-pokedex-card/80 hover:bg-pokedex-card rounded-2xl p-3 border transition-all duration-200 cursor-pointer shadow-md hover:shadow-xl flex flex-col justify-between select-none ${
+                className={`group relative min-w-0 overflow-hidden bg-pokedex-card/80 hover:bg-pokedex-card rounded-2xl p-2.5 sm:p-3 border transition-all duration-200 cursor-pointer shadow-md hover:shadow-xl flex flex-col justify-between select-none ${
                   chosenCard
                     ? 'border-amber-400/80 hover:border-yellow-300 bg-gradient-to-b from-amber-950/30 via-pokedex-card to-pokedex-card hover:scale-[1.02] ring-1 ring-amber-400/40'
                     : isOwned
@@ -492,24 +492,24 @@ export const NationalDexPage: React.FC<NationalDexPageProps> = ({ onNavigateToDe
                 }`}
               >
                 {/* Header: National Number & Owned Indicator */}
-                <div className="flex items-center justify-between gap-1 mb-1.5">
-                  <span className="font-mono font-bold text-[11px] text-yellow-300 bg-black/40 px-2 py-0.5 rounded-md border border-white/10">
+                <div className="flex items-center justify-between gap-1 mb-1.5 min-w-0">
+                  <span className="font-mono font-bold text-[10px] sm:text-[11px] text-yellow-300 bg-black/40 px-1.5 sm:px-2 py-0.5 rounded-md border border-white/10 shrink-0">
                     #{pokemon.number}
                   </span>
 
                   {chosenCard ? (
-                    <span className="inline-flex items-center space-x-1 text-[9px] font-mono font-black text-amber-300 bg-amber-950/90 border border-yellow-400/60 px-2 py-0.5 rounded-full shadow-sm animate-in fade-in">
-                      <Star className="w-2.5 h-2.5 fill-current text-yellow-400" />
-                      <span>Deck</span>
+                    <span className="inline-flex items-center gap-1 text-[9px] font-mono font-black text-amber-300 bg-amber-950/90 border border-yellow-400/60 px-1.5 sm:px-2 py-0.5 rounded-full shadow-sm animate-in fade-in min-w-0 overflow-hidden">
+                      <Star className="w-2.5 h-2.5 fill-current text-yellow-400 shrink-0" />
+                      <span className="truncate">Deck</span>
                     </span>
                   ) : isOwned ? (
-                    <span className="inline-flex items-center space-x-1 text-[9px] font-mono font-black text-emerald-300 bg-emerald-950/80 border border-emerald-500/40 px-1.5 py-0.5 rounded-full shadow-sm">
-                      <CheckCircle2 className="w-3 h-3 text-emerald-400" />
-                      <span>{pCards.length} {pCards.length === 1 ? 'carta' : 'cartas'}</span>
+                    <span className="inline-flex items-center gap-1 text-[9px] font-mono font-black text-emerald-300 bg-emerald-950/80 border border-emerald-500/40 px-1.5 py-0.5 rounded-full shadow-sm min-w-0 overflow-hidden">
+                      <CheckCircle2 className="w-3 h-3 text-emerald-400 shrink-0" />
+                      <span className="truncate">{pCards.length} {pCards.length === 1 ? 'carta' : 'cartas'}</span>
                     </span>
                   ) : (
-                    <span className="inline-flex items-center text-[9px] font-mono font-bold text-slate-400 bg-slate-900/80 border border-slate-700 px-1.5 py-0.5 rounded-full">
-                      Faltando
+                    <span className="inline-flex items-center text-[9px] font-mono font-bold text-slate-400 bg-slate-900/80 border border-slate-700 px-1.5 py-0.5 rounded-full min-w-0 overflow-hidden">
+                      <span className="truncate">Faltando</span>
                     </span>
                   )}
                 </div>
@@ -530,20 +530,20 @@ export const NationalDexPage: React.FC<NationalDexPageProps> = ({ onNavigateToDe
                 </div>
 
                 {/* Footer: Name & Type Icons */}
-                <div className="space-y-1.5 mt-1 text-center">
+                <div className="space-y-1.5 mt-1 text-center min-w-0">
                   <h4 className="font-display font-black text-xs sm:text-sm text-white truncate drop-shadow-sm group-hover:text-yellow-300 transition-colors">
                     {pokemon.name}
                   </h4>
 
-                  <div className="flex items-center justify-center gap-1">
+                  <div className="flex flex-wrap items-center justify-center gap-1 min-w-0">
                     {pokemon.types.map((type) => (
                       <span
                         key={type}
                         title={type}
-                        className="inline-flex items-center text-[9px] font-mono font-bold uppercase text-slate-300 bg-slate-800/90 border border-slate-700 px-1.5 py-0.5 rounded-md"
+                        className="inline-flex items-center text-[9px] font-mono font-bold uppercase text-slate-300 bg-slate-800/90 border border-slate-700 px-1.5 py-0.5 rounded-md max-w-full overflow-hidden"
                       >
-                        <PokemonTypeIcon type={type} size="xs" className="mr-0.5" />
-                        <span className="hidden sm:inline">{type}</span>
+                        <PokemonTypeIcon type={type} size="xs" className="sm:mr-0.5 shrink-0" />
+                        <span className="hidden sm:inline truncate">{type}</span>
                       </span>
                     ))}
                   </div>

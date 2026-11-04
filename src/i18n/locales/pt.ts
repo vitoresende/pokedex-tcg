@@ -22,7 +22,8 @@ export const pt: TranslationKeys = {
     "remove": "Remover",
     "confirm": "Confirmar",
     "success": "Sucesso",
-    "error": "Erro"
+    "error": "Erro",
+    "optional": "Opcional"
   },
   "nav": {
     "pokedex": "Pokédex",
@@ -140,6 +141,7 @@ export const pt: TranslationKeys = {
   },
   "decks": {
     "title": "Construtor Tático de Decks",
+    "subtitle": "Gerencie seus decks de 60 cartas, playbooks estratégicos e distribuição de energia",
     "cardsCount": "Deck de {count} Cartas",
     "exportLive": "Exportar (PTCG Live)",
     "decklistCopied": "Lista de Cartas Copiada!",
@@ -374,7 +376,20 @@ export const pt: TranslationKeys = {
     "visitorModeTitle": "Modo Visitante (Somente Leitura)",
     "visitorModeDesc": "Você está visualizando a coleção compartilhada de {owner}. Edições estão desativadas para proteger as cartas do proprietário.",
     "visitorBannerText": "Modo Somente Leitura • Coleção de {owner}",
-    "exitVisitorBtn": "Sair do Modo Visitante"
+    "exitVisitorBtn": "Sair do Modo Visitante",
+    "versionTitle": "Versão do Sistema & Atualizações PWA",
+    "versionSubtitle": "Controle de versão compilada, limpeza profunda de cache e atualização de PWA",
+    "installedVersion": "Versão Instalada",
+    "buildNumber": "Build",
+    "buildTime": "Data de Compilação",
+    "statusUpToDate": "Aplicação Atualizada",
+    "statusUpdateAvailable": "Nova Versão Disponível",
+    "checkUpdatesBtn": "Verificar Atualização",
+    "checkingUpdates": "Verificando...",
+    "forceUpdateBtn": "Forçar Atualização & Limpar Cache PWA",
+    "pwaHelp": "Se você instalou o app no celular como PWA e as telas não estiverem atualizando, clique em 'Forçar Atualização'. Isso desregistra os service workers, limpa o CacheStorage e baixa a versão mais recente dos servidores.",
+    "updateBannerText": "Nova versão {version} disponível!",
+    "updateBannerBtn": "Atualizar Agora"
   },
   "accessGate": {
     "booting": "Iniciando Pokédex OS...",
@@ -383,6 +398,7 @@ export const pt: TranslationKeys = {
     "unauthorizedAccount": "Conta Não Autorizada",
     "accountNotAuthorized": "Conta Não Autorizada",
     "notAuthorizedDesc": "Você está conectado como {email}, mas este endereço de e-mail não está autorizado a acessar esta Pokédex.",
+    "signedInAs": "Você está conectado como {email}, mas este endereço de e-mail não está autorizado a acessar esta Pokédex.",
     "signInAnother": "Entrar com Outra Conta",
     "signInTitle": "Identificação de Treinador",
     "welcomeDesc": "Faça login com sua conta Google autorizada para acessar sua coleção e decks de Pokémon.",
@@ -390,6 +406,7 @@ export const pt: TranslationKeys = {
     "authError": "Erro de Autenticação",
     "invalidShareTitle": "Link Inválido ou Revogado",
     "invalidShareDesc": "Este link de coleção compartilhada não está mais ativo ou foi revogado pelo treinador.",
+    "goToLoginBtn": "Ir para o Login",
     "versionTitle": "Versão do Sistema & Atualizações PWA",
     "versiontitle": "Versão do Sistema & Atualizações PWA",
     "versionSubtitle": "Controle de versão compilada, limpeza profunda de cache e atualização de PWA",

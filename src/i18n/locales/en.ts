@@ -20,7 +20,8 @@ export const en = {
     "remove": "Remove",
     "confirm": "Confirm",
     "success": "Success",
-    "error": "Error"
+    "error": "Error",
+    "optional": "Optional"
   },
   "nav": {
     "pokedex": "Pokédex",
@@ -138,6 +139,7 @@ export const en = {
   },
   "decks": {
     "title": "Tactical Deck Builder",
+    "subtitle": "Manage your 60-card decks, turn-by-turn playbooks, and energy ratios",
     "cardsCount": "{count}-Card Deck",
     "exportLive": "Export (PTCG Live)",
     "decklistCopied": "Decklist Copied!",
@@ -372,7 +374,20 @@ export const en = {
     "visitorModeTitle": "Read-Only Visitor Mode",
     "visitorModeDesc": "You are viewing the shared collection of {owner}. Modifications are disabled to protect the owner's cards.",
     "visitorBannerText": "Read-Only Mode • Collection of {owner}",
-    "exitVisitorBtn": "Exit Visitor Mode"
+    "exitVisitorBtn": "Exit Visitor Mode",
+    "versionTitle": "System Version & PWA Updates",
+    "versionSubtitle": "Compiled release tracking, cache purging and PWA update management",
+    "installedVersion": "Installed Version",
+    "buildNumber": "Build",
+    "buildTime": "Build Date",
+    "statusUpToDate": "App Up to Date",
+    "statusUpdateAvailable": "New Version Available",
+    "checkUpdatesBtn": "Check for Updates",
+    "checkingUpdates": "Checking...",
+    "forceUpdateBtn": "Force Reload & Purge PWA Cache",
+    "pwaHelp": "If you installed this app on your phone as a PWA and screens are not updating, click 'Force Reload'. This unregisters service workers, deletes CacheStorage, and downloads the latest build from the servers.",
+    "updateBannerText": "New version {version} is available!",
+    "updateBannerBtn": "Update Now"
   },
   "accessGate": {
     "booting": "Booting Pokédex OS...",
@@ -381,6 +396,7 @@ export const en = {
     "unauthorizedAccount": "Unauthorized Account",
     "accountNotAuthorized": "Account Not Authorized",
     "notAuthorizedDesc": "You are signed in as {email}, but this email address is not authorized to access this Pokédex.",
+    "signedInAs": "You are signed in as {email}, but this email address is not authorized to access this Pokédex.",
     "signInAnother": "Sign In with Another Account",
     "signInTitle": "Sign In",
     "welcomeDesc": "Sign in with your authorized Google account to access your Pokémon collection and decks.",
@@ -388,6 +404,7 @@ export const en = {
     "authError": "Authentication Error",
     "invalidShareTitle": "Invalid or Revoked Link",
     "invalidShareDesc": "This shared collection link is no longer active or was revoked by the trainer.",
+    "goToLoginBtn": "Go to Sign In",
     "versionTitle": "System Version & PWA Updates",
     "versiontitle": "System Version & PWA Updates",
     "versionSubtitle": "Compiled release tracking, cache purging and PWA update management",

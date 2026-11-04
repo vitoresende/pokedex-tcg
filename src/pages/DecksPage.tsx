@@ -319,20 +319,20 @@ export const DecksPage: React.FC = () => {
           style={{ backgroundColor: currentDeck.accent_color }}
         />
 
-        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 mb-6">
-          <div>
-            <div className="flex items-center space-x-2 mb-1.5">
-              <span className="bg-pokedex-red text-white text-[10px] font-bold px-2.5 py-0.5 rounded-full font-mono uppercase tracking-wider">
+        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 mb-6 min-w-0">
+          <div className="min-w-0">
+            <div className="flex flex-wrap items-center gap-1.5 mb-1.5">
+              <span className="bg-pokedex-red text-white text-[10px] font-bold px-2.5 py-0.5 rounded-full font-mono uppercase tracking-wider shrink-0">
                 {t('decks.cardsCount', { count: currentDeck.stats.total || 60 })}
               </span>
-              <span className="bg-slate-800 text-yellow-300 text-[10px] font-bold px-2.5 py-0.5 rounded-full font-mono">
+              <span className="bg-slate-800 text-yellow-300 text-[10px] font-bold px-2.5 py-0.5 rounded-full font-mono shrink-0">
                 {localizeFormat(currentDeck.format)}
               </span>
-              <span className="bg-slate-800 text-slate-300 text-[10px] px-2.5 py-0.5 rounded-full font-mono">
+              <span className="bg-slate-800 text-slate-300 text-[10px] px-2.5 py-0.5 rounded-full font-mono max-w-full truncate">
                 {currentDeck.archetype}
               </span>
             </div>
-            <h2 className="text-xl sm:text-2xl font-black font-display text-white">{currentDeck.name}</h2>
+            <h2 className="text-xl sm:text-2xl font-black font-display text-white break-words">{currentDeck.name}</h2>
             <p className="text-slate-300 text-xs mt-1 max-w-2xl">{localizeDeckText(currentDeck.summary)}</p>
           </div>
 

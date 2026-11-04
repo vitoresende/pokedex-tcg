@@ -85,7 +85,7 @@ export const FilterBar: React.FC = () => {
     filters.onlyDeckCards;
 
   return (
-    <div className="bg-pokedex-card/95 backdrop-blur-md rounded-2xl border border-slate-800 p-3 sm:p-4 space-y-3 shadow-lg">
+    <div className="bg-pokedex-card/95 backdrop-blur-md rounded-2xl border border-slate-800 p-3 sm:p-4 space-y-3 shadow-lg min-w-0 max-w-full overflow-hidden">
       {/* Search Input and Sort bar */}
       <div className="flex flex-col sm:flex-row gap-2.5">
         {/* Search Field */}
@@ -195,18 +195,19 @@ export const FilterBar: React.FC = () => {
         </div>
       </div>
 
-      {/* Quick Type & Energy Chips (Scrollable) */}
-      <div className="flex items-center space-x-1.5 overflow-x-auto pb-1 no-scrollbar text-xs font-mono">
+      {/* Quick Type & Energy Chips (Scrollable & Responsive) */}
+      <div className="flex items-center gap-1.5 overflow-x-auto py-1 px-0.5 no-scrollbar text-xs font-mono w-full min-w-0">
         {TYPE_PILLS.map((pill) => {
           const isSelected = filters.selectedColor === pill.id;
           const label = t(`filters.types.${pill.id}`);
           return (
             <button
               key={pill.id}
+              type="button"
               onClick={() => handleColorSelect(pill.id)}
-              className={`px-2.5 py-1 rounded-full whitespace-nowrap transition-all flex items-center space-x-1.5 border ${
+              className={`shrink-0 px-2.5 py-1 rounded-full whitespace-nowrap transition-all inline-flex items-center gap-1.5 border max-w-full overflow-hidden ${
                 isSelected
-                  ? 'text-white font-bold shadow-md scale-105'
+                  ? 'text-white font-bold shadow-md'
                   : 'bg-pokedex-darker text-slate-300 border-slate-800 hover:border-slate-700'
               }`}
               style={{
@@ -215,79 +216,84 @@ export const FilterBar: React.FC = () => {
               }}
             >
               {pill.id !== 'ALL' && pill.id !== 'trainer' && pill.id !== 'energy' ? (
-                <PokemonTypeIcon type={pill.id} size="xs" />
+                <PokemonTypeIcon type={pill.id} size="xs" className="shrink-0" />
               ) : (
                 <span 
-                  className="w-2 h-2 rounded-full" 
+                  className="w-2 h-2 rounded-full shrink-0" 
                   style={{ backgroundColor: pill.color }}
                 ></span>
               )}
-              <span>{label}</span>
+              <span className="shrink-0 leading-none">{label}</span>
             </button>
           );
         })}
       </div>
 
       {/* Quick Boolean Filter Badges */}
-      <div className="flex flex-wrap items-center gap-1.5 sm:gap-2 pt-1 border-t border-slate-800/80 text-[11px] sm:text-xs font-mono">
+      <div className="flex flex-wrap items-center gap-1.5 sm:gap-2 pt-1 border-t border-slate-800/80 text-[11px] sm:text-xs font-mono min-w-0">
         <button
+          type="button"
           onClick={() => toggleBooleanFilter('onlyFoil')}
-          className={`px-2.5 py-1.5 rounded-xl border transition-all flex items-center space-x-1.5 whitespace-nowrap ${
+          className={`shrink-0 max-w-full overflow-hidden px-2.5 py-1.5 rounded-xl border transition-all inline-flex items-center gap-1.5 whitespace-nowrap ${
             filters.onlyFoil
               ? 'bg-yellow-500/20 text-yellow-300 border-yellow-400/60 font-bold'
               : 'bg-pokedex-darker text-slate-400 border-slate-800 hover:text-slate-200'
           }`}
         >
           <Sparkles className="w-3.5 h-3.5 shrink-0" />
-          <span>{t('filters.foilOnly')}</span>
+          <span className="truncate">{t('filters.foilOnly')}</span>
         </button>
 
         <button
+          type="button"
           onClick={() => toggleBooleanFilter('onlyDeckCards')}
-          className={`px-2.5 py-1.5 rounded-xl border transition-all flex items-center space-x-1.5 whitespace-nowrap ${
+          className={`shrink-0 max-w-full overflow-hidden px-2.5 py-1.5 rounded-xl border transition-all inline-flex items-center gap-1.5 whitespace-nowrap ${
             filters.onlyDeckCards
               ? 'bg-purple-500/20 text-purple-300 border-purple-400/60 font-bold'
               : 'bg-pokedex-darker text-slate-400 border-slate-800 hover:text-slate-200'
           }`}
         >
           <Layers className="w-3.5 h-3.5 shrink-0" />
-          <span>{t('filters.mappedInDecks')}</span>
+          <span className="truncate">{t('filters.mappedInDecks')}</span>
         </button>
 
         <button
+          type="button"
           onClick={() => toggleBooleanFilter('onlyOwned')}
-          className={`px-2.5 py-1.5 rounded-xl border transition-all flex items-center space-x-1.5 whitespace-nowrap ${
+          className={`shrink-0 max-w-full overflow-hidden px-2.5 py-1.5 rounded-xl border transition-all inline-flex items-center gap-1.5 whitespace-nowrap ${
             filters.onlyOwned
               ? 'bg-emerald-500/20 text-emerald-300 border-emerald-400/60 font-bold'
               : 'bg-pokedex-darker text-slate-400 border-slate-800 hover:text-slate-200'
           }`}
         >
           <CheckCircle2 className="w-3.5 h-3.5 shrink-0" />
-          <span>{t('filters.ownedOnly')}</span>
+          <span className="truncate">{t('filters.ownedOnly')}</span>
         </button>
 
         <button
+          type="button"
           onClick={() => toggleBooleanFilter('onlyDuplicates')}
-          className={`px-2.5 py-1.5 rounded-xl border transition-all flex items-center space-x-1.5 whitespace-nowrap ${
+          className={`shrink-0 max-w-full overflow-hidden px-2.5 py-1.5 rounded-xl border transition-all inline-flex items-center gap-1.5 whitespace-nowrap ${
             filters.onlyDuplicates
               ? 'bg-cyan-500/20 text-cyan-300 border-cyan-400/60 font-bold shadow-md'
               : 'bg-pokedex-darker text-slate-400 border-slate-800 hover:text-slate-200'
           }`}
         >
           <Copy className="w-3.5 h-3.5 shrink-0" />
-          <span>{t('filters.duplicatesOnly')}</span>
+          <span className="truncate">{t('filters.duplicatesOnly')}</span>
         </button>
 
         <button
+          type="button"
           onClick={() => toggleBooleanFilter('onlyMissing')}
-          className={`px-2.5 py-1.5 rounded-xl border transition-all flex items-center space-x-1.5 whitespace-nowrap ${
+          className={`shrink-0 max-w-full overflow-hidden px-2.5 py-1.5 rounded-xl border transition-all inline-flex items-center gap-1.5 whitespace-nowrap ${
             filters.onlyMissing
               ? 'bg-red-500/20 text-red-300 border-red-400/60 font-bold'
               : 'bg-pokedex-darker text-slate-400 border-slate-800 hover:text-slate-200'
           }`}
         >
           <CircleDashed className="w-3.5 h-3.5 shrink-0" />
-          <span>{t('filters.missingOnly')}</span>
+          <span className="truncate">{t('filters.missingOnly')}</span>
         </button>
       </div>
     </div>

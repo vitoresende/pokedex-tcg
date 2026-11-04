@@ -93,139 +93,139 @@ export const RulesAndTypesPage: React.FC = () => {
       <div className="grid grid-cols-3 sm:hidden bg-pokedex-card/90 p-1.5 rounded-2xl border border-slate-800 gap-1 text-[11px] font-mono">
         <button
           onClick={() => handleSelectTab('types')}
-          className={`py-2 px-1 rounded-xl flex flex-col items-center justify-center gap-1 transition-all font-bold ${
+          className={`min-w-0 overflow-hidden py-2 px-1 rounded-xl flex flex-col items-center justify-center gap-1 transition-all font-bold ${
             activeTab === 'types'
               ? 'bg-pokedex-red text-white shadow-md'
               : 'text-slate-400 hover:text-slate-200 bg-pokedex-darker/60'
           }`}
         >
-          <Sparkles className="w-4 h-4 text-yellow-300" />
-          <span className="truncate">{language === 'pt' ? 'Tipos' : 'Types'}</span>
+          <Sparkles className="w-4 h-4 text-yellow-300 shrink-0" />
+          <span className="truncate max-w-full">{language === 'pt' ? 'Tipos' : 'Types'}</span>
         </button>
         <button
           onClick={() => handleSelectTab('formats')}
-          className={`py-2 px-1 rounded-xl flex flex-col items-center justify-center gap-1 transition-all font-bold ${
+          className={`min-w-0 overflow-hidden py-2 px-1 rounded-xl flex flex-col items-center justify-center gap-1 transition-all font-bold ${
             activeTab === 'formats'
               ? 'bg-pokedex-red text-white shadow-md'
               : 'text-slate-400 hover:text-slate-200 bg-pokedex-darker/60'
           }`}
         >
-          <BookOpen className="w-4 h-4 text-emerald-400" />
-          <span className="truncate">{language === 'pt' ? 'Formatos' : 'Formats'}</span>
+          <BookOpen className="w-4 h-4 text-emerald-400 shrink-0" />
+          <span className="truncate max-w-full">{language === 'pt' ? 'Formatos' : 'Formats'}</span>
         </button>
         <button
           onClick={() => handleSelectTab('trainers')}
-          className={`py-2 px-1 rounded-xl flex flex-col items-center justify-center gap-1 transition-all font-bold ${
+          className={`min-w-0 overflow-hidden py-2 px-1 rounded-xl flex flex-col items-center justify-center gap-1 transition-all font-bold ${
             activeTab === 'trainers'
               ? 'bg-pokedex-red text-white shadow-md'
               : 'text-slate-400 hover:text-slate-200 bg-pokedex-darker/60'
           }`}
         >
-          <Shield className="w-4 h-4 text-cyan-400" />
-          <span className="truncate">{language === 'pt' ? 'Treinadores' : 'Trainers'}</span>
+          <Shield className="w-4 h-4 text-cyan-400 shrink-0" />
+          <span className="truncate max-w-full">{language === 'pt' ? 'Treinadores' : 'Trainers'}</span>
         </button>
         <button
           onClick={() => handleSelectTab('conditions')}
-          className={`py-2 px-1 rounded-xl flex flex-col items-center justify-center gap-1 transition-all font-bold ${
+          className={`min-w-0 overflow-hidden py-2 px-1 rounded-xl flex flex-col items-center justify-center gap-1 transition-all font-bold ${
             activeTab === 'conditions'
               ? 'bg-pokedex-red text-white shadow-md'
               : 'text-slate-400 hover:text-slate-200 bg-pokedex-darker/60'
           }`}
         >
-          <AlertTriangle className="w-4 h-4 text-amber-400" />
-          <span className="truncate">{language === 'pt' ? 'Condições' : 'Conditions'}</span>
+          <AlertTriangle className="w-4 h-4 text-amber-400 shrink-0" />
+          <span className="truncate max-w-full">{language === 'pt' ? 'Condições' : 'Conditions'}</span>
         </button>
         <button
           onClick={() => handleSelectTab('sets')}
-          className={`py-2 px-1 rounded-xl flex flex-col items-center justify-center gap-1 transition-all font-bold ${
+          className={`min-w-0 overflow-hidden py-2 px-1 rounded-xl flex flex-col items-center justify-center gap-1 transition-all font-bold ${
             activeTab === 'sets'
               ? 'bg-pokedex-red text-white shadow-md'
               : 'text-slate-400 hover:text-slate-200 bg-pokedex-darker/60'
           }`}
         >
-          <Layers className="w-4 h-4 text-purple-400" />
-          <span className="truncate">{language === 'pt' ? 'Coleções' : 'Sets'}</span>
+          <Layers className="w-4 h-4 text-purple-400 shrink-0" />
+          <span className="truncate max-w-full">{language === 'pt' ? 'Coleções' : 'Sets'}</span>
         </button>
         <button
           onClick={() => handleSelectTab('rarities')}
-          className={`py-2 px-1 rounded-xl flex flex-col items-center justify-center gap-1 transition-all font-bold ${
+          className={`min-w-0 overflow-hidden py-2 px-1 rounded-xl flex flex-col items-center justify-center gap-1 transition-all font-bold ${
             activeTab === 'rarities'
               ? 'bg-pokedex-red text-white shadow-md'
               : 'text-slate-400 hover:text-slate-200 bg-pokedex-darker/60'
           }`}
         >
-          <Star className="w-4 h-4 text-yellow-300" />
-          <span className="truncate">{language === 'pt' ? 'Raridades' : 'Rarities'}</span>
+          <Star className="w-4 h-4 text-yellow-300 shrink-0" />
+          <span className="truncate max-w-full">{language === 'pt' ? 'Raridades' : 'Rarities'}</span>
         </button>
       </div>
 
       {/* Desktop / Tablet Navigation Pill Switcher */}
-      <div className="hidden sm:flex bg-pokedex-card/90 p-1.5 rounded-2xl border border-slate-800 space-x-1 text-xs font-mono">
+      <div className="hidden sm:flex flex-wrap lg:flex-nowrap bg-pokedex-card/90 p-1.5 rounded-2xl border border-slate-800 gap-1 text-xs font-mono">
         <button
           onClick={() => handleSelectTab('types')}
-          className={`flex-1 py-2.5 px-3 rounded-xl whitespace-nowrap transition-all font-bold flex items-center justify-center gap-1.5 ${
+          className={`flex-1 min-w-0 overflow-hidden py-2.5 px-3 rounded-xl whitespace-nowrap transition-all font-bold flex items-center justify-center gap-1.5 ${
             activeTab === 'types'
               ? 'bg-pokedex-red text-white shadow-md'
               : 'text-slate-400 hover:text-slate-200'
           }`}
         >
-          <Sparkles className="w-4 h-4 text-yellow-300" />
-          <span>{t('rules.tabTypes')}</span>
+          <Sparkles className="w-4 h-4 text-yellow-300 shrink-0" />
+          <span className="truncate">{t('rules.tabTypes')}</span>
         </button>
         <button
           onClick={() => handleSelectTab('formats')}
-          className={`flex-1 py-2.5 px-3 rounded-xl whitespace-nowrap transition-all font-bold flex items-center justify-center gap-1.5 ${
+          className={`flex-1 min-w-0 overflow-hidden py-2.5 px-3 rounded-xl whitespace-nowrap transition-all font-bold flex items-center justify-center gap-1.5 ${
             activeTab === 'formats'
               ? 'bg-pokedex-red text-white shadow-md'
               : 'text-slate-400 hover:text-slate-200'
           }`}
         >
-          <BookOpen className="w-4 h-4 text-emerald-400" />
-          <span>{t('rules.tabFormats')}</span>
+          <BookOpen className="w-4 h-4 text-emerald-400 shrink-0" />
+          <span className="truncate">{t('rules.tabFormats')}</span>
         </button>
         <button
           onClick={() => handleSelectTab('trainers')}
-          className={`flex-1 py-2.5 px-3 rounded-xl whitespace-nowrap transition-all font-bold flex items-center justify-center gap-1.5 ${
+          className={`flex-1 min-w-0 overflow-hidden py-2.5 px-3 rounded-xl whitespace-nowrap transition-all font-bold flex items-center justify-center gap-1.5 ${
             activeTab === 'trainers'
               ? 'bg-pokedex-red text-white shadow-md'
               : 'text-slate-400 hover:text-slate-200'
           }`}
         >
-          <Shield className="w-4 h-4 text-cyan-400" />
-          <span>{t('rules.tabTrainers')}</span>
+          <Shield className="w-4 h-4 text-cyan-400 shrink-0" />
+          <span className="truncate">{t('rules.tabTrainers')}</span>
         </button>
         <button
           onClick={() => handleSelectTab('conditions')}
-          className={`flex-1 py-2.5 px-3 rounded-xl whitespace-nowrap transition-all font-bold flex items-center justify-center gap-1.5 ${
+          className={`flex-1 min-w-0 overflow-hidden py-2.5 px-3 rounded-xl whitespace-nowrap transition-all font-bold flex items-center justify-center gap-1.5 ${
             activeTab === 'conditions'
               ? 'bg-pokedex-red text-white shadow-md'
               : 'text-slate-400 hover:text-slate-200'
           }`}
         >
-          <AlertTriangle className="w-4 h-4 text-amber-400" />
-          <span>{t('rules.tabConditions')}</span>
+          <AlertTriangle className="w-4 h-4 text-amber-400 shrink-0" />
+          <span className="truncate">{t('rules.tabConditions')}</span>
         </button>
         <button
           onClick={() => handleSelectTab('sets')}
-          className={`flex-1 py-2.5 px-3 rounded-xl whitespace-nowrap transition-all font-bold flex items-center justify-center gap-1.5 ${
+          className={`flex-1 min-w-0 overflow-hidden py-2.5 px-3 rounded-xl whitespace-nowrap transition-all font-bold flex items-center justify-center gap-1.5 ${
             activeTab === 'sets'
               ? 'bg-pokedex-red text-white shadow-md'
               : 'text-slate-400 hover:text-slate-200'
           }`}
         >
-          <Layers className="w-4 h-4 text-purple-400" />
-          <span>{t('rules.tabSets')}</span>
+          <Layers className="w-4 h-4 text-purple-400 shrink-0" />
+          <span className="truncate">{t('rules.tabSets')}</span>
         </button>
         <button
           onClick={() => handleSelectTab('rarities')}
-          className={`flex-1 py-2.5 px-3 rounded-xl whitespace-nowrap transition-all font-bold flex items-center justify-center gap-1.5 ${
+          className={`flex-1 min-w-0 overflow-hidden py-2.5 px-3 rounded-xl whitespace-nowrap transition-all font-bold flex items-center justify-center gap-1.5 ${
             activeTab === 'rarities'
               ? 'bg-pokedex-red text-white shadow-md'
               : 'text-slate-400 hover:text-slate-200'
           }`}
         >
-          <Star className="w-4 h-4 text-yellow-300" />
-          <span>{t('rules.tabRarities')}</span>
+          <Star className="w-4 h-4 text-yellow-300 shrink-0" />
+          <span className="truncate">{t('rules.tabRarities')}</span>
         </button>
       </div>
 
@@ -288,9 +288,9 @@ export const RulesAndTypesPage: React.FC = () => {
                 <button
                   key={typeItem.id}
                   onClick={() => handleSelectType(typeItem)}
-                  className={`p-2 rounded-2xl border transition-all duration-200 flex flex-col items-center justify-center space-y-1.5 ${
+                  className={`min-w-0 overflow-hidden p-2 rounded-2xl border transition-all duration-200 flex flex-col items-center justify-center space-y-1.5 ${
                     isSelected
-                      ? 'shadow-lg scale-105 border-white bg-pokedex-card/90'
+                      ? 'shadow-lg border-white bg-pokedex-card/90'
                       : 'bg-pokedex-card/70 border-slate-800 hover:border-slate-700 hover:bg-pokedex-card'
                   }`}
                   style={{
@@ -298,9 +298,9 @@ export const RulesAndTypesPage: React.FC = () => {
                     boxShadow: isSelected ? `0 0 15px ${typeItem.color}60` : undefined,
                   }}
                 >
-                  <PokemonTypeIcon type={typeItem.id} size="md" />
+                  <PokemonTypeIcon type={typeItem.id} size="md" className="shrink-0" />
                   <span 
-                    className="text-[11px] font-mono font-bold tracking-tight"
+                    className="text-[10px] sm:text-[11px] font-mono font-bold tracking-tight max-w-full truncate px-0.5"
                     style={{ color: isSelected ? typeItem.color : '#E2E8F0' }}
                   >
                     {t(`filters.types.${typeItem.id}`) !== `filters.types.${typeItem.id}` ? t(`filters.types.${typeItem.id}`) : typeItem.name}
@@ -311,42 +311,42 @@ export const RulesAndTypesPage: React.FC = () => {
           </div>
 
           {/* Selected Type Detailed Focus Card */}
-          <div className="bg-pokedex-card/95 rounded-3xl border border-slate-800 p-5 sm:p-6 shadow-xl relative overflow-hidden">
+          <div className="bg-pokedex-card/95 rounded-3xl border border-slate-800 p-4 sm:p-6 shadow-xl relative overflow-hidden">
             <div 
               className="absolute -top-24 -right-24 w-80 h-80 rounded-full blur-3xl opacity-20 pointer-events-none"
               style={{ backgroundColor: selectedType.color }}
             />
 
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-5">
-              <div className="flex items-center space-x-3.5">
-                <PokemonTypeIcon type={selectedType.id} size="xl" className="shadow-lg" />
-                <div>
-                  <h3 className="text-2xl font-black font-display text-white">
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-5 min-w-0">
+              <div className="flex items-center space-x-3.5 min-w-0">
+                <PokemonTypeIcon type={selectedType.id} size="xl" className="shadow-lg shrink-0" />
+                <div className="min-w-0">
+                  <h3 className="text-xl sm:text-2xl font-black font-display text-white truncate">
                     {t(`filters.types.${selectedType.id}`) !== `filters.types.${selectedType.id}` ? t(`filters.types.${selectedType.id}`) : selectedType.name}
                   </h3>
-                  <span className="text-xs font-mono text-slate-400">
+                  <span className="text-xs font-mono text-slate-400 block">
                     {language === 'pt' ? 'Tipo Elemental e Energia Oficial do Pokémon TCG' : 'Official Pokémon TCG Energy & Elemental Type'}
                   </span>
                 </div>
               </div>
 
-              <div className="flex items-center space-x-3 text-xs font-mono">
-                <div className="bg-pokedex-darker px-3 py-2 rounded-2xl border border-slate-800 flex items-center space-x-2">
-                  <span className="text-slate-400">{t('rules.weakness')}:</span>
-                  <div className="flex items-center space-x-1">
-                    <PokemonTypeIcon type={selectedType.weakness.split(' ')[0]} size="xs" />
-                    <span className="text-red-400 font-bold">
+              <div className="flex flex-wrap items-center gap-2 sm:gap-3 text-xs font-mono min-w-0">
+                <div className="bg-pokedex-darker px-3 py-2 rounded-2xl border border-slate-800 flex items-center gap-2 max-w-full overflow-hidden">
+                  <span className="text-slate-400 shrink-0">{t('rules.weakness')}:</span>
+                  <div className="flex items-center gap-1 min-w-0">
+                    <PokemonTypeIcon type={selectedType.weakness.split(' ')[0]} size="xs" className="shrink-0" />
+                    <span className="text-red-400 font-bold truncate">
                       {language === 'pt' && selectedType.weakness_pt ? selectedType.weakness_pt : selectedType.weakness}
                     </span>
                   </div>
                 </div>
-                <div className="bg-pokedex-darker px-3 py-2 rounded-2xl border border-slate-800 flex items-center space-x-2">
-                  <span className="text-slate-400">{t('rules.resistance')}:</span>
-                  <div className="flex items-center space-x-1">
+                <div className="bg-pokedex-darker px-3 py-2 rounded-2xl border border-slate-800 flex items-center gap-2 max-w-full overflow-hidden">
+                  <span className="text-slate-400 shrink-0">{t('rules.resistance')}:</span>
+                  <div className="flex items-center gap-1 min-w-0">
                     {selectedType.resistance !== 'None' && selectedType.resistance !== '-' ? (
-                      <PokemonTypeIcon type={selectedType.resistance.split(' ')[0]} size="xs" />
+                      <PokemonTypeIcon type={selectedType.resistance.split(' ')[0]} size="xs" className="shrink-0" />
                     ) : null}
-                    <span className="text-emerald-400 font-bold">
+                    <span className="text-emerald-400 font-bold truncate">
                       {language === 'pt' && selectedType.resistance_pt ? selectedType.resistance_pt : selectedType.resistance}
                     </span>
                   </div>
@@ -614,19 +614,19 @@ export const RulesAndTypesPage: React.FC = () => {
                   >
                     {/* Top Row: Year, Regulation Mark Badge, Code & Legality */}
                     <div>
-                      <div className="flex items-center justify-between gap-1.5 mb-2.5">
+                      <div className="flex flex-wrap items-center justify-between gap-1.5 mb-2.5">
                         {/* Year + Mark */}
-                        <div className="flex items-center gap-1.5">
+                        <div className="flex items-center gap-1.5 shrink-0">
                           {setItem.year > 0 && (
-                            <span className="inline-flex items-center gap-1 text-[11px] font-mono font-bold text-slate-300 bg-slate-800/90 border border-slate-700/70 px-2 py-0.5 rounded-md">
-                              <Calendar className="w-3 h-3 text-slate-400" />
+                            <span className="inline-flex items-center gap-1 text-[11px] font-mono font-bold text-slate-300 bg-slate-800/90 border border-slate-700/70 px-2 py-0.5 rounded-md shrink-0">
+                              <Calendar className="w-3 h-3 text-slate-400 shrink-0" />
                               {setItem.year}
                             </span>
                           )}
 
                           {setItem.mark ? (
                             <span
-                              className={`text-[11px] font-mono font-extrabold px-2 py-0.5 rounded-md border ${
+                              className={`text-[11px] font-mono font-extrabold px-2 py-0.5 rounded-md border shrink-0 ${
                                 isStandard
                                   ? 'bg-emerald-950/80 text-emerald-400 border-emerald-700/60 shadow-sm'
                                   : 'bg-amber-950/80 text-amber-400 border-amber-700/60'
@@ -636,7 +636,7 @@ export const RulesAndTypesPage: React.FC = () => {
                               [{setItem.mark}]
                             </span>
                           ) : (
-                            <span className="text-[10px] font-mono text-slate-400 bg-slate-800/60 border border-slate-700/40 px-1.5 py-0.5 rounded">
+                            <span className="text-[10px] font-mono text-slate-400 bg-slate-800/60 border border-slate-700/40 px-1.5 py-0.5 rounded shrink-0">
                               {t('rules.classicBadge')}
                             </span>
                           )}
@@ -644,7 +644,7 @@ export const RulesAndTypesPage: React.FC = () => {
 
                         {/* Format Legality Pill */}
                         <span
-                          className={`text-[10px] font-mono px-2 py-0.5 rounded-full border ${
+                          className={`text-[10px] font-mono px-2 py-0.5 rounded-full border shrink-0 max-w-full truncate ${
                             isStandard
                               ? 'bg-emerald-950/70 text-emerald-300 border-emerald-800/70'
                               : isExpanded
