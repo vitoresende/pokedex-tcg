@@ -133,7 +133,9 @@ export const en = {
     "pricePlaceholder": "Ex: 25.00 or 150.50",
     "priceUpdatedLabel": "Update Date",
     "savePrice": "Save Value",
+    "clearPrice": "Clear Value & Date",
     "priceSaved": "Value saved!",
+    "priceCleared": "Value & date cleared!",
     "deckCardToggle": "Mark as Main Card",
     "deckCardActive": "This card is marked as a main card for this Pokémon",
     "deckCardInactive": "Not marked as main card"

@@ -1053,14 +1053,23 @@ export const CollectionProvider: React.FC<{ children: React.ReactNode }> = ({ ch
                 const cloudTime = cloudCard.updated_at ? (new Date(cloudCard.updated_at).getTime() || 0) : 0;
 
                 if (localTime > cloudTime) {
-                  return {
+                  const mergedCard: Card = {
                     ...cloudCard,
-                    price: localMatch.price,
-                    price_updated_at: localMatch.price_updated_at,
                     is_deck_card: localMatch.is_deck_card,
                     quantity: localMatch.quantity,
                     updated_at: localMatch.updated_at
                   };
+                  if (localMatch.price !== undefined && localMatch.price !== null) {
+                    mergedCard.price = localMatch.price;
+                  } else {
+                    delete mergedCard.price;
+                  }
+                  if (localMatch.price_updated_at) {
+                    mergedCard.price_updated_at = localMatch.price_updated_at;
+                  } else {
+                    delete mergedCard.price_updated_at;
+                  }
+                  return mergedCard;
                 }
                 return cloudCard;
               });

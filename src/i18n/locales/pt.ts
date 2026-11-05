@@ -135,7 +135,9 @@ export const pt: TranslationKeys = {
     "pricePlaceholder": "Ex: 25,00 ou 150.50",
     "priceUpdatedLabel": "Data da Atualização",
     "savePrice": "Salvar Valor",
+    "clearPrice": "Limpar Valor e Data",
     "priceSaved": "Valor salvo!",
+    "priceCleared": "Valor e data removidos!",
     "deckCardToggle": "Marcar como Carta Principal",
     "deckCardActive": "Esta carta está marcada como principal deste Pokémon",
     "deckCardInactive": "Não marcada como principal"

@@ -76,7 +76,7 @@ export const CardDetailModal: React.FC<CardDetailModalProps> = ({ card, onClose,
       setIsFixingImage(false);
       setScanResults([]);
       setPriceInput(card.price !== undefined && card.price !== null ? String(card.price) : '');
-      setPriceDateInput(card.price_updated_at || new Date().toISOString().split('T')[0]);
+      setPriceDateInput(card.price_updated_at || '');
       setPriceSaved(false);
       setIsPriceDirty(false);
       soundEffects.playScan();
@@ -209,6 +209,29 @@ export const CardDetailModal: React.FC<CardDetailModalProps> = ({ card, onClose,
   const handleSavePrice = () => {
     if (isReadOnly || !card) return;
     commitPriceUpdate(true);
+  };
+
+  const handleClearPriceAndDate = () => {
+    if (isReadOnly || !card) return;
+    soundEffects.playClick();
+    setPriceInput('');
+    setPriceDateInput('');
+    setIsPriceDirty(false);
+    updateCard(card.id, {
+      price: undefined,
+      price_updated_at: undefined
+    });
+    setPriceSaved(true);
+    if (priceSavedTimerRef.current) {
+      window.clearTimeout(priceSavedTimerRef.current);
+    }
+    priceSavedTimerRef.current = window.setTimeout(() => setPriceSaved(false), 4500);
+    showToast(
+      language === 'pt'
+        ? `🗑️ Valor e data removidos de "${cardName}"`
+        : `🗑️ Value & date cleared for "${cardName}"`,
+      'info'
+    );
   };
 
   const handleModalClose = () => {
@@ -502,7 +525,7 @@ export const CardDetailModal: React.FC<CardDetailModalProps> = ({ card, onClose,
 
               {/* Current Price Status Badge */}
               {card.price !== undefined && Number(card.price) > 0 ? (
-                <div className="p-2.5 rounded-xl bg-emerald-950/40 border border-emerald-500/40 flex items-center justify-between text-xs font-mono shadow-inner">
+                <div className="p-2.5 rounded-xl bg-emerald-950/40 border border-emerald-500/40 flex items-center justify-between gap-2 text-xs font-mono shadow-inner">
                   <div className="flex items-center gap-2 min-w-0">
                     <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse shrink-0" />
                     <div className="min-w-0">
@@ -512,14 +535,26 @@ export const CardDetailModal: React.FC<CardDetailModalProps> = ({ card, onClose,
                       </span>
                     </div>
                   </div>
-                  {card.price_updated_at && (
-                    <div className="text-right shrink-0 pl-2">
-                      <span className="text-slate-400 text-[10px] block uppercase">Atualizado em:</span>
-                      <span className="text-slate-300 text-[11px] font-bold block">
-                        {card.price_updated_at}
-                      </span>
-                    </div>
-                  )}
+                  <div className="flex items-center gap-2 shrink-0">
+                    {card.price_updated_at && (
+                      <div className="text-right pl-1">
+                        <span className="text-slate-400 text-[10px] block uppercase">Atualizado em:</span>
+                        <span className="text-slate-300 text-[11px] font-bold block">
+                          {card.price_updated_at}
+                        </span>
+                      </div>
+                    )}
+                    {!isReadOnly && (
+                      <button
+                        type="button"
+                        onClick={handleClearPriceAndDate}
+                        title={t('cardDetail.clearPrice')}
+                        className="p-1.5 rounded-lg bg-red-500/20 hover:bg-red-500/40 text-red-300 hover:text-red-200 border border-red-500/40 transition-colors flex items-center justify-center"
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
+                      </button>
+                    )}
+                  </div>
                 </div>
               ) : (
                 <div className="p-2.5 rounded-xl bg-slate-900/60 border border-slate-800 flex items-center justify-between text-xs font-mono text-slate-400">
@@ -587,16 +622,45 @@ export const CardDetailModal: React.FC<CardDetailModalProps> = ({ card, onClose,
                             }
                           }}
                           placeholder={t('cardDetail.pricePlaceholder')}
-                          className="w-full min-w-0 max-w-full bg-slate-900/90 border border-slate-700 rounded-xl pl-9 pr-3 py-2 text-xs font-mono text-white placeholder-slate-500 focus:outline-none focus:border-yellow-400 transition-colors box-border"
+                          className="w-full min-w-0 max-w-full bg-slate-900/90 border border-slate-700 rounded-xl pl-9 pr-8 py-2 text-xs font-mono text-white placeholder-slate-500 focus:outline-none focus:border-yellow-400 transition-colors box-border"
                         />
+                        {priceInput && (
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setPriceInput('');
+                              setIsPriceDirty(true);
+                              setPriceSaved(false);
+                            }}
+                            title={t('common.reset')}
+                            className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white p-0.5 rounded"
+                          >
+                            <X className="w-3.5 h-3.5" />
+                          </button>
+                        )}
                       </div>
                     </div>
 
                     {/* Date Input */}
                     <div className="min-w-0 w-full overflow-hidden">
-                      <label className="text-[10px] font-mono text-slate-400 uppercase block mb-1">
-                        {t('cardDetail.priceUpdatedLabel')}
-                      </label>
+                      <div className="flex items-center justify-between mb-1">
+                        <label className="text-[10px] font-mono text-slate-400 uppercase block truncate">
+                          {t('cardDetail.priceUpdatedLabel')}
+                        </label>
+                        {priceDateInput && (
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setPriceDateInput('');
+                              setIsPriceDirty(true);
+                              setPriceSaved(false);
+                            }}
+                            className="text-[10px] font-mono text-red-400 hover:text-red-300 underline shrink-0"
+                          >
+                            {t('common.reset')}
+                          </button>
+                        )}
+                      </div>
                       <div className="relative w-full min-w-0 overflow-hidden">
                         <input
                           type="date"
@@ -623,28 +687,41 @@ export const CardDetailModal: React.FC<CardDetailModalProps> = ({ card, onClose,
                     </div>
                   )}
 
-                  {/* Save Price Button with Explicit Feedback */}
-                  <button
-                    type="button"
-                    onClick={handleSavePrice}
-                    className={`w-full py-2.5 px-4 rounded-xl font-mono text-xs font-black transition-all flex items-center justify-center gap-2 shadow active:scale-[0.98] border ${
-                      priceSaved
-                        ? 'bg-emerald-600 hover:bg-emerald-500 text-white border-emerald-400 shadow-[0_0_15px_rgba(16,185,129,0.4)]'
-                        : 'bg-yellow-400 hover:bg-yellow-300 text-slate-950 border-yellow-300 shadow-md'
-                    }`}
-                  >
-                    {priceSaved ? (
-                      <>
-                        <CheckCircle2 className="w-4 h-4 text-white" />
-                        <span>{language === 'pt' ? 'Valor Salvo com Sucesso!' : 'Value Saved Successfully!'}</span>
-                      </>
-                    ) : (
-                      <>
-                        <Save className="w-4 h-4 text-slate-950" />
-                        <span>{t('cardDetail.savePrice')}</span>
-                      </>
+                  {/* Save Price & Clear Price/Date Buttons */}
+                  <div className="flex flex-col sm:flex-row gap-2">
+                    <button
+                      type="button"
+                      onClick={handleSavePrice}
+                      className={`flex-1 py-2.5 px-4 rounded-xl font-mono text-xs font-black transition-all flex items-center justify-center gap-2 shadow active:scale-[0.98] border ${
+                        priceSaved && card.price !== undefined
+                          ? 'bg-emerald-600 hover:bg-emerald-500 text-white border-emerald-400 shadow-[0_0_15px_rgba(16,185,129,0.4)]'
+                          : 'bg-yellow-400 hover:bg-yellow-300 text-slate-950 border-yellow-300 shadow-md'
+                      }`}
+                    >
+                      {priceSaved && card.price !== undefined ? (
+                        <>
+                          <CheckCircle2 className="w-4 h-4 text-white shrink-0" />
+                          <span className="truncate">{language === 'pt' ? 'Valor Salvo com Sucesso!' : 'Value Saved Successfully!'}</span>
+                        </>
+                      ) : (
+                        <>
+                          <Save className="w-4 h-4 text-slate-950 shrink-0" />
+                          <span className="truncate">{t('cardDetail.savePrice')}</span>
+                        </>
+                      )}
+                    </button>
+
+                    {(card.price !== undefined || Boolean(card.price_updated_at) || Boolean(priceInput.trim()) || Boolean(priceDateInput.trim())) && (
+                      <button
+                        type="button"
+                        onClick={handleClearPriceAndDate}
+                        className="py-2.5 px-3.5 rounded-xl font-mono text-xs font-bold transition-all flex items-center justify-center gap-1.5 bg-red-950/60 hover:bg-red-900/70 text-red-300 hover:text-white border border-red-500/40 active:scale-[0.98] shrink-0"
+                      >
+                        <Trash2 className="w-3.5 h-3.5 shrink-0" />
+                        <span>{t('cardDetail.clearPrice')}</span>
+                      </button>
                     )}
-                  </button>
+                  </div>
 
                   {/* Explicit Persistent Saved Banner inside Modal */}
                   {priceSaved && (
@@ -656,7 +733,7 @@ export const CardDetailModal: React.FC<CardDetailModalProps> = ({ card, onClose,
                             ? (language === 'pt'
                                 ? `Salvo: R$ ${Number(card.price).toFixed(2)} (${card.price_updated_at || priceDateInput})`
                                 : `Saved: $ ${Number(card.price).toFixed(2)} (${card.price_updated_at || priceDateInput})`)
-                            : (language === 'pt' ? 'Valor removido com sucesso' : 'Value removed')}
+                            : t('cardDetail.priceCleared')}
                         </span>
                       </div>
                       <span className="text-[10px] px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-400/30 shrink-0">
