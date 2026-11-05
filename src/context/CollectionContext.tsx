@@ -310,6 +310,39 @@ export const normalizeCardName = (name: string | undefined | null): string => {
   return name.trim().toLowerCase().replace(/\s+/g, ' ');
 };
 
+export const areCardNamesCompatible = (
+  cardA: { name_pt?: string; name_en?: string },
+  cardB: { name_pt?: string; name_en?: string }
+): boolean => {
+  const ptA = normalizeCardName(cardA.name_pt);
+  const enA = normalizeCardName(cardA.name_en);
+  const ptB = normalizeCardName(cardB.name_pt);
+  const enB = normalizeCardName(cardB.name_en);
+
+  if ((!ptA && !enA) || (!ptB && !enB)) return true;
+  if (
+    (ptA && (ptA === ptB || ptA === enB)) ||
+    (enA && (enA === ptB || enA === enB))
+  ) {
+    return true;
+  }
+
+  const idsA = matchPokemonIdsByName(cardA.name_en || '', cardA.name_pt || '');
+  const idsB = matchPokemonIdsByName(cardB.name_en || '', cardB.name_pt || '');
+
+  if (idsA.length > 0 && idsB.length > 0) {
+    return idsA.some(id => idsB.includes(id));
+  }
+  if ((idsA.length > 0 && idsB.length === 0) || (idsA.length === 0 && idsB.length > 0)) {
+    return false;
+  }
+
+  if (ptA && ptB && (ptA.includes(ptB) || ptB.includes(ptA))) return true;
+  if (enA && enB && (enA.includes(enB) || enB.includes(enA))) return true;
+
+  return false;
+};
+
 export const findExistingCardIndex = (
   list: Card[],
   target: {
@@ -363,12 +396,13 @@ export const findExistingCardIndex = (
     return false;
   };
 
-  // 1. Primary check: matching normalized set_code and normalized card_number
+  // 1. Primary check: matching normalized set_code and normalized card_number (and compatible card/Pokémon name)
   if (targetSet && targetNum) {
     const idx = list.findIndex(c => {
       const cSet = normalizeSetCode(c.set_code);
       const cNum = normalizeCardNumber(c.card_number);
-      return isSetEquivalent(cSet, targetSet) && cNum === targetNum;
+      if (!isSetEquivalent(cSet, targetSet) || cNum !== targetNum) return false;
+      return areCardNamesCompatible(c, target);
     });
     if (idx !== -1) return idx;
   }
@@ -482,13 +516,99 @@ interface LocalCardMeta {
 }
 
 const LOCAL_CARD_META_KEY = 'pokedex_tcg_card_meta';
+const LOCAL_ADDED_CARDS_KEY = 'pokedex_tcg_added_cards';
+const LOCAL_DELETED_CARDS_KEY = 'pokedex_tcg_deleted_cards';
 const LOCAL_DIRTY_FLAG_KEY = 'pokedex_tcg_local_dirty';
 
-function getCardCanonicalKey(c: { id?: string; set_code?: string; card_number?: string }): string {
+function getCardCanonicalKey(c: { id?: string; set_code?: string; card_number?: string; name_pt?: string; name_en?: string }): string {
+  if (c.set_code && c.card_number) {
+    const pokeIds = matchPokemonIdsByName(c.name_en || '', c.name_pt || '');
+    const pokeSuffix = pokeIds.length > 0 ? `#p${pokeIds.join('-')}` : '';
+    return `${normalizeSetCode(c.set_code)}#${normalizeCardNumber(c.card_number)}${pokeSuffix}`;
+  }
+  return c.id || '';
+}
+
+function getCardLegacyKey(c: { id?: string; set_code?: string; card_number?: string }): string {
   if (c.set_code && c.card_number) {
     return `${normalizeSetCode(c.set_code)}#${normalizeCardNumber(c.card_number)}`;
   }
   return c.id || '';
+}
+
+function loadLocalAddedCardsMap(): Record<string, Card> {
+  try {
+    if (typeof window === 'undefined') return {};
+    const raw = localStorage.getItem(LOCAL_ADDED_CARDS_KEY);
+    return raw ? JSON.parse(raw) : {};
+  } catch {
+    return {};
+  }
+}
+
+function saveLocalAddedCard(card: Card) {
+  try {
+    if (typeof window === 'undefined') return;
+    const map = loadLocalAddedCardsMap();
+    const key = getCardCanonicalKey(card) || card.id;
+    if (key) {
+      map[key] = card;
+      localStorage.setItem(LOCAL_ADDED_CARDS_KEY, JSON.stringify(map));
+    }
+    const deleted = loadLocalDeletedCardsMap();
+    const legacyKey = getCardLegacyKey(card);
+    let delChanged = false;
+    for (const k of [key, legacyKey, card.id]) {
+      if (k && deleted[k]) {
+        delete deleted[k];
+        delChanged = true;
+      }
+    }
+    if (delChanged) {
+      localStorage.setItem(LOCAL_DELETED_CARDS_KEY, JSON.stringify(deleted));
+    }
+    localStorage.setItem(LOCAL_DIRTY_FLAG_KEY, 'true');
+  } catch {
+    // ignore
+  }
+}
+
+function loadLocalDeletedCardsMap(): Record<string, boolean> {
+  try {
+    if (typeof window === 'undefined') return {};
+    const raw = localStorage.getItem(LOCAL_DELETED_CARDS_KEY);
+    return raw ? JSON.parse(raw) : {};
+  } catch {
+    return {};
+  }
+}
+
+function markLocalCardDeleted(card: Card) {
+  try {
+    if (typeof window === 'undefined') return;
+    const deleted = loadLocalDeletedCardsMap();
+    const canonicalKey = getCardCanonicalKey(card);
+    const legacyKey = getCardLegacyKey(card);
+    if (canonicalKey) deleted[canonicalKey] = true;
+    if (legacyKey) deleted[legacyKey] = true;
+    if (card.id) deleted[card.id] = true;
+    localStorage.setItem(LOCAL_DELETED_CARDS_KEY, JSON.stringify(deleted));
+
+    const added = loadLocalAddedCardsMap();
+    let changed = false;
+    for (const k of [canonicalKey, legacyKey, card.id]) {
+      if (k && added[k]) {
+        delete added[k];
+        changed = true;
+      }
+    }
+    if (changed) {
+      localStorage.setItem(LOCAL_ADDED_CARDS_KEY, JSON.stringify(added));
+    }
+    localStorage.setItem(LOCAL_DIRTY_FLAG_KEY, 'true');
+  } catch {
+    // ignore
+  }
 }
 
 function loadLocalCardMetaMap(): Record<string, LocalCardMeta> {
@@ -502,7 +622,7 @@ function loadLocalCardMetaMap(): Record<string, LocalCardMeta> {
 }
 
 function saveLocalCardMeta(
-  card: { id?: string; set_code?: string; card_number?: string },
+  card: { id?: string; set_code?: string; card_number?: string; name_pt?: string; name_en?: string },
   patch: Partial<LocalCardMeta>
 ) {
   try {
@@ -510,6 +630,7 @@ function saveLocalCardMeta(
     const map = loadLocalCardMetaMap();
     const now = patch.updated_at || new Date().toISOString();
     const canonicalKey = getCardCanonicalKey(card);
+    const legacyKey = getCardLegacyKey(card);
     const idKey = card.id || '';
 
     const updateKey = (k: string) => {
@@ -522,6 +643,9 @@ function saveLocalCardMeta(
     };
 
     updateKey(canonicalKey);
+    if (legacyKey && legacyKey !== canonicalKey) {
+      updateKey(legacyKey);
+    }
     if (idKey && idKey !== canonicalKey) {
       updateKey(idKey);
     }
@@ -671,12 +795,14 @@ const normalizeCards = (rawCards: Card[], applyLocalMeta: boolean = true): Card[
     };
   });
 
-  // Deduplicate cards by canonical set_code and card_number to avoid duplicate cards
+  // Deduplicate cards by canonical set_code, card_number and Pokémon species/name to avoid merging different Pokémon
   const seenMap = new Map<string, Card>();
   for (const c of mappedList) {
-    const key = (c.set_code && c.card_number)
-      ? `${normalizeSetCode(c.set_code)}#${normalizeCardNumber(c.card_number)}`
-      : (c.id || Math.random().toString());
+    const baseKey = getCardCanonicalKey(c) || (c.id || Math.random().toString());
+    const existingWithBaseKey = seenMap.get(baseKey);
+    const key = (existingWithBaseKey && !areCardNamesCompatible(existingWithBaseKey, c))
+      ? `${baseKey}#${normalizeCardName(c.name_pt || c.name_en || c.id)}`
+      : baseKey;
 
     if (seenMap.has(key)) {
       const existing = seenMap.get(key)!;
@@ -695,9 +821,33 @@ const normalizeCards = (rawCards: Card[], applyLocalMeta: boolean = true): Card[
     }
   }
 
-  const deduped = Array.from(seenMap.values());
+  let deduped = Array.from(seenMap.values());
   if (!applyLocalMeta) {
     return deduped;
+  }
+
+  // Merge in any locally added cards that were not in rawCards (e.g. when rawCards comes from an older Firestore snapshot)
+  const deletedMap = loadLocalDeletedCardsMap();
+  deduped = deduped.filter(c => {
+    const cKey = getCardCanonicalKey(c);
+    return !deletedMap[cKey] && !deletedMap[c.id];
+  });
+
+  const localAddedMap = loadLocalAddedCardsMap();
+  const existingKeys = new Set<string>();
+  for (const c of deduped) {
+    existingKeys.add(getCardCanonicalKey(c));
+    if (c.id) existingKeys.add(c.id);
+  }
+  for (const addedCard of Object.values(localAddedMap)) {
+    if (!addedCard) continue;
+    const aKey = getCardCanonicalKey(addedCard);
+    if (deletedMap[aKey] || deletedMap[addedCard.id]) continue;
+    if (!existingKeys.has(aKey) && !existingKeys.has(addedCard.id)) {
+      deduped.unshift(addedCard);
+      existingKeys.add(aKey);
+      if (addedCard.id) existingKeys.add(addedCard.id);
+    }
   }
 
   const localMetaMap = loadLocalCardMetaMap();
@@ -705,7 +855,8 @@ const normalizeCards = (rawCards: Card[], applyLocalMeta: boolean = true): Card[
 
   const merged = deduped.map((c) => {
     const canonicalKey = getCardCanonicalKey(c);
-    const meta = localMetaMap[canonicalKey] || localMetaMap[c.id];
+    const legacyKey = getCardLegacyKey(c);
+    const meta = localMetaMap[canonicalKey] || localMetaMap[c.id] || localMetaMap[legacyKey];
 
     if (meta && meta.updated_at) {
       const metaTime = new Date(meta.updated_at).getTime() || 0;
@@ -1045,8 +1196,13 @@ export const CollectionProvider: React.FC<{ children: React.ReactNode }> = ({ ch
                 if (p.id) prevByKey.set(p.id, p);
               }
 
+              const cloudKeys = new Set<string>();
               const normalizedCloud = normalizeCards(data.cards, true).map(cloudCard => {
-                const localMatch = prevByKey.get(getCardCanonicalKey(cloudCard)) || prevByKey.get(cloudCard.id);
+                const cKey = getCardCanonicalKey(cloudCard);
+                cloudKeys.add(cKey);
+                if (cloudCard.id) cloudKeys.add(cloudCard.id);
+
+                const localMatch = prevByKey.get(cKey) || prevByKey.get(cloudCard.id);
                 if (!localMatch) return cloudCard;
 
                 const localTime = localMatch.updated_at ? (new Date(localMatch.updated_at).getTime() || 0) : 0;
@@ -1074,7 +1230,22 @@ export const CollectionProvider: React.FC<{ children: React.ReactNode }> = ({ ch
                 return cloudCard;
               });
 
-              return normalizedCloud;
+              // Preserve any cards present in local `prev` that were not yet in Firestore `data.cards`
+              const deletedMap = loadLocalDeletedCardsMap();
+              const localOnlyCards: Card[] = [];
+              for (const localCard of prev) {
+                const lKey = getCardCanonicalKey(localCard);
+                if (deletedMap[lKey] || deletedMap[localCard.id]) continue;
+                if (!cloudKeys.has(lKey) && !cloudKeys.has(localCard.id)) {
+                  if (localCard.id?.startsWith('custom-card-') || localCard.updated_at || (localCard.quantity || 0) > 0) {
+                    localOnlyCards.push(localCard);
+                    cloudKeys.add(lKey);
+                    if (localCard.id) cloudKeys.add(localCard.id);
+                  }
+                }
+              }
+
+              return localOnlyCards.length > 0 ? [...localOnlyCards, ...normalizedCloud] : normalizedCloud;
             });
           } else if (data.quantities) {
             setCards(prev => normalizeCards(prev.map(c => ({
@@ -1221,6 +1392,7 @@ export const CollectionProvider: React.FC<{ children: React.ReactNode }> = ({ ch
       }
 
       soundEffects.playScan();
+      const nowIso = new Date().toISOString();
       const nextQuantity = existingCard.quantity + qtyToAdd;
 
       const updatedCard: Card = {
@@ -1229,9 +1401,12 @@ export const CollectionProvider: React.FC<{ children: React.ReactNode }> = ({ ch
         is_foil: existingCard.is_foil || !!cardData.is_foil,
         image_url: (cardData.image_url && !existingCard.image_url) 
           ? cardData.image_url 
-          : existingCard.image_url
+          : existingCard.image_url,
+        updated_at: nowIso
       };
 
+      saveLocalCardMeta(updatedCard, { quantity: nextQuantity, updated_at: nowIso });
+      saveLocalAddedCard(updatedCard);
       setCards(prev => prev.map((c, idx) => (idx === existingIndex ? updatedCard : c)));
 
       if (selectedCard && selectedCard.id === existingCard.id) {
@@ -1246,6 +1421,7 @@ export const CollectionProvider: React.FC<{ children: React.ReactNode }> = ({ ch
       };
     }
 
+    const nowIso = new Date().toISOString();
     const newId = `custom-card-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`;
     const colorInfo = COLOR_MAP[cardData.color_code || ''] || COLOR_MAP[''];
     
@@ -1273,7 +1449,8 @@ export const CollectionProvider: React.FC<{ children: React.ReactNode }> = ({ ch
       comment: cardData.comment || '',
       image_url: cardData.image_url || '',
       local_image: '',
-      decks: []
+      decks: [],
+      updated_at: nowIso
     };
 
     if (isReadOnly) {
@@ -1284,6 +1461,8 @@ export const CollectionProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     }
     soundEffects.playScan();
 
+    saveLocalCardMeta(newCard, { quantity: qtyToAdd, updated_at: nowIso });
+    saveLocalAddedCard(newCard);
     setCards(prev => [newCard, ...prev]);
 
     if (newCard.set_code) {
@@ -1332,6 +1511,9 @@ export const CollectionProvider: React.FC<{ children: React.ReactNode }> = ({ ch
           metaPatch.quantity = updatedData.quantity;
         }
         saveLocalCardMeta(nextCard, metaPatch);
+        if (nextCard.id?.startsWith('custom-card-')) {
+          saveLocalAddedCard(nextCard);
+        }
 
         return nextCard;
       }
@@ -1360,7 +1542,13 @@ export const CollectionProvider: React.FC<{ children: React.ReactNode }> = ({ ch
   const deleteCard = (cardId: string) => {
     if (isReadOnly) return;
     soundEffects.playClick();
-    setCards(prev => prev.filter(c => c.id !== cardId));
+    setCards(prev => {
+      const target = prev.find(c => c.id === cardId);
+      if (target) {
+        markLocalCardDeleted(target);
+      }
+      return prev.filter(c => c.id !== cardId);
+    });
     if (selectedCard?.id === cardId) {
       setSelectedCard(null);
     }

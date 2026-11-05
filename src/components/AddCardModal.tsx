@@ -34,6 +34,21 @@ export const AddCardModal: React.FC<AddCardModalProps> = ({ isOpen, onClose, ini
       setNameEn(initialName);
       setNamePt(initialName);
       setQuickQuery(initialName);
+      setIsSearchingCard(true);
+      setSearchError('');
+      setSearchCandidates([]);
+      lookupCardOnline(initialName)
+        .then((results) => {
+          if (results.length === 1) {
+            applyCardCandidate(results[0]);
+          } else if (results.length > 1) {
+            setSearchCandidates(results);
+          }
+        })
+        .catch(() => {})
+        .finally(() => {
+          setIsSearchingCard(false);
+        });
     }
   }, [isOpen, initialName]);
 
