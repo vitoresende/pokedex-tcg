@@ -7,7 +7,7 @@ import {
   onAuthStateChanged,
   User as FirebaseUser
 } from 'firebase/auth';
-import { getFirestore, doc, setDoc, getDoc, deleteDoc, collection, Firestore } from 'firebase/firestore';
+import { getFirestore, initializeFirestore, doc, setDoc, getDoc, deleteDoc, collection, Firestore } from 'firebase/firestore';
 import { getStorage, ref, uploadBytes, getDownloadURL, FirebaseStorage } from 'firebase/storage';
 
 // Configuration read from environment variables (.env)
@@ -36,7 +36,11 @@ try {
     app = getApps()[0];
   }
   auth = getAuth(app);
-  db = getFirestore(app);
+  try {
+    db = initializeFirestore(app, { ignoreUndefinedProperties: true });
+  } catch {
+    db = getFirestore(app);
+  }
   storage = getStorage(app);
   isFirebaseConfigured = true;
 } catch (err) {
@@ -112,6 +116,23 @@ export function generateSecureShareToken(): string {
   return token;
 }
 
+function sanitizeForFirestore<T>(obj: T): T {
+  if (obj === null || obj === undefined) return obj;
+  if (Array.isArray(obj)) {
+    return obj.map((item) => sanitizeForFirestore(item)) as unknown as T;
+  }
+  if (typeof obj === 'object') {
+    const cleaned: Record<string, any> = {};
+    for (const [key, val] of Object.entries(obj as Record<string, any>)) {
+      if (val !== undefined) {
+        cleaned[key] = sanitizeForFirestore(val);
+      }
+    }
+    return cleaned as T;
+  }
+  return obj;
+}
+
 /**
  * Sync user collection, custom cards, and decks to Cloud Firestore
  * Also updates the public read-only snapshot if a shareToken is active.
@@ -131,22 +152,23 @@ export async function syncUserCollectionToFirestore(
   if (!db || !userId) return false;
   try {
     const timestamp = new Date().toISOString();
+    const cleanData = sanitizeForFirestore(data);
     const userRef = doc(db, 'users', userId);
     await setDoc(userRef, {
-      ...data,
+      ...cleanData,
       lastUpdated: timestamp
     }, { merge: true });
 
-    if (data.shareToken) {
-      const sharedRef = doc(db, 'shared_collections', data.shareToken);
+    if (cleanData.shareToken) {
+      const sharedRef = doc(db, 'shared_collections', cleanData.shareToken);
       await setDoc(sharedRef, {
         ownerUid: userId,
-        ownerName: data.ownerName || 'Treinador Pokémon',
-        quantities: data.quantities,
-        notes: data.notes,
-        favorites: data.favorites,
-        decks: data.decks || [],
-        cards: data.cards || [],
+        ownerName: cleanData.ownerName || 'Treinador Pokémon',
+        quantities: cleanData.quantities,
+        notes: cleanData.notes,
+        favorites: cleanData.favorites,
+        decks: cleanData.decks || [],
+        cards: cleanData.cards || [],
         lastUpdated: timestamp
       }, { merge: true });
     }
@@ -184,15 +206,16 @@ export async function publishSharedCollectionToFirestore(
     }
 
     const timestamp = new Date().toISOString();
+    const cleanData = sanitizeForFirestore(data);
     const sharedRef = doc(db, 'shared_collections', newToken);
     await setDoc(sharedRef, {
       ownerUid: userId,
       ownerName: ownerName || 'Treinador Pokémon',
-      quantities: data.quantities,
-      notes: data.notes,
-      favorites: data.favorites,
-      decks: data.decks,
-      cards: data.cards,
+      quantities: cleanData.quantities,
+      notes: cleanData.notes,
+      favorites: cleanData.favorites,
+      decks: cleanData.decks,
+      cards: cleanData.cards,
       lastUpdated: timestamp
     });
 

@@ -63,7 +63,7 @@ export const NationalDexPage: React.FC<NationalDexPageProps> = ({ onNavigateToDe
     return buildPokemonCardsMap(cards);
   }, [cards]);
 
-  // Overall Statistics including Deck Value
+  // Overall Statistics including Main Cards Value
   const { 
     ownedCount, 
     missingCount, 
@@ -71,13 +71,16 @@ export const NationalDexPage: React.FC<NationalDexPageProps> = ({ onNavigateToDe
     totalOwnedCardsCount,
     totalDeckValue,
     deckSelectedCount,
+    deckSelectedPokemonsCount,
     deckValuedPokemonsCount
   } = useMemo(() => {
     let owned = 0;
     let totalCardsCount = 0;
     let deckValueSum = 0;
     let selectedCount = 0;
+    let selectedPokemonsCount = 0;
     let valuedCount = 0;
+    const countedMainCardIds = new Set<string>();
 
     for (const p of POKEMON_LIST) {
       const pCards = pokemonCardsMap.get(p.id) || [];
@@ -87,14 +90,20 @@ export const NationalDexPage: React.FC<NationalDexPageProps> = ({ onNavigateToDe
         totalCardsCount += pCards.reduce((sum, c) => sum + (c.quantity || 0), 0);
       }
 
-      // Check chosen deck card for this pokemon
-      const chosen = pCards.find((c) => c.is_deck_card);
-      if (chosen) {
-        selectedCount++;
-        const priceNum = chosen.price !== undefined && chosen.price !== null ? Number(chosen.price) : 0;
-        if (!isNaN(priceNum) && priceNum > 0) {
-          deckValueSum += priceNum;
-          valuedCount++;
+      // Check all main cards for this pokemon (supports multiple main cards per Pokémon)
+      const mainCards = pCards.filter((c) => c.is_deck_card);
+      if (mainCards.length > 0) {
+        selectedPokemonsCount++;
+        for (const mc of mainCards) {
+          if (!countedMainCardIds.has(mc.id)) {
+            countedMainCardIds.add(mc.id);
+            selectedCount++;
+            const priceNum = mc.price !== undefined && mc.price !== null ? Number(mc.price) : 0;
+            if (!isNaN(priceNum) && priceNum > 0) {
+              deckValueSum += priceNum;
+              valuedCount++;
+            }
+          }
         }
       }
     }
@@ -109,6 +118,7 @@ export const NationalDexPage: React.FC<NationalDexPageProps> = ({ onNavigateToDe
       totalOwnedCardsCount: totalCardsCount,
       totalDeckValue: deckValueSum,
       deckSelectedCount: selectedCount,
+      deckSelectedPokemonsCount: selectedPokemonsCount,
       deckValuedPokemonsCount: valuedCount,
     };
   }, [pokemonCardsMap]);
@@ -358,7 +368,7 @@ export const NationalDexPage: React.FC<NationalDexPageProps> = ({ onNavigateToDe
               }`}
             >
               <Star className="w-3.5 h-3.5 fill-current shrink-0" />
-              <span className="truncate">{t('nationalDex.filterDeck', { count: deckSelectedCount })}</span>
+              <span className="truncate">{t('nationalDex.filterDeck', { count: deckSelectedPokemonsCount })}</span>
             </button>
             <button
               onClick={() => {
@@ -455,7 +465,7 @@ export const NationalDexPage: React.FC<NationalDexPageProps> = ({ onNavigateToDe
         </span>
         {ownershipFilter !== 'all' && (
           <span className="text-yellow-300/80">
-            Filtro ativo: {ownershipFilter === 'owned' ? 'Obtidos' : ownershipFilter === 'missing' ? 'Faltando' : 'No Deck'}
+            Filtro ativo: {ownershipFilter === 'owned' ? 'Obtidos' : ownershipFilter === 'missing' ? 'Faltando' : 'Principais'}
           </span>
         )}
       </div>
@@ -477,14 +487,20 @@ export const NationalDexPage: React.FC<NationalDexPageProps> = ({ onNavigateToDe
             const pCards = pokemonCardsMap.get(pokemon.id) || [];
             const totalCopies = pCards.reduce((acc, c) => acc + (c.quantity || 0), 0);
             const isOwned = pCards.length > 0 && totalCopies > 0;
-            const chosenCard = pCards.find((c) => c.is_deck_card);
+            const mainCards = pCards.filter((c) => c.is_deck_card);
+            const hasMainCards = mainCards.length > 0;
+            const mainCardsTotalValue = mainCards.reduce(
+              (sum, c) => sum + (c.price !== undefined && c.price !== null && !isNaN(Number(c.price)) ? Number(c.price) : 0),
+              0
+            );
+            const hasAnyMainPrice = mainCards.some((c) => c.price !== undefined && c.price !== null && Number(c.price) > 0);
 
             return (
               <div
                 key={pokemon.id}
                 onClick={() => handleSelectPokemon(pokemon)}
                 className={`group relative min-w-0 overflow-hidden bg-pokedex-card/80 hover:bg-pokedex-card rounded-2xl p-2.5 sm:p-3 border transition-all duration-200 cursor-pointer shadow-md hover:shadow-xl flex flex-col justify-between select-none ${
-                  chosenCard
+                  hasMainCards
                     ? 'border-amber-400/80 hover:border-yellow-300 bg-gradient-to-b from-amber-950/30 via-pokedex-card to-pokedex-card hover:scale-[1.02] ring-1 ring-amber-400/40'
                     : isOwned
                     ? 'border-emerald-600/50 hover:border-emerald-400/80 bg-gradient-to-b from-emerald-950/20 via-pokedex-card to-pokedex-card hover:scale-[1.02]'
@@ -497,10 +513,14 @@ export const NationalDexPage: React.FC<NationalDexPageProps> = ({ onNavigateToDe
                     #{pokemon.number}
                   </span>
 
-                  {chosenCard ? (
+                  {hasMainCards ? (
                     <span className="inline-flex items-center gap-1 text-[9px] font-mono font-black text-amber-300 bg-amber-950/90 border border-yellow-400/60 px-1.5 sm:px-2 py-0.5 rounded-full shadow-sm animate-in fade-in min-w-0 overflow-hidden">
                       <Star className="w-2.5 h-2.5 fill-current text-yellow-400 shrink-0" />
-                      <span className="truncate">Deck</span>
+                      <span className="truncate">
+                        {mainCards.length > 1
+                          ? (language === 'pt' ? `Principais (${mainCards.length})` : `Main (${mainCards.length})`)
+                          : (language === 'pt' ? 'Principal' : 'Main')}
+                      </span>
                     </span>
                   ) : isOwned ? (
                     <span className="inline-flex items-center gap-1 text-[9px] font-mono font-black text-emerald-300 bg-emerald-950/80 border border-emerald-500/40 px-1.5 py-0.5 rounded-full shadow-sm min-w-0 overflow-hidden">
@@ -548,24 +568,26 @@ export const NationalDexPage: React.FC<NationalDexPageProps> = ({ onNavigateToDe
                     ))}
                   </div>
 
-                  {/* If chosen for deck, display chosen card details and price tag */}
-                  {chosenCard && (
+                  {/* If marked as principal, display main card(s) details and total price tag */}
+                  {hasMainCards && (
                     <div className="pt-1 mt-1 border-t border-amber-500/30">
-                      <div className="flex items-center justify-between text-[10px] font-mono bg-yellow-400/15 px-2 py-1 rounded-lg border border-yellow-400/30">
-                        <span className="text-yellow-300/90 font-bold truncate max-w-[70px]">
-                          {chosenCard.set_code} #{chosenCard.card_number}
+                      <div className="flex items-center justify-between gap-1 text-[10px] font-mono bg-yellow-400/15 px-2 py-1 rounded-lg border border-yellow-400/30 min-w-0">
+                        <span className="text-yellow-300/90 font-bold truncate min-w-0">
+                          {mainCards.length === 1
+                            ? `${mainCards[0].set_code} #${mainCards[0].card_number}`
+                            : (language === 'pt' ? `${mainCards.length} principais` : `${mainCards.length} main`)}
                         </span>
-                        <span className="text-yellow-300 font-black">
-                          {chosenCard.price !== undefined
-                            ? `${language === 'pt' ? 'R$' : '$'} ${chosenCard.price.toFixed(2)}`
+                        <span className="text-yellow-300 font-black shrink-0">
+                          {hasAnyMainPrice
+                            ? `${language === 'pt' ? 'R$' : '$'} ${mainCardsTotalValue.toFixed(2)}`
                             : '—'}
                         </span>
                       </div>
                     </div>
                   )}
 
-                  {/* Quantity Owned Footer Pill (if not in deck, show copies count) */}
-                  {isOwned && !chosenCard && (
+                  {/* Quantity Owned Footer Pill (if not marked as main, show copies count) */}
+                  {isOwned && !hasMainCards && (
                     <div className="pt-0.5">
                       <span className="text-[10px] font-mono text-emerald-400/90 font-medium">
                         {totalCopies} {totalCopies === 1 ? 'cópia obtida' : 'cópias obtidas'}

@@ -67,11 +67,11 @@ export const CardItem: React.FC<CardItemProps> = ({ card, onSelect }) => {
           </button>
         )}
 
-        {/* Chosen Deck Card Star Badge */}
+        {/* Chosen Main Card Star Badge */}
         {card.is_deck_card && (
           <div className="absolute top-2 right-2 z-30 px-2 py-0.5 rounded-full bg-amber-400 text-slate-950 font-black text-[10px] font-mono shadow-md border border-yellow-200 flex items-center gap-1 backdrop-blur-md">
-            <Star className="w-3 h-3 fill-current" />
-            <span>Deck</span>
+            <Star className="w-3 h-3 fill-current shrink-0" />
+            <span>{language === 'pt' ? 'Principal' : 'Main'}</span>
           </div>
         )}
 
@@ -120,13 +120,16 @@ export const CardItem: React.FC<CardItemProps> = ({ card, onSelect }) => {
 
         {/* Price Tag if defined */}
         {card.price !== undefined && (
-          <div className="flex items-center justify-between text-[10px] font-mono bg-yellow-400/10 px-1.5 py-0.5 rounded border border-yellow-400/25">
-            <span className="text-yellow-400/80 flex items-center gap-1">
-              <CircleDollarSign className="w-3 h-3 text-yellow-400" />
-              <span>{t('nationalDex.price')}:</span>
+          <div
+            title={card.price_updated_at ? `${t('nationalDex.updatedAt')}: ${card.price_updated_at}` : undefined}
+            className="flex items-center justify-between gap-1 text-[10px] font-mono bg-yellow-400/10 px-1.5 py-0.5 rounded border border-yellow-400/25 min-w-0"
+          >
+            <span className="text-yellow-400/80 flex items-center gap-1 truncate min-w-0">
+              <CircleDollarSign className="w-3 h-3 text-yellow-400 shrink-0" />
+              <span className="truncate">{t('nationalDex.price')}:</span>
             </span>
-            <span className="text-yellow-300 font-bold">
-              {language === 'pt' ? 'R$' : '$'} {card.price.toFixed(2)}
+            <span className="text-yellow-300 font-bold shrink-0">
+              {language === 'pt' ? 'R$' : '$'} {Number(card.price).toFixed(2)}
             </span>
           </div>
         )}

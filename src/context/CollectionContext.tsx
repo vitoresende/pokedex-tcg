@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useMemo, useEffect } from 'react';
+import React, { createContext, useContext, useState, useMemo, useEffect, useRef, useCallback } from 'react';
 import initialCards from '../data/cards.json';
 import initialDecks from '../data/decks.json';
 import { Card, Deck, DeckCardItem, CardRarityInfo } from '../types';
@@ -28,11 +28,19 @@ interface FilterState {
   onlyMissing: boolean;
   onlyDuplicates: boolean;
   onlyDeckCards: boolean;
+  onlyMainCards: boolean;
   sortBy: 'number' | 'name' | 'quantity' | 'rarity';
   sortDirection: 'asc' | 'desc';
 }
 
 export type CloudSyncStatus = 'idle' | 'syncing' | 'synced' | 'error';
+
+export interface ToastNotification {
+  id: number;
+  message: string;
+  subMessage?: string;
+  type: 'success' | 'info';
+}
 
 export interface DeckImportOption {
   mode: 'none' | 'existing' | 'new';
@@ -98,6 +106,9 @@ interface CollectionContextType {
   addCardToDeck: (deckId: string, card: Card, count?: number) => void;
   removeCardFromDeck: (deckId: string, cardName: string) => void;
   selectDeckCardForPokemon: (pokemonId: number, cardId: string | null) => void;
+  toastNotification: ToastNotification | null;
+  showToast: (message: string, subMessage?: string, type?: 'success' | 'info') => void;
+  dismissToast: () => void;
 }
 
 const defaultFilters: FilterState = {
@@ -111,6 +122,7 @@ const defaultFilters: FilterState = {
   onlyMissing: false,
   onlyDuplicates: false,
   onlyDeckCards: false,
+  onlyMainCards: false,
   sortBy: 'number',
   sortDirection: 'asc'
 };
@@ -461,7 +473,66 @@ const HEALED_POKEMON_COLOR_BY_SET_NUM: Record<string, string> = {
   'MEP#87': 'F',   // Binacle (Lutador)
 };
 
-const normalizeCards = (rawCards: Card[]): Card[] => {
+interface LocalCardMeta {
+  price?: number | null;
+  price_updated_at?: string | null;
+  is_deck_card?: boolean;
+  quantity?: number;
+  updated_at: string;
+}
+
+const LOCAL_CARD_META_KEY = 'pokedex_tcg_card_meta';
+const LOCAL_DIRTY_FLAG_KEY = 'pokedex_tcg_local_dirty';
+
+function getCardCanonicalKey(c: { id?: string; set_code?: string; card_number?: string }): string {
+  if (c.set_code && c.card_number) {
+    return `${normalizeSetCode(c.set_code)}#${normalizeCardNumber(c.card_number)}`;
+  }
+  return c.id || '';
+}
+
+function loadLocalCardMetaMap(): Record<string, LocalCardMeta> {
+  try {
+    if (typeof window === 'undefined') return {};
+    const raw = localStorage.getItem(LOCAL_CARD_META_KEY);
+    return raw ? JSON.parse(raw) : {};
+  } catch {
+    return {};
+  }
+}
+
+function saveLocalCardMeta(
+  card: { id?: string; set_code?: string; card_number?: string },
+  patch: Partial<LocalCardMeta>
+) {
+  try {
+    if (typeof window === 'undefined') return;
+    const map = loadLocalCardMetaMap();
+    const now = patch.updated_at || new Date().toISOString();
+    const canonicalKey = getCardCanonicalKey(card);
+    const idKey = card.id || '';
+
+    const updateKey = (k: string) => {
+      if (!k) return;
+      map[k] = {
+        ...(map[k] || {}),
+        ...patch,
+        updated_at: now
+      };
+    };
+
+    updateKey(canonicalKey);
+    if (idKey && idKey !== canonicalKey) {
+      updateKey(idKey);
+    }
+    localStorage.setItem(LOCAL_CARD_META_KEY, JSON.stringify(map));
+    localStorage.setItem(LOCAL_DIRTY_FLAG_KEY, 'true');
+  } catch {
+    // ignore
+  }
+}
+
+const normalizeCards = (rawCards: Card[], applyLocalMeta: boolean = true): Card[] => {
   const mappedList: Card[] = rawCards.map((rawC): Card => {
     const c = {
       ...rawC,
@@ -616,12 +687,85 @@ const normalizeCards = (rawCards: Card[]): Card[] => {
       if (c.price !== undefined) existing.price = c.price;
       if (c.price_updated_at) existing.price_updated_at = c.price_updated_at;
       if (c.is_deck_card !== undefined) existing.is_deck_card = c.is_deck_card;
+      if (c.updated_at && (!existing.updated_at || c.updated_at > existing.updated_at)) {
+        existing.updated_at = c.updated_at;
+      }
     } else {
       seenMap.set(key, c);
     }
   }
 
-  return Array.from(seenMap.values());
+  const deduped = Array.from(seenMap.values());
+  if (!applyLocalMeta) {
+    return deduped;
+  }
+
+  const localMetaMap = loadLocalCardMetaMap();
+  let metaUpdatedFromCloud = false;
+
+  const merged = deduped.map((c) => {
+    const canonicalKey = getCardCanonicalKey(c);
+    const meta = localMetaMap[canonicalKey] || localMetaMap[c.id];
+
+    if (meta && meta.updated_at) {
+      const metaTime = new Date(meta.updated_at).getTime() || 0;
+      const cardTime = c.updated_at ? (new Date(c.updated_at).getTime() || 0) : 0;
+
+      if (metaTime >= cardTime) {
+        const nextCard: Card = {
+          ...c,
+          updated_at: meta.updated_at
+        };
+        if (meta.price !== undefined) {
+          if (meta.price === null) {
+            delete nextCard.price;
+          } else {
+            nextCard.price = meta.price;
+          }
+        }
+        if (meta.price_updated_at !== undefined) {
+          if (meta.price_updated_at === null) {
+            delete nextCard.price_updated_at;
+          } else {
+            nextCard.price_updated_at = meta.price_updated_at;
+          }
+        }
+        if (meta.is_deck_card !== undefined) {
+          nextCard.is_deck_card = meta.is_deck_card;
+        }
+        if (meta.quantity !== undefined) {
+          nextCard.quantity = meta.quantity;
+        }
+        return nextCard;
+      }
+    }
+
+    // If cloud card has price or is_deck_card and is newer than localMeta, persist to localMeta
+    if (c.price !== undefined || c.is_deck_card !== undefined || c.updated_at) {
+      const entry: LocalCardMeta = {
+        ...(meta || {}),
+        price: c.price !== undefined ? c.price : meta?.price,
+        price_updated_at: c.price_updated_at || meta?.price_updated_at,
+        is_deck_card: c.is_deck_card !== undefined ? c.is_deck_card : meta?.is_deck_card,
+        updated_at: c.updated_at || meta?.updated_at || new Date().toISOString()
+      };
+      if (canonicalKey) localMetaMap[canonicalKey] = entry;
+      if (c.id) localMetaMap[c.id] = entry;
+      metaUpdatedFromCloud = true;
+    }
+
+    return c;
+  });
+
+  if (metaUpdatedFromCloud) {
+    try {
+      localStorage.setItem(LOCAL_CARD_META_KEY, JSON.stringify(localMetaMap));
+    } catch {
+      // ignore
+    }
+  }
+
+  return merged;
 };
 
 const CollectionContext = createContext<CollectionContextType | undefined>(undefined);
@@ -673,6 +817,30 @@ export const CollectionProvider: React.FC<{ children: React.ReactNode }> = ({ ch
   const [syncStatus, setSyncStatus] = useState<CloudSyncStatus>('idle');
   const [lastSyncedAt, setLastSyncedAt] = useState<Date | null>(null);
   const [isInitializedFromCloud, setIsInitializedFromCloud] = useState<boolean>(false);
+  const [toastNotification, setToastNotification] = useState<ToastNotification | null>(null);
+  const toastTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const showToast = useCallback((message: string, subMessage?: string, type: 'success' | 'info' = 'success') => {
+    if (toastTimerRef.current) {
+      clearTimeout(toastTimerRef.current);
+    }
+    setToastNotification({
+      id: Date.now(),
+      message,
+      subMessage,
+      type
+    });
+    toastTimerRef.current = setTimeout(() => {
+      setToastNotification(null);
+    }, 4500);
+  }, []);
+
+  const dismissToast = useCallback(() => {
+    if (toastTimerRef.current) {
+      clearTimeout(toastTimerRef.current);
+    }
+    setToastNotification(null);
+  }, []);
 
   // Sharing & Read-Only Visitor State
   const [sharedOwnerName, setSharedOwnerName] = useState<string | null>(null);
@@ -813,9 +981,9 @@ export const CollectionProvider: React.FC<{ children: React.ReactNode }> = ({ ch
         if (data) {
           setSharedOwnerName(data.ownerName || 'Treinador Pokémon');
           if (data.cards && Array.isArray(data.cards) && data.cards.length > 0) {
-            setCards(normalizeCards(data.cards));
+            setCards(normalizeCards(data.cards, false));
           } else if (data.quantities) {
-            const baseCards = normalizeCards(initialCards as Card[]);
+            const baseCards = normalizeCards(initialCards as Card[], false);
             setCards(baseCards.map(c => ({
               ...c,
               quantity: data.quantities[c.id] !== undefined ? data.quantities[c.id] : c.quantity
@@ -869,12 +1037,41 @@ export const CollectionProvider: React.FC<{ children: React.ReactNode }> = ({ ch
 
         if (data) {
           if (data.cards && Array.isArray(data.cards) && data.cards.length > 0) {
-            setCards(normalizeCards(data.cards));
+            // Merge cloud cards with any newer in-session or localStorage edits
+            setCards(prev => {
+              const prevByKey = new Map<string, Card>();
+              for (const p of prev) {
+                prevByKey.set(getCardCanonicalKey(p), p);
+                if (p.id) prevByKey.set(p.id, p);
+              }
+
+              const normalizedCloud = normalizeCards(data.cards, true).map(cloudCard => {
+                const localMatch = prevByKey.get(getCardCanonicalKey(cloudCard)) || prevByKey.get(cloudCard.id);
+                if (!localMatch) return cloudCard;
+
+                const localTime = localMatch.updated_at ? (new Date(localMatch.updated_at).getTime() || 0) : 0;
+                const cloudTime = cloudCard.updated_at ? (new Date(cloudCard.updated_at).getTime() || 0) : 0;
+
+                if (localTime > cloudTime) {
+                  return {
+                    ...cloudCard,
+                    price: localMatch.price,
+                    price_updated_at: localMatch.price_updated_at,
+                    is_deck_card: localMatch.is_deck_card,
+                    quantity: localMatch.quantity,
+                    updated_at: localMatch.updated_at
+                  };
+                }
+                return cloudCard;
+              });
+
+              return normalizedCloud;
+            });
           } else if (data.quantities) {
             setCards(prev => normalizeCards(prev.map(c => ({
               ...c,
               quantity: data.quantities[c.id] !== undefined ? data.quantities[c.id] : c.quantity
-            }))));
+            })), true));
           }
           if (data.favorites) setFavorites(data.favorites);
           if (data.notes) setNotes(data.notes);
@@ -938,6 +1135,12 @@ export const CollectionProvider: React.FC<{ children: React.ReactNode }> = ({ ch
           ownerName
         });
 
+        try {
+          localStorage.removeItem(LOCAL_DIRTY_FLAG_KEY);
+        } catch {
+          // ignore
+        }
+
         setSyncStatus('synced');
         setSyncing(false);
         setLastSyncedAt(new Date());
@@ -946,7 +1149,7 @@ export const CollectionProvider: React.FC<{ children: React.ReactNode }> = ({ ch
         setSyncStatus('error');
         setSyncing(false);
       }
-    }, 800);
+    }, 350);
 
     return () => clearTimeout(timer);
   }, [cards, favorites, notes, decks, isInitializedFromCloud, user?.uid, user?.displayName, user?.email, isAllowed, isReadOnly, activeShareToken]);
@@ -964,16 +1167,18 @@ export const CollectionProvider: React.FC<{ children: React.ReactNode }> = ({ ch
   const updateCardQuantity = (cardId: string, delta: number) => {
     if (isReadOnly) return;
     soundEffects.playClick();
+    const nowIso = new Date().toISOString();
     setCards(prev => prev.map(c => {
       if (c.id === cardId) {
         const nextQty = Math.max(0, c.quantity + delta);
-        return { ...c, quantity: nextQty };
+        saveLocalCardMeta(c, { quantity: nextQty, updated_at: nowIso });
+        return { ...c, quantity: nextQty, updated_at: nowIso };
       }
       return c;
     }));
 
     if (selectedCard && selectedCard.id === cardId) {
-      setSelectedCard(prev => prev ? { ...prev, quantity: Math.max(0, prev.quantity + delta) } : null);
+      setSelectedCard(prev => prev ? { ...prev, quantity: Math.max(0, prev.quantity + delta), updated_at: nowIso } : null);
     }
   };
 
@@ -1088,14 +1293,58 @@ export const CollectionProvider: React.FC<{ children: React.ReactNode }> = ({ ch
   const updateCard = (cardId: string, updatedData: Partial<Card>) => {
     if (isReadOnly) return;
     soundEffects.playClick();
+    const nowIso = new Date().toISOString();
+
     setCards(prev => prev.map(c => {
       if (c.id === cardId) {
-        return { ...c, ...updatedData };
+        const nextCard: Card = {
+          ...c,
+          ...updatedData,
+          updated_at: nowIso
+        };
+        if ('price' in updatedData && updatedData.price === undefined) {
+          delete nextCard.price;
+        }
+        if ('price_updated_at' in updatedData && updatedData.price_updated_at === undefined) {
+          delete nextCard.price_updated_at;
+        }
+
+        const metaPatch: Partial<LocalCardMeta> = { updated_at: nowIso };
+        if ('price' in updatedData) {
+          metaPatch.price = updatedData.price === undefined ? null : updatedData.price;
+        }
+        if ('price_updated_at' in updatedData) {
+          metaPatch.price_updated_at = updatedData.price_updated_at === undefined ? null : updatedData.price_updated_at;
+        }
+        if ('is_deck_card' in updatedData) {
+          metaPatch.is_deck_card = Boolean(updatedData.is_deck_card);
+        }
+        if ('quantity' in updatedData && updatedData.quantity !== undefined) {
+          metaPatch.quantity = updatedData.quantity;
+        }
+        saveLocalCardMeta(nextCard, metaPatch);
+
+        return nextCard;
       }
       return c;
     }));
+
     if (selectedCard?.id === cardId) {
-      setSelectedCard(prev => prev ? { ...prev, ...updatedData } : null);
+      setSelectedCard(prev => {
+        if (!prev) return null;
+        const nextSelected: Card = {
+          ...prev,
+          ...updatedData,
+          updated_at: nowIso
+        };
+        if ('price' in updatedData && updatedData.price === undefined) {
+          delete nextSelected.price;
+        }
+        if ('price_updated_at' in updatedData && updatedData.price_updated_at === undefined) {
+          delete nextSelected.price_updated_at;
+        }
+        return nextSelected;
+      });
     }
   };
 
@@ -1108,39 +1357,22 @@ export const CollectionProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     }
   };
 
-  const selectDeckCardForPokemon = (pokemonId: number, cardId: string | null) => {
-    if (isReadOnly) return;
+  const selectDeckCardForPokemon = (_pokemonId: number, cardId: string | null) => {
+    if (isReadOnly || !cardId) return;
     soundEffects.playClick();
-    setCards(prev => {
-      const pokemonCardIds = new Set(
-        prev.filter(c => getPokemonIdsForCard(c).includes(pokemonId)).map(c => c.id)
-      );
+    const nowIso = new Date().toISOString();
 
-      return prev.map(c => {
-        if (pokemonCardIds.has(c.id)) {
-          if (c.id === cardId) {
-            return { ...c, is_deck_card: !c.is_deck_card };
-          } else {
-            return { ...c, is_deck_card: false };
-          }
-        }
-        return c;
-      });
-    });
+    setCards(prev => prev.map(c => {
+      if (c.id === cardId) {
+        const nextMain = !c.is_deck_card;
+        saveLocalCardMeta(c, { is_deck_card: nextMain, updated_at: nowIso });
+        return { ...c, is_deck_card: nextMain, updated_at: nowIso };
+      }
+      return c;
+    }));
 
-    if (selectedCard) {
-      setSelectedCard(prev => {
-        if (!prev) return null;
-        const ids = getPokemonIdsForCard(prev);
-        if (ids.includes(pokemonId)) {
-          if (prev.id === cardId) {
-            return { ...prev, is_deck_card: !prev.is_deck_card };
-          } else {
-            return { ...prev, is_deck_card: false };
-          }
-        }
-        return prev;
-      });
+    if (selectedCard && selectedCard.id === cardId) {
+      setSelectedCard(prev => prev ? { ...prev, is_deck_card: !prev.is_deck_card, updated_at: nowIso } : null);
     }
   };
 
@@ -1738,6 +1970,9 @@ export const CollectionProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     if (filters.onlyDeckCards) {
       result = result.filter(c => c.decks && c.decks.length > 0);
     }
+    if (filters.onlyMainCards) {
+      result = result.filter(c => Boolean(c.is_deck_card));
+    }
 
     // Sorting
     result.sort((a, b) => {
@@ -1812,7 +2047,10 @@ export const CollectionProvider: React.FC<{ children: React.ReactNode }> = ({ ch
         deleteDeck,
         addCardToDeck,
         removeCardFromDeck,
-        selectDeckCardForPokemon
+        selectDeckCardForPokemon,
+        toastNotification,
+        showToast,
+        dismissToast
       }}
     >
       {children}

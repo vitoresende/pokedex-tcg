@@ -28,6 +28,7 @@ export interface Card {
   price?: number;
   price_updated_at?: string;
   is_deck_card?: boolean;
+  updated_at?: string;
 }
 
 export interface DeckCardItem {

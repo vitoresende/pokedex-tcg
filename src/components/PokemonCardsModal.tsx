@@ -61,7 +61,7 @@ export const PokemonCardsModal: React.FC<PokemonCardsModalProps> = ({
   onAddCardForPokemon,
 }) => {
   const { t, language } = useLanguage();
-  const { isReadOnly, selectDeckCardForPokemon } = useCollection();
+  const { isReadOnly, selectDeckCardForPokemon, showToast } = useCollection();
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -79,7 +79,7 @@ export const PokemonCardsModal: React.FC<PokemonCardsModalProps> = ({
   const totalFoils = ownedCards.filter((c) => c.is_foil).length;
   const isOwned = ownedCards.length > 0 && totalCopies > 0;
   const regionName = REGION_MAP[pokemon.generation] || `Gen ${pokemon.generation}`;
-  const chosenDeckCard = ownedCards.find((c) => c.is_deck_card);
+  const mainCards = ownedCards.filter((c) => c.is_deck_card);
 
   return (
     <div
@@ -197,23 +197,36 @@ export const PokemonCardsModal: React.FC<PokemonCardsModalProps> = ({
                       ✨ {totalFoils} {totalFoils === 1 ? 'carta brilhante (foil/holo)' : 'cartas brilhantes (foil/holo)'}
                     </p>
                   )}
-                  {/* Chosen Deck Card Info Banner */}
-                  {chosenDeckCard && (
-                    <div className="mt-2 pt-2 border-t border-emerald-500/20 flex flex-wrap items-center justify-between gap-2 text-xs">
+                  {/* Main Cards Info Banner (supports multiple main cards per Pokémon) */}
+                  {mainCards.length > 0 && (
+                    <div className="mt-2 pt-2 border-t border-emerald-500/20 space-y-1.5 text-xs">
                       <span className="text-yellow-300 font-bold flex items-center gap-1.5">
-                        <Star className="w-3.5 h-3.5 text-yellow-400 fill-yellow-400" />
-                        <span>{t('nationalDex.chosenDeckCard')}: {chosenDeckCard.name_pt || chosenDeckCard.name_en} ({chosenDeckCard.set_code} #{chosenDeckCard.card_number})</span>
+                        <Star className="w-3.5 h-3.5 text-yellow-400 fill-yellow-400 shrink-0" />
+                        <span>
+                          {mainCards.length === 1
+                            ? (language === 'pt' ? 'Carta Principal:' : 'Main Card:')
+                            : (language === 'pt' ? `Cartas Principais (${mainCards.length}):` : `Main Cards (${mainCards.length}):`)}
+                        </span>
                       </span>
-                      {chosenDeckCard.price !== undefined ? (
-                        <span className="bg-yellow-400 text-slate-950 font-black px-2 py-0.5 rounded text-[11px] shadow">
-                          {language === 'pt' ? 'R$' : '$'} {chosenDeckCard.price.toFixed(2)}
-                          {chosenDeckCard.price_updated_at ? ` • ${chosenDeckCard.price_updated_at}` : ''}
-                        </span>
-                      ) : (
-                        <span className="text-[10px] text-slate-400 italic">
-                          ({t('nationalDex.noPrice')})
-                        </span>
-                      )}
+                      <div className="space-y-1">
+                        {mainCards.map((mc) => (
+                          <div key={mc.id} className="flex flex-wrap items-center justify-between gap-2 bg-black/30 px-2.5 py-1 rounded-lg border border-yellow-400/20">
+                            <span className="text-slate-200 font-semibold truncate">
+                              {mc.name_pt || mc.name_en} ({mc.set_code} #{mc.card_number})
+                            </span>
+                            {mc.price !== undefined ? (
+                              <span className="bg-yellow-400 text-slate-950 font-black px-2 py-0.5 rounded text-[11px] shadow shrink-0">
+                                {language === 'pt' ? 'R$' : '$'} {Number(mc.price).toFixed(2)}
+                                {mc.price_updated_at ? ` • ${mc.price_updated_at}` : ''}
+                              </span>
+                            ) : (
+                              <span className="text-[10px] text-slate-400 italic shrink-0">
+                                ({t('nationalDex.noPrice')})
+                              </span>
+                            )}
+                          </div>
+                        ))}
+                      </div>
                     </div>
                   )}
                 </div>
@@ -268,7 +281,15 @@ export const PokemonCardsModal: React.FC<PokemonCardsModalProps> = ({
                         type="button"
                         onClick={(e) => {
                           e.stopPropagation();
+                          const nextMain = !card.is_deck_card;
                           selectDeckCardForPokemon(pokemon.id, card.id);
+                          const cName = card.name_pt || card.name_en;
+                          showToast(
+                            nextMain
+                              ? (language === 'pt' ? `⭐ "${cName}" marcada como Carta Principal!` : `⭐ "${cName}" marked as Main Card!`)
+                              : (language === 'pt' ? `"${cName}" desmarcada como principal` : `"${cName}" unmarked as main card`),
+                            'info'
+                          );
                         }}
                         className={`w-full py-1.5 px-2 rounded-xl text-[11px] font-mono font-bold flex items-center justify-center gap-1.5 transition-all shadow active:scale-95 border ${
                           card.is_deck_card
@@ -276,8 +297,8 @@ export const PokemonCardsModal: React.FC<PokemonCardsModalProps> = ({
                             : 'bg-slate-800 hover:bg-slate-700 text-slate-300 border-slate-700 hover:border-yellow-400/40'
                         }`}
                       >
-                        <Star className={`w-3.5 h-3.5 ${card.is_deck_card ? 'fill-current text-slate-950' : 'text-yellow-400'}`} />
-                        <span>{card.is_deck_card ? t('nationalDex.chosenDeckCard') : t('nationalDex.selectForDeck')}</span>
+                        <Star className={`w-3.5 h-3.5 shrink-0 ${card.is_deck_card ? 'fill-current text-slate-950' : 'text-yellow-400'}`} />
+                        <span className="truncate">{card.is_deck_card ? t('nationalDex.chosenDeckCard') : t('nationalDex.selectForDeck')}</span>
                       </button>
                     )}
                   </div>

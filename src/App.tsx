@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { ShieldAlert, LogIn, RefreshCw, Sparkles } from 'lucide-react';
+import { ShieldAlert, LogIn, RefreshCw, Sparkles, CheckCircle2, X, Star } from 'lucide-react';
 import { LanguageProvider, useLanguage } from './context/LanguageContext';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { CollectionProvider, useCollection } from './context/CollectionContext';
@@ -16,9 +16,9 @@ import { checkForAppUpdate, forceAppUpdateAndClearCache, AppVersionInfo } from '
 const MainLayout: React.FC = () => {
   const [activeTab, setActiveTab] = useState<NavTab>('pokedex');
   const [remoteUpdate, setRemoteUpdate] = useState<AppVersionInfo | null>(null);
-  const { isReadOnly, sharedCollectionError, syncing } = useCollection();
+  const { isReadOnly, sharedCollectionError, syncing, toastNotification, dismissToast } = useCollection();
   const { exitGuestMode } = useAuth();
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
 
   useEffect(() => {
     let mounted = true;
@@ -126,6 +126,45 @@ const MainLayout: React.FC = () => {
         {activeTab === 'rules' && <RulesAndTypesPage />}
         {activeTab === 'auth' && <AuthProfilePage />}
       </main>
+
+      {/* Global Floating Toast Notification (for Price Saves, Main Card Toggles & Cloud Sync) */}
+      {toastNotification && (
+        <div
+          key={toastNotification.id}
+          className="fixed top-4 left-1/2 -translate-x-1/2 z-[120] w-[92%] max-w-md pointer-events-auto animate-in slide-in-from-top-2 fade-in duration-200"
+        >
+          <div
+            className={`px-4 py-3 rounded-2xl border-2 shadow-2xl backdrop-blur-md flex items-center justify-between gap-3 font-mono text-xs ${
+              toastNotification.type === 'success'
+                ? 'bg-emerald-950/95 border-emerald-400 text-emerald-100 shadow-[0_0_25px_rgba(16,185,129,0.45)]'
+                : 'bg-slate-900/95 border-amber-400 text-yellow-200 shadow-[0_0_25px_rgba(250,204,21,0.35)]'
+            }`}
+          >
+            <div className="flex items-center gap-2.5 min-w-0">
+              {toastNotification.type === 'success' ? (
+                <CheckCircle2 className="w-5 h-5 text-emerald-400 shrink-0" />
+              ) : (
+                <Star className="w-5 h-5 text-yellow-400 fill-yellow-400 shrink-0" />
+              )}
+              <div className="min-w-0">
+                <p className="font-bold text-xs leading-snug break-words">{toastNotification.message}</p>
+                <p className="text-[10px] opacity-80 mt-0.5">
+                  {syncing
+                    ? (language === 'pt' ? 'Sincronizando com o Cloud Firestore...' : 'Syncing to Cloud Firestore...')
+                    : (language === 'pt' ? 'Salvo no navegador e sincronizado na nuvem' : 'Saved locally & synced to cloud')}
+                </p>
+              </div>
+            </div>
+            <button
+              onClick={dismissToast}
+              aria-label={t('common.close')}
+              className="p-1 rounded-lg hover:bg-white/10 text-slate-300 hover:text-white transition-colors shrink-0"
+            >
+              <X className="w-4 h-4" />
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* Tactile Mobile Bottom Bar */}
       <BottomNavigation activeTab={activeTab} onTabChange={setActiveTab} />

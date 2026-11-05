@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { Search, X, Sparkles, Layers, CheckCircle2, CircleDashed, ChevronDown, RefreshCw, Copy } from 'lucide-react';
+import { Search, X, Sparkles, Layers, CheckCircle2, CircleDashed, ChevronDown, RefreshCw, Copy, Star } from 'lucide-react';
 import { PokemonTypeIcon } from './PokemonTypeIcon';
 import { useCollection } from '../context/CollectionContext';
 import { useLanguage } from '../context/LanguageContext';
@@ -60,7 +60,7 @@ export const FilterBar: React.FC = () => {
     }));
   };
 
-  const toggleBooleanFilter = (key: 'onlyFoil' | 'onlyOwned' | 'onlyMissing' | 'onlyDeckCards' | 'onlyDuplicates') => {
+  const toggleBooleanFilter = (key: 'onlyFoil' | 'onlyMainCards' | 'onlyOwned' | 'onlyMissing' | 'onlyDeckCards' | 'onlyDuplicates') => {
     soundEffects.playClick();
     setFilters(prev => {
       const next = !prev[key];
@@ -79,6 +79,7 @@ export const FilterBar: React.FC = () => {
     filters.selectedRarity !== 'ALL' ||
     filters.selectedCategory !== 'ALL' ||
     filters.onlyFoil ||
+    filters.onlyMainCards ||
     filters.onlyOwned ||
     filters.onlyMissing ||
     filters.onlyDuplicates ||
@@ -231,6 +232,19 @@ export const FilterBar: React.FC = () => {
 
       {/* Quick Boolean Filter Badges */}
       <div className="flex flex-wrap items-center gap-1.5 sm:gap-2 pt-1 border-t border-slate-800/80 text-[11px] sm:text-xs font-mono min-w-0">
+        <button
+          type="button"
+          onClick={() => toggleBooleanFilter('onlyMainCards')}
+          className={`shrink-0 max-w-full overflow-hidden px-2.5 py-1.5 rounded-xl border transition-all inline-flex items-center gap-1.5 whitespace-nowrap ${
+            filters.onlyMainCards
+              ? 'bg-amber-500/25 text-yellow-300 border-yellow-400/70 font-bold shadow-[0_0_10px_rgba(234,179,8,0.2)]'
+              : 'bg-pokedex-darker text-slate-400 border-slate-800 hover:text-slate-200'
+          }`}
+        >
+          <Star className={`w-3.5 h-3.5 shrink-0 ${filters.onlyMainCards ? 'fill-yellow-400 text-yellow-400' : ''}`} />
+          <span className="truncate">{t('filters.mainOnly')}</span>
+        </button>
+
         <button
           type="button"
           onClick={() => toggleBooleanFilter('onlyFoil')}

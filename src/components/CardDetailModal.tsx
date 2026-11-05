@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Card } from '../types';
 import { HoloCard } from './HoloCard';
 import { 
@@ -21,11 +21,28 @@ interface CardDetailModalProps {
   onNavigateToDeck?: (deckId: string) => void;
 }
 
+function parsePriceValue(raw: string): number | undefined {
+  const trimmed = raw.replace(/[^\d.,]/g, '').trim();
+  if (!trimmed) return undefined;
+  let normalized = trimmed;
+  if (trimmed.includes(',') && trimmed.includes('.')) {
+    if (trimmed.lastIndexOf(',') > trimmed.lastIndexOf('.')) {
+      normalized = trimmed.replace(/\./g, '').replace(',', '.');
+    } else {
+      normalized = trimmed.replace(/,/g, '');
+    }
+  } else if (trimmed.includes(',')) {
+    normalized = trimmed.replace(',', '.');
+  }
+  const parsed = parseFloat(normalized);
+  return !isNaN(parsed) && parsed >= 0 ? parsed : undefined;
+}
+
 export const CardDetailModal: React.FC<CardDetailModalProps> = ({ card, onClose, onNavigateToDeck }) => {
   const { 
     cards, favorites, toggleFavorite, updateCardQuantity, notes, 
     updateCardNote, decks, addCardToDeck, updateCard, deleteCard, 
-    selectDeckCardForPokemon, isReadOnly 
+    selectDeckCardForPokemon, isReadOnly, showToast, syncing 
   } = useCollection();
   const { t, getCardName, getCardSetName, language } = useLanguage();
   
@@ -37,6 +54,9 @@ export const CardDetailModal: React.FC<CardDetailModalProps> = ({ card, onClose,
   const [priceInput, setPriceInput] = useState<string>('');
   const [priceDateInput, setPriceDateInput] = useState<string>('');
   const [priceSaved, setPriceSaved] = useState<boolean>(false);
+  const [isPriceDirty, setIsPriceDirty] = useState<boolean>(false);
+  const prevCardIdRef = useRef<string | null>(null);
+  const priceSavedTimerRef = useRef<number | null>(null);
 
   const [isFixingImage, setIsFixingImage] = useState(false);
   const [isSearchingScans, setIsSearchingScans] = useState(false);
@@ -44,15 +64,21 @@ export const CardDetailModal: React.FC<CardDetailModalProps> = ({ card, onClose,
   const [imageFixSuccess, setImageFixSuccess] = useState(false);
 
   useEffect(() => {
-    if (card) {
+    if (!card) {
+      prevCardIdRef.current = null;
+      return;
+    }
+    if (prevCardIdRef.current !== card.id) {
+      prevCardIdRef.current = card.id;
       setLocalNote(notes[card.id] || card.comment || '');
       setNoteSaved(false);
       setCardAddedToDeck(false);
       setIsFixingImage(false);
       setScanResults([]);
       setPriceInput(card.price !== undefined && card.price !== null ? String(card.price) : '');
-      setPriceDateInput(card.price_updated_at || '');
+      setPriceDateInput(card.price_updated_at || new Date().toISOString().split('T')[0]);
       setPriceSaved(false);
+      setIsPriceDirty(false);
       soundEffects.playScan();
     }
   }, [card, notes]);
@@ -136,25 +162,60 @@ export const CardDetailModal: React.FC<CardDetailModalProps> = ({ card, onClose,
 
   const handlePriceChange = (val: string) => {
     setPriceInput(val);
+    setIsPriceDirty(true);
+    setPriceSaved(false);
     if (!priceDateInput && val.trim()) {
       setPriceDateInput(new Date().toISOString().split('T')[0]);
     }
   };
 
+  const commitPriceUpdate = (showFeedback = true): { price: number | undefined; price_updated_at: string | undefined } => {
+    const finalPrice = parsePriceValue(priceInput);
+    const finalDate = finalPrice !== undefined ? (priceDateInput || new Date().toISOString().split('T')[0]) : undefined;
+    if (card && !isReadOnly) {
+      updateCard(card.id, {
+        price: finalPrice,
+        price_updated_at: finalDate
+      });
+      setIsPriceDirty(false);
+      if (showFeedback) {
+        soundEffects.playSuccess();
+        setPriceSaved(true);
+        if (priceSavedTimerRef.current) {
+          window.clearTimeout(priceSavedTimerRef.current);
+        }
+        priceSavedTimerRef.current = window.setTimeout(() => setPriceSaved(false), 4500);
+        const currency = language === 'pt' ? 'R$' : '$';
+        if (finalPrice !== undefined) {
+          showToast(
+            language === 'pt'
+              ? `✅ Valor de "${cardName}" salvo: ${currency} ${finalPrice.toFixed(2)} (${finalDate})`
+              : `✅ Saved value for "${cardName}": ${currency} ${finalPrice.toFixed(2)} (${finalDate})`,
+            'success'
+          );
+        } else {
+          showToast(
+            language === 'pt'
+              ? `Valor removido de "${cardName}"`
+              : `Removed value from "${cardName}"`,
+            'info'
+          );
+        }
+      }
+    }
+    return { price: finalPrice, price_updated_at: finalDate };
+  };
+
   const handleSavePrice = () => {
     if (isReadOnly || !card) return;
-    soundEffects.playClick();
-    const cleaned = priceInput.replace(/[^\d.,]/g, '').replace(',', '.');
-    const parsed = cleaned.trim() ? parseFloat(cleaned) : undefined;
-    const finalPrice = parsed !== undefined && !isNaN(parsed) ? parsed : undefined;
-    const finalDate = finalPrice !== undefined ? (priceDateInput || new Date().toISOString().split('T')[0]) : undefined;
-    
-    updateCard(card.id, {
-      price: finalPrice,
-      price_updated_at: finalDate
-    });
-    setPriceSaved(true);
-    setTimeout(() => setPriceSaved(false), 2000);
+    commitPriceUpdate(true);
+  };
+
+  const handleModalClose = () => {
+    if (!isReadOnly && card && isPriceDirty) {
+      commitPriceUpdate(true);
+    }
+    onClose();
   };
 
   const matchedPokemonIds = card && card.card_category === 'Pokémon' ? getPokemonIdsForCard(card) : [];
@@ -164,11 +225,25 @@ export const CardDetailModal: React.FC<CardDetailModalProps> = ({ card, onClose,
   const handleToggleDeckCard = () => {
     if (isReadOnly || !card) return;
     soundEffects.playClick();
-    if (hasPokemonMatch) {
+    const nextIsMain = !card.is_deck_card;
+    if (isPriceDirty) {
+      const { price: finalPrice, price_updated_at: finalDate } = commitPriceUpdate(false);
+      updateCard(card.id, {
+        is_deck_card: nextIsMain,
+        price: finalPrice,
+        price_updated_at: finalDate
+      });
+    } else if (hasPokemonMatch) {
       selectDeckCardForPokemon(matchedPokemonIds[0], card.id);
     } else {
-      updateCard(card.id, { is_deck_card: !card.is_deck_card });
+      updateCard(card.id, { is_deck_card: nextIsMain });
     }
+    showToast(
+      nextIsMain
+        ? (language === 'pt' ? `⭐ "${cardName}" marcada como Carta Principal!` : `⭐ "${cardName}" marked as Main Card!`)
+        : (language === 'pt' ? `"${cardName}" desmarcada como principal` : `"${cardName}" unmarked as main card`),
+      'info'
+    );
   };
 
   const handleAddToDeck = () => {
@@ -200,7 +275,7 @@ export const CardDetailModal: React.FC<CardDetailModalProps> = ({ card, onClose,
           </div>
 
           <button
-            onClick={onClose}
+            onClick={handleModalClose}
             aria-label={t('common.close')}
             className="w-8 h-8 rounded-full bg-pokedex-darkred hover:bg-black/40 text-white flex items-center justify-center transition-colors"
           >
@@ -456,36 +531,36 @@ export const CardDetailModal: React.FC<CardDetailModalProps> = ({ card, onClose,
                 </div>
               )}
 
-              {/* Chosen Deck Card Toggle for Pokémon */}
-              {hasPokemonMatch && (
-                <div className="pt-0.5">
-                  <button
-                    type="button"
-                    onClick={handleToggleDeckCard}
-                    disabled={isReadOnly}
-                    className={`w-full py-2 px-3 rounded-xl border text-xs font-mono font-bold flex items-center justify-between transition-all active:scale-[0.98] ${
-                      isDeckCard
-                        ? 'bg-amber-500/20 text-yellow-300 border-yellow-400/50 shadow-[0_0_12px_rgba(234,179,8,0.25)]'
-                        : 'bg-slate-900/80 hover:bg-slate-800 text-slate-300 border-slate-700/80'
-                    }`}
-                  >
-                    <div className="flex items-center space-x-2">
-                      <Star className={`w-4 h-4 ${isDeckCard ? 'text-yellow-400 fill-yellow-400 animate-pulse' : 'text-slate-400'}`} />
-                      <span className="text-left">{t('cardDetail.deckCardToggle')}</span>
-                    </div>
-                    <span className={`text-[10px] px-2 py-0.5 rounded-md font-mono font-black shrink-0 ${
-                      isDeckCard ? 'bg-yellow-400 text-slate-950 shadow-sm' : 'bg-slate-800 text-slate-400'
-                    }`}>
-                      {isDeckCard ? '✓ ATIVA NO DECK' : 'SELECIONAR'}
-                    </span>
-                  </button>
-                  {isDeckCard && (
-                    <p className="text-[10px] font-mono text-yellow-300/80 mt-1 pl-1">
-                      ⭐ {t('cardDetail.deckCardActive')}
-                    </p>
-                  )}
-                </div>
-              )}
+              {/* Chosen Main Card Toggle */}
+              <div className="pt-0.5">
+                <button
+                  type="button"
+                  onClick={handleToggleDeckCard}
+                  disabled={isReadOnly}
+                  className={`w-full py-2 px-3 rounded-xl border text-xs font-mono font-bold flex items-center justify-between transition-all active:scale-[0.98] ${
+                    isDeckCard
+                      ? 'bg-amber-500/20 text-yellow-300 border-yellow-400/50 shadow-[0_0_12px_rgba(234,179,8,0.25)]'
+                      : 'bg-slate-900/80 hover:bg-slate-800 text-slate-300 border-slate-700/80'
+                  }`}
+                >
+                  <div className="flex items-center space-x-2">
+                    <Star className={`w-4 h-4 ${isDeckCard ? 'text-yellow-400 fill-yellow-400 animate-pulse' : 'text-slate-400'}`} />
+                    <span className="text-left">{t('cardDetail.deckCardToggle')}</span>
+                  </div>
+                  <span className={`text-[10px] px-2 py-0.5 rounded-md font-mono font-black shrink-0 ${
+                    isDeckCard ? 'bg-yellow-400 text-slate-950 shadow-sm' : 'bg-slate-800 text-slate-400'
+                  }`}>
+                    {isDeckCard
+                      ? (language === 'pt' ? '✓ PRINCIPAL' : '✓ MAIN CARD')
+                      : (language === 'pt' ? 'MARCAR PRINCIPAL' : 'MARK AS MAIN')}
+                  </span>
+                </button>
+                {isDeckCard && (
+                  <p className="text-[10px] font-mono text-yellow-300/80 mt-1 pl-1">
+                    ⭐ {t('cardDetail.deckCardActive')}
+                  </p>
+                )}
+              </div>
 
               {/* Inputs for Price and Updated Date */}
               {!isReadOnly ? (
@@ -502,8 +577,15 @@ export const CardDetailModal: React.FC<CardDetailModalProps> = ({ card, onClose,
                         </span>
                         <input
                           type="text"
+                          inputMode="decimal"
                           value={priceInput}
                           onChange={(e) => handlePriceChange(e.target.value)}
+                          onKeyDown={(e) => {
+                            if (e.key === 'Enter') {
+                              e.preventDefault();
+                              handleSavePrice();
+                            }
+                          }}
                           placeholder={t('cardDetail.pricePlaceholder')}
                           className="w-full min-w-0 max-w-full bg-slate-900/90 border border-slate-700 rounded-xl pl-9 pr-3 py-2 text-xs font-mono text-white placeholder-slate-500 focus:outline-none focus:border-yellow-400 transition-colors box-border"
                         />
@@ -519,12 +601,27 @@ export const CardDetailModal: React.FC<CardDetailModalProps> = ({ card, onClose,
                         <input
                           type="date"
                           value={priceDateInput}
-                          onChange={(e) => setPriceDateInput(e.target.value)}
+                          onChange={(e) => {
+                            setPriceDateInput(e.target.value);
+                            setIsPriceDirty(true);
+                            setPriceSaved(false);
+                          }}
                           className="w-full min-w-0 max-w-full bg-slate-900/90 border border-slate-700 rounded-xl px-3 py-2 text-xs font-mono text-white focus:outline-none focus:border-yellow-400 transition-colors cursor-pointer box-border block [color-scheme:dark]"
                         />
                       </div>
                     </div>
                   </div>
+
+                  {/* Unsaved Changes Hint */}
+                  {isPriceDirty && !priceSaved && (
+                    <div className="p-2 rounded-xl bg-amber-500/15 border border-amber-400/40 text-amber-300 text-[11px] font-mono flex items-center justify-between animate-in fade-in">
+                      <span>
+                        {language === 'pt'
+                          ? '⚠️ Valor alterado — clique abaixo para salvar'
+                          : '⚠️ Value modified — click below to save'}
+                      </span>
+                    </div>
+                  )}
 
                   {/* Save Price Button with Explicit Feedback */}
                   <button
@@ -539,7 +636,7 @@ export const CardDetailModal: React.FC<CardDetailModalProps> = ({ card, onClose,
                     {priceSaved ? (
                       <>
                         <CheckCircle2 className="w-4 h-4 text-white" />
-                        <span>Valor Salvo com Sucesso!</span>
+                        <span>{language === 'pt' ? 'Valor Salvo com Sucesso!' : 'Value Saved Successfully!'}</span>
                       </>
                     ) : (
                       <>
@@ -548,6 +645,27 @@ export const CardDetailModal: React.FC<CardDetailModalProps> = ({ card, onClose,
                       </>
                     )}
                   </button>
+
+                  {/* Explicit Persistent Saved Banner inside Modal */}
+                  {priceSaved && (
+                    <div className="p-2.5 rounded-xl bg-emerald-950/70 border border-emerald-400/60 text-emerald-200 text-[11px] font-mono flex items-center justify-between gap-2 animate-in fade-in slide-in-from-top-1 duration-200">
+                      <div className="flex items-center gap-2 min-w-0">
+                        <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
+                        <span className="font-bold truncate">
+                          {card.price !== undefined
+                            ? (language === 'pt'
+                                ? `Salvo: R$ ${Number(card.price).toFixed(2)} (${card.price_updated_at || priceDateInput})`
+                                : `Saved: $ ${Number(card.price).toFixed(2)} (${card.price_updated_at || priceDateInput})`)
+                            : (language === 'pt' ? 'Valor removido com sucesso' : 'Value removed')}
+                        </span>
+                      </div>
+                      <span className="text-[10px] px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-400/30 shrink-0">
+                        {syncing
+                          ? (language === 'pt' ? 'Sincronizando...' : 'Syncing...')
+                          : (language === 'pt' ? '✓ Salvo na Nuvem' : '✓ Cloud Synced')}
+                      </span>
+                    </div>
+                  )}
                 </div>
               ) : (
                 <div className="flex justify-between py-1 border-t border-slate-800 text-xs font-mono">
