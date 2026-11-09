@@ -129,16 +129,16 @@ export const en = {
     "saveCardNote": "Save Card Note",
     "foilHolo": "Foil / Holo",
     "priceSectionTitle": "Market & Collection Value",
-    "priceLabel": "Card Value ($)",
-    "pricePlaceholder": "Ex: 25.00 or 150.50",
-    "priceUpdatedLabel": "Update Date",
+    "priceLabel": "Value ($)",
+    "pricePlaceholder": "Ex: 25.00",
+    "priceUpdatedLabel": "Date",
     "savePrice": "Save Value",
-    "clearPrice": "Clear Value & Date",
+    "clearPrice": "Clear",
     "priceSaved": "Value saved!",
     "priceCleared": "Value & date cleared!",
-    "deckCardToggle": "Mark as Main Card",
-    "deckCardActive": "This card is marked as a main card for this Pokémon",
-    "deckCardInactive": "Not marked as main card"
+    "deckCardToggle": "Main Card",
+    "deckCardActive": "Main card for this Pokémon",
+    "deckCardInactive": "Not marked"
   },
   "decks": {
     "title": "Tactical Deck Builder",

@@ -131,16 +131,16 @@ export const pt: TranslationKeys = {
     "saveCardNote": "Salvar Anotação da Carta",
     "foilHolo": "Foil / Holográfica",
     "priceSectionTitle": "Valor de Mercado & Coleção",
-    "priceLabel": "Valor da Carta (R$)",
-    "pricePlaceholder": "Ex: 25,00 ou 150.50",
-    "priceUpdatedLabel": "Data da Atualização",
+    "priceLabel": "Valor (R$)",
+    "pricePlaceholder": "Ex: 25,00",
+    "priceUpdatedLabel": "Data",
     "savePrice": "Salvar Valor",
-    "clearPrice": "Limpar Valor e Data",
+    "clearPrice": "Limpar",
     "priceSaved": "Valor salvo!",
     "priceCleared": "Valor e data removidos!",
-    "deckCardToggle": "Marcar como Carta Principal",
-    "deckCardActive": "Esta carta está marcada como principal deste Pokémon",
-    "deckCardInactive": "Não marcada como principal"
+    "deckCardToggle": "Carta Principal",
+    "deckCardActive": "Principal deste Pokémon",
+    "deckCardInactive": "Não marcada"
   },
   "decks": {
     "title": "Construtor Tático de Decks",
