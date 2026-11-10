@@ -322,9 +322,9 @@ export const CardDetailModal: React.FC<CardDetailModalProps> = ({ card, onClose,
         </div>
 
         {/* Modal Body */}
-        <div className="p-5 sm:p-6 grid grid-cols-1 sm:grid-cols-2 gap-6 items-start max-h-[80vh] overflow-y-auto">
+        <div className="p-4 sm:p-6 grid grid-cols-1 sm:grid-cols-2 gap-5 sm:gap-6 items-start max-h-[80vh] overflow-y-auto overflow-x-hidden">
           {/* Left Column: 3D Holographic Card View */}
-          <div className="flex flex-col items-center">
+          <div className="flex flex-col items-center min-w-0 w-full">
             <div className="w-full max-w-[260px] aspect-[2.5/3.5] mb-4">
               <HoloCard card={card} isDetailed className="w-full h-full" />
             </div>
@@ -460,7 +460,7 @@ export const CardDetailModal: React.FC<CardDetailModalProps> = ({ card, onClose,
           </div>
 
           {/* Right Column: Detailed Stats, Deck Inclusion & Notes */}
-          <div className="space-y-4 text-xs font-mono">
+          <div className="space-y-4 text-xs font-mono min-w-0 w-full">
             {/* Titles */}
             <div className="min-w-0">
               <div className="flex flex-wrap items-center justify-between gap-1.5 mb-1">
@@ -588,14 +588,14 @@ export const CardDetailModal: React.FC<CardDetailModalProps> = ({ card, onClose,
 
               {/* Inputs for Price and Updated Date */}
               {!isReadOnly ? (
-                <div className="space-y-2 pt-0.5">
-                  <div className="grid grid-cols-12 gap-2 items-end w-full">
-                    {/* Price Input (5 cols) */}
-                    <div className="col-span-5 min-w-0">
+                <div className="space-y-2 pt-0.5 min-w-0 w-full">
+                  <div className="grid grid-cols-1 gap-2 w-full min-w-0">
+                    {/* Price Input (Full Width) */}
+                    <div className="w-full min-w-0">
                       <label className="text-[10px] font-mono text-slate-400 uppercase block mb-1 truncate">
                         {t('cardDetail.priceLabel')}
                       </label>
-                      <div className="relative w-full">
+                      <div className="relative w-full min-w-0">
                         <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-[11px] font-mono font-bold text-yellow-400 pointer-events-none">
                           {language === 'pt' ? 'R$' : '$'}
                         </span>
@@ -611,13 +611,13 @@ export const CardDetailModal: React.FC<CardDetailModalProps> = ({ card, onClose,
                             }
                           }}
                           placeholder="0,00"
-                          className="w-full bg-slate-900/90 border border-slate-700 rounded-xl pl-8 pr-2.5 py-2 text-xs font-mono text-white placeholder-slate-500 focus:outline-none focus:border-yellow-400 transition-colors box-border"
+                          className="w-full max-w-full min-w-0 bg-slate-900/90 border border-slate-700 rounded-xl pl-8 pr-2.5 py-2 text-xs font-mono text-white placeholder-slate-500 focus:outline-none focus:border-yellow-400 transition-colors box-border block"
                         />
                       </div>
                     </div>
 
-                    {/* Date Input (7 cols so YYYY-MM-DD + calendar icon fits comfortably on desktop) */}
-                    <div className="col-span-7 min-w-0">
+                    {/* Date Input (Full Width — prevents overflow on both mobile & desktop) */}
+                    <div className="w-full max-w-full min-w-0 overflow-hidden">
                       <label className="text-[10px] font-mono text-slate-400 uppercase block mb-1 truncate">
                         {t('cardDetail.priceUpdatedLabel')}
                       </label>
@@ -629,7 +629,7 @@ export const CardDetailModal: React.FC<CardDetailModalProps> = ({ card, onClose,
                           setIsPriceDirty(true);
                           setPriceSaved(false);
                         }}
-                        className="w-full bg-slate-900/90 border border-slate-700 rounded-xl px-2.5 py-2 text-xs font-mono text-white focus:outline-none focus:border-yellow-400 transition-colors cursor-pointer box-border block [color-scheme:dark]"
+                        className="w-full max-w-full min-w-0 appearance-none bg-slate-900/90 border border-slate-700 rounded-xl px-2.5 py-2 text-xs font-mono text-white focus:outline-none focus:border-yellow-400 transition-colors cursor-pointer box-border block [color-scheme:dark]"
                       />
                     </div>
                   </div>

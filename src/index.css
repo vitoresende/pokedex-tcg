@@ -8,6 +8,21 @@
     @apply bg-pokedex-darker text-slate-100 min-h-screen font-sans overflow-x-hidden max-w-full;
     -webkit-tap-highlight-color: transparent;
   }
+
+  /* Prevent native date inputs from overflowing containers on iOS Safari & mobile browsers */
+  input[type="date"] {
+    -webkit-appearance: none;
+    appearance: none;
+    min-width: 0;
+    max-width: 100%;
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  input[type="date"]::-webkit-date-and-time-value {
+    text-align: left;
+    min-width: 0;
+  }
 }
 
 /* Custom Scrollbar */
