@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Card } from '../types';
 import { HoloCard } from './HoloCard';
+import { ConfirmModal } from './ConfirmModal';
 import { 
   X, Heart, Plus, Minus, Layers, Sparkles, Save, 
   Trash2, PlusCircle, CheckCircle2, Image as ImageIcon, 
@@ -62,10 +63,12 @@ export const CardDetailModal: React.FC<CardDetailModalProps> = ({ card, onClose,
   const [isSearchingScans, setIsSearchingScans] = useState(false);
   const [scanResults, setScanResults] = useState<CardLookupResult[]>([]);
   const [imageFixSuccess, setImageFixSuccess] = useState(false);
+  const [isConfirmDeleteOpen, setIsConfirmDeleteOpen] = useState(false);
 
   useEffect(() => {
     if (!card) {
       prevCardIdRef.current = null;
+      setIsConfirmDeleteOpen(false);
       return;
     }
     if (prevCardIdRef.current !== card.id) {
@@ -75,6 +78,7 @@ export const CardDetailModal: React.FC<CardDetailModalProps> = ({ card, onClose,
       setCardAddedToDeck(false);
       setIsFixingImage(false);
       setScanResults([]);
+      setIsConfirmDeleteOpen(false);
       setPriceInput(card.price !== undefined && card.price !== null ? String(card.price) : '');
       setPriceDateInput(card.price_updated_at || '');
       setPriceSaved(false);
@@ -278,10 +282,21 @@ export const CardDetailModal: React.FC<CardDetailModalProps> = ({ card, onClose,
 
   const handleDelete = () => {
     if (isReadOnly) return;
-    if (confirm(t('cardDetail.confirmDelete', { name: cardName }))) {
-      deleteCard(card.id);
-      onClose();
-    }
+    soundEffects.playClick();
+    setIsConfirmDeleteOpen(true);
+  };
+
+  const handleConfirmDelete = () => {
+    if (isReadOnly) return;
+    deleteCard(card.id);
+    showToast(
+      language === 'pt'
+        ? `🗑️ "${cardName}" removida da coleção`
+        : `🗑️ "${cardName}" removed from collection`,
+      'info'
+    );
+    setIsConfirmDeleteOpen(false);
+    onClose();
   };
 
   return (
@@ -825,6 +840,21 @@ export const CardDetailModal: React.FC<CardDetailModalProps> = ({ card, onClose,
           </div>
         </div>
       </div>
+
+      <ConfirmModal
+        isOpen={isConfirmDeleteOpen}
+        title={language === 'pt' ? 'Remover Carta // Confirmação' : 'Remove Card // Confirmation'}
+        message={t('cardDetail.confirmDelete', { name: cardName })}
+        description={
+          language === 'pt'
+            ? `Esta ação removerá "${cardName}" (${card.set_code} #${card.card_number}) da sua coleção.`
+            : `This action will remove "${cardName}" (${card.set_code} #${card.card_number}) from your collection.`
+        }
+        confirmLabel={t('common.remove')}
+        cancelLabel={t('common.cancel')}
+        onConfirm={handleConfirmDelete}
+        onCancel={() => setIsConfirmDeleteOpen(false)}
+      />
     </div>
   );
 };

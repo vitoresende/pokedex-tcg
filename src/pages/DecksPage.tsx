@@ -17,6 +17,7 @@ import { CardDetailModal } from '../components/CardDetailModal';
 import { CreateDeckModal } from '../components/CreateDeckModal';
 import { EditDeckModal } from '../components/EditDeckModal';
 import { AddCardModal } from '../components/AddCardModal';
+import { ConfirmModal } from '../components/ConfirmModal';
 
 export const DecksPage: React.FC = () => {
   const { decks, cards, selectedCard, setSelectedCard, deleteDeck, removeCardFromDeck, isReadOnly } = useCollection();
@@ -33,6 +34,8 @@ export const DecksPage: React.FC = () => {
   const [validateModalOpen, setValidateModalOpen] = useState<boolean>(false);
   const [isDeckPickerOpen, setIsDeckPickerOpen] = useState<boolean>(false);
   const [deckSearchQuery, setDeckSearchQuery] = useState<string>('');
+  const [confirmDeleteDeckOpen, setConfirmDeleteDeckOpen] = useState<boolean>(false);
+  const [cardToRemoveFromDeck, setCardToRemoveFromDeck] = useState<{ name: string; displayName: string } | null>(null);
 
   const currentDeck = decks.find(d => d.id === activeDeckId) || decks[0] || {
     id: 'empty',
@@ -90,14 +93,25 @@ export const DecksPage: React.FC = () => {
 
   const handleDeleteCurrentDeck = () => {
     if (isReadOnly) return;
-    if (confirm(t('decks.confirmDelete', { name: currentDeck.name }))) {
-      soundEffects.playClick();
-      deleteDeck(currentDeck.id);
-      const remaining = decks.filter(d => d.id !== currentDeck.id);
-      if (remaining.length > 0) {
-        setActiveDeckId(remaining[0].id);
-      }
+    soundEffects.playClick();
+    setConfirmDeleteDeckOpen(true);
+  };
+
+  const handleConfirmDeleteCurrentDeck = () => {
+    if (isReadOnly) return;
+    soundEffects.playClick();
+    deleteDeck(currentDeck.id);
+    const remaining = decks.filter(d => d.id !== currentDeck.id);
+    if (remaining.length > 0) {
+      setActiveDeckId(remaining[0].id);
     }
+    setConfirmDeleteDeckOpen(false);
+  };
+
+  const handleConfirmRemoveCardFromDeck = () => {
+    if (isReadOnly || !cardToRemoveFromDeck) return;
+    removeCardFromDeck(currentDeck.id, cardToRemoveFromDeck.name);
+    setCardToRemoveFromDeck(null);
   };
 
   const handleCopyDecklist = () => {
@@ -530,7 +544,10 @@ export const DecksPage: React.FC = () => {
                     </div>
                     {!isReadOnly && (
                       <button
-                        onClick={() => removeCardFromDeck(currentDeck.id, c.name)}
+                        onClick={() => {
+                          soundEffects.playClick();
+                          setCardToRemoveFromDeck({ name: c.name, displayName });
+                        }}
                         title={t('decks.removeFromDeck')}
                         className="text-slate-500 hover:text-red-400 p-1"
                       >
@@ -566,7 +583,10 @@ export const DecksPage: React.FC = () => {
                     </div>
                     {!isReadOnly && (
                       <button
-                        onClick={() => removeCardFromDeck(currentDeck.id, c.name)}
+                        onClick={() => {
+                          soundEffects.playClick();
+                          setCardToRemoveFromDeck({ name: c.name, displayName });
+                        }}
                         title={t('decks.removeFromDeck')}
                         className="text-slate-500 hover:text-red-400 p-1"
                       >
@@ -602,7 +622,10 @@ export const DecksPage: React.FC = () => {
                     </div>
                     {!isReadOnly && (
                       <button
-                        onClick={() => removeCardFromDeck(currentDeck.id, c.name)}
+                        onClick={() => {
+                          soundEffects.playClick();
+                          setCardToRemoveFromDeck({ name: c.name, displayName });
+                        }}
                         title={t('decks.removeFromDeck')}
                         className="text-slate-500 hover:text-red-400 p-1"
                       >
@@ -616,6 +639,42 @@ export const DecksPage: React.FC = () => {
           </div>
         </div>
       </div>
+
+      {/* Confirm Delete Deck Modal */}
+      <ConfirmModal
+        isOpen={confirmDeleteDeckOpen}
+        title={language === 'pt' ? 'Excluir Deck // Confirmação' : 'Delete Deck // Confirmation'}
+        message={t('decks.confirmDelete', { name: currentDeck.name })}
+        description={
+          language === 'pt'
+            ? `Esta ação excluirá o deck "${currentDeck.name}" da sua lista de decks.`
+            : `This action will delete the deck "${currentDeck.name}" from your deck list.`
+        }
+        confirmLabel={t('common.delete')}
+        cancelLabel={t('common.cancel')}
+        onConfirm={handleConfirmDeleteCurrentDeck}
+        onCancel={() => setConfirmDeleteDeckOpen(false)}
+      />
+
+      {/* Confirm Remove Card from Deck Modal */}
+      <ConfirmModal
+        isOpen={!!cardToRemoveFromDeck}
+        title={language === 'pt' ? 'Remover do Deck // Confirmação' : 'Remove from Deck // Confirmation'}
+        message={
+          language === 'pt'
+            ? `Remover "${cardToRemoveFromDeck?.displayName || ''}" do deck?`
+            : `Remove "${cardToRemoveFromDeck?.displayName || ''}" from the deck?`
+        }
+        description={
+          language === 'pt'
+            ? `A carta será removida apenas do deck "${currentDeck.name}" (permanecerá na sua coleção).`
+            : `The card will only be removed from the deck "${currentDeck.name}" (it will remain in your collection).`
+        }
+        confirmLabel={t('common.remove')}
+        cancelLabel={t('common.cancel')}
+        onConfirm={handleConfirmRemoveCardFromDeck}
+        onCancel={() => setCardToRemoveFromDeck(null)}
+      />
 
       {/* Card Detail Modal */}
       <CardDetailModal
