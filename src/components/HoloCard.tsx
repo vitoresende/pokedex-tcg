@@ -3,6 +3,7 @@ import { Card } from '../types';
 import { Sparkles } from 'lucide-react';
 import { soundEffects } from '../services/audio';
 import { resolveEnergyColor, isBasicEnergyCard } from '../context/CollectionContext';
+import { resolveDynamicCardImage } from '../services/cardLookup';
 
 interface HoloCardProps {
   card: Card;
@@ -25,6 +26,7 @@ const BASIC_ENERGY_FILES: Record<string, { file: string; url: string; sveNum: st
 
 export const HoloCard: React.FC<HoloCardProps> = ({ card, className = '', isDetailed = false }) => {
   const [imageErrorLevel, setImageErrorLevel] = useState<number>(0);
+  const [resolvedOnlineUrl, setResolvedOnlineUrl] = useState<string | null>(null);
   const [rotateX, setRotateX] = useState<number>(0);
   const [rotateY, setRotateY] = useState<number>(0);
   const [glarePosition, setGlarePosition] = useState<{ x: number; y: number }>({ x: 50, y: 50 });
@@ -34,7 +36,27 @@ export const HoloCard: React.FC<HoloCardProps> = ({ card, className = '', isDeta
   // Reset error fallback index whenever the card or its image changes
   useEffect(() => {
     setImageErrorLevel(0);
+    setResolvedOnlineUrl(null);
   }, [card.id, card.image_url, card.card_number, card.set_code]);
+
+  // Proactively resolve dynamic image from TCGdex/TCGPlayer if primary image fails or card is from a new ME/Reinado Delta set without valid image_url
+  useEffect(() => {
+    const isBrokenDefaultUrl = !card.image_url || /pokemontcg\.io\/me0?\d/i.test(card.image_url);
+    const isNewMeSet = /^ME0?\d/i.test(card.set_code || '') || /reinado\s+delta|escurid[aã]o\s+absoluta|caos\s+ascendente|equil[ií]brio\s+perfeito|her[oó]is\s+excelsos/i.test(`${card.set_pt || ''} ${card.set_en || ''}`);
+
+    if (!resolvedOnlineUrl && (imageErrorLevel >= 1 || (isBrokenDefaultUrl && isNewMeSet))) {
+      let cancelled = false;
+      resolveDynamicCardImage(card).then(url => {
+        if (!cancelled && url) {
+          setResolvedOnlineUrl(url);
+          setImageErrorLevel(0);
+        }
+      });
+      return () => {
+        cancelled = true;
+      };
+    }
+  }, [card.id, card.image_url, card.card_number, card.set_code, card.set_pt, card.set_en, card.name_pt, card.name_en, imageErrorLevel, resolvedOnlineUrl]);
 
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
     if (!cardRef.current) return;
@@ -123,6 +145,11 @@ export const HoloCard: React.FC<HoloCardProps> = ({ card, className = '', isDeta
         sources.push(meta.url);
       }
     } else {
+      // 0. Dynamically resolved online scan (when primary image failed or card is from new ME/Reinado Delta set)
+      if (resolvedOnlineUrl) {
+        sources.push(resolvedOnlineUrl);
+      }
+
       // 1. Direct explicit image_url (e.g. from TCGdex, Limitless or user scan selection)
       if (card.image_url) {
         sources.push(card.image_url);
@@ -282,6 +309,15 @@ export const HoloCard: React.FC<HoloCardProps> = ({ card, className = '', isDeta
 
       // 6. TCGdex High-Res Official Scans CDN (Portuguese & English)
       const SET_CODE_TCGDEX_MAP: Record<string, string> = {
+        'ME01': 'me/me01', 'ME1': 'me/me01',
+        'ME02': 'me/me02', 'ME2': 'me/me02',
+        'ME02.5': 'me/me02.5', 'ME2.5': 'me/me02.5',
+        'ME03': 'me/me03', 'ME3': 'me/me03',
+        'ME04': 'me/me04', 'ME4': 'me/me04',
+        'ME05': 'me/me05', 'ME5': 'me/me05',
+        'ME06': 'me/me06', 'ME6': 'me/me06',
+        'ME07': 'me/me07', 'ME7': 'me/me07',
+        'ME08': 'me/me08', 'ME8': 'me/me08',
         'SVE': 'sv/sve', 'SV-BE': 'sv/sve', 'BAS': 'sv/sve',
         'PAL': 'sv/sv02', 'SV02': 'sv/sv02', 'SV2': 'sv/sv02',
         'SVI': 'sv/sv01', 'SV01': 'sv/sv01', 'SV1': 'sv/sv01',
@@ -295,7 +331,9 @@ export const HoloCard: React.FC<HoloCardProps> = ({ card, className = '', isDeta
         'SCR': 'sv/sv07', 'SV07': 'sv/sv07', 'SV7': 'sv/sv07',
         'SSP': 'sv/sv08', 'SV08': 'sv/sv08', 'SV8': 'sv/sv08',
         'PRE': 'sv/sv08.5', 'SV08.5': 'sv/sv08.5',
-        'DRI': 'sv/sv10',
+        'JTG': 'sv/sv09', 'SV09': 'sv/sv09', 'SV9': 'sv/sv09',
+        'DRI': 'sv/sv10', 'SV10': 'sv/sv10',
+        'WHT': 'sv/sv10.5w', 'BLK': 'sv/sv10.5b',
         'PGO': 'swsh/swsh10.5',
         'SSH': 'swsh/swsh1',
         'RCL': 'swsh/swsh2',

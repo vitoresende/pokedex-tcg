@@ -8,7 +8,8 @@ import { useLanguage } from '../context/LanguageContext';
 import { soundEffects } from '../services/audio';
 import { uploadCardImageToStorage, downloadAndUploadImageToStorage } from '../services/firebase';
 import { DeckValidatorTab } from './DeckValidatorTab';
-import { lookupCardOnline, CardLookupResult } from '../services/cardLookup';
+import { lookupCardOnline, resolveDynamicCardImage, CardLookupResult } from '../services/cardLookup';
+import { SET_OFFICIAL_NAMES_PT } from '../utils/setMetadata';
 import { readFileSmart } from '../utils/textSanitizer';
 
 interface AddCardModalProps {
@@ -19,7 +20,7 @@ interface AddCardModalProps {
 }
 
 export const AddCardModal: React.FC<AddCardModalProps> = ({ isOpen, onClose, initialTab, initialName }) => {
-  const { addNewCard, importCardsFromCsv, decks } = useCollection();
+  const { addNewCard, importCardsFromCsv, decks, allSetsList } = useCollection();
   const { t } = useLanguage();
   const [tab, setTab] = useState<'manual' | 'csv' | 'validate'>(initialTab || 'manual');
 
@@ -226,6 +227,41 @@ export const AddCardModal: React.FC<AddCardModalProps> = ({ isOpen, onClose, ini
     }
   };
 
+  const resolveSetCodeAndName = (rawInput: string) => {
+    const trimmed = rawInput.trim();
+    const upper = trimmed.toUpperCase();
+    const lower = trimmed.toLowerCase();
+
+    // Check if matches any item in allSetsList by code, id, or name
+    const matched = allSetsList.find(
+      s =>
+        s.code.toUpperCase() === upper ||
+        s.id.toUpperCase() === upper ||
+        s.namePt.toLowerCase() === lower ||
+        (s.nameEn && s.nameEn.toLowerCase() === lower)
+    );
+
+    if (matched) {
+      return {
+        code: matched.code.toUpperCase(),
+        namePt: matched.namePt,
+        nameEn: matched.nameEn || matched.namePt,
+        officialTotal: matched.officialCards ? String(matched.officialCards) : undefined
+      };
+    }
+
+    const dictName = SET_OFFICIAL_NAMES_PT[upper];
+    if (dictName) {
+      return { code: upper, namePt: dictName, nameEn: dictName };
+    }
+
+    return {
+      code: upper || 'SV1',
+      namePt: setEn.trim() || upper || 'Scarlet & Violet',
+      nameEn: setEn.trim() || upper || 'Scarlet & Violet'
+    };
+  };
+
   const handleManualSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!nameEn.trim() && !namePt.trim()) return;
@@ -233,7 +269,8 @@ export const AddCardModal: React.FC<AddCardModalProps> = ({ isOpen, onClose, ini
     soundEffects.playScan();
     setIsUploadingImage(true);
 
-    const cleanSet = setCode.trim().toLowerCase();
+    const resolvedSet = resolveSetCodeAndName(setCode);
+    const cleanSet = resolvedSet.code.toLowerCase();
     const cleanNum = cardNumber.trim().replace(/\D/g, '') || '1';
     const targetFilename = `${cleanSet}_${cleanNum}.png`;
 
@@ -245,7 +282,25 @@ export const AddCardModal: React.FC<AddCardModalProps> = ({ isOpen, onClose, ini
       } else if (finalImageUrl && !finalImageUrl.includes('firebasestorage.googleapis.com')) {
         finalImageUrl = await downloadAndUploadImageToStorage(finalImageUrl, targetFilename);
       } else if (!finalImageUrl) {
-        finalImageUrl = `https://images.pokemontcg.io/${cleanSet}/${cleanNum}.png`;
+        const dynamicUrl = await resolveDynamicCardImage({
+          id: '',
+          name_pt: namePt.trim() || nameEn.trim(),
+          name_en: nameEn.trim() || namePt.trim(),
+          set_code: resolvedSet.code,
+          set_pt: resolvedSet.namePt,
+          set_en: resolvedSet.nameEn,
+          card_number: cardNumber.trim() || '1'
+        });
+
+        if (dynamicUrl) {
+          try {
+            finalImageUrl = await downloadAndUploadImageToStorage(dynamicUrl, targetFilename);
+          } catch (_) {
+            finalImageUrl = dynamicUrl;
+          }
+        } else {
+          finalImageUrl = `https://images.pokemontcg.io/${cleanSet}/${cleanNum}.png`;
+        }
       }
     } catch (err) {
       console.warn('Storage upload warning, using fallback URL:', err);
@@ -256,11 +311,11 @@ export const AddCardModal: React.FC<AddCardModalProps> = ({ isOpen, onClose, ini
     const added = addNewCard({
       name_en: nameEn.trim() || namePt.trim(),
       name_pt: namePt.trim() || nameEn.trim(),
-      set_code: setCode.trim().toUpperCase(),
-      set_en: setEn.trim(),
-      set_pt: setEn.trim(),
+      set_code: resolvedSet.code,
+      set_en: resolvedSet.nameEn,
+      set_pt: resolvedSet.namePt,
       card_number: cardNumber.trim() || '1',
-      total_in_set: totalInSet.trim() || '100',
+      total_in_set: totalInSet.trim() || resolvedSet.officialTotal || '100',
       color_code: colorCode,
       card_category: colorCode === '' ? 'Trainer' : colorCode === 'E' ? 'Energy' : 'Pokémon',
       rarity_code: rarityCode,
@@ -562,11 +617,31 @@ export const AddCardModal: React.FC<AddCardModalProps> = ({ isOpen, onClose, ini
                   <input
                     type="text"
                     required
+                    list="sets-catalog-datalist"
                     value={setCode}
-                    onChange={(e) => setSetCode(e.target.value)}
+                    onChange={(e) => {
+                      const val = e.target.value;
+                      setSetCode(val);
+                      const matched = allSetsList.find(
+                        s => s.code.toUpperCase() === val.trim().toUpperCase() || s.namePt.toLowerCase() === val.trim().toLowerCase()
+                      );
+                      if (matched) {
+                        setSetEn(matched.namePt);
+                        if (matched.officialCards) {
+                          setTotalInSet(String(matched.officialCards));
+                        }
+                      }
+                    }}
                     placeholder={t('addCard.setCodePlaceholder')}
                     className="w-full bg-pokedex-darker border border-slate-800 rounded-xl p-2.5 text-white focus:outline-none focus:border-pokedex-blue text-xs uppercase"
                   />
+                  <datalist id="sets-catalog-datalist">
+                    {allSetsList.map(s => (
+                      <option key={s.code} value={s.code}>
+                        {s.year ? `${s.year} - ` : ''}{s.code} - {s.namePt}
+                      </option>
+                    ))}
+                  </datalist>
                 </div>
 
                 <div>

@@ -75,15 +75,44 @@ function calculateRegulationMark(year: number): string | null {
 }
 
 /**
- * Fetches all official Pokémon TCG sets from the TCGdex API in Portuguese,
+ * Fetches all official Pokémon TCG sets from the TCGdex API in Portuguese (with English fallback/names),
  * enriched with series metadata, release years, and regulation marks.
  */
 export async function fetchSetsFromTCGdex(): Promise<SyncedSetItem[]> {
-  const setsRes = await fetch('https://api.tcgdex.net/v2/pt/sets');
-  if (!setsRes.ok) {
-    throw new Error(`Failed to fetch sets from TCGdex: ${setsRes.statusText}`);
+  const [ptSetsRes, enSetsRes] = await Promise.all([
+    fetch('https://api.tcgdex.net/v2/pt/sets').catch(() => null),
+    fetch('https://api.tcgdex.net/v2/en/sets').catch(() => null)
+  ]);
+
+  if (!ptSetsRes?.ok && !enSetsRes?.ok) {
+    throw new Error('Failed to fetch sets from TCGdex');
   }
-  const rawSets: any[] = await setsRes.json();
+
+  const rawPtSets: any[] = ptSetsRes?.ok ? await ptSetsRes.json() : [];
+  const rawEnSets: any[] = enSetsRes?.ok ? await enSetsRes.json() : [];
+
+  const enNameById: Record<string, string> = {};
+  for (const enSet of rawEnSets) {
+    if (enSet?.id && enSet?.name) {
+      enNameById[String(enSet.id).toLowerCase()] = String(enSet.name).trim();
+    }
+  }
+
+  // Merge PT sets with any EN-only sets not yet listed in PT
+  const seenSetIds = new Set<string>();
+  const rawSets: any[] = [];
+  for (const s of rawPtSets) {
+    if (s?.id) {
+      seenSetIds.add(String(s.id).toLowerCase());
+      rawSets.push(s);
+    }
+  }
+  for (const s of rawEnSets) {
+    if (s?.id && !seenSetIds.has(String(s.id).toLowerCase())) {
+      seenSetIds.add(String(s.id).toLowerCase());
+      rawSets.push(s);
+    }
+  }
 
   // Also query series 'me' and 'sv' to get release dates of recent sets
   const releaseDatesMap: Record<string, string> = {};
@@ -113,7 +142,8 @@ export async function fetchSetsFromTCGdex(): Promise<SyncedSetItem[]> {
   for (const raw of rawSets) {
     const idLower = (raw.id || '').toLowerCase();
     const code = KNOWN_ID_TO_CODE[idLower] || raw.id.toUpperCase();
-    const namePt = (raw.name || code).trim();
+    const namePt = (SET_OFFICIAL_NAMES_PT[code] || raw.name || code).trim();
+    const nameEn = enNameById[idLower] || raw.name || namePt;
     
     // Resolve release date & year
     const releaseDate = releaseDatesMap[idLower] || raw.releaseDate || '';
@@ -127,7 +157,7 @@ export async function fetchSetsFromTCGdex(): Promise<SyncedSetItem[]> {
     }
 
     if (!year) {
-      year = getSetReleaseYear(code, namePt) || 0;
+      year = getSetReleaseYear(code, namePt) || new Date().getFullYear();
     }
 
     // Resolve regulation mark
@@ -142,6 +172,7 @@ export async function fetchSetsFromTCGdex(): Promise<SyncedSetItem[]> {
       id: raw.id,
       code,
       namePt,
+      nameEn,
       year,
       mark,
       symbolUrl: raw.symbol || undefined,
@@ -387,6 +418,28 @@ export async function loadAndApplySetsMetadata(): Promise<{
     }
   } catch (err) {
     console.warn('Error loading sets metadata from Firestore:', err);
+  }
+
+  // 3. Auto-discover new sets from TCGdex API if cache is missing, older than 6h, or missing recent sets (e.g. ME06)
+  const SIX_HOURS_MS = 6 * 60 * 60 * 1000;
+  const lastSyncTime = appliedPayload?.lastSyncedAt ? new Date(appliedPayload.lastSyncedAt).getTime() : 0;
+  const isStale = !lastSyncTime || isNaN(lastSyncTime) || (Date.now() - lastSyncTime > SIX_HOURS_MS);
+  const isMissingRecentSet = !appliedPayload?.sets?.['ME06'] && !appliedPayload?.sets?.['me06'];
+
+  if (!appliedPayload || isStale || isMissingRecentSet) {
+    try {
+      const freshSets = await fetchSetsFromTCGdex();
+      if (freshSets.length > 0) {
+        const freshPayload = buildPayloadFromSets(freshSets);
+        appliedPayload = freshPayload;
+        applyPayloadToMemory(freshPayload);
+        try {
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(freshPayload));
+        } catch (_) {}
+      }
+    } catch (err) {
+      console.warn('Auto-discovery of new TCGdex sets skipped:', err);
+    }
   }
 
   return {

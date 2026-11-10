@@ -92,10 +92,15 @@ export const CardDetailModal: React.FC<CardDetailModalProps> = ({ card, onClose,
     soundEffects.playClick();
     setIsSearchingScans(true);
     try {
-      const query = `${card.name_pt || card.name_en} ${card.card_number}`;
-      let results = await lookupCardOnline(query);
+      const cardLabel = card.name_pt || card.name_en;
+      const setHint = card.set_pt || card.set_code || '';
+      const queryWithSet = `${cardLabel} ${card.card_number} ${setHint}`.trim();
+      let results = await lookupCardOnline(queryWithSet);
       if (results.length === 0) {
-        results = await lookupCardOnline(card.name_pt || card.name_en);
+        results = await lookupCardOnline(`${cardLabel} ${card.card_number}`.trim());
+      }
+      if (results.length === 0) {
+        results = await lookupCardOnline(cardLabel);
       }
       setScanResults(results);
     } catch (e) {
@@ -108,10 +113,8 @@ export const CardDetailModal: React.FC<CardDetailModalProps> = ({ card, onClose,
   const handleApplyScan = async (scan: CardLookupResult) => {
     if (!card || isReadOnly) return;
     soundEffects.playScan();
-    // Normalize SVI to SV1 to maintain consistency with SV1 catalog & assets
-    const normalizedSetCode = scan.setCode === 'SVI' ? 'SV1' : (card.set_code || scan.setCode);
-    // Preserve existing Portuguese set name if available, don't overwrite with English setName from TCGdex
-    const setPt = card.set_pt || scan.setName;
+    const normalizedSetCode = scan.setCode === 'SVI' ? 'SV1' : (scan.setCode || card.set_code);
+    const setPt = scan.setName || card.set_pt;
     const cardNumber = scan.cardNumber || card.card_number;
     const targetFilename = `${normalizedSetCode.toLowerCase()}_${cardNumber}.png`;
 
