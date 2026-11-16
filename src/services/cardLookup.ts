@@ -1,6 +1,7 @@
 import type { Card } from '../types';
 import { getSetReleaseYear, SET_OFFICIAL_NAMES_PT } from '../utils/setMetadata';
 import { ensureSetInCatalog, getCachedSetsList } from './tcgSetsService';
+import nationalPokemonList from '../data/pokemon_national.json';
 
 export interface CardLookupResult {
   id: string;
@@ -18,6 +19,7 @@ export interface CardLookupResult {
   imageUrl: string;
   hp?: number;
   types?: string[];
+  isPromo?: boolean;
 }
 
 export interface ParsedQuery {
@@ -25,6 +27,12 @@ export interface ParsedQuery {
   number?: string;
   total?: string;
   setHint?: string;
+  isPromo?: boolean;
+}
+
+export interface LookupCardOptions {
+  isPromo?: boolean;
+  promoSet?: string;
 }
 
 const SET_ID_TO_CODE: Record<string, string> = {
@@ -47,6 +55,19 @@ const SET_ID_TO_CODE: Record<string, string> = {
   'me10': 'ME10',
   'mee': 'MEE',
   'mep': 'MEP',
+
+  // Promo Sets
+  'svp': 'SVP',
+  'swshp': 'SWSHP',
+  'smp': 'SMP',
+  'xyp': 'XYP',
+  'bwp': 'BWP',
+  'dpp': 'DPP',
+  'hgssp': 'HGSSP',
+  'np': 'NP',
+  'basep': 'PR',
+  'miscp': 'MISCP',
+  'sve': 'SVE',
 
   // Scarlet & Violet & SWSH
   'swsh10.5': 'PGO',
@@ -149,7 +170,11 @@ const RARITY_MAP: Record<string, string> = {
   'secret rare': 'S',
   'rara futurista': '30th',
   'futuristic rare': '30th',
-  'futuristic': '30th'
+  'futuristic': '30th',
+  'promo': 'R',
+  'promocional': 'R',
+  'promo rare': 'R',
+  'black star promo': 'R'
 };
 
 const TYPE_MAP: Record<string, { code: string; name: string }> = {
@@ -295,6 +320,16 @@ function buildSetSearchEntries(extraSets?: Array<{ id: string; code: string; nam
   addEntry('me01', 'ME01', ['Megaevolução', 'Mega Evolution', 'ME01', 'ME1']);
   addEntry('30th', '30TH', ['Celebração de 30 Anos', '30 Anos', '30th']);
 
+  // Promo expansions aliases
+  addEntry('mep', 'MEP', ['Megaevolução Promos', 'Mega Evolution Promos', 'MEP Promos', 'MEP']);
+  addEntry('svp', 'SVP', ['Escarlate e Violeta Promos', 'Scarlet & Violet Promos', 'SVP Promos', 'SVP']);
+  addEntry('swshp', 'SWSHP', ['Espada e Escudo Promos', 'Sword & Shield Promos', 'SWSHP Promos', 'SWSHP']);
+  addEntry('smp', 'SMP', ['Sol e Lua Promos', 'Sun & Moon Promos', 'SMP Promos', 'SMP']);
+  addEntry('xyp', 'XYP', ['XY Promos', 'XY Black Star Promos', 'XYP Promos', 'XYP']);
+  addEntry('bwp', 'BWP', ['Preto e Branco Promos', 'Black & White Promos', 'BWP Promos', 'BWP']);
+  addEntry('dpp', 'DPP', ['Diamante e Pérola Promos', 'Diamond & Pearl Promos', 'DPP Promos', 'DPP']);
+  addEntry('basep', 'PR', ['Wizards Black Star Promos', 'Promo Antiga', 'BASEP', 'PR']);
+
   // 3. From getCachedSetsList() (includes dynamically synced TCGdex sets)
   for (const item of getCachedSetsList()) {
     const tcgdexId = SET_CODE_TO_TCGDEX_ID[item.code.toUpperCase()] || item.id.toLowerCase();
@@ -424,12 +459,27 @@ function extractSetHintFromQuery(
  * Parses user search query string into card name, card number, total in set, and set hint.
  */
 export function parseCardQuery(input: string, customEntries?: SetSearchEntry[]): ParsedQuery {
+  let isPromo = false;
+  let text = input.trim();
+
+  // 1. Detect and strip promo keywords so the Pokémon name is cleanly isolated
+  if (/\b(promo|promos|promocional|promocionais|black star|bsp)\b/i.test(text)) {
+    isPromo = true;
+    text = text.replace(/\b(promo|promos|promocional|promocionais|black star|bsp)\b/gi, ' ').replace(/\s+/g, ' ').trim();
+  }
+
   const entries = customEntries || buildSetSearchEntries();
-  const { cleanedInput, setHint } = extractSetHintFromQuery(input, entries);
+  const { cleanedInput, setHint } = extractSetHintFromQuery(text, entries);
+
+  // If setHint is a known promo collection, mark as promo
+  if (setHint && ['mep', 'svp', 'swshp', 'smp', 'xyp', 'bwp', 'dpp', 'basep', 'pr'].includes(setHint.toLowerCase())) {
+    isPromo = true;
+  }
+
   const trimmed = cleanedInput.trim();
 
   if (!trimmed) {
-    return { name: '', setHint };
+    return { name: '', setHint, isPromo };
   }
 
   // Only a number left (e.g. when query was "Reinado Delta 21" or "ME06 021/103")
@@ -439,7 +489,8 @@ export function parseCardQuery(input: string, customEntries?: SetSearchEntry[]):
       name: '',
       number: onlySlashNum[1],
       total: onlySlashNum[2],
-      setHint
+      setHint,
+      isPromo
     };
   }
   const onlyNum = trimmed.match(/^#?(\d+)$/);
@@ -447,7 +498,8 @@ export function parseCardQuery(input: string, customEntries?: SetSearchEntry[]):
     return {
       name: '',
       number: onlyNum[1],
-      setHint
+      setHint,
+      isPromo
     };
   }
 
@@ -458,7 +510,8 @@ export function parseCardQuery(input: string, customEntries?: SetSearchEntry[]):
       name: slashMatch[1].trim(),
       number: slashMatch[2].trim(),
       total: slashMatch[3].trim(),
-      setHint
+      setHint,
+      isPromo
     };
   }
 
@@ -469,7 +522,8 @@ export function parseCardQuery(input: string, customEntries?: SetSearchEntry[]):
       name: prefixSlashMatch[3].trim(),
       number: prefixSlashMatch[1].trim(),
       total: prefixSlashMatch[2].trim(),
-      setHint
+      setHint,
+      isPromo
     };
   }
 
@@ -479,11 +533,23 @@ export function parseCardQuery(input: string, customEntries?: SetSearchEntry[]):
     return {
       name: numberMatch[1].trim(),
       number: numberMatch[2].trim(),
-      setHint
+      setHint,
+      isPromo
     };
   }
 
-  return { name: trimmed, setHint };
+  // Format: "115 Spritzee"
+  const prefixNumMatch = trimmed.match(/^#?(\d+)\s+(.*?)$/i);
+  if (prefixNumMatch && prefixNumMatch[2].trim().length > 0) {
+    return {
+      name: prefixNumMatch[2].trim(),
+      number: prefixNumMatch[1].trim(),
+      setHint,
+      isPromo
+    };
+  }
+
+  return { name: trimmed, setHint, isPromo };
 }
 
 const COMMON_TYPOS: Record<string, string> = {
@@ -511,6 +577,14 @@ const COMMON_TYPOS: Record<string, string> = {
  */
 export function extractBestCardImageUrl(detail: any): string {
   if (!detail) return '';
+
+  // Tier 0: Direct full image URL already present (e.g. from pkmncards or custom promo image)
+  if (typeof detail.imageUrl === 'string' && detail.imageUrl.startsWith('http')) {
+    return detail.imageUrl;
+  }
+  if (typeof detail.image === 'string' && detail.image.startsWith('http') && (detail.image.endsWith('.jpg') || detail.image.endsWith('.png') || detail.image.endsWith('.webp'))) {
+    return detail.image;
+  }
 
   // Tier 1: Direct TCGdex asset scan
   if (detail.image) {
@@ -567,6 +641,21 @@ function getCandidateRecencyScore(cardId: string): number {
   }
   if (setPrefix.startsWith('30th')) {
     return 202605;
+  }
+  if (setPrefix === 'mep') {
+    return 202604;
+  }
+  if (setPrefix === 'svp') {
+    return 202490;
+  }
+  if (setPrefix === 'swshp') {
+    return 202290;
+  }
+  if (setPrefix === 'smp') {
+    return 201990;
+  }
+  if (setPrefix === 'xyp') {
+    return 201690;
   }
 
   // Direct SV series (sv10 > sv09 > sv08.5 > ...)
@@ -646,6 +735,16 @@ async function fetchCardDetailById(cardId: string, fallbackNumber?: string, fall
       setName = 'Celebração de 30 Anos';
     } else if (setIdLower === '30th-c' || setCode === '30TH-C') {
       setName = 'Coleção Clássica de 30 Anos';
+    } else if (setIdLower === 'mep' || setCode === 'MEP') {
+      setName = 'Megaevolução Promos';
+    } else if (setIdLower === 'svp' || setCode === 'SVP') {
+      setName = 'Escarlate e Violeta Promos';
+    } else if (setIdLower === 'swshp' || setCode === 'SWSHP') {
+      setName = 'Espada e Escudo Promos';
+    } else if (setIdLower === 'smp' || setCode === 'SMP') {
+      setName = 'Sol e Lua Promos';
+    } else if (setIdLower === 'xyp' || setCode === 'XYP') {
+      setName = 'XY Promos';
     }
 
     // Automatically register any newly discovered set in the app's set catalog
@@ -668,16 +767,26 @@ async function fetchCardDetailById(cardId: string, fallbackNumber?: string, fall
       colorName = typeInfo.name || 'Energy';
     }
 
-    const rarityLower = (detail.rarity || '').toLowerCase();
-    const rarityCode = RARITY_MAP[rarityLower] || 'C';
+    const isPromo = Boolean(
+      detail.isPromo ||
+      ['mep', 'svp', 'swshp', 'smp', 'xyp', 'bwp', 'dpp', 'basep', 'pr'].includes(setIdLower) ||
+      ['MEP', 'SVP', 'SWSHP', 'SMP', 'XYP', 'BWP', 'DPP', 'PR'].includes(setCode) ||
+      detail.rarity?.toLowerCase().includes('promo') ||
+      detail.variants?.wPromo
+    );
 
-    const totalOfficial = detail.set?.cardCount?.official
-      ? String(detail.set.cardCount.official)
-      : (fallbackTotal || '100');
+    const rarityLower = (detail.rarity || '').toLowerCase();
+    const rarityCode = isPromo && (!detail.rarity || RARITY_MAP[rarityLower] === 'C')
+      ? 'R'
+      : (RARITY_MAP[rarityLower] || 'C');
+
+    const totalOfficial = isPromo
+      ? 'Promo'
+      : (detail.set?.cardCount?.official ? String(detail.set.cardCount.official) : (fallbackTotal || '100'));
 
     const imageUrl = extractBestCardImageUrl(detail);
 
-    let rarityName = detail.rarity || 'Comum';
+    let rarityName = detail.rarity || (isPromo ? 'Promo' : 'Comum');
     if (rarityLower === 'futuristic rare') {
       rarityName = 'Rara Futurista';
     } else if (rarityLower === 'illustration rare') {
@@ -689,11 +798,13 @@ async function fetchCardDetailById(cardId: string, fallbackNumber?: string, fall
     } else if (rarityLower === 'ultra rare') {
       rarityName = 'Ultra Rara';
     } else if (rarityLower === 'common') {
-      rarityName = 'Comum';
+      rarityName = isPromo ? 'Promo' : 'Comum';
     } else if (rarityLower === 'uncommon') {
       rarityName = 'Incomum';
     } else if (rarityLower === 'rare') {
-      rarityName = 'Rara';
+      rarityName = isPromo ? 'Promo' : 'Rara';
+    } else if (isPromo && !detail.rarity) {
+      rarityName = 'Promo';
     }
 
     return {
@@ -711,7 +822,8 @@ async function fetchCardDetailById(cardId: string, fallbackNumber?: string, fall
       rarityName,
       imageUrl,
       hp: detail.hp,
-      types: detail.types
+      types: detail.types,
+      isPromo
     };
   } catch (err) {
     console.warn('Error fetching card detail for', cardId, err);
@@ -719,19 +831,163 @@ async function fetchCardDetailById(cardId: string, fallbackNumber?: string, fall
   }
 }
 
+const promoSetCardsCache = new Map<string, any[]>();
+
+/**
+ * Retrieves and caches the card list for a promotional expansion from TCGdex.
+ */
+async function getPromoSetCards(setId: string): Promise<any[]> {
+  const cleanId = setId.toLowerCase().trim();
+  if (promoSetCardsCache.has(cleanId)) {
+    return promoSetCardsCache.get(cleanId)!;
+  }
+  try {
+    const [ptRes, enRes] = await Promise.all([
+      fetch(`https://api.tcgdex.net/v2/pt/sets/${encodeURIComponent(cleanId)}`).catch(() => null),
+      fetch(`https://api.tcgdex.net/v2/en/sets/${encodeURIComponent(cleanId)}`).catch(() => null)
+    ]);
+    const setData = (ptRes?.ok ? await ptRes.json().catch(() => null) : null) ||
+                    (enRes?.ok ? await enRes.json().catch(() => null) : null);
+    const cards = Array.isArray(setData?.cards) ? setData.cards : [];
+    promoSetCardsCache.set(cleanId, cards);
+    return cards;
+  } catch (_) {
+    return [];
+  }
+}
+
+/**
+ * Synthesizes a promotional card (e.g. Spritzee 115 MEP, or brand-new blister / booster promos)
+ * when a promo card has not yet been indexed in TCGdex or when searched by number.
+ */
+function synthesizePromoCard(
+  name: string,
+  number: string,
+  preferredPromoSet?: string
+): CardLookupResult | null {
+  if (!name && !number) return null;
+  const cleanNum = (number || '1').replace(/^0+/, '') || '1';
+  const normName = stripAccents((COMMON_TYPOS[name.toLowerCase()] || name).toLowerCase().trim());
+
+  // Look up Pokémon in national dex dataset
+  const natPoke = nationalPokemonList.find(p => {
+    const pName = stripAccents((p.name || '').toLowerCase());
+    return pName === normName || pName.includes(normName) || normName.includes(pName);
+  });
+
+  const resolvedName = natPoke ? natPoke.name : (name || `Promo #${cleanNum}`);
+  const ptName = translateNameToPt(resolvedName);
+
+  // Preferred promo set
+  let targetSetId = (preferredPromoSet || '').toLowerCase();
+  if (!targetSetId || targetSetId === 'auto') {
+    targetSetId = 'mep';
+  }
+
+  const setCode = SET_ID_TO_CODE[targetSetId] || targetSetId.toUpperCase();
+  const setName = SET_OFFICIAL_NAMES_PT[setCode] || 'Megaevolução Promos';
+
+  // Determine type and energy color
+  let colorCode = 'C';
+  let colorName = 'Colorless';
+  let types: string[] = [];
+
+  if (natPoke && Array.isArray(natPoke.types) && natPoke.types.length > 0) {
+    const primaryType = natPoke.types[0].toLowerCase();
+    if (primaryType === 'fairy') {
+      // In modern Pokémon TCG, Fairy cards are printed with Psychic type
+      colorCode = 'P';
+      colorName = 'Psychic';
+      types = ['Psychic'];
+    } else {
+      const tInfo = TYPE_MAP[primaryType];
+      if (tInfo) {
+        colorCode = tInfo.code;
+        colorName = tInfo.name;
+        types = [tInfo.name];
+      }
+    }
+  }
+
+  // Determine high-resolution image URL
+  let imageUrl = '';
+  if (setCode === 'MEP' || targetSetId === 'mep') {
+    imageUrl = `https://pkmncards.com/wp-content/uploads/mebsp_en_${cleanNum}_std.jpg`;
+  } else if (setCode === 'SVP' || targetSetId === 'svp') {
+    imageUrl = `https://assets.tcgdex.net/en/sv/svp/${cleanNum.padStart(3, '0')}/high.png`;
+  } else if (setCode === 'SWSHP' || targetSetId === 'swshp') {
+    imageUrl = `https://assets.tcgdex.net/en/swsh/swshp/SWSH${cleanNum.padStart(3, '0')}/high.png`;
+  } else if (natPoke?.artwork_url) {
+    imageUrl = natPoke.artwork_url;
+  }
+
+  return {
+    id: `${targetSetId}-${cleanNum}`,
+    namePt: ptName,
+    nameEn: resolvedName,
+    setCode,
+    setName,
+    cardNumber: cleanNum,
+    totalInSet: 'Promo',
+    category: 'Pokémon',
+    colorCode,
+    colorName,
+    rarityCode: 'R',
+    rarityName: 'Promo',
+    imageUrl,
+    hp: 70,
+    types,
+    isPromo: true
+  };
+}
+
 /**
  * Queries TCGdex API (Portuguese first, merged with English fallback, plus direct set lookup)
- * to retrieve and format card candidates, automatically discovering new expansions like Reinado Delta (ME06).
+ * to retrieve and format card candidates, automatically discovering new expansions like Reinado Delta (ME06)
+ * and promotional sets (MEP, SVP, SWSHP, SMP, XYP).
  */
-export async function lookupCardOnline(query: string): Promise<CardLookupResult[]> {
+export async function lookupCardOnline(query: string, options?: LookupCardOptions): Promise<CardLookupResult[]> {
   const liveEntries = await getLiveSetSearchEntries();
   const parsed = parseCardQuery(query, liveEntries);
 
-  if (!parsed.name && !parsed.setHint) return [];
+  const isPromoMode = Boolean(options?.isPromo || parsed.isPromo);
+  if (options?.promoSet) {
+    parsed.setHint = options.promoSet;
+  }
+
+  if (!parsed.name && !parsed.setHint && !parsed.number) return [];
 
   try {
     const seenIds = new Set<string>();
     const candidatesList: any[] = [];
+
+    // Case 0: If Promo Mode is active (either via options or detected in query),
+    // target promo expansions directly so promo cards are prioritized and found easily!
+    if (isPromoMode) {
+      const targetPromoSets = options?.promoSet
+        ? [options.promoSet]
+        : (parsed.setHint && ['mep', 'svp', 'swshp', 'smp', 'xyp', 'bwp', 'dpp', 'basep', 'pr'].includes(parsed.setHint.toLowerCase())
+            ? [parsed.setHint]
+            : ['mep', 'svp', 'swshp', 'smp', 'xyp']);
+
+      for (const pSet of targetPromoSets) {
+        const promoCards = await getPromoSetCards(pSet);
+        if (promoCards.length > 0) {
+          const searchNameNorm = stripAccents((COMMON_TYPOS[parsed.name.toLowerCase()] || parsed.name).toLowerCase().trim());
+          for (const c of promoCards) {
+            if (!c?.id) continue;
+            const cardNameNorm = stripAccents(String(c.name || '').toLowerCase());
+            const matchesName = !searchNameNorm || cardNameNorm.includes(searchNameNorm);
+            const matchesNum = !parsed.number || (c.localId && (c.localId === parsed.number || c.localId.replace(/^0+/, '') === parsed.number.replace(/^0+/, '')));
+            const shouldInclude = searchNameNorm ? (matchesName && matchesNum) : matchesNum;
+            if (shouldInclude && !seenIds.has(c.id)) {
+              candidatesList.push(c);
+              seenIds.add(c.id);
+            }
+          }
+        }
+      }
+    }
 
     // Case 1: If a setHint was detected (e.g., "Reinado Delta", "ME06", "Magmortar Reinado Delta"),
     // fetch that set's card list directly so even brand-new sets or set-only searches work reliably!
@@ -802,9 +1058,18 @@ export async function lookupCardOnline(query: string): Promise<CardLookupResult[
       }
     }
 
+    // If candidates list is empty but promo mode is on with name and number (e.g. Spritzee 115 MEP)
+    if (candidatesList.length === 0 && isPromoMode && parsed.name && parsed.number) {
+      const synth = synthesizePromoCard(parsed.name, parsed.number, options?.promoSet || parsed.setHint);
+      if (synth) {
+        return [synth];
+      }
+      return [];
+    }
+
     if (candidatesList.length === 0) return [];
 
-    // Sort all candidates by recency (newest sets like ME06 Reinado Delta first!)
+    // Sort all candidates by recency (newest sets like ME06 Reinado Delta, MEP, SVP first!)
     candidatesList.sort((a, b) => getCandidateRecencyScore(b.id) - getCandidateRecencyScore(a.id));
 
     let filtered = candidatesList;
@@ -828,8 +1093,7 @@ export async function lookupCardOnline(query: string): Promise<CardLookupResult[
       });
 
       if (exactNumMatches.length > 0) {
-        // Keep ALL exact number matches (sorted newest sets first!) — never discard cards
-        // whose brief object lacks `c.image` because new sets (like ME06) store scans in `detail.thirdParty.tcgplayer`.
+        // Keep ALL exact number matches (sorted newest sets first!)
         const otherMatches = filtered.filter(c => !exactNumMatches.includes(c));
         filtered = [...exactNumMatches, ...otherMatches];
       } else {
@@ -852,6 +1116,33 @@ export async function lookupCardOnline(query: string): Promise<CardLookupResult[
     );
 
     const validResults = detailedResults.filter((r): r is CardLookupResult => r !== null);
+
+    // If promo mode is active and an exact promo card with the target number and name wasn't found in TCGdex
+    // (such as Spritzee 115 from MEP), synthesize the promo card and place it at the front!
+    if (isPromoMode && parsed.name && parsed.number) {
+      const cleanTargetNum = parsed.number.replace(/^0+/, '');
+      const searchNameNorm = stripAccents((COMMON_TYPOS[parsed.name.toLowerCase()] || parsed.name).toLowerCase().trim());
+      const hasExactPromoMatch = validResults.some(r =>
+        r.isPromo &&
+        r.cardNumber.replace(/^0+/, '') === cleanTargetNum &&
+        (stripAccents((r.namePt || '').toLowerCase()).includes(searchNameNorm) || stripAccents((r.nameEn || '').toLowerCase()).includes(searchNameNorm))
+      );
+      if (!hasExactPromoMatch) {
+        const synth = synthesizePromoCard(parsed.name, parsed.number, options?.promoSet || parsed.setHint);
+        if (synth) {
+          validResults.unshift(synth);
+        }
+      }
+    }
+
+    // If promo mode is active, prioritize all promo cards
+    if (isPromoMode) {
+      validResults.sort((a, b) => {
+        const aPromo = a.isPromo || a.setCode.endsWith('P') ? 1 : 0;
+        const bPromo = b.isPromo || b.setCode.endsWith('P') ? 1 : 0;
+        return bPromo - aPromo;
+      });
+    }
 
     // If totalInSet was specified in query (e.g. "Magmortar 21/103"), prioritize exact totalInSet matches
     if (parsed.total) {
@@ -946,6 +1237,13 @@ export async function resolveDynamicCardImage(card: Pick<Card, 'id' | 'name_pt' 
             return res.imageUrl;
           }
         }
+      }
+
+      // 2.1 For MEP promos not yet indexed on TCGdex, use official pkmncards high-res scan
+      if (cleanSet === 'MEP' || tcgdexSetId === 'mep') {
+        const mepUrl = `https://pkmncards.com/wp-content/uploads/mebsp_en_${unpaddedNum}_std.jpg`;
+        saveCachedDynamicImage(cacheKey, mepUrl);
+        return mepUrl;
       }
 
       // 3. Fallback: search by card name + number (+ set hint if known)

@@ -82,6 +82,8 @@ export const AddCardModal: React.FC<AddCardModalProps> = ({ isOpen, onClose, ini
   // Smart Autofill Search State
   const [quickQuery, setQuickQuery] = useState('');
   const [isSearchingCard, setIsSearchingCard] = useState(false);
+  const [isPromoSearch, setIsPromoSearch] = useState(false);
+  const [promoSetFilter, setPromoSetFilter] = useState('');
   const [searchCandidates, setSearchCandidates] = useState<CardLookupResult[]>([]);
   const [searchError, setSearchError] = useState('');
   const [searchSuccess, setSearchSuccess] = useState('');
@@ -110,6 +112,8 @@ export const AddCardModal: React.FC<AddCardModalProps> = ({ isOpen, onClose, ini
     setImageFile(null);
     setImagePreview(null);
     setQuickQuery('');
+    setIsPromoSearch(false);
+    setPromoSetFilter('');
     setSearchCandidates([]);
     setSearchError('');
     setSearchSuccess('');
@@ -138,6 +142,7 @@ export const AddCardModal: React.FC<AddCardModalProps> = ({ isOpen, onClose, ini
     const finalImage = c.imageUrl || fallbackImage;
 
     const normalizedColor = c.colorCode === 'N' ? 'O' : c.colorCode === 'T' ? '' : (c.colorCode ?? 'C');
+    const isCandidatePromo = Boolean(c.isPromo || c.setCode.endsWith('P') || c.rarityName?.toLowerCase().includes('promo'));
 
     const added = addNewCard({
       name_en: c.nameEn || c.namePt,
@@ -146,13 +151,13 @@ export const AddCardModal: React.FC<AddCardModalProps> = ({ isOpen, onClose, ini
       set_en: c.setName,
       set_pt: c.setName,
       card_number: cleanNum,
-      total_in_set: c.totalInSet || '100',
+      total_in_set: isCandidatePromo ? 'Promo' : (c.totalInSet || '100'),
       color_code: normalizedColor,
       card_category: c.category,
-      rarity_code: c.rarityCode || 'C',
+      rarity_code: c.rarityCode || (isCandidatePromo ? 'R' : 'C'),
       quantity: 1,
       quality: 'NM',
-      is_foil: false,
+      is_foil: isCandidatePromo ? true : false,
       image_url: finalImage,
       comment: ''
     });
@@ -178,7 +183,10 @@ export const AddCardModal: React.FC<AddCardModalProps> = ({ isOpen, onClose, ini
     setSearchCandidates([]);
 
     try {
-      const results = await lookupCardOnline(quickQuery);
+      const results = await lookupCardOnline(quickQuery, {
+        isPromo: isPromoSearch,
+        promoSet: promoSetFilter || undefined
+      });
       if (results.length === 0) {
         setSearchError(t('addCard.quickSearchNotFound', { query: quickQuery }));
       } else if (results.length === 1) {
@@ -205,6 +213,9 @@ export const AddCardModal: React.FC<AddCardModalProps> = ({ isOpen, onClose, ini
     const normalizedCandidateColor = candidate.colorCode === 'N' ? 'O' : candidate.colorCode === 'T' ? '' : candidate.colorCode;
     setColorCode(normalizedCandidateColor);
     setRarityCode(candidate.rarityCode);
+    if (candidate.isPromo || candidate.setCode.endsWith('P') || candidate.rarityName?.toLowerCase().includes('promo')) {
+      setIsFoil(true);
+    }
     setImageUrl(candidate.imageUrl || '');
     setImagePreview(candidate.imageUrl || null);
     setSearchCandidates([]);
@@ -499,16 +510,58 @@ export const AddCardModal: React.FC<AddCardModalProps> = ({ isOpen, onClose, ini
                     <input
                       type="text"
                       value={quickQuery}
-                      onChange={(e) => setQuickQuery(e.target.value)}
+                      onChange={(e) => {
+                        const val = e.target.value;
+                        setQuickQuery(val);
+                        if (/\b(promo|promos|promocional|mep|svp|swshp|smp|xyp)\b/i.test(val) && !isPromoSearch) {
+                          setIsPromoSearch(true);
+                        }
+                      }}
                       onKeyDown={(e) => {
                         if (e.key === 'Enter') {
                           e.preventDefault();
                           handleQuickSearch();
                         }
                       }}
-                      placeholder={t('addCard.quickSearchPlaceholder')}
+                      placeholder={isPromoSearch ? t('addCard.quickSearchPromoPlaceholder') : t('addCard.quickSearchPlaceholder')}
                       className="w-full bg-black/60 border border-slate-700 rounded-xl pl-9 pr-3 py-2.5 text-white focus:outline-none focus:border-yellow-400 text-xs font-sans placeholder-slate-500"
                     />
+                  </div>
+
+                  {/* Promo Card Toggle & Set Selector */}
+                  <div className="flex items-center justify-between gap-2 pt-0.5 flex-wrap">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        soundEffects.playClick();
+                        setIsPromoSearch(!isPromoSearch);
+                      }}
+                      className={`px-3 py-1.5 rounded-xl text-[11px] font-mono font-bold flex items-center gap-1.5 transition-all border ${
+                        isPromoSearch
+                          ? 'bg-amber-400 text-slate-950 border-amber-300 shadow-[0_0_12px_rgba(251,191,36,0.35)]'
+                          : 'bg-slate-800/80 text-slate-300 border-slate-700 hover:border-slate-500 hover:text-white'
+                      }`}
+                    >
+                      <Sparkles className={`w-3.5 h-3.5 ${isPromoSearch ? 'text-slate-950 fill-slate-950' : 'text-amber-400'}`} />
+                      <span>{t('addCard.isPromoSearch')}</span>
+                    </button>
+
+                    {isPromoSearch && (
+                      <div className="flex items-center gap-1.5 animate-in fade-in">
+                        <select
+                          value={promoSetFilter}
+                          onChange={(e) => setPromoSetFilter(e.target.value)}
+                          className="bg-slate-800 border border-amber-400/50 text-amber-200 rounded-xl px-2.5 py-1 text-[10px] font-mono focus:outline-none focus:border-amber-400 cursor-pointer"
+                        >
+                          <option value="">{t('addCard.promoSetAll')}</option>
+                          <option value="mep">MEP (Megaevolução)</option>
+                          <option value="svp">SVP (Escarlate e Violeta)</option>
+                          <option value="swshp">SWSHP (Espada e Escudo)</option>
+                          <option value="smp">SMP (Sol e Lua)</option>
+                          <option value="xyp">XYP (XY)</option>
+                        </select>
+                      </div>
+                    )}
                   </div>
 
                   <button
@@ -553,34 +606,44 @@ export const AddCardModal: React.FC<AddCardModalProps> = ({ isOpen, onClose, ini
                       {t('addCard.quickSearchSelectPrompt', { count: searchCandidates.length })}
                     </span>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-1.5 max-h-52 overflow-y-auto pr-1 no-scrollbar">
-                      {searchCandidates.map((c) => (
-                        <div
-                          key={c.id}
-                          onClick={() => applyCardCandidate(c)}
-                          className="flex items-center justify-between gap-2 p-2 rounded-xl bg-slate-800/90 hover:bg-slate-700 text-left border border-slate-700 hover:border-yellow-400/60 transition-all cursor-pointer group"
-                        >
-                          <div className="flex items-center gap-2 min-w-0 flex-1">
-                            {c.imageUrl && (
-                              <img src={c.imageUrl} alt="" className="w-8 h-11 object-cover rounded shrink-0 border border-slate-600 shadow" />
-                            )}
-                            <div className="min-w-0 flex-1">
-                              <span className="font-bold text-white text-[11px] truncate block">{c.namePt || c.nameEn}</span>
-                              <span className="text-[9px] text-slate-300 font-mono block">{c.setName} ({c.setCode} #{c.cardNumber})</span>
-                              <span className="text-[8px] text-yellow-400/80 font-mono block">{c.rarityName} • {c.category}</span>
-                            </div>
-                          </div>
-
-                          <button
-                            type="button"
-                            onClick={(e) => handleAddCandidateDirectly(c, e)}
-                            className="bg-yellow-400 hover:bg-yellow-300 text-slate-950 font-bold px-2 py-1 rounded-lg text-[10px] font-mono shrink-0 active:scale-95 transition-all shadow flex items-center gap-1"
-                            title="Adicionar carta e limpar busca"
+                      {searchCandidates.map((c) => {
+                        const isPromoCard = Boolean(c.isPromo || c.setCode.endsWith('P') || c.rarityName?.toLowerCase().includes('promo'));
+                        return (
+                          <div
+                            key={c.id}
+                            onClick={() => applyCardCandidate(c)}
+                            className="flex items-center justify-between gap-2 p-2 rounded-xl bg-slate-800/90 hover:bg-slate-700 text-left border border-slate-700 hover:border-yellow-400/60 transition-all cursor-pointer group"
                           >
-                            <Plus className="w-3 h-3" />
-                            <span>{t('cardDetail.addBtn')}</span>
-                          </button>
-                        </div>
-                      ))}
+                            <div className="flex items-center gap-2 min-w-0 flex-1">
+                              {c.imageUrl && (
+                                <img src={c.imageUrl} alt="" className="w-8 h-11 object-cover rounded shrink-0 border border-slate-600 shadow" />
+                              )}
+                              <div className="min-w-0 flex-1">
+                                <div className="flex items-center gap-1.5 flex-wrap">
+                                  <span className="font-bold text-white text-[11px] truncate block">{c.namePt || c.nameEn}</span>
+                                  {isPromoCard && (
+                                    <span className="px-1.5 py-0.2 rounded bg-amber-400/20 text-amber-300 border border-amber-400/50 text-[8px] font-mono font-bold">
+                                      {t('addCard.promoBadge')}
+                                    </span>
+                                  )}
+                                </div>
+                                <span className="text-[9px] text-slate-300 font-mono block">{c.setName} ({c.setCode} #{c.cardNumber})</span>
+                                <span className="text-[8px] text-yellow-400/80 font-mono block">{c.rarityName} • {c.category}</span>
+                              </div>
+                            </div>
+
+                            <button
+                              type="button"
+                              onClick={(e) => handleAddCandidateDirectly(c, e)}
+                              className="bg-yellow-400 hover:bg-yellow-300 text-slate-950 font-bold px-2 py-1 rounded-lg text-[10px] font-mono shrink-0 active:scale-95 transition-all shadow flex items-center gap-1"
+                              title="Adicionar carta e limpar busca"
+                            >
+                              <Plus className="w-3 h-3" />
+                              <span>{t('cardDetail.addBtn')}</span>
+                            </button>
+                          </div>
+                        );
+                      })}
                     </div>
                   </div>
                 )}
