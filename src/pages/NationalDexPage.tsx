@@ -635,94 +635,106 @@ export const NationalDexPage: React.FC<NationalDexPageProps> = ({ onNavigateToDe
 
       {/* Active Generation Stats Dedicated Banner (Prominent generation breakdown) */}
       {selectedGen !== 'all' && activeGenMeta && (
-        <div className="bg-gradient-to-r from-slate-900/95 via-pokedex-card to-slate-900/95 border border-pokedex-blue/40 rounded-2xl p-4 shadow-xl space-y-3 animate-in fade-in slide-in-from-top-2 duration-300">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-800/80 pb-2.5">
-            <div className="flex items-center gap-2.5">
-              <span className="px-2.5 py-1 rounded-xl bg-pokedex-blue/20 text-pokedex-blue border border-pokedex-blue/40 text-xs font-mono font-black tracking-wider uppercase">
+        <div className="bg-gradient-to-br from-slate-900/95 via-pokedex-card/95 to-slate-900/95 border border-pokedex-blue/40 rounded-2xl p-3 sm:p-4 shadow-xl space-y-3 animate-in fade-in slide-in-from-top-2 duration-300 overflow-hidden">
+          {/* Header Row: Gen Badge, Region, Range & Clear Button */}
+          <div className="flex items-center justify-between gap-2 border-b border-slate-800/80 pb-2.5">
+            <div className="flex items-center gap-2 min-w-0">
+              <span className="px-2 py-0.5 rounded-lg bg-pokedex-blue/20 text-pokedex-blue border border-pokedex-blue/40 text-[11px] font-mono font-black shrink-0">
                 Gen {selectedGen}
               </span>
-              <div>
-                <h3 className="text-sm sm:text-base font-bold font-display text-white flex items-center gap-2">
-                  <span>{t('nationalDex.genBannerTitle', { gen: selectedGen, region: activeStats.region })}</span>
-                  <span className="text-xs font-mono text-slate-400 font-normal">({activeStats.range})</span>
-                </h3>
+              <div className="flex items-center gap-1.5 min-w-0 truncate">
+                <span className="text-xs sm:text-sm font-bold font-display text-white truncate">
+                  {activeStats.region}
+                </span>
+                <span className="text-[10px] sm:text-xs font-mono text-slate-400 shrink-0">
+                  {activeStats.range}
+                </span>
               </div>
             </div>
+
             <button
               type="button"
               onClick={() => {
                 soundEffects.playClick();
                 setSelectedGen('all');
               }}
-              className="text-[11px] font-mono text-slate-400 hover:text-white flex items-center gap-1 self-start sm:self-auto hover:underline transition-colors cursor-pointer"
+              className="text-[11px] font-mono text-slate-400 hover:text-white bg-slate-800/80 hover:bg-slate-700 px-2 sm:px-2.5 py-1 rounded-lg border border-slate-700/80 flex items-center gap-1 transition-colors shrink-0 cursor-pointer"
             >
               <X className="w-3.5 h-3.5" />
-              <span>{t('nationalDex.clearGenFilter')}</span>
+              <span className="hidden xs:inline sm:inline">{t('nationalDex.clearGenFilter')}</span>
             </button>
           </div>
 
-          {/* Generation KPIs with Interactive Quick Toggles */}
-          <div className="grid grid-cols-3 gap-2 sm:gap-3 text-center">
-            {/* Gen Owned button */}
+          {/* 3 Metric Cards: Clean vertical stacked layout that never overflows */}
+          <div className="grid grid-cols-3 gap-2 sm:gap-3">
+            {/* 1. Obtained */}
             <button
               type="button"
               onClick={() => {
                 soundEffects.playClick();
                 setOwnershipFilter(ownershipFilter === 'owned' ? 'all' : 'owned');
               }}
-              className={`rounded-xl p-2.5 border transition-all flex flex-col items-center justify-center text-center cursor-pointer ${
+              className={`rounded-xl p-2 sm:p-2.5 border transition-all flex flex-col items-center justify-center text-center cursor-pointer min-w-0 overflow-hidden ${
                 ownershipFilter === 'owned'
                   ? 'bg-emerald-950/80 border-emerald-400 shadow-md ring-1 ring-emerald-400/50'
-                  : 'bg-slate-950/70 border-emerald-500/30 hover:border-emerald-500/60'
+                  : 'bg-slate-950/70 border-emerald-500/20 hover:border-emerald-500/50'
               }`}
             >
-              <span className="text-[10px] font-mono text-slate-400 uppercase tracking-wider block">
-                {t('nationalDex.obtained')}
+              <span className="text-[9px] sm:text-[10px] font-mono text-slate-400 uppercase tracking-wider block truncate w-full">
+                {t('nationalDex.obtainedShort')}
               </span>
-              <span className="text-base sm:text-xl font-black font-display text-emerald-400 flex items-center gap-1">
-                <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0 inline" />
-                <span>{activeStats.ownedCount}</span>
-                <small className="text-[11px] font-normal text-slate-400">/ {activeStats.totalCount}</small>
-              </span>
+              <div className="flex items-baseline justify-center gap-0.5 mt-0.5 min-w-0">
+                <span className="text-base sm:text-xl font-black font-display text-emerald-400 leading-none">
+                  {activeStats.ownedCount}
+                </span>
+                <span className="text-[10px] sm:text-xs font-mono text-slate-400 font-normal">
+                  /{activeStats.totalCount}
+                </span>
+              </div>
             </button>
 
-            {/* Gen Missing button */}
+            {/* 2. Missing */}
             <button
               type="button"
               onClick={() => {
                 soundEffects.playClick();
                 setOwnershipFilter(ownershipFilter === 'missing' ? 'all' : 'missing');
               }}
-              className={`rounded-xl p-2.5 border transition-all flex flex-col items-center justify-center text-center cursor-pointer ${
+              className={`rounded-xl p-2 sm:p-2.5 border transition-all flex flex-col items-center justify-center text-center cursor-pointer min-w-0 overflow-hidden ${
                 ownershipFilter === 'missing'
                   ? 'bg-red-950/80 border-red-500 shadow-md ring-1 ring-red-400/50'
-                  : 'bg-slate-950/70 border-red-500/30 hover:border-red-500/60'
+                  : 'bg-slate-950/70 border-red-500/20 hover:border-red-500/50'
               }`}
             >
-              <span className="text-[10px] font-mono text-slate-400 uppercase tracking-wider block">
+              <span className="text-[9px] sm:text-[10px] font-mono text-slate-400 uppercase tracking-wider block truncate w-full">
                 {t('nationalDex.missing')}
               </span>
-              <span className="text-base sm:text-xl font-black font-display text-red-400 flex items-center gap-1">
-                <HelpCircle className="w-4 h-4 text-red-400 shrink-0 inline" />
-                <span>{activeStats.missingCount}</span>
-                <small className="text-[11px] font-normal text-slate-500">{t('nationalDex.remaining')}</small>
-              </span>
+              <div className="flex items-baseline justify-center gap-0.5 mt-0.5 min-w-0">
+                <span className="text-base sm:text-xl font-black font-display text-red-400 leading-none">
+                  {activeStats.missingCount}
+                </span>
+                <span className="text-[10px] sm:text-xs font-mono text-slate-500 font-normal">
+                  {t('nationalDex.remaining')}
+                </span>
+              </div>
             </button>
 
-            {/* Gen Completion */}
-            <div className="bg-slate-950/70 rounded-xl p-2.5 border border-yellow-500/30 flex flex-col items-center justify-center">
-              <span className="text-[10px] font-mono text-slate-400 uppercase tracking-wider block">
-                {t('nationalDex.completion')}
+            {/* 3. Progress */}
+            <div className="bg-slate-950/70 rounded-xl p-2 sm:p-2.5 border border-yellow-500/20 flex flex-col items-center justify-center text-center min-w-0 overflow-hidden">
+              <span className="text-[9px] sm:text-[10px] font-mono text-slate-400 uppercase tracking-wider block truncate w-full">
+                {t('nationalDex.progressShort')}
               </span>
-              <span className="text-base sm:text-xl font-black font-display text-yellow-300">
-                {activeStats.completionPercent}%
-              </span>
+              <div className="flex items-baseline justify-center mt-0.5 min-w-0">
+                <span className="text-base sm:text-xl font-black font-display text-yellow-300 leading-none">
+                  {activeStats.completionPercent}%
+                </span>
+              </div>
             </div>
           </div>
 
-          {/* Gen Progress Bar */}
+          {/* Progress Bar */}
           <div className="space-y-1">
-            <div className="w-full bg-slate-950 h-2.5 rounded-full overflow-hidden border border-slate-800">
+            <div className="w-full bg-slate-950 h-2 rounded-full overflow-hidden border border-slate-800">
               <div
                 className="bg-gradient-to-r from-emerald-500 via-cyan-400 to-yellow-300 h-full rounded-full transition-all duration-500 shadow-[0_0_8px_rgba(52,211,153,0.4)]"
                 style={{ width: `${activeStats.completionPercent}%` }}
@@ -936,19 +948,28 @@ export const NationalDexPage: React.FC<NationalDexPageProps> = ({ onNavigateToDe
 
       {/* Generations Overview Modal */}
       {showGenOverviewModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-200">
-          <div className="bg-pokedex-card border border-slate-800 rounded-3xl w-full max-w-2xl max-h-[90vh] flex flex-col shadow-2xl overflow-hidden">
+        <div
+          onClick={() => {
+            soundEffects.playClick();
+            setShowGenOverviewModal(false);
+          }}
+          className="fixed inset-0 z-[70] flex items-center justify-center p-3 sm:p-5 pb-24 sm:pb-8 bg-black/85 backdrop-blur-md animate-in fade-in duration-200 overflow-y-auto"
+        >
+          <div
+            onClick={(e) => e.stopPropagation()}
+            className="bg-pokedex-card border border-slate-700/80 rounded-3xl w-full max-w-2xl max-h-[85vh] sm:max-h-[88vh] flex flex-col shadow-2xl overflow-hidden my-auto"
+          >
             {/* Modal Header */}
-            <div className="p-4 sm:p-5 border-b border-slate-800 flex items-center justify-between gap-3 bg-slate-900/60">
+            <div className="p-4 sm:p-5 border-b border-slate-800 flex items-center justify-between gap-3 bg-slate-900/80 shrink-0">
               <div className="flex items-center gap-3">
                 <div className="p-2.5 rounded-2xl bg-pokedex-blue/20 text-pokedex-blue border border-blue-500/30">
                   <BarChart2 className="w-5 h-5" />
                 </div>
                 <div>
-                  <h3 className="font-black font-display text-lg text-white">
+                  <h3 className="font-black font-display text-base sm:text-lg text-white">
                     {t('nationalDex.genOverviewTitle')}
                   </h3>
-                  <p className="text-xs text-slate-400 font-mono">
+                  <p className="text-[11px] sm:text-xs text-slate-400 font-mono">
                     {t('nationalDex.genOverviewSubtitle')}
                   </p>
                 </div>
@@ -965,8 +986,8 @@ export const NationalDexPage: React.FC<NationalDexPageProps> = ({ onNavigateToDe
               </button>
             </div>
 
-            {/* Modal Content / Gen List */}
-            <div className="p-4 sm:p-5 overflow-y-auto space-y-3">
+            {/* Modal Content / Gen List (min-h-0 flex-1 guarantees complete scroll reaching the end) */}
+            <div className="min-h-0 flex-1 overflow-y-auto p-3.5 sm:p-5 pb-8 space-y-2.5 custom-scrollbar">
               {/* National Dex Summary Row */}
               <div
                 onClick={() => {
@@ -974,14 +995,14 @@ export const NationalDexPage: React.FC<NationalDexPageProps> = ({ onNavigateToDe
                   setSelectedGen('all');
                   setShowGenOverviewModal(false);
                 }}
-                className={`p-3.5 rounded-2xl border transition-all cursor-pointer flex flex-col sm:flex-row sm:items-center justify-between gap-3 ${
+                className={`p-3 sm:p-3.5 rounded-2xl border transition-all cursor-pointer flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 sm:gap-3 ${
                   selectedGen === 'all'
                     ? 'bg-blue-950/40 border-pokedex-blue shadow-lg ring-1 ring-pokedex-blue/50'
-                    : 'bg-slate-900/60 border-slate-800 hover:border-slate-700'
+                    : 'bg-slate-900/60 border-slate-800 hover:border-slate-700 hover:bg-slate-900/90'
                 }`}
               >
-                <div>
-                  <div className="flex items-center gap-2">
+                <div className="min-w-0">
+                  <div className="flex items-center gap-2 flex-wrap">
                     <span className="font-black font-display text-white text-sm">
                       {t('nationalDex.allGenerations')}
                     </span>
@@ -998,8 +1019,8 @@ export const NationalDexPage: React.FC<NationalDexPageProps> = ({ onNavigateToDe
                     </span>
                   </div>
                 </div>
-                <div className="flex items-center gap-3">
-                  <div className="w-24 sm:w-32 bg-slate-800 h-2 rounded-full overflow-hidden border border-slate-700">
+                <div className="flex items-center justify-between sm:justify-end gap-3 shrink-0">
+                  <div className="w-28 sm:w-32 bg-slate-800 h-2 rounded-full overflow-hidden border border-slate-700">
                     <div
                       className="bg-gradient-to-r from-emerald-500 to-yellow-300 h-full rounded-full"
                       style={{ width: `${nationalStats.completionPercent}%` }}
@@ -1028,15 +1049,15 @@ export const NationalDexPage: React.FC<NationalDexPageProps> = ({ onNavigateToDe
                       setSelectedGen(g.gen);
                       setShowGenOverviewModal(false);
                     }}
-                    className={`p-3.5 rounded-2xl border transition-all cursor-pointer flex flex-col sm:flex-row sm:items-center justify-between gap-3 ${
+                    className={`p-3 sm:p-3.5 rounded-2xl border transition-all cursor-pointer flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 sm:gap-3 ${
                       isCurrent
                         ? 'bg-blue-950/40 border-pokedex-blue shadow-lg ring-1 ring-pokedex-blue/50'
                         : 'bg-slate-900/60 border-slate-800 hover:border-slate-700 hover:bg-slate-900/90'
                     }`}
                   >
-                    <div>
-                      <div className="flex items-center gap-2">
-                        <span className="px-2 py-0.5 rounded-md bg-pokedex-blue/20 text-pokedex-blue border border-pokedex-blue/30 text-[10px] font-mono font-bold">
+                    <div className="min-w-0">
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <span className="px-2 py-0.5 rounded-md bg-pokedex-blue/20 text-pokedex-blue border border-pokedex-blue/30 text-[10px] font-mono font-bold shrink-0">
                           Gen {g.gen}
                         </span>
                         <span className="font-black font-display text-white text-sm">
@@ -1056,8 +1077,8 @@ export const NationalDexPage: React.FC<NationalDexPageProps> = ({ onNavigateToDe
                       </div>
                     </div>
 
-                    <div className="flex items-center gap-3">
-                      <div className="w-24 sm:w-32 bg-slate-800 h-2 rounded-full overflow-hidden border border-slate-700">
+                    <div className="flex items-center justify-between sm:justify-end gap-3 shrink-0">
+                      <div className="w-28 sm:w-32 bg-slate-800 h-2 rounded-full overflow-hidden border border-slate-700">
                         <div
                           className="bg-gradient-to-r from-emerald-500 to-yellow-300 h-full rounded-full"
                           style={{ width: `${gPercent}%` }}
@@ -1070,6 +1091,20 @@ export const NationalDexPage: React.FC<NationalDexPageProps> = ({ onNavigateToDe
                   </div>
                 );
               })}
+            </div>
+
+            {/* Modal Sticky Footer */}
+            <div className="p-3 sm:p-4 border-t border-slate-800 bg-slate-900/90 flex items-center justify-end shrink-0">
+              <button
+                type="button"
+                onClick={() => {
+                  soundEffects.playClick();
+                  setShowGenOverviewModal(false);
+                }}
+                className="w-full sm:w-auto px-5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 hover:text-white font-mono text-xs font-bold transition-all border border-slate-700 cursor-pointer text-center"
+              >
+                {t('common.close')}
+              </button>
             </div>
           </div>
         </div>
