@@ -755,6 +755,19 @@ const normalizeCards = (rawCards: Card[], applyLocalMeta: boolean = true): Card[
       imageUrl = imageUrl.replace('cards%2Fsvi_', 'cards%2Fsv1_');
     }
 
+    // Heal MEP promo cards whose image_url previously fell back to broken pokemontcg.io/mep or missing pkmncards scans
+    if (setCodeUpper === 'MEP') {
+      const numDigits = (c.card_number || '').replace(/\D/g, '');
+      const paddedMepNum = (numDigits || '1').padStart(3, '0');
+      if (
+        !imageUrl ||
+        /pokemontcg\.io\/mep/i.test(imageUrl) ||
+        (/pkmncards\.com\/wp-content\/uploads\/mebsp_en_/i.test(imageUrl) && parseInt(numDigits || '0', 10) !== 115)
+      ) {
+        imageUrl = `https://limitlesstcg.nyc3.cdn.digitaloceanspaces.com/tpci/MEP/MEP_${paddedMepNum}_R_EN.png`;
+      }
+    }
+
     const imageFilename = c.image_filename || `${setCodeUpper.toLowerCase()}_${c.card_number}.png`;
 
     // Only assign default storage URL if imageUrl is truly missing or empty, preserving custom/online scans

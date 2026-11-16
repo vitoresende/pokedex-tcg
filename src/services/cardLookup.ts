@@ -609,6 +609,15 @@ export function extractBestCardImageUrl(detail: any): string {
         tcgplayerId = v.thirdParty.tcgplayer;
         break;
       }
+      if (v?.pricing?.tcgplayer) {
+        const vtcp = v.pricing.tcgplayer;
+        tcgplayerId =
+          vtcp.holofoil?.productId ||
+          vtcp.normal?.productId ||
+          vtcp['reverse-holofoil']?.productId ||
+          vtcp['1st-edition-holofoil']?.productId;
+        if (tcgplayerId) break;
+      }
     }
   }
 
@@ -616,9 +625,26 @@ export function extractBestCardImageUrl(detail: any): string {
     return `https://tcgplayer-cdn.tcgplayer.com/product/${tcgplayerId}_in_1000x1000.jpg`;
   }
 
-  // Tier 3: pokemontcg.io standard scan (only for sets that exist on pokemontcg.io, not ME/30th)
   const setIdLower = String(detail.set?.id || '').toLowerCase();
-  if (setIdLower && detail.localId && !setIdLower.startsWith('me0') && !setIdLower.startsWith('30th')) {
+
+  // Tier 2.5: Limitless TCG official high-res scans for MEP promos (e.g. First Partner starters Chespin 058, Fennekin 059, Froakie 060, Spritzee 115)
+  if (setIdLower === 'mep' && detail.localId) {
+    const numDigits = String(detail.localId).replace(/\D/g, '');
+    if (numDigits) {
+      const paddedNum = numDigits.padStart(3, '0');
+      return `https://limitlesstcg.nyc3.cdn.digitaloceanspaces.com/tpci/MEP/MEP_${paddedNum}_R_EN.png`;
+    }
+  }
+
+  // Tier 3: pokemontcg.io standard scan (only for sets that exist on pokemontcg.io, not ME/MEP/MEE/30th)
+  if (
+    setIdLower &&
+    detail.localId &&
+    !setIdLower.startsWith('me0') &&
+    !setIdLower.startsWith('30th') &&
+    setIdLower !== 'mep' &&
+    setIdLower !== 'mee'
+  ) {
     const cleanNum = String(detail.localId).replace(/^0+/, '') || '1';
     return `https://images.pokemontcg.io/${setIdLower}/${cleanNum}.png`;
   }
@@ -712,10 +738,15 @@ async function fetchCardDetailById(cardId: string, fallbackNumber?: string, fall
         if (!detail) {
           detail = enDetail;
         } else {
-          // Merge thirdParty/pricing/image from EN if missing in PT
+          // Merge thirdParty/pricing/image/variants_detailed from EN if missing in PT
           if (!detail.image && enDetail.image) detail.image = enDetail.image;
           if (!detail.thirdParty && enDetail.thirdParty) detail.thirdParty = enDetail.thirdParty;
-          if (!detail.pricing && enDetail.pricing) detail.pricing = enDetail.pricing;
+          if ((!detail.pricing || !detail.pricing.tcgplayer) && enDetail.pricing) {
+            detail.pricing = { ...(detail.pricing || {}), ...enDetail.pricing };
+          }
+          if ((!detail.variants_detailed || detail.variants_detailed.length === 0) && enDetail.variants_detailed) {
+            detail.variants_detailed = enDetail.variants_detailed;
+          }
         }
       } catch (_) {}
     }
@@ -912,7 +943,8 @@ function synthesizePromoCard(
   // Determine high-resolution image URL
   let imageUrl = '';
   if (setCode === 'MEP' || targetSetId === 'mep') {
-    imageUrl = `https://pkmncards.com/wp-content/uploads/mebsp_en_${cleanNum}_std.jpg`;
+    const paddedNum = cleanNum.replace(/\D/g, '').padStart(3, '0');
+    imageUrl = `https://limitlesstcg.nyc3.cdn.digitaloceanspaces.com/tpci/MEP/MEP_${paddedNum}_R_EN.png`;
   } else if (setCode === 'SVP' || targetSetId === 'svp') {
     imageUrl = `https://assets.tcgdex.net/en/sv/svp/${cleanNum.padStart(3, '0')}/high.png`;
   } else if (setCode === 'SWSHP' || targetSetId === 'swshp') {
@@ -1161,7 +1193,7 @@ export async function lookupCardOnline(query: string, options?: LookupCardOption
   }
 }
 
-const DYNAMIC_IMAGE_CACHE_KEY = 'pokedex_tcg_resolved_images_v1';
+const DYNAMIC_IMAGE_CACHE_KEY = 'pokedex_tcg_resolved_images_v2';
 const memoryImageCache = new Map<string, string>();
 const inFlightImageLookups = new Map<string, Promise<string | null>>();
 
@@ -1173,9 +1205,10 @@ function getCachedDynamicImage(cacheKey: string): string | null {
     const raw = localStorage.getItem(DYNAMIC_IMAGE_CACHE_KEY);
     if (raw) {
       const parsed = JSON.parse(raw);
-      if (parsed && typeof parsed[cacheKey] === 'string' && parsed[cacheKey]) {
-        memoryImageCache.set(cacheKey, parsed[cacheKey]);
-        return parsed[cacheKey];
+      const cachedUrl = parsed?.[cacheKey];
+      if (typeof cachedUrl === 'string' && cachedUrl && !/pokemontcg\.io\/(me0?\d|mep|mee|30th)/i.test(cachedUrl)) {
+        memoryImageCache.set(cacheKey, cachedUrl);
+        return cachedUrl;
       }
     }
   } catch (_) {}
@@ -1239,9 +1272,9 @@ export async function resolveDynamicCardImage(card: Pick<Card, 'id' | 'name_pt' 
         }
       }
 
-      // 2.1 For MEP promos not yet indexed on TCGdex, use official pkmncards high-res scan
+      // 2.1 For MEP promos not yet indexed with images on TCGdex, use Limitless TCG official high-res scan
       if (cleanSet === 'MEP' || tcgdexSetId === 'mep') {
-        const mepUrl = `https://pkmncards.com/wp-content/uploads/mebsp_en_${unpaddedNum}_std.jpg`;
+        const mepUrl = `https://limitlesstcg.nyc3.cdn.digitaloceanspaces.com/tpci/MEP/MEP_${paddedNum}_R_EN.png`;
         saveCachedDynamicImage(cacheKey, mepUrl);
         return mepUrl;
       }

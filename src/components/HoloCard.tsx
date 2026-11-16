@@ -39,10 +39,10 @@ export const HoloCard: React.FC<HoloCardProps> = ({ card, className = '', isDeta
     setResolvedOnlineUrl(null);
   }, [card.id, card.image_url, card.card_number, card.set_code]);
 
-  // Proactively resolve dynamic image from TCGdex/TCGPlayer if primary image fails or card is from a new ME/Reinado Delta set without valid image_url
+  // Proactively resolve dynamic image from TCGdex/TCGPlayer/Limitless if primary image fails or card is from a new ME/MEP set without valid image_url
   useEffect(() => {
-    const isBrokenDefaultUrl = !card.image_url || /pokemontcg\.io\/me0?\d/i.test(card.image_url);
-    const isNewMeSet = /^ME0?\d/i.test(card.set_code || '') || /reinado\s+delta|escurid[aã]o\s+absoluta|caos\s+ascendente|equil[ií]brio\s+perfeito|her[oó]is\s+excelsos/i.test(`${card.set_pt || ''} ${card.set_en || ''}`);
+    const isBrokenDefaultUrl = !card.image_url || /pokemontcg\.io\/(me0?\d|mep|mee|30th)/i.test(card.image_url);
+    const isNewMeSet = /^(ME0?\d|MEP|MEE|30TH)/i.test(card.set_code || '') || /reinado\s+delta|escurid[aã]o\s+absoluta|caos\s+ascendente|equil[ií]brio\s+perfeito|her[oó]is\s+excelsos|megaevolu[cç][aã]o/i.test(`${card.set_pt || ''} ${card.set_en || ''}`);
 
     if (!resolvedOnlineUrl && (imageErrorLevel >= 1 || (isBrokenDefaultUrl && isNewMeSet))) {
       let cancelled = false;
@@ -151,8 +151,14 @@ export const HoloCard: React.FC<HoloCardProps> = ({ card, className = '', isDeta
       }
 
       // 1. Direct explicit image_url (e.g. from TCGdex, Limitless or user scan selection)
-      if (card.image_url) {
+      if (card.image_url && !/pokemontcg\.io\/(me0?\d|mep|mee|30th)/i.test(card.image_url)) {
         sources.push(card.image_url);
+      }
+
+      // 1.1 Priority Limitless TCG CDN for MEP promos (e.g. First Partner starters Chespin 058, Fennekin 059, Froakie 060)
+      if (cleanSet === 'mep') {
+        sources.push(`https://limitlesstcg.nyc3.cdn.digitaloceanspaces.com/tpci/MEP/MEP_${paddedNum}_R_EN.png`);
+        sources.push(`https://limitlesstcg.nyc3.cdn.digitaloceanspaces.com/tpci/MEP/MEP_${paddedNum}_R_PT.png`);
       }
 
       // 2. Direct local bundle image (bundled in public/cards/)
@@ -246,8 +252,10 @@ export const HoloCard: React.FC<HoloCardProps> = ({ card, className = '', isDeta
         'smp': 'smp',
       };
       const pokemontcgSet = SET_CODE_POKEMONTCG_IO_MAP[cleanSet] || cleanSet;
-      sources.push(`https://images.pokemontcg.io/${pokemontcgSet}/${unpaddedNum}_hires.png`);
-      sources.push(`https://images.pokemontcg.io/${pokemontcgSet}/${unpaddedNum}.png`);
+      if (!/^(me0?\d|mep|mee|30th)/i.test(cleanSet)) {
+        sources.push(`https://images.pokemontcg.io/${pokemontcgSet}/${unpaddedNum}_hires.png`);
+        sources.push(`https://images.pokemontcg.io/${pokemontcgSet}/${unpaddedNum}.png`);
+      }
 
       const SET_CODE_LIMITLESS_MAP: Record<string, string> = {
         // Megaevolução aliases

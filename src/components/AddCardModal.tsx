@@ -138,7 +138,10 @@ export const AddCardModal: React.FC<AddCardModalProps> = ({ isOpen, onClose, ini
     soundEffects.playScan();
     const cleanSet = (c.setCode || 'SV1').trim().toUpperCase();
     const cleanNum = (c.cardNumber || '1').trim();
-    const fallbackImage = `https://images.pokemontcg.io/${cleanSet.toLowerCase()}/${cleanNum.replace(/\D/g, '') || '1'}.png`;
+    const numDigits = cleanNum.replace(/\D/g, '') || '1';
+    const fallbackImage = cleanSet === 'MEP'
+      ? `https://limitlesstcg.nyc3.cdn.digitaloceanspaces.com/tpci/MEP/MEP_${numDigits.padStart(3, '0')}_R_EN.png`
+      : `https://images.pokemontcg.io/${cleanSet.toLowerCase()}/${numDigits}.png`;
     const finalImage = c.imageUrl || fallbackImage;
 
     const normalizedColor = c.colorCode === 'N' ? 'O' : c.colorCode === 'T' ? '' : (c.colorCode ?? 'C');
