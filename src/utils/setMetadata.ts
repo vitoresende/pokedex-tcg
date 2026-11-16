@@ -21,6 +21,7 @@ export const SET_RELEASE_YEARS: Record<string, number> = {
 
   // === 2025 (Megaevolução & Scarlet & Violet finale) ===
   'ME01': 2025, 'ME1': 2025, // Megaevolução Base Set
+  'MEP': 2025, // Megaevolução Promos / Mega Evolution Promos
   'ME02': 2025, 'ME2': 2025, // Fogo Fantasmagórico / Phantasmal Flames
   'BLK': 2025, // Black Bolt
   'WHT': 2025, // White Flare
@@ -134,7 +135,7 @@ export const SET_RELEASE_YEARS: Record<string, number> = {
   'SM2': 2017,
   'SUM': 2017, 'SM1': 2017, // Sun & Moon Base / Sol e Lua
   'SMP': 2017, // Sun & Moon Promos
-  'MEP': 2017, // Mega Powers
+  'MPO': 2017, // Mega Powers
 
   // === 2016 (XY) ===
   'EVO': 2016, // Evolutions / Evoluções
@@ -275,6 +276,7 @@ export const SET_OFFICIAL_NAMES_PT: Record<string, string> = {
   'ME5': 'Escuridão Absoluta',
   'ME06': 'Reinado Delta',
   'ME6': 'Reinado Delta',
+  'MEP': 'Megaevolução Promos',
 
   // Scarlet & Violet
   'PRE': 'Evoluções Prismáticas',
@@ -352,6 +354,7 @@ export const SET_OFFICIAL_NAMES_PT: Record<string, string> = {
   'FFI': 'Punhos Furiosos',
   'FLF': 'Flash de Fogo',
   'XY': 'XY',
+  'XYP': 'XY Promos',
   
   // Black & White
   'PLB': 'Explosão de Plasma',
@@ -361,6 +364,14 @@ export const SET_OFFICIAL_NAMES_PT: Record<string, string> = {
   'EPO': 'Forças Emergentes',
   'BLW': 'Black & White',
   'BW': 'Black & White',
+  'BWP': 'Preto e Branco Promos',
+
+  // Outras Coleções Promocionais
+  'DPP': 'Diamante e Pérola Promos',
+  'HGSSP': 'HeartGold SoulSilver Promos',
+  'NP': 'Nintendo Promos',
+  'PR': 'Wizards Black Star Promos',
+  'BASEP': 'Wizards Black Star Promos',
 };
 
 /**
